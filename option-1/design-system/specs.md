@@ -6,6 +6,7 @@ _Last updated: 12 Oct 2026, third session._
 
 ## Changelog
 
+- **13 Oct 2026:** hosted at https://salon-om-option-1.web.app (`site/`, made from `homepage-artifact/` plus a mobile viewport tag). Added `writing.md` and the Motion rules in `design.md`.
 - **12 Oct, session 3:** connected Magnific. Generated 14 placeholder photos (Nano Banana 2, 2K) and chose 7. Saved web copies to `Maggie website/images` and put them on the homepage: offering cards, affirmation tiles (with a new `photo-veil` token) and the About arch. Saved the single-file homepage and these notes to the Mac folder.
 - **12 Oct, session 2:** dropped the monogram and added a small-size cut of the full logo. Built the tall white desktop header with the full logo. Set the colour proportions (MoodStrip, token notes, neutral CTA). Made all sections responsive (desktop / tablet / mobile container queries). Added `Section`, `Shoreline` (living generated sea) and `WaveSound` (generated surf, opt-in). Generated copyright-free textures. Built the homepage draft.
 - **12 Oct, session 1:** reviewed both boards, vectorised the logo, created tokens, the brand book, 17 components and these memory files.

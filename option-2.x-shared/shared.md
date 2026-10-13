@@ -1,5 +1,7 @@
 # Shared — facts and rules (Option 2)
 
+> **13 Oct 2026:** each variation now has its own four memory files (`design.md`, `shared.md`, `specs.md`, `writing.md`) in `option-2.2/`, `option-2.3/` and `option-2.4/`. Use those. This file is the common base they were made from.
+
 This is the project memory for **Option 2, "OM is everything."** It shares the facts of the project with Option 1. Read it before any Option 2 work and update it when a fact is confirmed or a rule changes. Mark anything unconfirmed **(TBC)**.
 
 ## Rules (always apply)

@@ -2,7 +2,7 @@
 
 This is the working design memory for **Option 2, "OM is everything."** Option 1 ("Embossed gold on warm paper") is saved separately in `Maggie website/option-1/` and in the "Salon OM Option 1" design system. Update this file whenever a design or motion decision changes.
 
-_Version 2, 12 Oct 2026 (after the client's second review)._
+_Version 2, 12 Oct 2026 (after the client's second review). Motion and sound checked against `site/index.html` on 13 Oct 2026._
 
 ## Direction
 
@@ -23,6 +23,9 @@ OM is unity: the first sound, everything at once. The site is a **cinematic slid
 | O2-9 | Single visual world (umber + clay), not tied to the OS light/dark setting | The films carry the page |
 | O2-10 | Photography from Option 1 (Magnific placeholders) reused for offerings and story | Same resources across options |
 | O2-11 | **The word "home" is never used** in brand copy (no "come home", "at home", "feel at home") | Client: home is not a welcoming place for everyone |
+| O2-12 | **Soundscapes**: one per element plus a background bed, crossfading with the slides | Client: "soundscapes that feel calm, very soothing and introspective" |
+| O2-13 | Logo: SALON set a little smaller (0.09 of the OM cap height) and closer (0.2 cap heights above OM) | Client, mobile/hero review |
+| O2-14 | **Sound is on by default.** It starts on the visitor's first tap, click or key (browsers allow nothing sooner); the button then mutes and unmutes, and the choice is remembered on that device | Client |
 
 ## Colour use
 
@@ -100,6 +103,30 @@ OM is unity: the first sound, everything at once. The site is a **cinematic slid
 - Loading: streamed from its URL; if the host refuses it, or it hasn't started after 4.5s, it is fetched whole and played from memory. Hero and closing films share one download.
 - A **pause-films button** in the header stops and restarts every film (accessibility: moving content can be paused).
 
+**Soundscapes**
+
+- Each element slide has its own soundscape; every other slide shares a soft background bed (ambient pads with a faint rainforest layer). All are in D, so crossfades stay in harmony. Files: `sound/earth.mp3`, `water.mp3`, `fire.mp3`, `air.mp3`, `ether.mp3` and `bed.mp3`.
+  - Ground: low cello drones with a quiet forest.
+  - Flow: glassy pads and harp ripples over small waves.
+  - Transform: warm swells over soft embers.
+  - Breathe: airy flute pads over a breeze.
+  - Unite: singing bowls and a humming choir.
+- Sources: Google Lyria 3 Pro (music) and ElevenLabs sound effects (nature), on the client's Magnific account. Each soundscape is loudness-matched (about −22 LUFS), made into a seamless 90s loop with an equal-power crossfade, padded 0.5s each side and encoded as MP3 at 112 kbps.
+- **Sound is on by default** (O2-14). It begins on the first tap, click or key anywhere; a first press on the sound button also starts it rather than muting. The button (three bars) then mutes, and a second press unmutes. The choice is saved on the device (`om-sound`). Muted, the bars settle flat with a fine line across them.
+- Playback uses Web Audio. Each track loops [0.5s, 90.5s] of its buffer. When the slide that fills most of the screen settles (350ms), its soundscape crossfades in over 3s on a sine ease-in-out while the previous one fades out. The master volume fades in over 2.5s and out over 1.2s, then the audio pauses. Sound fades out when the tab is hidden.
+- Memory: only the bed, the current and the next soundscape stay decoded.
+
+**Where the motion lives in the code** (`site/index.html`)
+
+| Rule | Code |
+| --- | --- |
+| Easing and timing tokens | `--io`, `--io-soft`, `--io-strong`, `--t-ui`, `--t-text`, `--t-title`, `--t-film` in `:root` |
+| Motion amounts | `--m-film: 1.24` (film scale-in), `--m-slide: 64px` (text slide), `--m-blur: 12px`, `--m-par: 1` (leave parallax) |
+| Reduced motion | the same variables, set to `1.06`, `14px`, `4px` and `.25` |
+| Slide activation | a slide turns active when 40% of it is on screen (`0.4` in the slide observer) and resets once fully gone |
+| Leaving shade | `.s__shade` opacity `--q × .72` |
+| Film fallback | a film that hasn't started after 4.5s is fetched whole (`4500` ms) |
+
 **Reduced motion** (`prefers-reduced-motion: reduce`): the same choreography, gentler. Films still loop (they can be paused from the header). Film scale-in drops to 106%, text slides 14px with a 4px blur, the leave parallax drops to a quarter, anchor scrolling is instant.
 
 **Performance budget:** at most two films decoding (only during a transition). Posters under 100 KB. Page HTML/CSS/JS about 70 KB. Fonts: 7 woff2 files (~150 KB). Animations use transform, opacity, filter and clip-path only.
@@ -112,6 +139,5 @@ OM is unity: the first sound, everything at once. The site is a **cinematic slid
 
 ## Not yet decided
 
-- Wave sound for Option 2.
 - How the films should change once the client's beach reference arrives (the water chapter is the place).
 - Final copy, services and prices. The Sanskrit element names need the client's approval.

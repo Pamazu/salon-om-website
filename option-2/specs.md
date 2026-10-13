@@ -6,6 +6,7 @@ _Last updated: 12 Oct 2026 (v2.1)._
 
 ## Changelog
 
+- **13 Oct 2026:** hosted at https://salon-om-option-2.web.app. Added `writing.md`; `design.md` now records the soundscapes, sound-on-by-default and where each motion rule lives in the code.
 - **12 Oct, v2.1 (client comment):** OM now sounds first in the manifesto, on its own, with a slow ease-in-out breath and a held pause before the rest is written in.
 - **12 Oct, v2 (client review):**
   - Rebuilt the homepage as a full-screen **slideshow** that snaps section to section, with entrances on arrival and a parallax/shade as each section leaves.

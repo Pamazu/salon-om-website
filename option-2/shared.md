@@ -14,7 +14,7 @@ This is the project memory for **Option 2, "OM is everything."** It shares the f
 8. **Own media only:** films and photos are generated on the client's Magnific account (or are the client's own). Never use Pinterest or web images. AI people never stand in for the coach.
 9. **Real content only:** services, prices, testimonials and contact details stay marked as placeholders until confirmed.
 10. **Responsive:** desktop ≥ 1024, tablet 640–1023, phone < 640. Check all three, with no horizontal scroll at 360px.
-11. **Memory files:** keep shared.md, design.md and specs.md current in the same session as any change.
+11. **Memory files:** keep all four current, in the same session as any change: `shared.md` (facts and rules), `design.md` (design and motion), `specs.md` (what is done and pending) and `writing.md` (how the words are written).
 
 ## Facts
 
@@ -32,6 +32,7 @@ This is the project memory for **Option 2, "OM is everything."** It shares the f
 | Option 2 site | `Maggie website/option-2/site/index.html` (open it in a browser), plus the "Salon OM Option 2" homepage artifact | 12 Oct 2026 |
 | Fonts | Option 2: Cormorant Garamond (300, 300 italic, 400, 500) + Instrument Sans (400, 500, 600), all SIL OFL, self-hosted woff2 | |
 | Client's Mac | "Reduce motion" is switched on in macOS Accessibility settings (seen 12 Oct 2026). Browsers then ask sites for reduced motion, so the page shows its gentler motion there | In-app browser check |
+| Coach photo | A photo from the client, saved as `resources/coach-photo-beach.jpg` at the top of the repo. Who is in it and how it may be used: **TBC** | Client, 13 Oct 2026 |
 
 ## The coach's own words (source text, keep verbatim)
 

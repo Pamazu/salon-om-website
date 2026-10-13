@@ -14,7 +14,7 @@ This is the project's persistent memory: facts we know and rules we follow. Read
 8. **Accessibility:** semantic HTML, visible labels on every field, `focus-ring` on every focusable element, alt text on every meaningful image, and all motion disabled under `prefers-reduced-motion`.
 9. **Responsive:** every section has a desktop (≥ 1024px), tablet (640–1023px) and mobile (< 640px) layout, driven by container queries. Test all three before calling a section done.
 10. **Own imagery and sound only:** use only images and audio we generate ourselves (in code, or with Magnific on the client's account) or that the client owns or licenses. Never use Pinterest images or anything else from the web. AI photos are placeholders until real photography replaces them, and must never stand in for the coach. The sea sound never autoplays; it starts only from a visitor's tap.
-11. **Memory files:** keep `shared.md` (facts and rules), `design.md` (design decisions) and `specs.md` (features and status) current. When work finishes or a decision is made, update the right file in the same session.
+11. **Memory files:** keep all four current, in the same session as any change: `shared.md` (facts and rules), `design.md` (design and motion), `specs.md` (what is done and pending) and `writing.md` (how the words are written).
 12. **Never use the word "home"** in brand copy ("come home", "at home", "feel at home", "home to yourself"). Home is not a welcoming place for everyone (client, 12 Oct 2026). This applies to both options.
 
 ## Facts
@@ -34,6 +34,7 @@ This is the project's persistent memory: facts we know and rules we follow. Read
 | Image generation | Magnific is connected (12 Oct 2026). Placeholder photos are made with Google Nano Banana 2 at 2K and kept in the Magnific project "Salon OM Website". The cloud workspace can't reach Magnific's image server, so images come through the in-app browser into the Mac folder below | Magnific |
 | Project folder | `~/j-workspace/Maggie website` on the client's Mac: `images/` (web-ready photos), the single-file homepage, and copies of these memory files | Client, 12 Oct |
 | Board owners | Both boards are curated by Maggie Woodward (pinterest.com/msbliss1). Rozetree Marketing collaborates on board 2 | Pinterest |
+| Coach photo | A photo from the client, saved as `resources/coach-photo-beach.jpg` at the top of the repo. Who is in it and how it may be used: **TBC** | Client, 13 Oct 2026 |
 
 ## The coach's own words (source text, keep verbatim)
 

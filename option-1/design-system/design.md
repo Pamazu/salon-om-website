@@ -70,6 +70,25 @@ Each page follows the same rhythm, alternating `surface` and `surface-sunken` (l
 
 Choose textures over faces: sand ripples, wood grain, palm and monstera leaves, cracked plaster, water with sun glints, candles and smoke, linen, hands, arched interiors. Use warm, desaturated colour and natural light. Faces, when used, are calm and unposed. Until real photography exists, use the Magnific placeholder photos (`Maggie website/images`) or the generated textures in the Imagery group. Prompts that worked: warm desaturated palette of ivory, linen, sand, stone and muted sage; soft natural light; editorial interior photography; no people, text or logos. The coach's portrait must be a real photo.
 
+## Motion rules
+
+_Checked against the hosted page (`site/index.html`) on 13 Oct 2026._
+
+**Principles.** Option 1 is still and editorial. The sea is the only thing that moves on its own; everything else changes only when the visitor acts (scrolls, hovers, taps). Motion is short (0.25–0.35s), soft and never decorative: no entrance animations, no parallax, no snapping between sections.
+
+| What moves | How | Timing |
+| --- | --- | --- |
+| Living sea (hero arch) | WebGL waves on their own clock: each wave lasts 8.5–12s and reaches a different height, so the sea never visibly repeats. It draws only while the arch is on screen. The surf sound (`WaveSound`) follows the same clock | Continuous |
+| Sound button bars | Three bars swell from 4px to 16px while the sound plays | 2.4s, ease-in-out, looping |
+| Header | Compacts after 40px of scroll: the logo shrinks from 128px to 84px (104px to 76px on tablet and phone) and a soft shadow replaces the hairline | Logo 0.35s ease, shadow 0.3s ease |
+| Floating sound button | Appears bottom-right after 760px of scroll (past the hero), fading in as it rises 8px | 0.35s ease |
+| Buttons and links | Background, text and border colours change on hover; the → arrow slides 4px to the right | 0.25s ease |
+| Anchor links | Smooth scrolling, landing below the sticky header (`scroll-padding-top` 132px) | Browser default |
+
+**Reduced motion** (`prefers-reduced-motion: reduce`): every transition and animation is switched off, the sea is drawn as one still frame and anchor jumps are instant. The sound still plays when tapped. (Option 2 only softens its motion; Option 1 switches it off, as `shared.md` rule 8 says.)
+
+**Adding motion:** keep to this vocabulary. Interface changes take 0.25–0.35s with `ease` or `ease-in-out`; only the sea and the sound bars loop; animate transform, opacity, colour and shadow (plus the header logo's height); and switch it off under reduced motion.
+
 ## Not yet decided
 
 - How the waves should move: waiting for the client's reference beach image and notes. Then tune `Shoreline` (speed, wave size, colour, foam, camera angle) and possibly go full-bleed.

@@ -1,5 +1,7 @@
 # Specs — Option 2.2, 2.3, 2.4
 
+> **13 Oct 2026:** each variation now has its own four memory files (`design.md`, `shared.md`, `specs.md`, `writing.md`) in `option-2.2/`, `option-2.3/` and `option-2.4/`. Use those. This file is the common base they were made from.
+
 _Last updated: 12 Oct 2026._
 
 | Item | 2.2 | 2.3 | 2.4 | Notes |
