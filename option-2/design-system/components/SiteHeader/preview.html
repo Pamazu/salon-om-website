@@ -1,0 +1,14 @@
+<!-- @dsCard group="Navigation" height=200 width=1280 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>SiteHeader - preview</title></head>
+<body style="margin:0;">
+<div id="root"></div>
+<script>
+  var S = window.SalonOM2, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', null,
+  h('div', {style:{background:'linear-gradient(rgba(10,7,5,.4),rgba(10,7,5,0)), url(/_blob/8f0b80ce69e867a493163d3f75aadc77) center 30%/cover', height:100}}, h(S.SiteHeader, {className:'ds-static', links:[{label:'Elements',href:'#'},{label:'Offerings',href:'#'},{label:'Story',href:'#'},{label:'Letters',href:'#'}], cta:{label:'Book', href:'#'}})),
+  h('div', {style:{background:'var(--clay)', height:100}}, h(S.SiteHeader, {className:'ds-static', tone:'light', links:[{label:'Elements',href:'#'},{label:'Offerings',href:'#'},{label:'Story',href:'#'},{label:'Letters',href:'#'}], cta:{label:'Book', href:'#'}}))));
+</script>
+</body>
+</html>

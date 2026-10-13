@@ -1,0 +1,49 @@
+<!-- @dsCard height=300 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Salon OM Option 2</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--clay); color:var(--ink); font-family:var(--font-sans); overflow:hidden; }
+  .cover { position:relative; width:960px; height:300px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:300px; overflow:hidden; }
+  .art svg { display:block; width:480px; height:300px; }
+  .umber { fill:var(--umber); }
+  .bark { fill:var(--bark); }
+  .deep { fill:var(--clay-deep); }
+  .forest { fill:var(--forest); }
+  .ring { fill:none; stroke:var(--ivory); stroke-width:1; opacity:.5; }
+  .ring2 { fill:none; stroke:var(--forest-light); stroke-width:1; opacity:.55; }
+  .words { position:absolute; left:40px; bottom:40px; max-width:420px; }
+  .eyebrow { margin:0 0 14px 2px; font-size:11px; line-height:14px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-soft); }
+  .name { margin:0; font-family:var(--font-serif); font-size:92px; line-height:.9; font-weight:300; letter-spacing:-.02em; color:var(--ink); white-space:nowrap; }
+  .tag { margin:14px 0 0 2px; font-size:14px; line-height:20px; color:var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="art" aria-hidden="true">
+    <svg viewBox="0 0 480 300" width="480" height="300">
+      <!--
+        blocks   umber 208x300 full height (the base ground, the largest area) · bark 112x204 bled off the top · clay-deep 96x120 · forest 40x56 once (the one accent stays small): grounds carry the area, as the colour rules say
+        pattern  "OM is unity": two thin rings, like the manifesto's breathing rings, one ivory and one forest-light, centred on the umber block
+        scales   gutters 16px; ring radii 72 and 62; 1px hairlines like the drawn OM outline
+      -->
+      <rect class="deep" x="0" y="180" width="96" height="120"/>
+      <rect class="bark" x="112" y="0" width="112" height="204"/>
+      <rect class="umber" x="240" y="0" width="240" height="300"/>
+      <circle class="ring" cx="360" cy="150" r="72"/>
+      <circle class="ring2" cx="360" cy="150" r="62"/>
+      <rect class="forest" x="112" y="220" width="40" height="56"/>
+    </svg>
+  </div>
+  <div class="words">
+    <p class="eyebrow">Option 2 · OM is everything</p>
+    <h1 class="name">Salon OM</h1>
+    <p class="tag">A cinematic journey through the five elements, for healing, growth and transformation.</p>
+  </div>
+</div>
+</body>
+</html>

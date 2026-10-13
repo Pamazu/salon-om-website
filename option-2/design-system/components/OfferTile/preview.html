@@ -1,0 +1,16 @@
+<!-- @dsCard group="Content" height=600 width=1280 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>OfferTile - preview</title></head>
+<body style="margin:0;">
+<div id="root"></div>
+<script>
+  var S = window.SalonOM2, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('section', {className:'offers is-active ds-static', style:{padding:14}},
+  h('div', {className:'tiles', style:{minHeight:572}},
+  h(S.OfferTile, {image:'/_blob/faed6f4b356ec6f8d0f0cc19d33f26f8', alt:'Two linen armchairs and herbal tea in a sunlit room', tag:'Coaching \u00b7 60 min', title:'One-to-one coaching', text:'A private space to release limiting beliefs and reconnect with your inner wisdom.', primary:{label:'Book', href:'#'}, secondary:{label:'Learn more', href:'#'}}),
+  h(S.OfferTile, {image:'/_blob/719b094a585d3d6820a29cb5bfd26b60', alt:'A calm salon with an arched mirror', tag:'Salon \u00b7 90 min', title:'The ritual', text:'Unhurried care for body and spirit, in natural light and quiet.', primary:{label:'Book', href:'#'}, secondary:{label:'Learn more', href:'#'}}),
+  h(S.OfferTile, {image:'/_blob/3a5189a29ff9b8337c34fb7f9fe513e4', alt:'Floor cushions in a circle around a candle', tag:'Group \u00b7 6 weeks', title:'Rise circle', text:'Grow alongside others who are choosing joy, peace and purpose.', primary:{label:'Join the waitlist', href:'#'}, secondary:{label:'Learn more', href:'#'}}))));
+</script>
+</body>
+</html>

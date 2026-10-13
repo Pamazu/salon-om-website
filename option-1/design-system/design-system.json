@@ -1,0 +1,217 @@
+{
+ "v": 3,
+ "assetGroups": {
+  "Logos": {
+   "name": "Logos",
+   "tile": "l",
+   "order": [
+    "salon-om-logo-gold.svg",
+    "salon-om-logo-ink.svg",
+    "salon-om-logo-ivory.svg",
+    "salon-om-logo-foil.svg",
+    "salon-om-logo-small-gold.svg",
+    "salon-om-logo-small-ink.svg",
+    "salon-om-logo-small-ivory.svg",
+    "salon-om-favicon.svg",
+    "salon-om-logo-original-mockup.jpg"
+   ],
+   "files": {
+    "salon-om-logo-gold.svg": {
+     "name": "salon-om-logo-gold.svg",
+     "blob": "ac8ad12f4bec4ce37ca3332cc0c1806a",
+     "size": 22308,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-ink.svg": {
+     "name": "salon-om-logo-ink.svg",
+     "blob": "0a9f4fbb8850f5d5df6ac74fe1d22af7",
+     "size": 22308,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-ivory.svg": {
+     "name": "salon-om-logo-ivory.svg",
+     "blob": "89dab8f2f50b89605712e4ab542b3d27",
+     "size": 22308,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-foil.svg": {
+     "name": "salon-om-logo-foil.svg",
+     "blob": "d430219e0825083010ad40917528b7a9",
+     "size": 22578,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-small-gold.svg": {
+     "name": "salon-om-logo-small-gold.svg",
+     "blob": "a3df251573fec4787ceb35c2584359b5",
+     "size": 22305,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-small-ink.svg": {
+     "name": "salon-om-logo-small-ink.svg",
+     "blob": "97232457156e472e531800d437297e2f",
+     "size": 22305,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-small-ivory.svg": {
+     "name": "salon-om-logo-small-ivory.svg",
+     "blob": "65b8dabe5ab9fe96d038b9c0cb92f884",
+     "size": 22305,
+     "type": "image/svg+xml"
+    },
+    "salon-om-favicon.svg": {
+     "name": "salon-om-favicon.svg",
+     "blob": "2da1a98374a1574529822e0b5073874b",
+     "size": 22420,
+     "type": "image/svg+xml"
+    },
+    "salon-om-logo-original-mockup.jpg": {
+     "name": "salon-om-logo-original-mockup.jpg",
+     "blob": "19b39e6e7af33319321d52dfffd4eadb",
+     "size": 344877,
+     "type": "image/jpeg"
+    }
+   }
+  },
+  "Imagery": {
+   "name": "Imagery",
+   "tile": "m",
+   "order": [
+    "shore-still.webp",
+    "sand-ripples.webp",
+    "plaster-palm.webp",
+    "sage-frond.webp",
+    "linen.webp",
+    "stone.webp"
+   ],
+   "files": {
+    "shore-still.webp": {
+     "name": "shore-still.webp",
+     "blob": "96c18f78e2a3a8009b7aa71af19230fd",
+     "size": 34992,
+     "type": "image/webp"
+    },
+    "sand-ripples.webp": {
+     "name": "sand-ripples.webp",
+     "blob": "d2a7a8dd5f4355d7374b8620a5ac75ab",
+     "size": 58042,
+     "type": "image/webp"
+    },
+    "plaster-palm.webp": {
+     "name": "plaster-palm.webp",
+     "blob": "56c25a1bdc25220b4d8f6e2e3328f67c",
+     "size": 11434,
+     "type": "image/webp"
+    },
+    "sage-frond.webp": {
+     "name": "sage-frond.webp",
+     "blob": "5056ad78dcfce08348d619606684ac8d",
+     "size": 5210,
+     "type": "image/webp"
+    },
+    "linen.webp": {
+     "name": "linen.webp",
+     "blob": "6f80acb20bb0a4ba785c2c725b665a8c",
+     "size": 10398,
+     "type": "image/webp"
+    },
+    "stone.webp": {
+     "name": "stone.webp",
+     "blob": "2199219e50ae2f550a2fdbb5959aaec6",
+     "size": 9008,
+     "type": "image/webp"
+    }
+   }
+  },
+  "Photography": {
+   "name": "Photography",
+   "tile": "m",
+   "order": [
+    "salon-om-coaching.webp",
+    "salon-om-salon.webp",
+    "salon-om-circle.webp",
+    "salon-om-shoreline-walk.webp",
+    "salon-om-sand.webp",
+    "salon-om-linen.webp",
+    "salon-om-plaster-palm.webp"
+   ],
+   "files": {
+    "salon-om-coaching.webp": {
+     "name": "salon-om-coaching.webp",
+     "blob": "1e59154f684eda6b97fcde1fcba1957a",
+     "size": 163284,
+     "type": "image/webp"
+    },
+    "salon-om-salon.webp": {
+     "name": "salon-om-salon.webp",
+     "blob": "08d0ff8facaa91437fcd3f73946bac0a",
+     "size": 143630,
+     "type": "image/webp"
+    },
+    "salon-om-circle.webp": {
+     "name": "salon-om-circle.webp",
+     "blob": "7a6b6148c36911b282d2d8ce0887af68",
+     "size": 157414,
+     "type": "image/webp"
+    },
+    "salon-om-shoreline-walk.webp": {
+     "name": "salon-om-shoreline-walk.webp",
+     "blob": "6ee821ff77b9a1735724cf9f6e2cb916",
+     "size": 191404,
+     "type": "image/webp"
+    },
+    "salon-om-sand.webp": {
+     "name": "salon-om-sand.webp",
+     "blob": "6ef69b5521aa8cc9725ef2f7e59b5a1d",
+     "size": 282466,
+     "type": "image/webp"
+    },
+    "salon-om-linen.webp": {
+     "name": "salon-om-linen.webp",
+     "blob": "7de71eb368f17b1e226c5997d59672bf",
+     "size": 92396,
+     "type": "image/webp"
+    },
+    "salon-om-plaster-palm.webp": {
+     "name": "salon-om-plaster-palm.webp",
+     "blob": "d75ee67f348a5bf98e77cfbfa79f4260",
+     "size": 135950,
+     "type": "image/webp"
+    }
+   }
+  }
+ },
+ "blobs": {},
+ "createdOnFiles": {
+  "at": "2026-10-12T14:52:00Z",
+  "v": 1
+ },
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "groups": [
+  "Logos",
+  "Photography",
+  "Imagery"
+ ],
+ "lastChange": {
+  "by": "Claude",
+  "at": "2026-10-12T16:08:00Z",
+  "via": "Claude (cloud session)",
+  "note": "Magnific placeholder photography (Nano Banana 2) and the photo-veil token for text over photos."
+ },
+ "layout": "files",
+ "libraries": [
+  {
+   "name": "react",
+   "version": "18"
+  },
+  {
+   "name": "react-dom",
+   "version": "18"
+  }
+ ],
+ "namespace": "SalonOM",
+ "sections": {},
+ "title": "Salon OM"
+}

@@ -1,0 +1,44 @@
+{
+ "earth": {
+  "loop_seconds": 90.0,
+  "pad": 0.5,
+  "lufs": -22.0,
+  "peak_dbfs": -2.7,
+  "kb": 1245
+ },
+ "water": {
+  "loop_seconds": 90.0,
+  "pad": 0.5,
+  "lufs": -22.3,
+  "peak_dbfs": -6.9,
+  "kb": 1245
+ },
+ "fire": {
+  "loop_seconds": 90.0,
+  "pad": 0.5,
+  "lufs": -23.3,
+  "peak_dbfs": -1.2,
+  "kb": 1245
+ },
+ "air": {
+  "loop_seconds": 90.0,
+  "pad": 0.5,
+  "lufs": -22.8,
+  "peak_dbfs": -9.8,
+  "kb": 1245
+ },
+ "ether": {
+  "loop_seconds": 90.0,
+  "pad": 0.5,
+  "lufs": -22.3,
+  "peak_dbfs": -10.2,
+  "kb": 1245
+ },
+ "bed": {
+  "loop_seconds": 90.0,
+  "pad": 0.5,
+  "lufs": -23.8,
+  "peak_dbfs": -12.0,
+  "kb": 1245
+ }
+}

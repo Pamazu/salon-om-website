@@ -1,0 +1,21 @@
+<!-- @dsCard group="Content" height=860 width=1330 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Affirmation - preview</title></head>
+<body>
+<div id="root" class=""></div>
+<script>
+  var S = window.SalonOM, h = React.createElement;
+  function frame(label, w, el) { return h('div', { key: label }, h('span', { className: 'om-pv-frame__label' }, label), h('div', { className: 'om-pv-frame', style: { width: w } }, el)); }
+  function frames(make) {
+    return h('div', { className: 'om-pv-frames' },
+      frame('Desktop \u2265 1024px', 1280, make('d')),
+      h('div', { className: 'om-pv-frames__row' }, frame('Tablet 640\u20131023px', 820, make('t')), frame('Mobile < 640px', 390, make('m'))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(frames(function (k) { return h('div', {className:'om-section', style:{}}, h('div', {className:'om-row'},
+    h(S.Affirmation, {text:'Feel it to heal it.', tone:'sand'}),
+    h(S.Affirmation, {text:'Soft & strong.', tone:'linen'}),
+    h(S.Affirmation, {text:'You are allowed to begin again.', attribution:'Salon OM', tone:'sage'}))); }));
+</script>
+</body>
+</html>

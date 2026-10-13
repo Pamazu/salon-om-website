@@ -1,0 +1,49 @@
+<!-- @dsCard height=300 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Salon OM</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--surface); color:var(--ink); font-family:var(--font-sans); overflow:hidden; }
+  .cover { position:relative; width:960px; height:300px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:300px; overflow:hidden; }
+  .art svg { display:block; width:480px; height:300px; }
+  .stone { fill:var(--stone); }
+  .forest { fill:var(--forest); }
+  .sand { fill:var(--sand); }
+  .gold { fill:var(--gold); }
+  .rule { fill:none; stroke:var(--gold-ink); stroke-width:1; }
+  .words { position:absolute; left:var(--space-6); bottom:var(--space-6); max-width:440px; }
+  .name { margin:0; font-family:var(--font-serif); font-size:96px; line-height:.92; font-weight:300; letter-spacing:-.01em; color:var(--ink); white-space:nowrap; }
+  .tag { margin:var(--space-3) 0 0 4px; font-size:14px; line-height:20px; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="art" aria-hidden="true">
+    <svg viewBox="0 0 480 300" width="480" height="300">
+      <!--
+        blocks      sand 144x252 bled off the top (the dominant neutral) · stone 112x180 · gold arch 112x236 bled off the bottom (the logo's gold) · forest 48x64 once (an accent stays small) - neutrals carry the area, as the palette proportions say
+        arrangement a strip of unequal bands at space-4 gutters (16px), stepping like the Pinterest palette boards, bottoms bleeding off the edge
+        pattern     the arch, from "the arch is the signature shape" (radius-arch): four nested hairline arches in gold-ink cut into the sand slab, 16px apart (space-4)
+        scales      sides in space-4 multiples; gutters space-4; arch tops = radius-arch (half the width); hairline 1px like the ornament
+      -->
+      <rect class="stone" x="0" y="120" width="112" height="180"/>
+      <rect class="sand" x="128" y="0" width="144" height="252"/>
+      <path class="rule" d="M152 252 V112 A48 48 0 0 1 248 112 V252"/>
+      <path class="rule" d="M168 252 V112 A32 32 0 0 1 232 112 V252"/>
+      <path class="rule" d="M184 252 V112 A16 16 0 0 1 216 112 V252"/>
+      <path class="rule" d="M199.5 252 V112"/>
+      <path class="gold" d="M288 300 V120 A56 56 0 0 1 400 120 V300 Z"/>
+      <rect class="forest" x="416" y="236" width="48" height="64"/>
+    </svg>
+  </div>
+  <div class="words">
+    <h1 class="name">Salon OM</h1>
+    <p class="tag">A sanctuary for healing, growth and transformation.</p>
+  </div>
+</div>
+</body>
+</html>

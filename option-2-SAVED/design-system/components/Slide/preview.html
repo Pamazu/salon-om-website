@@ -1,0 +1,17 @@
+<!-- @dsCard group="Sections" height=600 width=1280 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Slide - preview</title></head>
+<body style="margin:0;">
+<div id="root"></div>
+<script>
+  var S = window.SalonOM2, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(S.Slide, {className:'cta', active:true, video:'/_blob/cf0637c031e306378a719eef25490b77', poster:'/_blob/8f0b80ce69e867a493163d3f75aadc77', scrim:'cta__scrim', label:'Begin'},
+  h('div', {className:'cta__in s__leave'},
+    h('p', {className:'label a-up', style:{'--d':'.2s'}}, 'Your first step'),
+    h('h2', null, h('span', {className:'mask'}, h('span', {className:'mask__in', style:{'--d':'.35s'}}, 'Begin.'))),
+    h('p', {className:'a-up', style:{'--d':'.8s'}}, 'Online booking opens soon. Join the letters list and you will be the first to know.'),
+    h(S.Button, {variant:'light', arrow:true, href:'#', className:'a-up'}, 'Join the list'))));
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!-- @dsCard group="Navigation" height=980 width=1330 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>SiteHeader - preview</title></head>
+<body>
+<div id="root" class=""></div>
+<script>
+  var S = window.SalonOM, h = React.createElement;
+  function frame(label, w, el) { return h('div', { key: label }, h('span', { className: 'om-pv-frame__label' }, label), h('div', { className: 'om-pv-frame', style: { width: w } }, el)); }
+  function frames(make) {
+    return h('div', { className: 'om-pv-frames' },
+      frame('Desktop \u2265 1024px', 1280, make('d')),
+      h('div', { className: 'om-pv-frames__row' }, frame('Tablet 640\u20131023px', 820, make('t')), frame('Mobile < 640px', 390, make('m'))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(frames(function (k) {
+    if (k === 'd') return h('div', null,
+      h(S.SiteHeader, {links:[{label:'Salon',href:'#salon'},{label:'Coaching',href:'#coaching'},{label:'About',href:'#about'},{label:'Journal',href:'#journal'},{label:'Contact',href:'#contact'}], current:'#coaching', cta:{label:'Book', href:'#book'}}),
+      h('div', {style:{height:24, background:'var(--surface-sunken)'}}),
+      h(S.SiteHeader, {compact:true, links:[{label:'Salon',href:'#salon'},{label:'Coaching',href:'#coaching'},{label:'About',href:'#about'},{label:'Journal',href:'#journal'},{label:'Contact',href:'#contact'}], cta:{label:'Book', href:'#book'}}));
+    return h(S.SiteHeader, {defaultOpen: k === 'm', links:[{label:'Salon',href:'#salon'},{label:'Coaching',href:'#coaching'},{label:'About',href:'#about'},{label:'Journal',href:'#journal'},{label:'Contact',href:'#contact'}], cta:{label:'Book', href:'#book'}});
+  }));
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!-- @dsCard group="Actions" height=190 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Button - preview</title></head>
+<body style="margin:0;">
+<div id="root"></div>
+<script>
+  var S = window.SalonOM2, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', null,
+  h('div', {className:'ds-row', style:{background:'linear-gradient(rgba(10,7,5,.45),rgba(10,7,5,.45)), url(/_blob/8f0b80ce69e867a493163d3f75aadc77) center/cover'}}, h(S.Button, {variant:'light', arrow:true}, 'Book a session'), h(S.Button, {variant:'ghost'}, 'Begin the journey'), h(S.Button, {size:'small'}, 'Book'), h(S.Button, {size:'small', variant:'ghost'}, 'Learn more')),
+  h('div', {className:'ds-row', style:{background:'var(--clay)'}}, h(S.Button, {arrow:true}, 'Book a session'), h(S.Button, {variant:'ink'}, 'Subscribe'), h(S.Button, {variant:'line', arrow:true}, 'Work with me'))));
+</script>
+</body>
+</html>

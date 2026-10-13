@@ -1,0 +1,18 @@
+<!-- @dsCard group="Media" height=96 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>WaveSound - preview</title></head>
+<body>
+<div id="root" class="om-pv"></div>
+<script>
+  var S = window.SalonOM, h = React.createElement;
+  function frame(label, w, el) { return h('div', { key: label }, h('span', { className: 'om-pv-frame__label' }, label), h('div', { className: 'om-pv-frame', style: { width: w } }, el)); }
+  function frames(make) {
+    return h('div', { className: 'om-pv-frames' },
+      frame('Desktop \u2265 1024px', 1280, make('d')),
+      h('div', { className: 'om-pv-frames__row' }, frame('Tablet 640\u20131023px', 820, make('t')), frame('Mobile < 640px', 390, make('m'))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {className:'om-pv-row'}, h(S.WaveSound)));
+</script>
+</body>
+</html>

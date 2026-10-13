@@ -1,0 +1,22 @@
+<!-- @dsCard group="Brand" height=340 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Logo - preview</title></head>
+<body>
+<div id="root" class="om-pv"></div>
+<script>
+  var S = window.SalonOM, h = React.createElement;
+  function frame(label, w, el) { return h('div', { key: label }, h('span', { className: 'om-pv-frame__label' }, label), h('div', { className: 'om-pv-frame', style: { width: w } }, el)); }
+  function frames(make) {
+    return h('div', { className: 'om-pv-frames' },
+      frame('Desktop \u2265 1024px', 1280, make('d')),
+      h('div', { className: 'om-pv-frames__row' }, frame('Tablet 640\u20131023px', 820, make('t')), frame('Mobile < 640px', 390, make('m'))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {className:'om-pv-row', style:{gap:56, alignItems:'flex-end'}},
+    h('div', null, h(S.Logo, {size:300}), h('p', {className:'om-pv-frame__label', style:{marginTop:12}}, 'Master \u00b7 240px and up')),
+    h('div', null, h(S.Logo, {cut:'small', height:128}), h('p', {className:'om-pv-frame__label', style:{marginTop:12}}, 'Small cut \u00b7 header 128px')),
+    h('div', null, h(S.Logo, {cut:'small', height:84, tone:'ink'}), h('p', {className:'om-pv-frame__label', style:{marginTop:12}}, 'Small cut \u00b7 ink 84px')),
+    h('div', null, h('div', {style:{background:'var(--forest)', padding:28}}, h(S.Logo, {cut:'small', height:140, tone:'ivory'})), h('p', {className:'om-pv-frame__label', style:{marginTop:12}}, 'Ivory on forest'))));
+</script>
+</body>
+</html>

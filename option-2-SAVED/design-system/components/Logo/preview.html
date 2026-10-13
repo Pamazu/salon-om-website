@@ -1,0 +1,17 @@
+<!-- @dsCard group="Brand" height=400 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Logo - preview</title></head>
+<body style="margin:0;">
+<div id="root"></div>
+<script>
+  var S = window.SalonOM2, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style:{display:'grid', gridTemplateColumns:'1.3fr 1fr', gap:12, padding:12, background:'var(--umber)'}},
+  h('div', {style:{background:'linear-gradient(rgba(10,7,5,.35),rgba(10,7,5,.35)), url(/_blob/8f0b80ce69e867a493163d3f75aadc77) center/cover', color:'var(--ivory)', display:'flex', alignItems:'center', justifyContent:'center', minHeight:376}}, h(S.Logo, {variant:'stacked', width:340, draw:true})),
+  h('div', {style:{display:'grid', gap:12}},
+    h('div', {style:{background:'var(--clay)', color:'var(--ink)', display:'flex', alignItems:'center', justifyContent:'center'}}, h(S.Logo, {variant:'inline', height:38})),
+    h('div', {style:{background:'var(--clay)', color:'var(--forest)', display:'flex', alignItems:'center', justifyContent:'center'}}, h(S.Logo, {variant:'stacked', width:210})),
+    h('div', {style:{background:'var(--bark)', color:'var(--ivory)', display:'flex', alignItems:'center', justifyContent:'center', gap:40}}, h(S.Logo, {variant:'inline', height:26}), h(S.Logo, {variant:'om', height:40})))));
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+{
+  "v": 3,
+  "assetGroups": {
+    "Films": {
+      "files": {
+        "film-air.mp4": {
+          "blob": "61854850a3b465be51021189ae4291c1",
+          "name": "film-air.mp4",
+          "size": 2647242,
+          "type": "video/mp4"
+        },
+        "film-earth-ground-wood.mp4": {
+          "blob": "2fdf683859b2da866c90f9538d934d5e",
+          "name": "film-earth-ground-wood.mp4",
+          "size": 3907910,
+          "type": "video/mp4"
+        },
+        "film-ether.mp4": {
+          "blob": "2e0b0670b07b1c044b0b5ba4efdef135",
+          "name": "film-ether.mp4",
+          "size": 2830197,
+          "type": "video/mp4"
+        },
+        "film-fire.mp4": {
+          "blob": "5dc6df5d2f431edeeb1649f2f985f67d",
+          "name": "film-fire.mp4",
+          "size": 2084492,
+          "type": "video/mp4"
+        },
+        "film-hero-rainforest.mp4": {
+          "blob": "cf0637c031e306378a719eef25490b77",
+          "name": "film-hero-rainforest.mp4",
+          "size": 5864630,
+          "type": "video/mp4"
+        },
+        "film-water.mp4": {
+          "blob": "b7acc801eb41220adbafcd470f1ba98a",
+          "name": "film-water.mp4",
+          "size": 6012003,
+          "type": "video/mp4"
+        },
+        "poster-air.webp": {
+          "blob": "abcf8754473038860b134242ea6eba90",
+          "name": "poster-air.webp",
+          "size": 36946,
+          "type": "image/webp"
+        },
+        "poster-earth-ground-wood.webp": {
+          "blob": "fb34c930afe41c4898eb0e0b0df3fc74",
+          "name": "poster-earth-ground-wood.webp",
+          "size": 60004,
+          "type": "image/webp"
+        },
+        "poster-ether.webp": {
+          "blob": "b69a0659aa945e3970fc6dde84008c28",
+          "name": "poster-ether.webp",
+          "size": 22260,
+          "type": "image/webp"
+        },
+        "poster-fire.webp": {
+          "blob": "3988ec404db571a8d9f20f0baaf3a3fd",
+          "name": "poster-fire.webp",
+          "size": 28700,
+          "type": "image/webp"
+        },
+        "poster-hero-rainforest.webp": {
+          "blob": "8f0b80ce69e867a493163d3f75aadc77",
+          "name": "poster-hero-rainforest.webp",
+          "size": 34016,
+          "type": "image/webp"
+        },
+        "poster-water.webp": {
+          "blob": "e29e31233cff2bf1433c585e78864659",
+          "name": "poster-water.webp",
+          "size": 71860,
+          "type": "image/webp"
+        }
+      },
+      "name": "Films",
+      "order": [
+        "film-hero-rainforest.mp4",
+        "poster-hero-rainforest.webp",
+        "film-earth-ground-wood.mp4",
+        "poster-earth-ground-wood.webp",
+        "film-water.mp4",
+        "poster-water.webp",
+        "film-fire.mp4",
+        "poster-fire.webp",
+        "film-air.mp4",
+        "poster-air.webp",
+        "film-ether.mp4",
+        "poster-ether.webp"
+      ],
+      "tile": "m"
+    },
+    "Logos": {
+      "files": {
+        "salon-om-v2-favicon-forest.svg": {
+          "blob": "e7e5ab928545a8ef2f30e75bde318c6d",
+          "name": "salon-om-v2-favicon-forest.svg",
+          "size": 1709,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-inline-forest.svg": {
+          "blob": "5e7fb3049d56d1753ac5499975894864",
+          "name": "salon-om-v2-inline-forest.svg",
+          "size": 6459,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-inline-ivory.svg": {
+          "blob": "a8f7ef98fc8ab4789cbbbcb0b41b2367",
+          "name": "salon-om-v2-inline-ivory.svg",
+          "size": 6459,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-inline-umber.svg": {
+          "blob": "3c35277ab9e298fb72a9772a893ade53",
+          "name": "salon-om-v2-inline-umber.svg",
+          "size": 6459,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-om-forest.svg": {
+          "blob": "80cba7d219f3fdf97442d0346b557d38",
+          "name": "salon-om-v2-om-forest.svg",
+          "size": 1731,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-om-ivory.svg": {
+          "blob": "88fd305b2d7ff765b28d0b163c8670b5",
+          "name": "salon-om-v2-om-ivory.svg",
+          "size": 1731,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-om-umber.svg": {
+          "blob": "857d6098d9c6956238ba8accc966502f",
+          "name": "salon-om-v2-om-umber.svg",
+          "size": 1731,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-stacked-forest.svg": {
+          "blob": "759b5b4ae07570bffef4d710b246227d",
+          "name": "salon-om-v2-stacked-forest.svg",
+          "size": 6209,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-stacked-ivory.svg": {
+          "blob": "d659f1c34c092f208f82f6267fcc0419",
+          "name": "salon-om-v2-stacked-ivory.svg",
+          "size": 6209,
+          "type": "image/svg+xml"
+        },
+        "salon-om-v2-stacked-umber.svg": {
+          "blob": "0e532ff253c770f5af08067064c0aa6c",
+          "name": "salon-om-v2-stacked-umber.svg",
+          "size": 6209,
+          "type": "image/svg+xml"
+        }
+      },
+      "name": "Logos",
+      "order": [
+        "salon-om-v2-stacked-ivory.svg",
+        "salon-om-v2-stacked-umber.svg",
+        "salon-om-v2-stacked-forest.svg",
+        "salon-om-v2-inline-ivory.svg",
+        "salon-om-v2-inline-umber.svg",
+        "salon-om-v2-inline-forest.svg",
+        "salon-om-v2-om-ivory.svg",
+        "salon-om-v2-om-umber.svg",
+        "salon-om-v2-om-forest.svg",
+        "salon-om-v2-favicon-forest.svg"
+      ],
+      "tile": "l"
+    },
+    "Photography": {
+      "files": {
+        "salon-om-circle.webp": {
+          "blob": "3a5189a29ff9b8337c34fb7f9fe513e4",
+          "name": "salon-om-circle.webp",
+          "size": 157414,
+          "type": "image/webp"
+        },
+        "salon-om-coaching.webp": {
+          "blob": "faed6f4b356ec6f8d0f0cc19d33f26f8",
+          "name": "salon-om-coaching.webp",
+          "size": 163284,
+          "type": "image/webp"
+        },
+        "salon-om-salon.webp": {
+          "blob": "719b094a585d3d6820a29cb5bfd26b60",
+          "name": "salon-om-salon.webp",
+          "size": 143630,
+          "type": "image/webp"
+        },
+        "salon-om-shoreline-walk.webp": {
+          "blob": "b8dbb9e12d8b78a23ed61e48bcfc49a4",
+          "name": "salon-om-shoreline-walk.webp",
+          "size": 191404,
+          "type": "image/webp"
+        }
+      },
+      "name": "Photography",
+      "order": [
+        "salon-om-coaching.webp",
+        "salon-om-salon.webp",
+        "salon-om-circle.webp",
+        "salon-om-shoreline-walk.webp"
+      ],
+      "tile": "m"
+    }
+  },
+  "blobs": {},
+  "createdOnFiles": {
+    "at": "2026-10-12T16:40:00Z",
+    "v": 1
+  },
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
+  "groups": [
+    "Logos",
+    "Films",
+    "Photography"
+  ],
+  "lastChange": {
+    "at": "2026-10-12T18:16:00Z",
+    "by": "Claude",
+    "note": "Saved reference version of Option 2: soundscapes, phone header/menu fixes, story photo reveal, SALON smaller and closer to OM. New directions continue as variations 2.2-2.4.",
+    "via": "Claude (cloud session)"
+  },
+  "layout": "files",
+  "libraries": [
+    {
+      "name": "react",
+      "version": "18"
+    },
+    {
+      "name": "react-dom",
+      "version": "18"
+    }
+  ],
+  "namespace": "SalonOM2",
+  "sections": {},
+  "title": "Salon OM Option 2"
+}
