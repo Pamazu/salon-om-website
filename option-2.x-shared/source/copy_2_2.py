@@ -40,10 +40,10 @@ CFG = {
     ('tease', dict(id='om', label='OM · Unity', dark=True, accents=['everything.', 'one.', 'all.'],
       text='OM is the first sound, the breath of everything. Earth, water, fire, air, and space, held as one. And you are part of it all.')),
     # ESTABLISH AUTHORITY. Moved up from after the rituals: trust before features (Maggie's step 03).
-    ('team', dict(id='hosts', layout='letter', eyebrow='Founder, stylist, and guide', title='28 years in the chair.',
+    ('team', dict(id='hosts', layout='letter', ph_tag=False, eyebrow='Founder, stylist, and guide', title='28 years in the chair.',
       note='This is your space. Talk, laugh, or simply rest. For as long as you are here, I am holding it for you.', sign='Maggie',
       intro='Maggie Woodward is the founder of Salon OM and of Inner Work with Maggie. [Her training and origin story, in her words, from the copy interview.]',
-      people=[dict(name='Maggie Woodward', img='portrait-maggie.webp', alt='Placeholder portrait of Maggie, smiling in the salon', role='Founder · stylist and guide', desc='Founder of Salon OM and Inner Work with Maggie. Stylist and guide.'),
+      people=[dict(name='Maggie Woodward', img='real-maggie-arms-crossed.webp', alt='Maggie Woodward in front of the Aveda shelves at Salon OM', role='Founder · stylist and guide', desc='Founder of Salon OM and Inner Work with Maggie. Stylist and guide.'),
               dict(name='Katie Paonessa', role='Stylist', desc='A full part of Salon OM. [Her page and services to come.]', img=None),
               dict(name='Chesney', role='Salon Concierge', desc='Holds every detail, so you receive Maggie’s full attention.', img=None)])),
     # STORYTELLING. Five moments, each answering one quiet worry with warmth (Maggie's step 04).
@@ -76,9 +76,9 @@ CFG = {
     # FEATURES AND BENEFITS (the offer). Salon rituals, clearly laid out (Maggie's step 05).
     ('offers', dict(id='time', layout='menu', eyebrow='Salon rituals', title='Choose your visit.',
       intro='Every visit begins with tea and a conversation. [Services, times, and prices to confirm.]',
-      tiles=[dict(img='scalp-ritual.webp', alt='A scalp massage at a stone wash basin in a sunlit salon', tag='Up to 3 hours', title='The Sanctuary', text='Consultation, aroma journey, scalp and shoulder ritual, cut and color, and a slow finish.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#arrive', 'ghost btn--sm')),
-             dict(img='styling.webp', alt='Hands cutting long hair in a calm, plant-filled salon', tag='90 minutes', title='Cut & Ritual', text='A bespoke cut, with the aroma journey and a scalp ritual.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#renew', 'ghost btn--sm')),
-             dict(img='colour.webp', alt='A stone bowl of plant-based hair color with a brush and herbs', tag='2 to 3 hours', title='Color Ritual', text='Plant-powered Aveda color, with hand and scalp rituals while it develops.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#renew', 'ghost btn--sm'))])),
+      tiles=[dict(img='real-shampoo-basins.webp', alt='The shampoo basins at Salon OM', tag='Up to 3 hours', title='The Sanctuary', text='Consultation, aroma journey, scalp and shoulder ritual, cut and color, and a slow finish.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#arrive', 'ghost btn--sm')),
+             dict(img='real-styling-chair.webp', alt='A styling chair by the window at Salon OM', tag='90 minutes', title='Cut & Ritual', text='A bespoke cut, with the aroma journey and a scalp ritual.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#renew', 'ghost btn--sm')),
+             dict(img='real-aveda-shelves.webp', alt='Aveda products on the shelves at Salon OM', tag='2 to 3 hours', title='Color Ritual', text='Plant-powered Aveda color, with hand and scalp rituals while it develops.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#renew', 'ghost btn--sm'))])),
     # FEATURES AND BENEFITS (the second practice). Moved before the voices, so both doors sit in the offer.
     ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='One Source. Two Practices.', title='Some things go deeper than hair.',
       text='Each practice stands on its own, and they also work together. Inner Work with Maggie is coaching for anyone, guest or not: room to grow and reconnect with yourself.',
@@ -107,10 +107,10 @@ CFG = {
     ('tease', dict(id='c-om', sound='air', label='OM · Unity', dark=True, accents=['everything.', 'all.'],
       text='OM is the first sound, the breath of everything. The same breath moves in you, steady through every season. And you are part of it all.')),
     # 4 ESTABLISH AUTHORITY. Maggie alone (Katie and Chesney belong to the salon). The letter is her own words, verbatim.
-    ('team', dict(id='c-maggie', layout='letter', sound='air', eyebrow='Your guide, Maggie Woodward', title='Rooted in lived experience.',
+    ('team', dict(id='c-maggie', layout='letter', ph_tag=False, sound='air', eyebrow='Your guide, Maggie Woodward', title='Rooted in lived experience.',
       intro='After 28 years of listening in the chair, Maggie guides from her own story. [Her coaching training, to confirm.]',
       note='Through both hardship and healing, I have learned that transformation is possible when we are willing to reconnect with ourselves with honesty, compassion, and courage.', sign='Maggie',
-      people=[dict(name='Maggie Woodward', img='portrait-maggie-window.webp', alt='Placeholder portrait of Maggie in window light', role='Founder · guide', desc='Founder of Inner Work with Maggie and Salon OM.')])),
+      people=[dict(name='Maggie Woodward', img='real-maggie-fireplace.webp', alt='Maggie Woodward seated by the fireplace at Salon OM', role='Founder · guide', desc='Founder of Inner Work with Maggie and Salon OM.')])),
     # 5-9 STORYTELLING → BENEFITS. The same five moments, from the inside: each pairs the work with nature, never forced.
     ('ch', dict(id='c-rooted', chapter=0, sound='earth', film='earth', acc='earth', num='01', of='/ 05', name='Begin', sub='Your story', title='Rooted',
       body='Lasting change grows from the root, from who you already are. We begin with your story, at your pace, with room to be fully heard.',
@@ -141,7 +141,7 @@ CFG = {
              dict(img='meadow.webp', alt='A woman standing in a misty meadow at dawn', tag='60 minutes · online', title='Online', text='The same care, wherever you are.', btns=btn('Book', '#c-begin', 'sm') + btn('Learn more', '#c-rooted', 'ghost btn--sm')),
              dict(img='salon-om-circle.webp', alt='Floor cushions in a circle around a candle', tag='Group · 6 weeks', title='Rise circle', text='Grow alongside others who are choosing Joy, peace, and purpose.', btns=btn('Join the waitlist', '#c-letters', 'sm') + btn('Learn more', '#c-rooted', 'ghost btn--sm'))])),
     # 12 FEATURES AND BENEFITS (the second practice). The other equal door, and the stand-alone line.
-    ('bridge', dict(id='c-salon', sound='air', img='scalp-ritual.webp', eyebrow='One Source. Two Practices.', title='Let yourself be cared for.',
+    ('bridge', dict(id='c-salon', sound='air', img='real-lounge.webp', eyebrow='One Source. Two Practices.', title='Let yourself be cared for.',
       text='Each practice stands on its own, and they also work together. Salon OM is Maggie’s Aveda Concept Salon, where up to three unhurried hours of care are made around you.',
       btn=btn('Enter Salon OM', '#', 'light', arrow=True, world='salon'))),
     # 13 Client voices: left out until real Inner Work words arrive. Put back here with real quotes, initials only:

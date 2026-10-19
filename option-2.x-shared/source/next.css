@@ -76,3 +76,6 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
   .ch__top img, .ch__top video { object-position: 50% 22%; }
 }
 @media (max-width: 639px) { .ch__top .tag { white-space: normal; width: 80%; text-align: center; top: 16%; } }
+/* real photos (19 Oct): keep Maggie in frame in the tall letter portrait (the fireplace photo is landscape) */
+.tl__ph img[src$="real-maggie-fireplace.webp"] { object-position: 52% 30%; }
+.tl__ph img[src$="real-maggie-arms-crossed.webp"] { object-position: 50% 22%; }
