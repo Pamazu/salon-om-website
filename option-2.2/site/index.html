@@ -1083,9 +1083,39 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .tl--wide .tl__ph img { object-position: 50% 30%; }
 @media (max-width: 1023px) { .tl--wide { grid-template-columns: 1fr; } }
 .tl__ph img[src$="real-maggie-standing-shelves.webp"] { object-position: 50% 20%; }
+
+/* ==== how the second world is signposted (J, 19 Oct 18:42: "IT's not clear that you can change to the inner work
+   variation"). ?switch=a (default) is today's pill; b adds a door strip at the foot of the screen; c names the pill
+   and lets the other practice breathe. Existing motion only: .intro rise, --io / --io-soft, the 9s breathe. ==== */
+.wdoor { display: none; }
+[data-switch="b"] .wdoor { position: fixed; z-index: 44; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 16px; padding: 12px 14px 12px 22px; border-radius: 999px; background: rgba(21, 16, 12, .5); backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%); color: var(--ivory); text-decoration: none; transform: translate(-50%, 0); opacity: 0; animation: intro 1.5s var(--io) 3.2s forwards; transition: background-color var(--t-ui) var(--io), opacity .6s var(--io); }
+[data-switch="b"] .wdoor:hover { background: rgba(21, 16, 12, .7); }
+[data-switch="b"] .wdoor__k { color: var(--ivory-soft); font-size: 10.5px; }
+[data-switch="b"] .wdoor__n { font: 300 22px/1 var(--serif); }
+[data-switch="b"] .wdoor__go { padding: 9px 14px; border-radius: 999px; background: var(--ivory); color: var(--ink); font-size: 11px; }
+[data-switch="b"] .wdoor:hover .arr { transform: translateX(3px); }
+[data-switch="b"] .wdoor .arr { display: inline-block; transition: transform var(--t-ui) var(--io); }
+[data-switch="b"] .wdoor--back, [data-switch="b"][data-world="coaching"] .wdoor:not(.wdoor--back) { display: none; }
+[data-switch="b"][data-world="coaching"] .wdoor--back { display: inline-flex; background: rgba(246, 241, 234, .72); color: #2B2620; }
+[data-switch="b"][data-world="coaching"] .wdoor--back .wdoor__k { color: rgba(43, 38, 32, .7); }
+[data-switch="b"][data-world="coaching"] .wdoor--back .wdoor__go { background: #2B2620; color: #F6F1EA; }
+[data-switch="b"] .menu-open .wdoor, .menu-open [data-switch="b"] .wdoor { opacity: 0; pointer-events: none; }
+@media (max-width: 1023px) {
+  [data-switch="b"] .dock { display: none; }
+  [data-switch="b"] .wdoor { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); gap: 12px; padding: 10px 10px 10px 18px; }
+  [data-switch="b"] .wdoor__n { font-size: 19px; }
+}
+@media (min-width: 1024px) { [data-switch="b"] .hero__foot, [data-switch="b"] .ch__copy { padding-bottom: 64px; } }
+
+[data-switch="c"] .hdr__mid .worlds::before { content: "Two practices"; position: absolute; left: 0; right: 0; top: calc(100% + 8px); text-align: center; font: 500 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; opacity: .78; }
+[data-switch="c"] .worlds button[aria-pressed="false"] { opacity: 1; animation: other-breathe 4.5s var(--io-soft) 3.5s infinite alternate; }
+@keyframes other-breathe { from { text-shadow: 0 0 0 transparent; } to { text-shadow: 0 0 .9em currentColor; } }
+[data-switch="c"] .worlds button[aria-pressed="false"]::after { content: " →"; }
+@media (max-width: 1023px) { [data-switch="c"] .dock .worlds::before { content: "Two practices"; position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); text-align: center; font: 500 10px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ivory); text-shadow: 0 1px 10px rgba(0,0,0,.5); } }
 </style>
 </head>
 <body>
+<script>(function(){var m=/[?&]switch=([abc])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?m[1]:"a");})();</script>
 <a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">
@@ -1103,6 +1133,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
   </div>
 </header>
 <div class="dock"><div class="worlds worlds--named" role="group" aria-label="Choose: Salon OM or Inner Work with Maggie"><button type="button" data-to-world="salon" aria-pressed="true">Salon OM</button><button type="button" data-to-world="coaching" aria-pressed="false">Inner Work <span class="wl2">with Maggie</span></button><i class="worlds__pill" aria-hidden="true"></i></div></div>
+<a class="wdoor" href="#coaching" data-to-world="coaching"><span class="wdoor__k label">Also here</span><span class="wdoor__n">Inner Work with Maggie</span><span class="wdoor__go label">Enter <span class="arr" aria-hidden="true">→</span></span></a><a class="wdoor wdoor--back" href="#" data-to-world="salon"><span class="wdoor__k label">Also here</span><span class="wdoor__n">Salon OM</span><span class="wdoor__go label">Enter <span class="arr" aria-hidden="true">→</span></span></a>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">Salon OM</button><button type="button" data-to-world="coaching" aria-pressed="false">Inner Work <span class="wl2">with Maggie</span></button></div><ul data-world-list="salon"><li style="--i:0"><a href="#hosts"><small>01</small>Maggie</a></li><li style="--i:1"><a href="#arrive"><small>02</small>The visit</a></li><li style="--i:2"><a href="#aveda"><small>03</small>Aveda</a></li><li style="--i:3"><a href="#time"><small>04</small>Salon rituals</a></li><li style="--i:4"><a href="#begin"><small>05</small>Book</a></li></ul><ul data-world-list="coaching"><li style="--i:0"><a href="#c-maggie"><small>01</small>Maggie</a></li><li style="--i:1"><a href="#c-rooted"><small>02</small>The path</a></li><li style="--i:2"><a href="#c-facts"><small>03</small>Why Inner Work</a></li><li style="--i:3"><a href="#c-sessions"><small>04</small>Paths</a></li><li style="--i:4"><a href="#c-begin"><small>05</small>Connection Call</a></li></ul></div>
   <div class="menu__end"><a class="btn w-salon" href="#begin">Book your visit</a><a class="btn w-coaching" href="#c-begin">Book a Connection Call</a></div>
@@ -1477,7 +1508,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="d38dc7c8f136";</script>
+<script>window.OM_BUILD="476201ca3521";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

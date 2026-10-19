@@ -14,7 +14,8 @@ TW_CSS = open(V + 'tweaks.css').read()
 # extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)
 EXTRA_CSS = {'2.2': ['next.css']}
 EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
-PRE_PAINT = {}
+# 2.2 next: ?switch=a|b|c picks how the second world is signposted, before first paint (J 18:42); a = today's pill
+PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?m[1]:"a");})();</script>\n'}
 E = html.escape
 
 def svg(key):
@@ -481,7 +482,7 @@ def page(cfg):
     </div>
   </div>
 </header>
-<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>
+<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>{'' if not names else chr(10) + f'<a class="wdoor" href="#coaching" data-to-world="coaching"><span class="wdoor__k label">Also here</span><span class="wdoor__n">{E(names["coaching"])}</span><span class="wdoor__go label">Enter <span class="arr" aria-hidden="true">→</span></span></a><a class="wdoor wdoor--back" href="#" data-to-world="salon"><span class="wdoor__k label">Also here</span><span class="wdoor__n">{E(names["salon"])}</span><span class="wdoor__go label">Enter <span class="arr" aria-hidden="true">→</span></span></a>'}
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button></div>{menu_lists}</div>
   <div class="menu__end"><a class="btn w-salon" href="#{cfg['book_salon']}">{E(cfg.get('menu_salon_btn', 'Book your time'))}</a><a class="btn w-coaching" href="#{cfg['book_coaching']}">{E(cfg.get('menu_coaching_btn', 'Book a free call'))}</a></div>

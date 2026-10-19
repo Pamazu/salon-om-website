@@ -85,3 +85,32 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .tl--wide .tl__ph img { object-position: 50% 30%; }
 @media (max-width: 1023px) { .tl--wide { grid-template-columns: 1fr; } }
 .tl__ph img[src$="real-maggie-standing-shelves.webp"] { object-position: 50% 20%; }
+
+/* ==== how the second world is signposted (J, 19 Oct 18:42: "IT's not clear that you can change to the inner work
+   variation"). ?switch=a (default) is today's pill; b adds a door strip at the foot of the screen; c names the pill
+   and lets the other practice breathe. Existing motion only: .intro rise, --io / --io-soft, the 9s breathe. ==== */
+.wdoor { display: none; }
+[data-switch="b"] .wdoor { position: fixed; z-index: 44; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 16px; padding: 12px 14px 12px 22px; border-radius: 999px; background: rgba(21, 16, 12, .5); backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%); color: var(--ivory); text-decoration: none; transform: translate(-50%, 0); opacity: 0; animation: intro 1.5s var(--io) 3.2s forwards; transition: background-color var(--t-ui) var(--io), opacity .6s var(--io); }
+[data-switch="b"] .wdoor:hover { background: rgba(21, 16, 12, .7); }
+[data-switch="b"] .wdoor__k { color: var(--ivory-soft); font-size: 10.5px; }
+[data-switch="b"] .wdoor__n { font: 300 22px/1 var(--serif); }
+[data-switch="b"] .wdoor__go { padding: 9px 14px; border-radius: 999px; background: var(--ivory); color: var(--ink); font-size: 11px; }
+[data-switch="b"] .wdoor:hover .arr { transform: translateX(3px); }
+[data-switch="b"] .wdoor .arr { display: inline-block; transition: transform var(--t-ui) var(--io); }
+[data-switch="b"] .wdoor--back, [data-switch="b"][data-world="coaching"] .wdoor:not(.wdoor--back) { display: none; }
+[data-switch="b"][data-world="coaching"] .wdoor--back { display: inline-flex; background: rgba(246, 241, 234, .72); color: #2B2620; }
+[data-switch="b"][data-world="coaching"] .wdoor--back .wdoor__k { color: rgba(43, 38, 32, .7); }
+[data-switch="b"][data-world="coaching"] .wdoor--back .wdoor__go { background: #2B2620; color: #F6F1EA; }
+[data-switch="b"] .menu-open .wdoor, .menu-open [data-switch="b"] .wdoor { opacity: 0; pointer-events: none; }
+@media (max-width: 1023px) {
+  [data-switch="b"] .dock { display: none; }
+  [data-switch="b"] .wdoor { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); gap: 12px; padding: 10px 10px 10px 18px; }
+  [data-switch="b"] .wdoor__n { font-size: 19px; }
+}
+@media (min-width: 1024px) { [data-switch="b"] .hero__foot, [data-switch="b"] .ch__copy { padding-bottom: 64px; } }
+
+[data-switch="c"] .hdr__mid .worlds::before { content: "Two practices"; position: absolute; left: 0; right: 0; top: calc(100% + 8px); text-align: center; font: 500 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; opacity: .78; }
+[data-switch="c"] .worlds button[aria-pressed="false"] { opacity: 1; animation: other-breathe 4.5s var(--io-soft) 3.5s infinite alternate; }
+@keyframes other-breathe { from { text-shadow: 0 0 0 transparent; } to { text-shadow: 0 0 .9em currentColor; } }
+[data-switch="c"] .worlds button[aria-pressed="false"]::after { content: " →"; }
+@media (max-width: 1023px) { [data-switch="c"] .dock .worlds::before { content: "Two practices"; position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); text-align: center; font: 500 10px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ivory); text-shadow: 0 1px 10px rgba(0,0,0,.5); } }
