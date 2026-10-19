@@ -47,9 +47,11 @@ CFG = {
               dict(name='Katie Paonessa', role='Stylist', desc='A full part of Salon OM. [Her page and services to come.]', img=None),
               dict(name='Chesney', role='Salon Concierge', desc='Holds every detail, so you receive Maggie’s full attention.', img=None)])),
     # STORYTELLING. Five moments, each answering one quiet worry with warmth (Maggie's step 04).
-    ('ch', dict(id='arrive', chapter=0, sound='earth', film='earth', acc='earth', num='01', of='/ 05', name='Arrive', sub='The welcome', title='Welcome',
-      body='Tea in your hands, shoulders dropping. Before anything begins, we talk: your hair, your life, and how you would like to feel when you leave.',
-      specs=[(SPECS[0], 'Personal consultation'), (SPECS[1], 'Aveda comforting tea'), (SPECS[2], 'Welcomed')])),
+    # Moment 01 is ROOTED (J, 19 Oct 16:39): hair roots, rooted in yourself, in nature, in care kind to the earth.
+    # Ayurveda is NOT claimed: not found on aveda.com (19 Oct). Add it only with a source.
+    ('ch', dict(id='arrive', chapter=0, sound='earth', film='earth', acc='earth', num='01', of='/ 05', name='Arrive', sub='The consultation', title='Rooted',
+      body='Beautiful hair begins at the root, and so do you. Over tea, we talk about your hair, your life, and how you would like to feel.',
+      specs=[(SPECS[0], 'Consultation over tea'), (SPECS[1], 'Plant-based Aveda care'), (SPECS[2], 'Grounded')])),
     ('ch', dict(id='unwind', chapter=1, sound='water', film='water', acc='water', num='02', of='/ 05', name='Unwind', sub='The rituals', title='Release',
       body='Choose your scent on an Aveda aroma journey, then settle into a slow scalp and shoulder ritual. Tension you may not know you carry often begins to let go.',
       specs=[(SPECS[0], 'Aroma journey'), (SPECS[1], 'Scalp & shoulder ritual'), (SPECS[2], 'Lighter')])),
@@ -114,7 +116,7 @@ CFG = {
     ('ch', dict(id='c-lighter', sound='water', film='water', acc='water', num='01', of='/ 03', name='What often changes', sub='Feeling', title='Lighter',
       body='Old weight, set down. Emotions given room to move, so they may clear.', specs=[('Focus', 'Release'), ('Often felt', 'Lighter')])),
     ('ch', dict(id='c-clear', sound='ether', film='ether', acc='ether', num='02', of='/ 03', name='What often changes', sub='Clarity', title='Clear',
-      body='Room to hear your own inner wisdom again, and to trust what it says.', specs=[('Focus', 'Inner wisdom'), ('Often felt', 'Grounded')])),
+      body='Room to hear your own inner wisdom again, and to trust what it says.', specs=[('Focus', 'Inner wisdom'), ('Often felt', 'At peace')])),
     ('ch', dict(id='c-brave', sound='air', film='meadow.webp', acc='earth', num='03', of='/ 03', name='What often changes', sub='Courage', title='Brave',
       body='Breaking free from limiting beliefs, and acting on what truly matters to you.', specs=[('Focus', 'Limiting beliefs'), ('Often felt', 'Empowered')])),
     # FEATURES AND BENEFITS (the offer). The Inner Work path, clearly laid out; the Connection Call is the way in.

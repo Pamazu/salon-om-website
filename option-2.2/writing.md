@@ -100,10 +100,10 @@ The copy deck that maps every slide to these stages is the StoryMind record "Sal
 | Gentle question | One honest question, then one line that answers it | Question up to 20 words | When did someone last take care of you, without rushing you or needing anything back? At Salon OM, that is the whole point of your visit. |
 | OM line | "OM" first, alone, then the brand's sentence | Keep as written | OM is the first sound, the breath of everything. Earth, water, fire, air, and space, held as one. And you are part of it all. |
 | Maggie and the team | An authority title, a letter from Maggie in first person, then the team with their real titles | Title up to 6 words; letter up to 60 words; each team line about 70 characters | 28 years in the chair. · Katie Paonessa, Stylist · Chesney, Salon Concierge |
-| Moment meta | Number / total, the step · its name | Fixed format | 01 / 05 · Arrive · The welcome |
-| Moment word | One word and a period | 1 word | Welcome. · Release. · Transform. · Breathe. · Glow. |
-| Moment body | Warmth first (the senses), then the clear truth that answers a worry | Up to 30 words | Tea in your hands, shoulders dropping. Before anything begins, we talk: your hair, your life, and how you would like to feel when you leave. |
-| Moment specs | What happens / Included / Guests often feel | 1–4 words each | Personal consultation · Aveda comforting tea · Welcomed |
+| Moment meta | Number / total, the step · its name | Fixed format | 01 / 05 · Arrive · The consultation |
+| Moment word | One word and a period | 1 word | Rooted. · Release. · Transform. · Breathe. · Glow. The word never repeats the label above it |
+| Moment body | Warmth first (the senses), then the clear truth that answers a worry | Up to 30 words | Beautiful hair begins at the root, and so do you. Over tea, we talk about your hair, your life, and how you would like to feel. |
+| Moment specs | What happens / Included / Guests often feel | 1–4 words each | Consultation over tea · Plant-based Aveda care · Grounded |
 | Aveda | The signature line, then sourced facts | Title is the locked line | Beauty from the inside out. |
 | Salon rituals | Ritual names, title case, with "&" | 1–3 words | The Sanctuary · Cut & Ritual · Color Ritual |
 | Door to Inner Work | The locked pairing line, then one line that opens a second, equal door | Title up to 8 words | Some things go deeper than hair. |
@@ -129,7 +129,8 @@ The copy deck that maps every slide to these stages is the StoryMind record "Sal
 
 - **The elements stay in the films and the structure, not in the words.** The five films still run, but the copy speaks of what the visit gives you. The one exception is the OM line, which names the elements by design: it is the brand's own sentence.
 - **Two equal doors.** Wherever one practice points to the other, use the pairing line ("One Source. Two Practices.") and an equal button ("Enter Salon OM →", "Enter Inner Work →").
-- **Aveda facts come only from the list in `shared.md`.** Nothing else about Aveda without a source.
+- **Aveda facts come only from the list in `shared.md`.** Nothing else about Aveda without a source. **Ayurveda is not claimed:** on 19 Oct 2026 no Ayurveda link was found anywhere on aveda.com (about, heritage, mission, ingredients, wellness). Use it only once Maggie or Aveda gives a source.
+- **Rooted:** moment 01 carries the salon's idea of roots: hair roots, being rooted in yourself, in nature, and in care that is kind to the earth (J, 19 Oct 2026).
 - **The team:** Maggie Woodward (Founder), Katie Paonessa (Stylist), Chesney (Salon Concierge). Never a placeholder photo of a real person who isn't them: show their initial until their portrait arrives. Maggie's portraits stay labelled "Placeholder portrait" until real photos arrive.
 - **Testimonials:** only Maggie's chosen guest quotes, word for word, initials only (L.T., C.M., G.A., S.). Never invent or edit a quote. No Inner Work testimonial until real words arrive.
 
