@@ -461,6 +461,10 @@ def page(cfg):
     vkey = cfg['title'].split()[-1]
     pre = PRE_PAINT.get(vkey, '')
     xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(vkey, []))
+    if vkey in EXTRA_JS:      # a build stamp, so a tweak draft saved against an older build is dropped (next.js)
+        import hashlib
+        stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in EXTRA_CSS.get(vkey, []))).encode()).hexdigest()[:12]
+        xjs = f'<script>window.OM_BUILD="{stamp}";</script>\n' + xjs
     body = pre + f'''<a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">

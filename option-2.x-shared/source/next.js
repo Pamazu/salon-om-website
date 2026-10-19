@@ -1,3 +1,11 @@
+/* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
+   position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
+(function () {
+  try {
+    var v = document.documentElement.getAttribute('data-variant') || 'x', b = window.OM_BUILD, kb = 'om-build-' + v;
+    if (b && localStorage.getItem(kb) !== b) { localStorage.removeItem('om-tweaks-' + v); localStorage.setItem(kb, b); }
+  } catch (e) {}
+})();
 /* Option 2.2 next: the OM line, facts and voices sit the OM line, facts and voices onto light clay, so the header reads them as light */
 (function () {
   document.querySelectorAll('main[data-world="salon"] .mani.dark, main[data-world="salon"] .facts, main[data-world="salon"] .voices')
