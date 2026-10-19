@@ -431,9 +431,10 @@ R = {'hero_mark': hero_mark, 'hero_words': hero_words, 'hero_doors': hero_doors,
 def render_world(world, slides, draft, names=None, foot=None):
     foot = foot or {}
     other = names[('coaching' if world == 'salon' else 'salon')] if names else ('Coaching with Maggie' if world == 'salon' else 'The salon')
-    out, chs = [], [s for s in slides if s[0] == 'ch']
+    out, chs = [], [s for s in slides if s[0] == 'ch' and not s[1].get('parked')]
     ci = 0
     for kind, d in slides:
+        if d.get('parked'): continue      # kept in the copy file, off the page until it returns
         if kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
         elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, **foot), world))
         else: out.append(R[kind](d))

@@ -27,13 +27,13 @@ CFG = {
   },
   'salon': [
     # HOOK. Maggie's first screen: the locked tagline, the locked pairing line, two equal doors.
-    ('hero_mark', dict(id='top', film='hero', next='pause',
+    ('hero_mark', dict(id='top', film='hero', next='om',
       hook='Where Beauty and Inner Work Belong',
       eyebrow='An Aveda Concept Salon',
       line='Only Aveda: plant-based, 100% vegan, and giving back, with clean water worldwide and the Yawanawá of Brazil.',  # sources: aveda.com/mission-giving-back, /about (19 Oct 2026)
-      ctas=btn('Book your time', '#begin', 'light', arrow=True) + btn('Step inside', '#pause', 'ghost'))),
+      ctas=btn('Book your time', '#begin', 'light', arrow=True) + btn('Step inside', '#om', 'ghost'))),
     # HOOK → UNDERSTANDING. One gentle question that names what guests carry.
-    ('tease', dict(id='pause', label='A gentle question', accents=['care'],
+    ('tease', dict(id='pause', parked='J 19 Oct 17:23: remove, park for later', label='A gentle question', accents=['care'],
       text='When did someone last take care of you, without rushing you or needing anything back?',
       after='At Salon OM, that is the whole point of your visit.', after_at='3.6s')),
     # HOOK (meaning). The locked OM line.
@@ -95,11 +95,11 @@ CFG = {
   'coaching': [
     # Mirrors the salon list slot for slot, same kinds and order (J, 19 Oct 16:50). Same element film per slot = the parallel.
     # 1 HOOK. The same first screen and two doors; here the Inner Work door is the one you are on.
-    ('hero_words', dict(id='c-top', film='air', sound='air', next='c-pause', at='.5s', sub_at='1.4s', foot_at='1.7s', eyebrow='Inner Work with Maggie', title='Return to yourself.',
+    ('hero_words', dict(id='c-top', film='air', sound='air', next='c-om', at='.5s', sub_at='1.4s', foot_at='1.7s', eyebrow='Inner Work with Maggie', title='Return to yourself.',
       sub='Room to grow and reconnect with your inner wisdom, at your pace. In person or online.',
-      ctas=btn('Book a Connection Call', '#c-begin', arrow=True) + btn('Step inside', '#c-pause', 'ghost'))),
+      ctas=btn('Book a Connection Call', '#c-begin', arrow=True) + btn('Step inside', '#c-om', 'ghost'))),
     # 2 HOOK → UNDERSTANDING. What clients may carry, without assuming their story.
-    ('tease', dict(id='c-pause', sound='air', label='Perhaps this is you', accents=['within'],
+    ('tease', dict(id='c-pause', parked='mirror of the parked salon pause (J 16:50: same sections, same order)', sound='air', label='Perhaps this is you', accents=['within'],
       text='You may have carried a great deal, for a long time. What if the strength you are looking for already exists within you?')),
     # 3 HOOK (meaning). The OM line, turned inward. The locked phrase stays word for word.
     ('tease', dict(id='c-om', sound='air', label='OM · Unity', dark=True, accents=['everything.', 'all.'],
