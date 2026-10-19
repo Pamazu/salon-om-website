@@ -1150,7 +1150,8 @@ html[data-pause-look] .mani[data-parked] { display: grid; }
 @media (max-width: 1023px) {
   .pz::after { background: linear-gradient(0deg, rgba(21, 16, 12, .9) 0%, rgba(21, 16, 12, .66) 55%, rgba(21, 16, 12, .3) 100%); }
   .mani[data-look="2"] .pf { right: 50%; top: calc(var(--hdr) + 3vh); width: 34vw; transform: translateX(50%); }
-  .mani[data-look="2"] .mani__in { padding-right: var(--gutter); padding-top: calc(var(--hdr) + 3vh + 34vw * 1.5 + 4vh); }
+  .mani[data-look="2"] { align-items: start; }
+  .mani[data-look="2"] .mani__in { padding-right: var(--gutter); padding-top: calc(var(--hdr) + 3vh + 34vw * 1.5 + 5vh); }
   .mani[data-look="2"] .mani__text { font-size: clamp(28px, 7.4vw, 44px); }
   .mani[data-look="1"] .mani__text { font-size: clamp(30px, 8.4vw, 52px); }
   .mani[data-look="3"] .mani__ring { right: 50%; width: 110vw; }
@@ -1571,7 +1572,7 @@ html[data-pause-look] .mani[data-parked] { display: grid; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="289b0a9f6b55";</script>
+<script>window.OM_BUILD="f56877ea0c94";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
