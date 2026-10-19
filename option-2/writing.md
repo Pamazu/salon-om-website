@@ -48,9 +48,9 @@ Option 2 is cinematic: a slideshow through the five elements, so the words are f
 ## Mechanics
 
 - **Sentence case** for headlines, buttons and labels ("Book a session"). Eyebrows and labels are typed in sentence case too; the design sets them in capitals.
-- **British spelling:** colour, centre, programme.
+- **American spelling:** color, center, program. Maggie's copy direction (Oct 2026) asks for "a California review of every word before launch". Older lines on this page that still say "colour" are corrected when this option's copy is next revised.
 - **Brand name:** "Salon OM" in text. Never "Salon Om", "SalonOM" or "OM Salon".
-- **No serial comma** in our own copy ("honesty, compassion and courage"). Quotes from the coach stay exactly as she wrote them.
+- **Serial comma** in our own copy ("honesty, compassion, and courage"), as in Maggie's own writing. Quotes from the coach stay exactly as she wrote them.
 - **Curly quotes and apostrophes** (’ “ ”). Use "&" only in short labels and names ("Soft & strong.", "Cut & Ritual").
 - **No exclamation marks, no emoji.**
 - **Durations** as "60 min"; prices only once confirmed.
