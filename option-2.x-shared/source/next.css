@@ -55,3 +55,9 @@ html[data-accent="b"] main[data-world="salon"] .voices figcaption b { color: var
 .hero__hook { text-wrap: balance; }
 /* the hero's lower-left line carries Aveda's story: a little wider so it sits in three calm lines */
 .hero__line { max-width: 40ch; }
+/* phones: the Aveda line is longer than the checkpoint's, so the mark sits a little higher and smaller and the line tightens */
+@media (max-width: 639px) {
+  .hero__mark { width: 70vw; top: 31%; }
+  .hero__line { font-size: 14px; line-height: 1.5; }
+  .hero__foot { gap: 16px; }
+}
