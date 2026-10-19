@@ -13,6 +13,9 @@ TW_JS = open(V + 'tweaks.js').read()
 TW_CSS = open(V + 'tweaks.css').read()
 # extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)
 EXTRA_CSS = {'2.2': ['next.css']}
+EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
+# 2.2 next: ?accent=a|b picks the accent option before first paint
+PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]accent=([ab])/.exec(location.search);document.documentElement.setAttribute("data-accent",m?m[1]:"a");})();</script>\n'}
 E = html.escape
 
 def svg(key):
@@ -230,6 +233,7 @@ def team_letter(d):
     """2.2: a tall portrait of Maggie beside a short letter from her, with the people beside her signed in below
     (one, as at the checkpoint; or a row of two: an initial circle stands in until a real photo exists)."""
     m, *ws = d['people']
+    ws = ws + list(d.get('also', []))
     if len(ws) == 1 and 'with_label' not in d:      # checkpoint shape, kept byte-identical
         w = ws[0]
         withs = f'''<div class="tl__with a-up" style="--d:1.35s">
@@ -431,28 +435,30 @@ def end(d, world):
       <div class="foot__in">
         <div class="foot__brand a-up" style="--d:.6s">{svg('stacked')}<p>{d['tagline']}</p></div>
         <div class="a-up" style="--d:.7s"><h3 class="label">Explore</h3><ul>{expl}</ul></div>
-        <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>Salon in person · coaching in person and online</li></ul></div>
+        <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>{d.get('foot_visit', 'Salon in person · coaching in person and online')}</li></ul></div>
         <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul><li>Instagram (link to come)</li><li>Email (to confirm)</li><li><a href="#" data-to-world="{'coaching' if world == 'salon' else 'salon'}">{d['other']}</a></li></ul></div>
       </div>
-      <div class="foot__base"><span>© 2026 Salon OM · an Aveda concept salon · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
+      <div class="foot__base"><span>© 2026 Salon OM · {d.get('foot_base', 'an Aveda concept salon')} · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
     </footer>
   </section>'''
 
 R = {'hero_mark': hero_mark, 'hero_words': hero_words, 'hero_doors': hero_doors, 'hero_arch': hero_arch, 'tease': tease, 'split': split, 'facts': facts, 'team': team,
      'steps': steps, 'offers': offers, 'voices': voices, 'bridge': bridge, 'doors': doors, 'walkin': walkin, 'cta': cta}
 
-def render_world(world, slides, draft, names=None):
+def render_world(world, slides, draft, names=None, foot=None):
+    foot = foot or {}
     other = names[('coaching' if world == 'salon' else 'salon')] if names else ('Coaching with Maggie' if world == 'salon' else 'The salon')
     out, chs = [], [s for s in slides if s[0] == 'ch']
     ci = 0
     for kind, d in slides:
         if kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
-        elif kind == 'end': out.append(end(dict(d, draft=draft, other=other), world))
+        elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, **foot), world))
         else: out.append(R[kind](d))
     return '\n  '.join(out)
 
 def page(cfg):
     names = cfg.get('worlds')
+    foot = {k: cfg[k] for k in ('foot_visit', 'foot_base') if k in cfg}
     def wl(w):      # a long world name breaks before "with" where the switch is narrow
         if not names: return 'Salon' if w == 'salon' else 'Coaching'
         a, sep, b = names[w].partition(' with ')
@@ -461,7 +467,10 @@ def page(cfg):
     worlds_btns = f'<button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button><i class="worlds__pill" aria-hidden="true"></i>'
     menu_lists = ''.join(f'<ul data-world-list="{w}">' + ''.join(f'<li style="--i:{k}"><a href="#{h}"><small>{n}</small>{t}</a></li>' for k, (n, t, h) in enumerate(items)) + '</ul>' for w, items in cfg['menu'].items())
     rail = ''.join(f'<a href="#{h}"><span>{t}</span><b>0{k + 1}</b></a>' for k, (t, h) in enumerate(cfg['rail']))
-    body = f'''<a class="skip" href="#main-salon">Skip to content</a>
+    vkey = cfg['title'].split()[-1]
+    pre = PRE_PAINT.get(vkey, '')
+    xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(vkey, []))
+    body = pre + f'''<a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">
     <a class="hdr__logo" href="#" aria-label="Salon OM, back to the top" onclick="window.scrollTo({{top:0,behavior:'smooth'}});return false;">{svg('inline')}</a>
@@ -472,7 +481,7 @@ def page(cfg):
         <svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="2" height="10" fill="currentColor"/><rect x="9" y="2" width="2" height="10" fill="currentColor"/></svg>
         <svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.2v9.6L11.6 7z" fill="currentColor"/></svg>
       </button>
-      <a class="btn btn--sm hdr__book w-salon" href="#{cfg['book_salon']}">Book</a><a class="btn btn--sm hdr__book w-coaching" href="#{cfg['book_coaching']}">Free call</a>
+      <a class="btn btn--sm hdr__book w-salon" href="#{cfg['book_salon']}">{E(cfg.get('book_salon_label', 'Book'))}</a><a class="btn btn--sm hdr__book w-coaching" href="#{cfg['book_coaching']}">{E(cfg.get('book_coaching_label', 'Free call'))}</a>
       <button class="hdr__icon hdr__menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -480,17 +489,17 @@ def page(cfg):
 <div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button></div>{menu_lists}</div>
-  <div class="menu__end"><a class="btn w-salon" href="#{cfg['book_salon']}">Book your time</a><a class="btn w-coaching" href="#{cfg['book_coaching']}">Book a free call</a></div>
+  <div class="menu__end"><a class="btn w-salon" href="#{cfg['book_salon']}">{E(cfg.get('menu_salon_btn', 'Book your time'))}</a><a class="btn w-coaching" href="#{cfg['book_coaching']}">{E(cfg.get('menu_coaching_btn', 'Book a free call'))}</a></div>
 </div>
 <nav class="rail" id="rail" aria-label="The visit">{rail}</nav>
 <div class="wveil" id="wveil" aria-hidden="true">{svg('om')}</div>
 <main id="main-salon" data-world="salon">
-  {render_world('salon', cfg['salon'], cfg['draft'], names)}
+  {render_world('salon', cfg['salon'], cfg['draft'], names, foot)}
 </main>
 <main id="main-coaching" data-world="coaching" hidden>
-  {render_world('coaching', cfg['coaching'], cfg['draft'], names)}
+  {render_world('coaching', cfg['coaching'], cfg['draft'], names, foot)}
 </main>
-<script>
+{xjs}<script>
 {TW_JS}</script>
 <script>
 {JS}</script>
