@@ -27,15 +27,44 @@ The visit told as five moments, with a letter from Maggie. It opens on a hook ("
 
 ## Slides, in order
 
-**Salon world:** 1 Hero: rainforest film, OM draws itself, the hook · 2 Pain question (clay) · 3 OM line (dark) · 4–8 The five moments on the element films: Welcome, Release, Transform, Breathe, Glow · 9 Aveda, with numbers that count up · 10 Hosts: a portrait beside a letter from Maggie, [Name] signed in below · 11 Rituals: a quiet menu on deep green, one ritual open at a time, the photo following it · 12 Client voices (rotating) · 13 Bridge to coaching ("Some things go deeper than hair.") · 14 Call to action ("Begin.") · 15 Letters and footer.
+_Development build (branch `cro-copy-2-2`, https://salon-om-2-2-next.web.app), from 19 Oct 2026. The checkpoint (tag `checkpoint-2026-10-19`, https://salon-om-2-2.web.app) keeps the order it had._
 
-**Coaching world:** 1 Hero, written word by word ("Return to yourself.") · 2 OM line · 3 Steps on light ("Three gentle steps") · 4–6 Three films ("Lighter.", "Clear.", "Brave.") · 7 Story, photo on the right ("Rooted in lived experience.") · 8 Offerings · 9 Client voices · 10 Bridge back to the salon ("Let yourself be cared for.") · 11 Call to action · 12 Letters and footer.
+**The two worlds are named for Maggie's two practices:** "Salon OM" and "Inner Work with Maggie", in the header switch, the phone dock (the long name breaks before "with"), the menu and the footer (`CFG['worlds']`).
+
+**Salon world:** 1 Opening: the original 2.2 hero, unchanged in motion (rainforest film, SALON rises, OM draws itself then fills; the client, 19 Oct: *"We actually prefer much more the original version 2.2, the hero with the OM, the animation, the way that it comes up … Salon OM is important in the hero"*). Under OM, the line "Where Beauty and Inner Work Belong"; lower left "One Source. Two Practices." and "Maggie Woodward"; the two buttons are Maggie's two practices as equal doors, Salon OM (into the visit) and Inner Work with Maggie (switches world through the veil) · 2 Pain question (clay) · 3 OM line (dark) · 4 Team: Maggie's portrait beside her letter, Katie Paonessa and Chesney signed in below as a row (an initial circle until real photos exist) · 5–9 The five moments on the element films: Rooted, Release, Transform, Breathe, Glow · 10 Aveda, numbers that count up · 11 Rituals menu on deep green · 12 Bridge to Inner Work · 13 Guest voices (real, initials only) · 14 Call to action ("Begin.") · 15 Letters and footer.
+
+**Inner Work world: the same sections in the same order as the salon** (the client, 19 Oct: *"I want this alone to have the same sections, but we adjust the copy, the text, and the imagery … we show the parallel natures of the two and that they can work together"*). Slot for slot: 1 opening with the same two doors · 2 pain or motivation · 3 OM line · 4 Maggie's letter, Maggie alone · 5–9 five moments on films · 10 facts (Maggie's path) · 11 paths menu · 12 bridge to the salon · 13 client voices: **left out until real Inner Work quotes exist**, the slot returns when they do · 14 call to action ("Book a Connection Call") · 15 letters and footer.
+
+**Imagery each mirrored Inner Work section needs** (reused now; new where marked, for the film prompts):
+
+| Slot | Uses now | Needs |
+| --- | --- | --- |
+| 1 Opening | `air` film | Keep `air` (the Inner Work hero), or a new dawn film of the same forest, so the two openings read as one place at two times of day |
+| 3 OM line | none (type only) | none |
+| 4 Maggie | `portrait-maggie-window.webp` (placeholder) | Real portrait of Maggie, coaching setting, upright 4:5 |
+| 5 Rooted | `earth` film | **New film**: the inner counterpart of the roots, e.g. bare feet on moss or soil, slow, clean |
+| 6 Release | `water` film | Reuse `water` (release reads the same in both worlds) |
+| 7 Transform | `fire` film | **New film**: a soft-lit candle or dawn sun through mist, calmer than the salon's fire |
+| 8 Breathe | `air` film | Reuse `air` |
+| 9 Glow | `ether` film | Reuse `ether` |
+| 10 Facts | none | none |
+| 11 Paths | `coaching-room`, `meadow`, `salon-om-circle` | Real photos of the coaching room and a circle when they exist |
+| 12 Bridge | `scalp-ritual.webp` | Reuse |
+| 14 CTA | `air` film | Reuse |
+
+Every film follows **Films** below (slowed 0.5× with interpolation, seamless loop, H.264, no audio, WebP poster under 100 KB) and keeps the copy area (lower left) readable on its brightest frame.
 
 ## Look
+
+**Accent: forest green, never mint** (the client, 19 Oct: *"This mint grint is not the one that we want. We want more of a forest green … find a way, with respect to the background, to use a forest green in such a way that still preserves readability"*). The development build replaces mint `#8FCBA4` (Option 2's O2-2 "text on dark") everywhere in 2.2, as two options to compare (`?accent=a` or `?accent=b`; `next.css`):
+- **A, the default: lifted forest `#3F9465` on the dark grounds.** Contrast 5.07:1 on umber, 4.35:1 on bark, 4.39:1 on the menu green; display-size accents need 3:1. Small accent text on dark (the ritual durations) goes ivory. The earth chapter's accent is the same green.
+- **B: the OM line, the Aveda facts and the guest voices move onto light clay**, with deep forest `#1E5A3A` (5.87:1 on clay), as Option 2.4 does. The header reads those slides as light.
 
 Salon world: the Option 2 grounds (umber, bark, clay) with the forest-green accent; the rituals menu sits on deep forest green. Coaching world, **Dawn**: light linen and sage grounds, italic headlines, light veils over the films. Type, logo and readability rules are Option 2's: Cormorant Garamond (Light for display) with Instrument Sans for small text, the SALON-above-OM logo, text on film always on the defined scrim, one accent per screen.
 
 ## Motion rules
+
+**First principle: preserve the motion.** The client, 19 Oct 2026: *"I want to highlight in the creative directions the quality of the animations that we have. They are pretty good. I like the timing, how they flow. Just preserve that creative direction throughout any additions that we make or modifications. Always keep in mind to preserve that."* Every new or changed slide uses the tokens and choreography below. Nothing adds a new kind of motion: the opening is the original hero, its two doors are the hero's own buttons, and the team row reuses the letter's `a-up` rise.
 
 ### The shared engine (the same in 2.2, 2.3 and 2.4, and as in Option 2)
 

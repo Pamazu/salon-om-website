@@ -56,3 +56,12 @@ For 2.2, 2.3 and 2.4, browsers block the soundscapes and the saved tweaks on fil
 Each `site/` folder has its own `firebase.json`. `deploy-all.sh` publishes all five sites to one Firebase project: `bash deploy-all.sh [project-id]` (default project: `salon-om-sites`).
 
 Fonts: Cormorant Garamond, Instrument Sans and Jost, all under the SIL Open Font License.
+
+## Checkpoints
+
+| What | Git | Links |
+| --- | --- | --- |
+| Checkpoint, 19 Oct 2026 (frozen, never redeployed) | tag `checkpoint-2026-10-19` | https://salon-om-option-1.web.app · https://salon-om-option-2.web.app · https://salon-om-2-2.web.app · https://salon-om-2-3.web.app · https://salon-om-2-4.web.app |
+| Development of 2.2 (new copy, Maggie's two practices) | branch `cro-copy-2-2` | https://salon-om-2-2-next.web.app (accent option B: add `?accent=b`) |
+
+Build 2.2 from the repo: `python3 option-2.x-shared/source/build.py 2.2` writes `option-2.2/site/index.html`; `python3 option-2.x-shared/source/build.py 2.2 2.3 2.4 --check` compares without writing (2.3 and 2.4 must stay identical to the checkpoint). Deploy from `option-2.2/site` (its `firebase.json` targets `salon-om-2-2-next` on this branch). Never deploy to the five checkpoint sites.

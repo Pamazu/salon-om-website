@@ -72,33 +72,15 @@ def hero_words(d):
   </section>'''
 
 def hero_doors(d):
-    """2.2 next: Maggie at the center. Her name, the site tagline written word by word, then two equal doors
-    over the hero film: Salon OM (stays in this world) and Inner Work with Maggie (switches world)."""
-    def door(x, k):
-        to = f' data-to-world="{x["world"]}"' if x.get('world') == 'coaching' else ''
-        href = x.get('href', '#coaching' if x.get('world') == 'coaching' else '#')
-        return (f'<a class="hd__door intro" style="--d:{2.5 + k * .2:.2f}s" href="{href}"{to}>'
-                f'<span class="hd__kind label">{x["label"]}<i aria-hidden="true">·</i>{x["who"]}</span>'
-                f'<span class="hd__name">{x["title"]}</span>'
-                + (f'<span class="hd__text">{x["text"]}</span>' if x.get('text') else '') +
-                f'<span class="hd__go label">{x["go"]} <span class="arr" aria-hidden="true">→</span></span></a>')
-    return f'''<section class="s hero hero--doors" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-h">
-    {film(d['film'])}
-    <div class="s__scrim hero__scrim hd__scrim"></div>
-    <div class="s__leave hero__lv hd__lv">
-      <div class="hd__head">
-        <p class="eyebrow intro" style="--d:.9s">{d['eyebrow']}</p>
-        <h1 id="{d['id']}-h" data-write="words" style="--wd-at:{d.get('at','1.2s')};--wd-gap:{d.get('gap','150ms')}">{d['title']}</h1>
-        <p class="hd__sub intro" style="--d:{d.get('sub_at','2.2s')}">{d['sub']}</p>
-      </div>
-      <nav class="hd__doors" aria-label="{E(d.get('label', 'Choose a practice'))}">{''.join(door(x, k) for k, x in enumerate(d['doors']))}</nav>
-      <div class="hd__foot">
-        <p class="hero__line intro" style="--d:3s">{SOUND_CTA}</p>
-        <a class="hero__cue label intro" style="--d:3.1s" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
-      </div>
-    </div>
-    <div class="hero__veil"></div><div class="s__shade"></div>
-  </section>'''
+    """2.2 next: the original 2.2 hero (SALON OM draws itself, the same intro), with the site tagline as the line
+    under OM and Maggie's two practices as two equal doors in the button row (the client, 19 Oct)."""
+    here = d.get('here', 'salon')
+    def door(x):
+        if x.get('world') != here:
+            return btn(x['title'], '#coaching' if x['world'] == 'coaching' else '#', 'light hd__btn', arrow=True, world=x['world'])
+        return btn(x['title'], x.get('href', '#' + d['next']), 'light hd__btn', arrow=True)
+    return hero_mark(dict(d, hook=d['title'], eyebrow=d['sub'], line=d['eyebrow'],
+                          ctas=''.join(door(x) for x in d['doors'])))
 
 def hero_arch(d):
     return f'''<section class="s hero--arch" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','air')}" aria-labelledby="{d['id']}-h">
@@ -240,6 +222,8 @@ def team_letter(d):
         <img class="tl__avatar" src="img/{w['img']}" alt="{E(w['alt'])}" decoding="async">
         <div><p class="label">With</p><h3>{w['name']}</h3><p class="tl__role tx">{w['role']}</p><p class="tl__desc tx">{w['desc']}</p></div>
       </div>'''
+    elif not ws:
+        withs = ''
     else:
         def av(w):
             if w.get('img'): return f'<img class="tl__avatar" src="img/{w["img"]}" alt="{E(w.get("alt", ""))}" decoding="async">'

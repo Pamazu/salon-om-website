@@ -1,28 +1,7 @@
 /* ==== Option 2.2 next (branch cro-copy-2-2): only 2.2 loads this file ==== */
 
-/* ---- the opening: Maggie at the center, two equal doors over the hero film ---- */
-.hd__scrim { background: radial-gradient(ellipse 70% 58% at 50% 40%, rgba(10, 7, 5, .46), rgba(10, 7, 5, .1) 74%), linear-gradient(to top, rgba(10, 7, 5, .82), rgba(10, 7, 5, 0) 46%), linear-gradient(to bottom, rgba(10, 7, 5, .5), rgba(10, 7, 5, 0) 24%); }
-.hd__lv { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: var(--top) var(--gutter) calc(var(--base) + var(--dock) + env(safe-area-inset-bottom, 0px)); }
-.hd__head { align-self: center; text-align: center; color: var(--ivory); }
-.hd__head .eyebrow { color: var(--ivory-soft); margin: 0 0 clamp(16px, 2.6vh, 28px); }
-.hd__head h1 { margin: 0 auto; max-width: 15ch; font: 300 clamp(46px, 6.6vw, 118px)/.92 var(--serif); letter-spacing: -.025em; text-shadow: 0 1px 30px rgba(0, 0, 0, .3); }
-.hd__head h1 .wd { margin-right: .04em; }
-.hd__sub { margin: clamp(16px, 2.6vh, 28px) 0 0; font: italic 300 clamp(22px, 2vw, 32px)/1.2 var(--serif); color: var(--ivory); }
-
-.hd__doors { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.4vw, 20px); width: min(100%, 1040px); margin: clamp(20px, 4vh, 44px) auto 0; }
-.hd__door { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "kind go" "name name" "text text"; align-items: end; column-gap: 20px; padding: clamp(18px, 2.4vh, 28px) clamp(20px, 2.2vw, 32px); border-radius: 4px; background: rgba(21, 16, 12, .36); backdrop-filter: blur(18px) saturate(130%); -webkit-backdrop-filter: blur(18px) saturate(130%); color: var(--ivory); text-decoration: none; text-align: left; transition: background-color var(--t-ui) var(--io), transform var(--t-ui) var(--io); }
-.hd__door:hover, .hd__door:focus-visible { background: rgba(21, 16, 12, .54); transform: translateY(-2px); }
-.hd__kind { grid-area: kind; color: var(--ivory-soft); margin-bottom: 10px; }
-.hd__kind i { font-style: normal; margin: 0 .6em; }
-.hd__name { grid-area: name; font: 300 clamp(32px, 2.8vw, 46px)/1 var(--serif); letter-spacing: -.01em; }
-.hd__text { grid-area: text; margin-top: 8px; font-size: 15px; line-height: 1.5; color: var(--ivory-soft); max-width: 42ch; }
-.hd__go { grid-area: go; align-self: start; white-space: nowrap; }
-.hd__go .arr { display: inline-block; transition: transform var(--t-ui) var(--io); }
-.hd__door:hover .hd__go .arr { transform: translateX(4px); }
-
-.hd__foot { display: flex; justify-content: space-between; align-items: end; margin-top: clamp(14px, 2.4vh, 26px); color: var(--ivory-soft); }
-.hd__foot .hero__line { margin: 0; }
-
+/* ---- the opening: the original hero; the two practices as two equal doors ---- */
+.hero__cta .hd__btn { min-width: 260px; }
 /* ---- the world switch carries the practices' names ---- */
 .worlds--named button { min-width: 0; padding: 0 20px; letter-spacing: .16em; white-space: nowrap; }
 .menu__worlds button .wl2 { display: block; margin-top: 4px; }
@@ -39,26 +18,13 @@
 .tl__w .tl__desc { font-size: 14px; }
 
 @media (max-width: 1023px) {
-  .hd__lv { padding-top: calc(var(--top) + 8px); }
-  .hd__head h1 { font-size: clamp(42px, 11.5vw, 84px); }
-  .hd__doors { grid-template-columns: 1fr; gap: 10px; margin-top: clamp(18px, 3vh, 32px); }
-  .hd__door { padding: 16px 18px; grid-template-areas: "kind kind" "name go" "text go"; }
-  .hd__go { align-self: end; }
-  .hd__kind { font-size: 10.5px; letter-spacing: .16em; }
-  .hd__name { font-size: clamp(28px, 7.6vw, 40px); }
-  .hd__text { font-size: 14px; margin-top: 6px; }
-  .hd__foot { justify-content: center; }
-  .hd__foot .hero__cue { display: none; }
   .worlds--named button { padding: 0 14px; height: 44px; line-height: 1.15; letter-spacing: .14em; font-size: 10.5px; white-space: normal; }
   .worlds--named .wl2 { display: block; }
   .tl__with--row { grid-template-columns: 1fr; gap: 12px; }
 }
 @media (max-width: 1023px) and (max-height: 760px) {
-  .hd__text { display: none; }
-  .hd__sub { font-size: 20px; }
 }
 @media (max-height: 760px) and (min-width: 1024px) {
-  .hd__text { display: none; }
   .tl__w .tl__desc { display: none; }
 }
 
@@ -86,3 +52,4 @@ html[data-accent="b"] main[data-world="salon"] .voices__aura { opacity: .45; }
 html[data-accent="b"] main[data-world="salon"] .voices__mark { color: var(--forest-deep); }
 html[data-accent="b"] main[data-world="salon"] .voices figcaption { color: var(--ink-soft); }
 html[data-accent="b"] main[data-world="salon"] .voices figcaption b { color: var(--ink); }
+.hero__hook { text-wrap: balance; }
