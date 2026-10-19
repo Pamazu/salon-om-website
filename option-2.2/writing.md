@@ -111,19 +111,22 @@ The copy deck that maps every slide to these stages is the StoryMind record "Sal
 | Begin | A line that recaps the visit, then "Begin." and one button | Recap up to 20 words | Tea, a real conversation, and up to three unhurried hours of care. |
 | Button | Verb first; an arrow on forward links | 1–4 words | Book your visit → |
 
-**Inner Work with Maggie world** (order as on the page)
+**Inner Work with Maggie world** (J, 19 Oct 2026: the same sections in the same order as Salon OM, with its own words; the same element film in each slot is the parallel)
 
-| Element | Pattern | Length | On the page now |
+| Slot | Salon OM | Inner Work with Maggie | Pattern |
 | --- | --- | --- | --- |
-| Hero | An invitation, with a period | 3–5 words | Return to yourself. |
-| Gentle question | What they may carry, without assuming their story, then Maggie's phrase | Up to 25 words | You may have carried a great deal, for a long time. What if the strength you are looking for already exists within you? |
-| Maggie | Title, then Maggie's own words verbatim, then one line of experience | Quote verbatim | Rooted in lived experience. |
-| Steps | A title, then three one-word verbs, each said in the positive | 1 word each | Three gentle steps: Listen · Release · Rise |
-| Film words | One feeling and a period, labelled "What often changes" | 1 word | Lighter. · Clear. · Brave. |
-| Paths | Format names; the Connection Call named as the way in | 1–2 words | One-to-one · Online · Rise circle |
-| Client voices | **Hidden until real Inner Work words arrive.** Never a sample | — | — |
-| Door to Salon OM | The locked pairing line, then an invitation | Up to 6 words | Let yourself be cared for. |
-| Begin | The three steps in one line, then the locked line and the locked button | Locked | Begin with your complimentary conversation. · Book a Connection Call → |
+| 1 First screen | Two equal doors | The same two doors | Locked lines, word for word |
+| 2 Gentle question | When did someone last take care of you…? | You may have carried a great deal, for a long time… | Name what they carry, without assuming |
+| 3 OM line | Earth, water, fire, air, and space, held as one | The same breath moves in you, steady through every season | "The first sound, the breath of everything" stays locked |
+| 4 Maggie | 28 years in the chair. + Katie and Chesney | Rooted in lived experience. Maggie alone, her letter verbatim | Authority before the offer |
+| 5–9 Moments | Rooted · Release · Transform · Breathe · Glow | The same five words, from the inside | A part of the visit, or of the work, paired with nature, never forced |
+| 10 Why | Beauty from the inside out. (Aveda) | Where the work comes from. (Maggie's own sentence) | Sourced facts only; brackets for the rest |
+| 11 Offer | Choose your visit. | Choose your path. | Every path begins with a Connection Call |
+| 12 The other door | Some things go deeper than hair. | Let yourself be cared for. | "Each practice stands on its own, and they also work together." |
+| 13 Voices | Guest quotes, initials only | Left out until real Inner Work words arrive | Never a sample |
+| 14 Begin | Book your visit → | Book a Connection Call → | Locked last word: Begin. |
+
+**The Rooted game (moments 01–05, both worlds).** Each moment pairs one physical part of the visit, or one part of the inner work, with something in nature: roots, water smoothing a stone, a plant growing toward light, moving air, late-afternoon sun. One image per moment, said once and plainly. It is never forced or explained, and the moment's word never repeats its label.
 
 ## Rules for this option
 

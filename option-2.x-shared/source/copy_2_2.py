@@ -9,6 +9,7 @@ Placeholders stay in [square brackets] until the fact is confirmed. Never invent
 from build import btn
 
 SPECS = ('What happens', 'Included', 'Guests often feel')
+CSPECS = ('What happens', 'Focus', 'Clients often feel')
 CFG = {
   'title': 'Salon OM Option 2.2', 'theme': 'dawn', 'draft': 'Option 2.2 draft',
   'desc': 'Where Beauty and Inner Work Belong. Salon OM, an Aveda Concept Salon, and Inner Work with Maggie, both with Maggie Woodward.',
@@ -22,7 +23,7 @@ CFG = {
   'rail': [('Arrive', 'arrive'), ('Unwind', 'unwind'), ('Renew', 'renew'), ('Unhurried', 'unhurried'), ('Leave whole', 'whole')],
   'menu': {
     'salon': [('01', 'Maggie', 'hosts'), ('02', 'The visit', 'arrive'), ('03', 'Aveda', 'aveda'), ('04', 'Salon rituals', 'time'), ('05', 'Book', 'begin')],
-    'coaching': [('01', 'Maggie', 'c-maggie'), ('02', 'How it works', 'c-how'), ('03', 'What often changes', 'c-lighter'), ('04', 'Paths', 'c-sessions'), ('05', 'Connection Call', 'c-begin')],
+    'coaching': [('01', 'Maggie', 'c-maggie'), ('02', 'The path', 'c-rooted'), ('03', 'Why Inner Work', 'c-facts'), ('04', 'Paths', 'c-sessions'), ('05', 'Connection Call', 'c-begin')],
   },
   'salon': [
     # HOOK. Maggie's first screen: the locked tagline, the locked pairing line, two equal doors.
@@ -53,16 +54,16 @@ CFG = {
       body='Beautiful hair begins at the root, and so do you. Over tea, we talk about your hair, your life, and how you would like to feel.',
       specs=[(SPECS[0], 'Consultation over tea'), (SPECS[1], 'Plant-based Aveda care'), (SPECS[2], 'Grounded')])),
     ('ch', dict(id='unwind', chapter=1, sound='water', film='water', acc='water', num='02', of='/ 05', name='Unwind', sub='The rituals', title='Release',
-      body='Choose your scent on an Aveda aroma journey, then settle into a slow scalp and shoulder ritual. Tension you may not know you carry often begins to let go.',
+      body='Warm water and slow hands, the way a river smooths a stone. You choose your scent on an Aveda aroma journey, and tension often begins to let go.',
       specs=[(SPECS[0], 'Aroma journey'), (SPECS[1], 'Scalp & shoulder ritual'), (SPECS[2], 'Lighter')])),
     ('ch', dict(id='renew', chapter=2, sound='fire', film='fire', acc='fire', num='03', of='/ 05', name='Renew', sub='Cut & color', title='Transform',
-      body='A cut and color made for you alone, with plant-powered Aveda color and 100% vegan formulas. Beauty that is kind to you, and to the earth.',
+      body='A cut that follows the way your hair naturally grows, and color drawn from plants: Aveda, 100% vegan. Beauty that is kind to you, and to the earth.',
       specs=[(SPECS[0], 'Bespoke cut & color'), (SPECS[1], 'Plant-based, vegan'), (SPECS[2], 'Radiant')])),
     ('ch', dict(id='unhurried', chapter=3, sound='air', film='air', acc='air', num='04', of='/ 05', name='Unhurried', sub='Your time', title='Breathe',
-      body='Your visit may last up to three hours, because real care takes its time. Talk, laugh, or rest in silence. This time is yours.',
+      body='Your hair dries in warm, moving air while time slows. A visit may last up to three hours, because real care takes its time. This time is yours.',
       specs=[(SPECS[0], 'One to three hours'), (SPECS[1], 'Your pace, your needs'), (SPECS[2], 'At ease')])),
     ('ch', dict(id='whole', chapter=4, sound='ether', film='ether', acc='ether', num='05', of='/ 05', name='Leave whole', sub='The finish', title='Glow',
-      body='Finished by hand, with simple rituals to carry the feeling into your week. Guests often leave lighter in spirit, and it shows.',
+      body='Finished by hand, your hair catches the light like late-afternoon sun. Simple rituals carry the feeling into your week. Guests often leave lighter in spirit.',
       specs=[(SPECS[0], 'Finish & styling tips'), (SPECS[1], 'Aftercare ritual'), (SPECS[2], 'Cared for')])),
     # FEATURES AND BENEFITS (why us). The locked signature line meets Aveda's founding idea.
     ('facts', dict(id='aveda', eyebrow='Why Aveda', title='Beauty from the inside out.',
@@ -79,7 +80,7 @@ CFG = {
              dict(img='colour.webp', alt='A stone bowl of plant-based hair color with a brush and herbs', tag='2 to 3 hours', title='Color Ritual', text='Plant-powered Aveda color, with hand and scalp rituals while it develops.', btns=btn('Book', '#begin', 'sm') + btn('Learn more', '#renew', 'ghost btn--sm'))])),
     # FEATURES AND BENEFITS (the second practice). Moved before the voices, so both doors sit in the offer.
     ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='One Source. Two Practices.', title='Some things go deeper than hair.',
-      text='Inner Work with Maggie is coaching for anyone, guest or not: room to grow, reconnect with yourself, and move forward with clarity.',
+      text='Each practice stands on its own, and they also work together. Inner Work with Maggie is coaching for anyone, guest or not: room to grow and reconnect with yourself.',
       btn=btn('Enter Inner Work', '#coaching', 'light', arrow=True, world='coaching'))),
     # SUMMARIZE (social proof). Maggie's chosen guest words, verbatim, initials only.
     ('voices', dict(id='kind', quotes=[('Seeing you is magic for my mind, body, and soul.', 'L.T.', 'Guest'),
@@ -93,49 +94,65 @@ CFG = {
       explore=[('Maggie', 'hosts'), ('The visit', 'arrive'), ('Aveda', 'aveda'), ('Salon rituals', 'time')])),
   ],
   'coaching': [
-    # HOOK. The practice's real name and the locked button.
-    ('hero_words', dict(id='c-top', film='air', sound='air', next='c-pause', at='.5s', sub_at='1.4s', foot_at='1.7s', eyebrow='Inner Work with Maggie', title='Return to yourself.',
-      sub='Coaching for anyone ready to grow, reconnect with their inner wisdom, and create a life that feels more aligned. In person or online.',
-      ctas=btn('Book a Connection Call', '#c-begin', arrow=True) + btn('How it works', '#c-how', 'ghost'))),
-    # UNDERSTANDING. Names what clients carry, without assuming their story.
+    # Mirrors the salon list slot for slot, same kinds and order (J, 19 Oct 16:50). Same element film per slot = the parallel.
+    # 1 HOOK. The same first screen and two doors; here the Inner Work door is the one you are on.
+    ('hero_doors', dict(id='c-top', here='coaching', film='air', sound='air', next='c-pause',
+      eyebrow='Maggie Woodward', title='Where Beauty and Inner Work Belong', sub='One Source. Two Practices.',
+      doors=[dict(world='salon', label='An Aveda Concept Salon', who='For guests', title='Salon OM',
+                  text='Up to three unhurried hours of Aveda care, made around you.', go='Step inside'),
+             dict(world='coaching', href='#c-pause', label='Coaching', who='For clients', title='Inner Work with Maggie',
+                  text='Room to grow and reconnect with your inner wisdom, at your pace.', go='Enter')])),
+    # 2 HOOK → UNDERSTANDING. What clients may carry, without assuming their story.
     ('tease', dict(id='c-pause', sound='air', label='Perhaps this is you', accents=['within'],
       text='You may have carried a great deal, for a long time. What if the strength you are looking for already exists within you?')),
-    # ESTABLISH AUTHORITY. Moved up from after the outcomes: clients choose the guide before the method.
-    ('split', dict(id='c-maggie', sound='air', flip=True, img='salon-om-shoreline-walk.webp', alt='A woman walking the shoreline at golden hour, seen from behind', tag='Placeholder image',
-      eyebrow='Your guide, Maggie Woodward', title='Rooted in lived experience.',
-      lead='My work as a Coach is deeply rooted in my own life experience, personal growth, and the challenges I have walked through and overcome.',
-      paras=['Through both hardship and healing, I have learned that transformation is possible when we are willing to reconnect with ourselves with honesty, compassion, and courage.',
-             'Maggie brings 28 years of listening in the chair, [her coaching training, to confirm], and her own story to every conversation.'],
-      btn=btn('Book a Connection Call', '#c-begin', arrow=True))),
-    # STORYTELLING. What happens, met with warmth (the quiet worry: "what will it be like?").
-    ('steps', dict(id='c-how', light=True, sound='air', eyebrow='How it works', title='Three gentle steps',
-      steps=[('01', 'Listen', 'We begin with your story, at your pace, with room to be fully heard.'),
-             ('02', 'Release', 'Together we name the beliefs that may be holding you back, and let them soften.'),
-             ('03', 'Rise', 'Small, courageous steps, held with compassion, toward more Joy, peace, and purpose.')])),
-    # FEATURES AND BENEFITS. What people often experience, never a promise.
-    ('ch', dict(id='c-lighter', sound='water', film='water', acc='water', num='01', of='/ 03', name='What often changes', sub='Feeling', title='Lighter',
-      body='Old weight, set down. Emotions given room to move, so they may clear.', specs=[('Focus', 'Release'), ('Often felt', 'Lighter')])),
-    ('ch', dict(id='c-clear', sound='ether', film='ether', acc='ether', num='02', of='/ 03', name='What often changes', sub='Clarity', title='Clear',
-      body='Room to hear your own inner wisdom again, and to trust what it says.', specs=[('Focus', 'Inner wisdom'), ('Often felt', 'At peace')])),
-    ('ch', dict(id='c-brave', sound='air', film='meadow.webp', acc='earth', num='03', of='/ 03', name='What often changes', sub='Courage', title='Brave',
-      body='Breaking free from limiting beliefs, and acting on what truly matters to you.', specs=[('Focus', 'Limiting beliefs'), ('Often felt', 'Empowered')])),
-    # FEATURES AND BENEFITS (the offer). The Inner Work path, clearly laid out; the Connection Call is the way in.
-    ('offers', dict(id='c-sessions', sound='air', eyebrow='The Inner Work path', title='Ways to work together',
+    # 3 HOOK (meaning). The OM line, turned inward. The locked phrase stays word for word.
+    ('tease', dict(id='c-om', sound='air', label='OM · Unity', dark=True, accents=['everything.', 'all.'],
+      text='OM is the first sound, the breath of everything. The same breath moves in you, steady through every season. And you are part of it all.')),
+    # 4 ESTABLISH AUTHORITY. Maggie alone (Katie and Chesney belong to the salon). The letter is her own words, verbatim.
+    ('team', dict(id='c-maggie', layout='letter', sound='air', eyebrow='Your guide, Maggie Woodward', title='Rooted in lived experience.',
+      intro='After 28 years of listening in the chair, Maggie guides from her own story. [Her coaching training, to confirm.]',
+      note='Through both hardship and healing, I have learned that transformation is possible when we are willing to reconnect with ourselves with honesty, compassion, and courage.', sign='Maggie',
+      people=[dict(name='Maggie Woodward', img='portrait-maggie-window.webp', alt='Placeholder portrait of Maggie in window light', role='Founder · guide', desc='Founder of Inner Work with Maggie and Salon OM.')])),
+    # 5-9 STORYTELLING → BENEFITS. The same five moments, from the inside: each pairs the work with nature, never forced.
+    ('ch', dict(id='c-rooted', chapter=0, sound='earth', film='earth', acc='earth', num='01', of='/ 05', name='Begin', sub='Your story', title='Rooted',
+      body='Lasting change grows from the root, from who you already are. We begin with your story, at your pace, with room to be fully heard.',
+      specs=[(CSPECS[0], 'Listening'), (CSPECS[1], 'Your story'), (CSPECS[2], 'Grounded')])),
+    ('ch', dict(id='c-release', chapter=1, sound='water', film='water', acc='water', num='02', of='/ 05', name='Let go', sub='Old beliefs', title='Release',
+      body='Like water around a stone, old weight can soften and move. Together we name the beliefs that may be holding you back, and let them ease.',
+      specs=[(CSPECS[0], 'Naming beliefs'), (CSPECS[1], 'Limiting beliefs'), (CSPECS[2], 'Lighter')])),
+    ('ch', dict(id='c-transform', chapter=2, sound='fire', film='fire', acc='fire', num='03', of='/ 05', name='Grow', sub='Change', title='Transform',
+      body='Growth, the way a plant grows: toward the light, at its own pace. Small, courageous steps, held with compassion.',
+      specs=[(CSPECS[0], 'Small steps'), (CSPECS[1], 'Courage'), (CSPECS[2], 'Empowered')])),
+    ('ch', dict(id='c-breathe', chapter=3, sound='air', film='air', acc='air', num='04', of='/ 05', name='Pause', sub='Your pace', title='Breathe',
+      body='Room to breathe, and to hear your own inner wisdom again. Sessions may be in person or online. This time is yours.',
+      specs=[(CSPECS[0], 'Space to reflect'), (CSPECS[1], 'Inner wisdom'), (CSPECS[2], 'Clear')])),
+    ('ch', dict(id='c-glow', chapter=4, sound='ether', film='ether', acc='ether', num='05', of='/ 05', name='Carry it forward', sub='After', title='Glow',
+      body='Choosing Joy, peace, and purpose, and carrying them into your week. Clients often leave lighter, and more themselves.',
+      specs=[(CSPECS[0], 'Next steps'), (CSPECS[1], 'Your own practice'), (CSPECS[2], 'Aligned')])),
+    # 10 FEATURES AND BENEFITS (why Maggie). Her own sentence, verbatim; unconfirmed facts in brackets.
+    ('facts', dict(id='c-facts', sound='air', eyebrow='Why Inner Work', title='Where the work comes from.',
+      paras=['Inner Work with Maggie grows from the same place as Salon OM: deep listening, and care for the whole person.',
+             'Clients often come for clarity, and stay for the way it feels to be heard.'],
+      quote='I am passionate about supporting people in breaking free from limiting beliefs, reconnecting with their inner wisdom, and discovering the strength and potential that already exists within them.', cite='Maggie Woodward',
+      facts=[('28', 'years of listening in the chair', True), ('1:1', 'in person or online'), ('[Training]', 'coaching training, to confirm'), ('[Year]', 'Inner Work began, to confirm')],
+      src='Facts in brackets are placeholders until Maggie confirms them.')),
+    # 11 FEATURES AND BENEFITS (the offer). The Inner Work path, clearly laid out; the Connection Call is the way in.
+    ('offers', dict(id='c-sessions', layout='menu', sound='air', eyebrow='The Inner Work path', title='Choose your path.',
       intro='Open to everyone, guest of Salon OM or not. Every path begins with a complimentary Connection Call. [Formats and prices to confirm.]',
-      tiles=[dict(img='coaching-room.webp', alt='Two linen armchairs, tea and an open journal by a window', tag='60 minutes · in person', title='One-to-one', text='A private space to release limiting beliefs and reconnect with your inner wisdom.', btns=btn('Book', '#c-begin', 'sm') + btn('Learn more', '#c-how', 'ghost btn--sm')),
-             dict(img='meadow.webp', alt='A woman standing in a misty meadow at dawn', tag='60 minutes · online', title='Online', text='The same care, wherever you are.', btns=btn('Book', '#c-begin', 'sm') + btn('Learn more', '#c-how', 'ghost btn--sm')),
-             dict(img='salon-om-circle.webp', alt='Floor cushions in a circle around a candle', tag='Group · 6 weeks', title='Rise circle', text='Grow alongside others who are choosing Joy, peace, and purpose.', btns=btn('Join the waitlist', '#c-letters', 'sm') + btn('Learn more', '#c-how', 'ghost btn--sm'))])),
-    # Client voices: hidden until real Inner Work words arrive ("Words from Inner Work clients are on their way").
-    # Put back here, unchanged in form, with real quotes and initials only:
-    # ('voices', dict(id='c-kind', sound='air', quotes=[('<quote>', '<initials>', 'Inner Work client')])),
-    # FEATURES AND BENEFITS (the second practice). The other equal door.
+      tiles=[dict(img='coaching-room.webp', alt='Two linen armchairs, tea and an open journal by a window', tag='60 minutes · in person', title='One-to-one', text='A private space to release limiting beliefs and reconnect with your inner wisdom.', btns=btn('Book', '#c-begin', 'sm') + btn('Learn more', '#c-rooted', 'ghost btn--sm')),
+             dict(img='meadow.webp', alt='A woman standing in a misty meadow at dawn', tag='60 minutes · online', title='Online', text='The same care, wherever you are.', btns=btn('Book', '#c-begin', 'sm') + btn('Learn more', '#c-rooted', 'ghost btn--sm')),
+             dict(img='salon-om-circle.webp', alt='Floor cushions in a circle around a candle', tag='Group · 6 weeks', title='Rise circle', text='Grow alongside others who are choosing Joy, peace, and purpose.', btns=btn('Join the waitlist', '#c-letters', 'sm') + btn('Learn more', '#c-rooted', 'ghost btn--sm'))])),
+    # 12 FEATURES AND BENEFITS (the second practice). The other equal door, and the stand-alone line.
     ('bridge', dict(id='c-salon', sound='air', img='scalp-ritual.webp', eyebrow='One Source. Two Practices.', title='Let yourself be cared for.',
-      text='Salon OM is Maggie’s Aveda Concept Salon, where up to three unhurried hours of care are made around you.',
+      text='Each practice stands on its own, and they also work together. Salon OM is Maggie’s Aveda Concept Salon, where up to three unhurried hours of care are made around you.',
       btn=btn('Enter Salon OM', '#', 'light', arrow=True, world='salon'))),
-    # SUMMARIZE → CTA. The three steps in one line, then the locked button and its locked line.
+    # 13 Client voices: left out until real Inner Work words arrive. Put back here with real quotes, initials only:
+    # ('voices', dict(id='c-kind', sound='air', quotes=[('<quote>', '<initials>', 'Client')])),
+    # 14 SUMMARIZE → CTA. The locked button and its locked line.
     ('cta', dict(id='c-begin', sound='air', film='air', label='A calm first step', title='Begin.',
-      text='Listen, release, rise, at your own pace. Begin with your complimentary conversation.', btn=btn('Book a Connection Call', '#c-letters', 'light', arrow=True))),
+      text='Rooted, release, transform, at your own pace. Begin with your complimentary conversation.', btn=btn('Book a Connection Call', '#c-letters', 'light', arrow=True))),
+    # 15
     ('end', dict(id='c-letters', sound='air', title='Letters for the journey', tagline='Where Beauty and Inner Work Belong',
-      explore=[('Maggie', 'c-maggie'), ('How it works', 'c-how'), ('Paths', 'c-sessions'), ('Connection Call', 'c-begin')])),
+      explore=[('Maggie', 'c-maggie'), ('The path', 'c-rooted'), ('Why Inner Work', 'c-facts'), ('Paths', 'c-sessions'), ('Connection Call', 'c-begin')])),
   ],
 }
