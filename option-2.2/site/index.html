@@ -1077,6 +1077,11 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 /* real photos (19 Oct): keep Maggie in frame in the tall letter portrait (the fireplace photo is landscape) */
 .tl__ph img[src$="real-maggie-fireplace.webp"] { object-position: 52% 30%; }
 .tl__ph img[src$="real-maggie-arms-crossed.webp"] { object-position: 50% 22%; }
+/* the team photo is landscape (three people): its frame keeps the photo's own 3:2 shape, centred beside the letter */
+.tl--wide { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+.tl--wide .tl__ph { align-self: center; aspect-ratio: 3 / 2; height: auto; }
+.tl--wide .tl__ph img { object-position: 50% 30%; }
+@media (max-width: 1023px) { .tl--wide { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -1126,8 +1131,8 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
     </div>
     <div class="s__shade"></div>
   </section>
-  <section class="s team-letter" id="hosts" data-tone="light" data-sound="bed" aria-labelledby="hosts-t">
-    <figure class="tl__ph"><img src="img/real-maggie-arms-crossed.webp" alt="Maggie Woodward in front of the Aveda shelves at Salon OM" decoding="async"></figure>
+  <section class="s team-letter tl--wide" id="hosts" data-tone="light" data-sound="bed" aria-labelledby="hosts-t">
+    <figure class="tl__ph"><img src="img/real-team-of-three.webp" alt="The Salon OM team in the salon" decoding="async"></figure>
     <div class="tl__copy s__leave">
       <p class="eyebrow a-left" style="--d:0.35s">Founder, stylist, and guide</p><h2 class="mid" id="hosts-t"><span class="mask"><span class="mask__in" style="--d:0.50s">28 years in the chair.</span></span></h2><p class="tl__intro tx a-up" style="--d:0.80s">Maggie Woodward is the founder of Salon OM and of Inner Work with Maggie. [Her training and origin story, in her words, from the copy interview.]</p>
       <blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“This is your space. Talk, laugh, or simply rest. For as long as you are here, I am holding it for you.”</span><cite class="tx">Maggie</cite></blockquote>
@@ -1235,7 +1240,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
           <h3>Color Ritual</h3><span class="om__arr" aria-hidden="true">→</span>
           <div class="om__more"><div><p class="tx">Plant-powered Aveda color, with hand and scalp rituals while it develops.</p><div class="om__btns"><a class="btn btn--sm" href="#begin">Book</a><a class="btn btn--ghost btn--sm" href="#renew">Learn more</a></div></div></div>
         </li></ol>
-    <div class="om__ph"><img src="img/real-shampoo-basins.webp" alt="The shampoo basins at Salon OM" decoding="async" data-i="0" class="is-on"><img src="img/real-styling-chair.webp" alt="A styling chair by the window at Salon OM" decoding="async" data-i="1"><img src="img/real-aveda-shelves.webp" alt="Aveda products on the shelves at Salon OM" decoding="async" data-i="2"></div>
+    <div class="om__ph"><img src="img/real-shampoo-basins.webp" alt="The shampoo basins at Salon OM" decoding="async" data-i="0" class="is-on"><img src="img/real-styling-stations.webp" alt="A styling station with a mirror at Salon OM" decoding="async" data-i="1"><img src="img/real-color-bar.webp" alt="The Aveda color bar at Salon OM" decoding="async" data-i="2"></div>
     <div class="s__shade"></div>
   </section>
   <section class="s bridge" id="deeper" data-tone="dark" data-sound="bed" aria-labelledby="deeper-t">

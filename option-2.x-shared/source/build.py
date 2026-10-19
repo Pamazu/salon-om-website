@@ -240,7 +240,7 @@ def team_letter(d):
         <p class="label">{d.get('with_label', 'With')}</p>{cells}
       </div>'''
     tag = PH_TAG if d.get('ph_tag', True) else ''
-    return f'''<section class="s team-letter" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
+    return f'''<section class="s team-letter{' tl--wide' if d.get('ph_wide') else ''}" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     <figure class="tl__ph"><img src="img/{m['img']}" alt="{E(m['alt'])}" decoding="async">{tag}</figure>
     <div class="tl__copy s__leave">
       {head(d, 'tl', 'tl__intro', .35)}
