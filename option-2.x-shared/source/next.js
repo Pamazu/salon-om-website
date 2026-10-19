@@ -25,28 +25,38 @@
   }, { threshold: 0.01 });
   tops.forEach(function (v) { io.observe(v); });
 })();
-/* the parked pause slide: Shift+V shows it and cycles J's three ideas (1 Photo, 2 Framed, 3 Letter, then 0 the old clay look).
-   ?pause=1|2|3|0 opens on one look; the URL follows, so a look can be sent as a link. */
+/* Shift+V: live option cycling for J (19 Oct). It cycles the option set of the slide on screen:
+   - on the parked pause slide ("A gentle question", shown with ?pause=1|2|3|0): 1 Photo, 2 Framed, 3 Letter, 0 the old clay look;
+   - anywhere else: the world switch, 1 the pill (today's), 2 the "Also here" door, 3 "Two practices" (?switch=a|b|c or 1|2|3).
+   The URL follows each change, so any option can be sent as a link. */
 (function () {
-  var root = document.documentElement, slides = document.querySelectorAll('.mani[data-pause]'); if (!slides.length) return;
-  var NAMES = ['The old clay look (for comparison)', 'Idea 1 of 3 · Photo', 'Idea 2 of 3 · Framed', 'Idea 3 of 3 · Letter'];
-  var TONE = ['light', 'dark', 'dark', 'light'], toast, tt;
-  function set(n, show) {
-    root.setAttribute('data-pause-look', n);
-    slides.forEach(function (s) { s.setAttribute('data-look', n); s.setAttribute('data-tone', TONE[n]); });
-    try { var u = new URL(location.href); u.searchParams.set('pause', n); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
-    if (!show) return;
+  var root = document.documentElement, slides = document.querySelectorAll('.mani[data-pause]'), toast, tt;
+  var P_NAMES = ['The old clay look (for comparison)', 'Idea 1 of 3 · Photo', 'Idea 2 of 3 · Framed', 'Idea 3 of 3 · Letter'];
+  var P_TONE = ['light', 'dark', 'dark', 'light'];
+  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill (today\u2019s)', '2 of 3 · The \u201cAlso here\u201d door', '3 of 3 · \u201cTwo practices\u201d'];
+  function url(k, v) { try { var u = new URL(location.href); u.searchParams.set(k, v); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {} }
+  function say(t) {
     if (!toast) { toast = document.createElement('div'); toast.className = 'pz-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
-    toast.textContent = 'Shift+V · ' + NAMES[n]; toast.classList.add('is-on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('is-on'); }, 2600);
+    toast.textContent = 'Shift+V · ' + t; toast.classList.add('is-on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('is-on'); }, 2600);
   }
-  var start = root.getAttribute('data-pause-look'); if (start !== null) set(+start, false);
+  function setPause(n, show) {
+    root.setAttribute('data-pause-look', n);
+    slides.forEach(function (s) { s.setAttribute('data-look', n); s.setAttribute('data-tone', P_TONE[n]); });
+    url('pause', n); if (show) say('Gentle question: ' + P_NAMES[n]);
+  }
+  function setSwitch(i, show) { root.setAttribute('data-switch', S_KEYS[i]); url('switch', S_KEYS[i]); if (show) say('World switch: ' + S_NAMES[i]); }
+  var start = root.getAttribute('data-pause-look'); if (start !== null && slides.length) setPause(+start, false);
+  // a ?pause= link opens ON the slide (J's review link), unless it names another place with a #hash
+  if (start !== null && slides.length && !location.hash) addEventListener('load', function () { var s = [].filter.call(slides, function (x) { return !x.closest('[hidden]'); })[0]; if (s) s.scrollIntoView(); });
+  function pauseOnScreen() {
+    var mid = innerHeight / 2;
+    return [].some.call(slides, function (s) { if (s.closest('[hidden]')) return false; var r = s.getBoundingClientRect(); return r.height > 0 && r.top <= mid && r.bottom > mid; });
+  }
   document.addEventListener('keydown', function (e) {
-    if (!e.shiftKey || e.metaKey || e.ctrlKey || e.altKey || (e.key !== 'V' && e.code !== 'KeyV')) return;
+    if (!e.shiftKey || e.metaKey || e.ctrlKey || e.altKey || (e.key !== 'V' && e.key !== 'v' && e.code !== 'KeyV')) return;
     var t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
     e.preventDefault();
-    var cur = root.getAttribute('data-pause-look'), first = cur === null, n = first ? 1 : (+cur + 1) % 4;
-    set(n, true);
-    var s = [].filter.call(slides, function (x) { return !x.closest('[hidden]'); })[0];
-    if (s && (first || Math.abs(s.getBoundingClientRect().top) > innerHeight * .5)) s.scrollIntoView({ behavior: 'smooth' });
+    if (pauseOnScreen()) setPause((+root.getAttribute('data-pause-look') + 1) % 4, true);
+    else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'a') + 1) % 3, true);
   });
 })();
