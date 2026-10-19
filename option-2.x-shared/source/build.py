@@ -111,8 +111,15 @@ def chapter(d, i, n):
     specs = ''.join(f'<div class="a-up" style="--d:{0.95 + k * 0.12:.2f}s"><dt>{a}</dt><dd>{b}</dd></div>' for k, (a, b) in enumerate(d['specs']))
     cls = ' style="grid-template-columns:repeat(2,minmax(0,1fr))"' if len(d['specs']) == 2 else ''
     chap = f' data-chapter="{d["chapter"]}"' if 'chapter' in d else ''
-    return f'''<section class="s ch" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
-    {film(d['film'])}
+    media = film(d['film'])
+    if d.get('film_top'):     # 2.2 next: two films stacked, the top one fading into the bottom one through a soft mask
+        t = d['film_top']
+        top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async">'
+               + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
+               + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + '</div>')
+        media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
+    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
+    {media}
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">{d['num']}<small>{d['of']}</small></span><span class="label"><b>{d['name']}</b>{(' · ' + d['sub']) if d.get('sub') else ''}</span></p>

@@ -1059,6 +1059,20 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
   .hero__line { font-size: 14px; line-height: 1.5; }
   .hero__foot { gap: 16px; }
 }
+
+/* ---- Rooted: two films stacked, top and bottom, joined by a soft mask (J, 19 Oct 17:20) ----
+   Bottom: the root-grain film, untouched. Top: the salon hair-care film, faded into the grain from 42% to 62% of
+   the slide's height, so its falling hair continues the grain's lines. Both settle with the slide (same --m-film). */
+.ch__top { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 62%); mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 62%); }
+.ch__top img, .ch__top video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.ch__top video { opacity: 0; transition: opacity 1.2s var(--io-soft); }
+.ch__top video.is-on { opacity: 1; }
+.ch__top .tag { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); color: rgba(245, 238, 228, .9); text-shadow: 0 1px 12px rgba(0, 0, 0, .5); white-space: nowrap; }
+.ch--stack .ch__scrim { background: linear-gradient(to top, rgba(10, 7, 5, .88) 0%, rgba(10, 7, 5, .58) 30%, rgba(10, 7, 5, .14) 58%, rgba(10, 7, 5, 0) 74%), linear-gradient(to right, rgba(10, 7, 5, .42), rgba(10, 7, 5, 0) 56%), linear-gradient(to bottom, rgba(10, 7, 5, .55), rgba(10, 7, 5, 0) 22%); }
+@media (max-aspect-ratio: 3/4) {   /* tall phones: the top film takes a little less of the height */
+  .ch__top { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 36%, transparent 54%); mask-image: linear-gradient(to bottom, #000 0%, #000 36%, transparent 54%); }
+  .ch__top img, .ch__top video { object-position: 50% 22%; }
+}
 </style>
 </head>
 <body>
@@ -1119,8 +1133,8 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
     </div>
     <div class="s__shade"></div>
   </section>
-  <section class="s ch" id="arrive" data-tone="dark" data-sound="earth" data-chapter="0" style="--acc: var(--earth)" aria-labelledby="arrive-t">
-    <div class="s__media"><div class="s__zoom"><img src="media/earth-poster.webp" alt="" decoding="async"><video data-src="media/earth.mp4" muted playsinline loop preload="none" aria-hidden="true"></video></div></div>
+  <section class="s ch ch--stack" id="arrive" data-tone="dark" data-sound="earth" data-chapter="0" style="--acc: var(--earth)" aria-labelledby="arrive-t">
+    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/earth-poster.webp" alt="" decoding="async"><video data-src="media/earth.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top is-stand" aria-hidden="true"><img src="img/scalp-ritual.webp" alt="" decoding="async"><span class="tag label">Stand-in: the salon hair-care film comes here</span></div></div></div>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">01<small>/ 05</small></span><span class="label"><b>Arrive</b> · The consultation</span></p>
@@ -1458,6 +1472,20 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 (function () {
   document.querySelectorAll('main[data-world="salon"] .mani.dark, main[data-world="salon"] .facts, main[data-world="salon"] .voices')
     .forEach(function (s) { s.setAttribute('data-tone', 'light'); });
+})();
+/* the stacked Rooted slide: the top film plays and pauses with its slide (the engine drives one film per slide) */
+(function () {
+  var tops = document.querySelectorAll('video[data-src-top]'); if (!tops.length) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      var v = e.target;
+      if (e.isIntersecting) {
+        if (!v.src) { v.src = v.getAttribute('data-src-top'); v.addEventListener('playing', function () { v.classList.add('is-on'); }); }
+        var p = v.play(); if (p && p.catch) p.catch(function () {});
+      } else v.pause();
+    });
+  }, { threshold: 0.01 });
+  tops.forEach(function (v) { io.observe(v); });
 })();
 </script>
 <script>

@@ -61,3 +61,17 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
   .hero__line { font-size: 14px; line-height: 1.5; }
   .hero__foot { gap: 16px; }
 }
+
+/* ---- Rooted: two films stacked, top and bottom, joined by a soft mask (J, 19 Oct 17:20) ----
+   Bottom: the root-grain film, untouched. Top: the salon hair-care film, faded into the grain from 42% to 62% of
+   the slide's height, so its falling hair continues the grain's lines. Both settle with the slide (same --m-film). */
+.ch__top { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 62%); mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 62%); }
+.ch__top img, .ch__top video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.ch__top video { opacity: 0; transition: opacity 1.2s var(--io-soft); }
+.ch__top video.is-on { opacity: 1; }
+.ch__top .tag { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); color: rgba(245, 238, 228, .9); text-shadow: 0 1px 12px rgba(0, 0, 0, .5); white-space: nowrap; }
+.ch--stack .ch__scrim { background: linear-gradient(to top, rgba(10, 7, 5, .88) 0%, rgba(10, 7, 5, .58) 30%, rgba(10, 7, 5, .14) 58%, rgba(10, 7, 5, 0) 74%), linear-gradient(to right, rgba(10, 7, 5, .42), rgba(10, 7, 5, 0) 56%), linear-gradient(to bottom, rgba(10, 7, 5, .55), rgba(10, 7, 5, 0) 22%); }
+@media (max-aspect-ratio: 3/4) {   /* tall phones: the top film takes a little less of the height */
+  .ch__top { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 36%, transparent 54%); mask-image: linear-gradient(to bottom, #000 0%, #000 36%, transparent 54%); }
+  .ch__top img, .ch__top video { object-position: 50% 22%; }
+}
