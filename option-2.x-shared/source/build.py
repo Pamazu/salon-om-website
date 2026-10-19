@@ -1,8 +1,11 @@
 """Salon OM, Option 2.x: three variations (2.2, 2.3, 2.4) of the salon site, each with a parallel
 coaching world. Shared engine (Option 2 base.css + add.css + engine.js); copy and structure per variation."""
-import json, re, os, html
-V = '/home/claude/v2x/'
-L = json.load(open('/home/claude/logo/opt3.json'))
+import json, re, os, html, sys
+V = os.path.dirname(os.path.abspath(__file__)) + '/'          # option-2.x-shared/source/
+REPO = os.path.abspath(V + '../..') + '/'
+sys.modules.setdefault('build', sys.modules[__name__])       # copy_*.py does `from build import btn`
+# logo paths, recovered byte-exact from the published pages (the original generator lived outside this repo)
+L = json.load(open(V + 'logo.json'))
 BASE_CSS = open(V + 'base.css').read()
 ADD_CSS = open(V + 'add.css').read()
 JS = open(V + 'engine.js').read()
@@ -455,12 +458,22 @@ def page(cfg):
     return art, doc
 
 if __name__ == '__main__':
-    import importlib.util, sys
-    for key in sys.argv[1:] or ['2.2', '2.3', '2.4']:
+    # python3 option-2.x-shared/source/build.py [2.2 2.3 2.4] [--check]
+    #   writes option-<key>/site/index.html; --check only compares with the file on disk and writes nothing.
+    # 2.3 and 2.4 are frozen at tag checkpoint-2026-10-19: build them only with --check.
+    import importlib.util
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    check = '--check' in sys.argv
+    bad = 0
+    for key in args or ['2.2']:
         spec = importlib.util.spec_from_file_location('c', V + f'copy_{key.replace(".", "_")}.py'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
         art, doc = page(m.CFG)
-        os.makedirs(V + 'common', exist_ok=True)
-        open(V + f'common/salon-om-option-{key}.html', 'w').write(art)
-        d = V + f'out/{key}/'; os.makedirs(d, exist_ok=True); open(d + 'index.html', 'w').write(doc)
-        if not os.path.exists(d + 'tweaks.json'): open(d + 'tweaks.json', 'w').write('{}\n')
-        print(key, len(art) // 1024, 'KB')
+        out = REPO + f'option-{key}/site/index.html'
+        if check:
+            same = open(out).read() == doc
+            bad += not same
+            print(key, 'identical to', os.path.relpath(out, REPO) if same else 'DIFFERS from ' + os.path.relpath(out, REPO))
+            continue
+        open(out, 'w').write(doc)
+        print(key, len(doc) // 1024, 'KB ->', os.path.relpath(out, REPO))
+    sys.exit(1 if bad else 0)

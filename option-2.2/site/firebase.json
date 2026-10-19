@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "salon-om-2-2",
+    "site": "salon-om-2-2-next",
     "public": ".",
     "cleanUrls": true,
     "ignore": [
