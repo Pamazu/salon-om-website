@@ -1112,10 +1112,55 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 [data-switch="c"] .worlds button[aria-pressed="false"] { opacity: 1; animation: om-hum 5s var(--io-soft) 3.5s infinite; }
 [data-switch="c"] .worlds button[aria-pressed="false"]::after { content: " →"; }
 @media (max-width: 1023px) { [data-switch="c"] .dock .worlds::before { content: "Two practices"; position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); text-align: center; font: 500 10px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ivory); text-shadow: 0 1px 10px rgba(0,0,0,.5); } }
+/* ---- the parked pause slide: J's "3 other ideas for that section", live with Shift+V (or ?pause=1|2|3; 0 = the old clay look).
+   Parked = off the page until Shift+V or ?pause= reveals it. Existing motion only (ink write, draw, breathe, kenburns). */
+.mani[data-parked] { display: none; }
+html[data-pause-look] .mani[data-parked] { display: grid; }
+.mani[data-pause] .pz, .mani[data-pause] .pf { display: none; }
+.pz { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.pz img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mani.is-active .pz img { animation: kenburns 22s var(--io-soft) both; }
+.pz::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(21, 16, 12, .86) 0%, rgba(21, 16, 12, .62) 46%, rgba(21, 16, 12, .18) 100%); }
+/* 1 · Photo: full-bleed rest photo, ivory words over it (the OM line stays type-only on clay) */
+.mani[data-look="1"] { background: var(--umber); color: var(--ivory); }
+.mani[data-look="1"] .pz { display: block; }
+.mani[data-look="1"] .mani__ring { display: none; }
+.mani[data-look="1"] .mani__label { color: var(--ivory-soft); }
+.mani[data-look="1"] .mani__text { font-size: clamp(34px, 4.6vw, 84px); max-width: 12.5em; }
+.mani[data-look="1"] .mani__text .acc { color: var(--clay); }
+.mani[data-look="1"] .lead { color: var(--ivory-soft) !important; }
+/* 2 · Framed: dark bark ground, words left, a real salon photo in a tall arch on the right */
+.mani[data-look="2"] { background: var(--bark); color: var(--ivory); }
+.mani[data-look="2"] .mani__ring { display: none; }
+.mani[data-look="2"] .pf { display: block; position: absolute; z-index: 1; margin: 0; right: max(var(--gutter), 6vw); top: 50%; width: min(30vw, 46vh); aspect-ratio: 2 / 3; transform: translateY(-50%); border-radius: 999px 999px 6px 6px; overflow: hidden; }
+.mani[data-look="2"] .pf img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mani.is-active[data-look="2"] .pf img { animation: kenburns 22s var(--io-soft) both; }
+.mani[data-look="2"] .mani__in { padding-right: calc(min(30vw, 46vh) + 10vw); }
+.mani[data-look="2"] .mani__label { color: var(--ivory-soft); }
+.mani[data-look="2"] .mani__text { font-size: clamp(32px, 4.2vw, 76px); max-width: 11em; }
+.mani[data-look="2"] .mani__text .acc { color: var(--fire); }
+.mani[data-look="2"] .lead { color: var(--ivory-soft) !important; }
+/* 3 · Letter: pale ivory paper, small centred italic words, like a note left on the chair; the ring stays, faint */
+.mani[data-look="3"] { background: var(--ivory); color: var(--ink); text-align: center; }
+.mani[data-look="3"] .mani__in { max-width: 980px; }
+.mani[data-look="3"] .mani__label { color: var(--ink-soft); }
+.mani[data-look="3"] .mani__text { font-size: clamp(28px, 3.3vw, 56px); line-height: 1.18; font-style: italic; max-width: 17em; margin: 0 auto; }
+.mani[data-look="3"] .mani__text .acc { color: var(--forest-deep); font-style: normal; }
+.mani[data-look="3"] .mani__ring { right: 50%; transform: translate(50%, -50%); opacity: .55; }
+@media (max-width: 1023px) {
+  .pz::after { background: linear-gradient(0deg, rgba(21, 16, 12, .9) 0%, rgba(21, 16, 12, .66) 55%, rgba(21, 16, 12, .3) 100%); }
+  .mani[data-look="2"] .pf { right: 50%; top: calc(var(--hdr) + 3vh); width: 34vw; transform: translateX(50%); }
+  .mani[data-look="2"] .mani__in { padding-right: var(--gutter); padding-top: calc(var(--hdr) + 3vh + 34vw * 1.5 + 4vh); }
+  .mani[data-look="2"] .mani__text { font-size: clamp(28px, 7.4vw, 44px); }
+  .mani[data-look="1"] .mani__text { font-size: clamp(30px, 8.4vw, 52px); }
+  .mani[data-look="3"] .mani__ring { right: 50%; width: 110vw; }
+}
+.pz-toast { position: fixed; z-index: 60; left: 50%; top: calc(var(--hdr) + 14px); transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: rgba(21, 16, 12, .78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: var(--ivory); font: 500 11px/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity .5s var(--io); pointer-events: none; }
+.pz-toast.is-on { opacity: 1; }
 </style>
 </head>
 <body>
-<script>(function(){var m=/[?&]switch=([abc])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?m[1]:"a");})();</script>
+<script>(function(){var m=/[?&]switch=([abc])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?m[1]:"a");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>
 <a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">
@@ -1153,6 +1198,15 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
       </div>
     </div>
     <div class="hero__veil"></div><div class="s__shade"></div>
+  </section>
+  <section class="s mani" id="pause" data-tone="light" data-sound="bed" aria-label="A gentle question" data-look="0" data-pause data-parked>
+    <div class="pz" aria-hidden="true"><img src="img/rest.webp" alt="" decoding="async" loading="lazy"></div><figure class="pf" aria-hidden="true"><img src="img/real-styling-chair.webp" alt="" decoding="async" loading="lazy"></figure><div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
+    <div class="s__leave mani__in">
+      <p class="mani__label label a-left" style="--d:.1s">A gentle question</p>
+      <p class="mani__text" data-write="letters" data-accents="care">When did someone last take care of you, without rushing you or needing anything back?</p>
+      <p class="lead a-up" style="--d:3.6s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">At Salon OM, that is the whole point of your visit.</p>
+    </div>
+    <div class="s__shade"></div>
   </section>
   <section class="s mani dark" id="om" data-tone="dark" data-sound="bed" aria-label="OM · Unity">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
@@ -1345,6 +1399,15 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
     </div>
     <div class="hero__veil"></div><div class="s__shade"></div>
   </section>
+  <section class="s mani" id="c-pause" data-tone="light" data-sound="air" aria-label="Perhaps this is you" data-look="0" data-pause data-parked>
+    <div class="pz" aria-hidden="true"><img src="img/coaching-room.webp" alt="" decoding="async" loading="lazy"></div><figure class="pf" aria-hidden="true"><img src="img/real-maggie-fireplace.webp" alt="" decoding="async" loading="lazy"></figure><div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
+    <div class="s__leave mani__in">
+      <p class="mani__label label a-left" style="--d:.1s">Perhaps this is you</p>
+      <p class="mani__text" data-write="letters" data-accents="within">You may have carried a great deal, for a long time. What if the strength you are looking for already exists within you?</p>
+      
+    </div>
+    <div class="s__shade"></div>
+  </section>
   <section class="s mani dark" id="c-om" data-tone="dark" data-sound="air" aria-label="OM · Unity">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
@@ -1508,7 +1571,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="2d9c4a10e47b";</script>
+<script>window.OM_BUILD="289b0a9f6b55";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -1536,6 +1599,31 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
     });
   }, { threshold: 0.01 });
   tops.forEach(function (v) { io.observe(v); });
+})();
+/* the parked pause slide: Shift+V shows it and cycles J's three ideas (1 Photo, 2 Framed, 3 Letter, then 0 the old clay look).
+   ?pause=1|2|3|0 opens on one look; the URL follows, so a look can be sent as a link. */
+(function () {
+  var root = document.documentElement, slides = document.querySelectorAll('.mani[data-pause]'); if (!slides.length) return;
+  var NAMES = ['The old clay look (for comparison)', 'Idea 1 of 3 · Photo', 'Idea 2 of 3 · Framed', 'Idea 3 of 3 · Letter'];
+  var TONE = ['light', 'dark', 'dark', 'light'], toast, tt;
+  function set(n, show) {
+    root.setAttribute('data-pause-look', n);
+    slides.forEach(function (s) { s.setAttribute('data-look', n); s.setAttribute('data-tone', TONE[n]); });
+    try { var u = new URL(location.href); u.searchParams.set('pause', n); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
+    if (!show) return;
+    if (!toast) { toast = document.createElement('div'); toast.className = 'pz-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
+    toast.textContent = 'Shift+V · ' + NAMES[n]; toast.classList.add('is-on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('is-on'); }, 2600);
+  }
+  var start = root.getAttribute('data-pause-look'); if (start !== null) set(+start, false);
+  document.addEventListener('keydown', function (e) {
+    if (!e.shiftKey || e.metaKey || e.ctrlKey || e.altKey || (e.key !== 'V' && e.code !== 'KeyV')) return;
+    var t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    e.preventDefault();
+    var cur = root.getAttribute('data-pause-look'), first = cur === null, n = first ? 1 : (+cur + 1) % 4;
+    set(n, true);
+    var s = [].filter.call(slides, function (x) { return !x.closest('[hidden]'); })[0];
+    if (s && (first || Math.abs(s.getBoundingClientRect().top) > innerHeight * .5)) s.scrollIntoView({ behavior: 'smooth' });
+  });
 })();
 </script>
 <script>

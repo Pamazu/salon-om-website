@@ -15,7 +15,7 @@ TW_CSS = open(V + 'tweaks.css').read()
 EXTRA_CSS = {'2.2': ['next.css']}
 EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
 # 2.2 next: ?switch=a|b|c picks how the second world is signposted, before first paint (J 18:42); a = today's pill
-PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?m[1]:"a");})();</script>\n'}
+PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?m[1]:"a");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>\n'}
 E = html.escape
 
 def svg(key):
@@ -98,8 +98,14 @@ def hero_arch(d):
 def tease(d):
     ring = '<div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>'
     after = f'<p class="lead a-up" style="--d:{d.get("after_at","4.6s")};margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">{d["after"]}</p>' if d.get('after') else ''
-    return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}">
-    {ring}
+    lk = d.get('looks')      # 2.2 next: J's "3 other ideas for that section", switchable live with Shift+V (next.js)
+    extra = ''
+    if lk:
+        extra = (f'<div class="pz" aria-hidden="true"><img src="img/{lk["photo"]}" alt="" decoding="async" loading="lazy"></div>'
+                 f'<figure class="pf" aria-hidden="true"><img src="img/{lk["frame"]}" alt="" decoding="async" loading="lazy"></figure>')
+    attrs = (' data-look="0" data-pause' + (' data-parked' if d.get('parked') else '')) if lk else ''
+    return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}>
+    {extra}{ring}
     <div class="s__leave mani__in">
       <p class="mani__label label a-left" style="--d:.1s">{d['label']}</p>
       <p class="mani__text" data-write="letters" data-accents="{'|'.join(d.get('accents',[]))}">{d['text']}</p>
@@ -442,7 +448,7 @@ def render_world(world, slides, draft, names=None, foot=None):
     out, chs = [], [s for s in slides if s[0] == 'ch' and not s[1].get('parked')]
     ci = 0
     for kind, d in slides:
-        if d.get('parked'): continue      # kept in the copy file, off the page until it returns
+        if d.get('parked') and not d.get('looks'): continue      # kept in the copy file, off the page until it returns
         if kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
         elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, **foot), world))
         else: out.append(R[kind](d))

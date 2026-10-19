@@ -33,7 +33,7 @@ CFG = {
       line='Only Aveda: plant-based, 100% vegan, and giving back, with clean water worldwide and the Yawanawá of Brazil.',  # sources: aveda.com/mission-giving-back, /about (19 Oct 2026)
       ctas=btn('Book your time', '#begin', 'light', arrow=True) + btn('Step inside', '#om', 'ghost'))),
     # HOOK → UNDERSTANDING. One gentle question that names what guests carry.
-    ('tease', dict(id='pause', parked='J 19 Oct 17:23: remove, park for later', label='A gentle question', accents=['care'],
+    ('tease', dict(id='pause', parked='J 19 Oct 17:23: remove, park for later', looks=dict(photo='rest.webp', frame='real-styling-chair.webp'), label='A gentle question', accents=['care'],
       text='When did someone last take care of you, without rushing you or needing anything back?',
       after='At Salon OM, that is the whole point of your visit.', after_at='3.6s')),
     # HOOK (meaning). The locked OM line.
@@ -101,7 +101,7 @@ CFG = {
       sub='Room to grow and reconnect with your inner wisdom, at your pace. In person or online.',
       ctas=btn('Book a Connection Call', '#c-begin', arrow=True) + btn('Step inside', '#c-om', 'ghost'))),
     # 2 HOOK → UNDERSTANDING. What clients may carry, without assuming their story.
-    ('tease', dict(id='c-pause', parked='mirror of the parked salon pause (J 16:50: same sections, same order)', sound='air', label='Perhaps this is you', accents=['within'],
+    ('tease', dict(id='c-pause', parked='mirror of the parked salon pause (J 16:50: same sections, same order)', looks=dict(photo='coaching-room.webp', frame='real-maggie-fireplace.webp'), sound='air', label='Perhaps this is you', accents=['within'],
       text='You may have carried a great deal, for a long time. What if the strength you are looking for already exists within you?')),
     # 3 HOOK (meaning). The OM line, turned inward. The locked phrase stays word for word.
     ('tease', dict(id='c-om', sound='air', label='OM · Unity', dark=True, accents=['everything.', 'all.'],
