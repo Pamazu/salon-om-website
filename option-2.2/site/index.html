@@ -1026,7 +1026,7 @@ body { font-size: var(--body-fs); line-height: var(--lh); }
   .tl__w .tl__desc { display: none; }
 }
 
-/* ==== accent: forest green instead of mint (J, 19 Oct). Two options, chosen by ?accent=a|b (default a) ====
+/* ==== accent: forest green instead of mint (J, 19 Oct). J chose option B: the light-clay slides below; lifted forest stays only where a dark ground remains ====
    A  lifted forest #3F9465 on the dark grounds: umber 5.07:1, bark 4.35:1, menu green 4.39:1 (display sizes need 3:1).
       Small accent text on dark goes ivory. Film-chapter accent (earth) uses the same green.
    B  the OM line, Aveda facts and guest voices move onto light clay with deep forest #1E5A3A: 5.87:1. */
@@ -1035,21 +1035,21 @@ body { font-size: var(--body-fs); line-height: var(--lh); }
 .om__dur { color: var(--ivory-soft); }
 .om__row:focus-visible { box-shadow: 0 0 0 1px rgba(63, 148, 101, .7); }
 
-html[data-accent="b"] main[data-world="salon"] .mani.dark { background: var(--clay); color: var(--ink); }
-html[data-accent="b"] main[data-world="salon"] .mani.dark .mani__label { color: var(--ink-soft); }
-html[data-accent="b"] main[data-world="salon"] .mani.dark .mani__text .acc { color: var(--forest-deep); }
-html[data-accent="b"] main[data-world="salon"] .mani.dark .mani__ring circle { stroke: rgba(23, 17, 13, .14); }
-html[data-accent="b"] main[data-world="salon"] .mani.dark .mani__ring circle + circle { stroke: rgba(30, 90, 58, .32); }
-html[data-accent="b"] main[data-world="salon"] .facts { background: var(--clay); color: var(--ink); }
-html[data-accent="b"] main[data-world="salon"] .facts .eyebrow, html[data-accent="b"] main[data-world="salon"] .facts p,
-html[data-accent="b"] main[data-world="salon"] .facts blockquote cite, html[data-accent="b"] main[data-world="salon"] .fact span,
-html[data-accent="b"] main[data-world="salon"] .facts small.src { color: var(--ink-soft); }
-html[data-accent="b"] main[data-world="salon"] .facts blockquote { color: var(--forest-deep); }
-html[data-accent="b"] main[data-world="salon"] .voices { background: var(--clay); color: var(--ink); }
-html[data-accent="b"] main[data-world="salon"] .voices__aura { opacity: .45; }
-html[data-accent="b"] main[data-world="salon"] .voices__mark { color: var(--forest-deep); }
-html[data-accent="b"] main[data-world="salon"] .voices figcaption { color: var(--ink-soft); }
-html[data-accent="b"] main[data-world="salon"] .voices figcaption b { color: var(--ink); }
+main[data-world="salon"] .mani.dark { background: var(--clay); color: var(--ink); }
+main[data-world="salon"] .mani.dark .mani__label { color: var(--ink-soft); }
+main[data-world="salon"] .mani.dark .mani__text .acc { color: var(--forest-deep); }
+main[data-world="salon"] .mani.dark .mani__ring circle { stroke: rgba(23, 17, 13, .14); }
+main[data-world="salon"] .mani.dark .mani__ring circle + circle { stroke: rgba(30, 90, 58, .32); }
+main[data-world="salon"] .facts { background: var(--clay); color: var(--ink); }
+main[data-world="salon"] .facts .eyebrow, main[data-world="salon"] .facts p,
+main[data-world="salon"] .facts blockquote cite, main[data-world="salon"] .fact span,
+main[data-world="salon"] .facts small.src { color: var(--ink-soft); }
+main[data-world="salon"] .facts blockquote { color: var(--forest-deep); }
+main[data-world="salon"] .voices { background: var(--clay); color: var(--ink); }
+main[data-world="salon"] .voices__aura { opacity: .45; }
+main[data-world="salon"] .voices__mark { color: var(--forest-deep); }
+main[data-world="salon"] .voices figcaption { color: var(--ink-soft); }
+main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .hero__hook { text-wrap: balance; }
 /* the hero's lower-left line carries Aveda's story: a little wider so it sits in three calm lines */
 .hero__line { max-width: 40ch; }
@@ -1062,7 +1062,6 @@ html[data-accent="b"] main[data-world="salon"] .voices figcaption b { color: var
 </style>
 </head>
 <body>
-<script>(function(){var m=/[?&]accent=([ab])/.exec(location.search);document.documentElement.setAttribute("data-accent",m?m[1]:"a");})();</script>
 <a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">
@@ -1473,9 +1472,8 @@ html[data-accent="b"] main[data-world="salon"] .voices figcaption b { color: var
   </section>
 </main>
 <script>
-/* Option 2.2 next: accent option B moves the OM line, facts and voices onto light clay, so the header reads them as light */
+/* Option 2.2 next: the OM line, facts and voices sit the OM line, facts and voices onto light clay, so the header reads them as light */
 (function () {
-  if (document.documentElement.getAttribute('data-accent') !== 'b') return;
   document.querySelectorAll('main[data-world="salon"] .mani.dark, main[data-world="salon"] .facts, main[data-world="salon"] .voices')
     .forEach(function (s) { s.setAttribute('data-tone', 'light'); });
 })();

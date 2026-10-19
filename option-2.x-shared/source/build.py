@@ -14,8 +14,7 @@ TW_CSS = open(V + 'tweaks.css').read()
 # extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)
 EXTRA_CSS = {'2.2': ['next.css']}
 EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
-# 2.2 next: ?accent=a|b picks the accent option before first paint
-PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]accent=([ab])/.exec(location.search);document.documentElement.setAttribute("data-accent",m?m[1]:"a");})();</script>\n'}
+PRE_PAINT = {}
 E = html.escape
 
 def svg(key):

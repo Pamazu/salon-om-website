@@ -56,9 +56,9 @@ Every film follows **Films** below (slowed 0.5× with interpolation, seamless lo
 
 ## Look
 
-**Accent: forest green, never mint** (the client, 19 Oct: *"This mint grint is not the one that we want. We want more of a forest green … find a way, with respect to the background, to use a forest green in such a way that still preserves readability"*). The development build replaces mint `#8FCBA4` (Option 2's O2-2 "text on dark") everywhere in 2.2, as two options to compare (`?accent=a` or `?accent=b`; `next.css`):
-- **A, the default: lifted forest `#3F9465` on the dark grounds.** Contrast 5.07:1 on umber, 4.35:1 on bark, 4.39:1 on the menu green; display-size accents need 3:1. Small accent text on dark (the ritual durations) goes ivory. The earth chapter's accent is the same green.
-- **B: the OM line, the Aveda facts and the guest voices move onto light clay**, with deep forest `#1E5A3A` (5.87:1 on clay), as Option 2.4 does. The header reads those slides as light.
+**Accent: forest green, never mint** (the client, 19 Oct: *"This mint grint is not the one that we want. We want more of a forest green … find a way, with respect to the background, to use a forest green in such a way that still preserves readability"*). The development build replaces mint `#8FCBA4` (Option 2's O2-2 "text on dark") everywhere in 2.2. Two options were built; **the client chose B** (19 Oct: *"this is much better … ?accent=b"*, and of A: *"This I don't like … I already told you"*):
+- **The OM line, the Aveda facts and the guest voices sit on light clay, with deep forest `#1E5A3A`** (5.87:1 on clay), as Option 2.4 does. The header reads those slides as light (`next.js`).
+- Where a dark ground remains (the element films' accent, the rituals menu, the steps), the green is lifted forest `#3F9465` (5.07:1 on umber, 4.35:1 on bark, 4.39:1 on the menu green); small accent text on dark goes ivory. Never mint.
 
 Salon world: the Option 2 grounds (umber, bark, clay) with the forest-green accent; the rituals menu sits on deep forest green. Coaching world, **Dawn**: light linen and sage grounds, italic headlines, light veils over the films. Type, logo and readability rules are Option 2's: Cormorant Garamond (Light for display) with Instrument Sans for small text, the SALON-above-OM logo, text on film always on the defined scrim, one accent per screen.
 
