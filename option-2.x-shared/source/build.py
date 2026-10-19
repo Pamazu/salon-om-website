@@ -11,6 +11,8 @@ ADD_CSS = open(V + 'add.css').read()
 JS = open(V + 'engine.js').read()
 TW_JS = open(V + 'tweaks.js').read()
 TW_CSS = open(V + 'tweaks.css').read()
+# extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)
+EXTRA_CSS = {'2.2': ['next.css']}
 E = html.escape
 
 def svg(key):
@@ -61,6 +63,35 @@ def hero_words(d):
         <p class="hero__line intro" style="--d:{d.get('foot_at','2.5s')}">{SOUND_CTA}</p>
         <div class="hero__cta intro" style="--d:{d.get('foot_at','2.5s')}">{d['ctas']}</div>
         <a class="hero__cue label intro" style="--d:{d.get('foot_at','2.5s')}" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
+      </div>
+    </div>
+    <div class="hero__veil"></div><div class="s__shade"></div>
+  </section>'''
+
+def hero_doors(d):
+    """2.2 next: Maggie at the center. Her name, the site tagline written word by word, then two equal doors
+    over the hero film: Salon OM (stays in this world) and Inner Work with Maggie (switches world)."""
+    def door(x, k):
+        to = f' data-to-world="{x["world"]}"' if x.get('world') == 'coaching' else ''
+        href = x.get('href', '#coaching' if x.get('world') == 'coaching' else '#')
+        return (f'<a class="hd__door intro" style="--d:{2.5 + k * .2:.2f}s" href="{href}"{to}>'
+                f'<span class="hd__kind label">{x["label"]}<i aria-hidden="true">·</i>{x["who"]}</span>'
+                f'<span class="hd__name">{x["title"]}</span>'
+                + (f'<span class="hd__text">{x["text"]}</span>' if x.get('text') else '') +
+                f'<span class="hd__go label">{x["go"]} <span class="arr" aria-hidden="true">→</span></span></a>')
+    return f'''<section class="s hero hero--doors" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-h">
+    {film(d['film'])}
+    <div class="s__scrim hero__scrim hd__scrim"></div>
+    <div class="s__leave hero__lv hd__lv">
+      <div class="hd__head">
+        <p class="eyebrow intro" style="--d:.9s">{d['eyebrow']}</p>
+        <h1 id="{d['id']}-h" data-write="words" style="--wd-at:{d.get('at','1.2s')};--wd-gap:{d.get('gap','150ms')}">{d['title']}</h1>
+        <p class="hd__sub intro" style="--d:{d.get('sub_at','2.2s')}">{d['sub']}</p>
+      </div>
+      <nav class="hd__doors" aria-label="{E(d.get('label', 'Choose a practice'))}">{''.join(door(x, k) for k, x in enumerate(d['doors']))}</nav>
+      <div class="hd__foot">
+        <p class="hero__line intro" style="--d:3s">{SOUND_CTA}</p>
+        <a class="hero__cue label intro" style="--d:3.1s" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
       </div>
     </div>
     <div class="hero__veil"></div><div class="s__shade"></div>
@@ -196,17 +227,31 @@ def head(d, cls, intro_cls, d0=.15):
             + (f'<p class="{intro_cls} tx a-up" style="--d:{d0 + .45:.2f}s">{d["intro"]}</p>' if d.get('intro') else ''))
 
 def team_letter(d):
-    """2.2: a tall portrait of Maggie beside a short letter from her, with her support person signed in below."""
-    m, w = d['people']
+    """2.2: a tall portrait of Maggie beside a short letter from her, with the people beside her signed in below
+    (one, as at the checkpoint; or a row of two: an initial circle stands in until a real photo exists)."""
+    m, *ws = d['people']
+    if len(ws) == 1 and 'with_label' not in d:      # checkpoint shape, kept byte-identical
+        w = ws[0]
+        withs = f'''<div class="tl__with a-up" style="--d:1.35s">
+        <img class="tl__avatar" src="img/{w['img']}" alt="{E(w['alt'])}" decoding="async">
+        <div><p class="label">With</p><h3>{w['name']}</h3><p class="tl__role tx">{w['role']}</p><p class="tl__desc tx">{w['desc']}</p></div>
+      </div>'''
+    else:
+        def av(w):
+            if w.get('img'): return f'<img class="tl__avatar" src="img/{w["img"]}" alt="{E(w.get("alt", ""))}" decoding="async">'
+            return f'<span class="tl__avatar tl__initial" aria-hidden="true">{E(w.get("initial") or w["name"][0])}</span>'
+        cells = ''.join(f'<div class="tl__w">{av(w)}<div><h3>{w["name"]}</h3><p class="tl__role tx">{w["role"]}</p>'
+                        + (f'<p class="tl__desc tx">{w["desc"]}</p>' if w.get('desc') else '') + '</div></div>' for w in ws)
+        withs = f'''<div class="tl__with tl__with--row a-up" style="--d:1.35s;--n:{len(ws)}">
+        <p class="label">{d.get('with_label', 'With')}</p>{cells}
+      </div>'''
+    tag = PH_TAG if d.get('ph_tag', True) else ''
     return f'''<section class="s team-letter" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
-    <figure class="tl__ph"><img src="img/{m['img']}" alt="{E(m['alt'])}" decoding="async">{PH_TAG}</figure>
+    <figure class="tl__ph"><img src="img/{m['img']}" alt="{E(m['alt'])}" decoding="async">{tag}</figure>
     <div class="tl__copy s__leave">
       {head(d, 'tl', 'tl__intro', .35)}
       <blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“{d['note']}”</span><cite class="tx">{d['sign']}</cite></blockquote>
-      <div class="tl__with a-up" style="--d:1.35s">
-        <img class="tl__avatar" src="img/{w['img']}" alt="{E(w['alt'])}" decoding="async">
-        <div><p class="label">With</p><h3>{w['name']}</h3><p class="tl__role tx">{w['role']}</p><p class="tl__desc tx">{w['desc']}</p></div>
-      </div>
+      {withs}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -387,33 +432,40 @@ def end(d, world):
         <div class="foot__brand a-up" style="--d:.6s">{svg('stacked')}<p>{d['tagline']}</p></div>
         <div class="a-up" style="--d:.7s"><h3 class="label">Explore</h3><ul>{expl}</ul></div>
         <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>Salon in person · coaching in person and online</li></ul></div>
-        <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul><li>Instagram (link to come)</li><li>Email (to confirm)</li><li><a href="#" data-to-world="{'coaching' if world == 'salon' else 'salon'}">{'Coaching with Maggie' if world == 'salon' else 'The salon'}</a></li></ul></div>
+        <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul><li>Instagram (link to come)</li><li>Email (to confirm)</li><li><a href="#" data-to-world="{'coaching' if world == 'salon' else 'salon'}">{d['other']}</a></li></ul></div>
       </div>
       <div class="foot__base"><span>© 2026 Salon OM · an Aveda concept salon · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
     </footer>
   </section>'''
 
-R = {'hero_mark': hero_mark, 'hero_words': hero_words, 'hero_arch': hero_arch, 'tease': tease, 'split': split, 'facts': facts, 'team': team,
+R = {'hero_mark': hero_mark, 'hero_words': hero_words, 'hero_doors': hero_doors, 'hero_arch': hero_arch, 'tease': tease, 'split': split, 'facts': facts, 'team': team,
      'steps': steps, 'offers': offers, 'voices': voices, 'bridge': bridge, 'doors': doors, 'walkin': walkin, 'cta': cta}
 
-def render_world(world, slides, draft):
+def render_world(world, slides, draft, names=None):
+    other = names[('coaching' if world == 'salon' else 'salon')] if names else ('Coaching with Maggie' if world == 'salon' else 'The salon')
     out, chs = [], [s for s in slides if s[0] == 'ch']
     ci = 0
     for kind, d in slides:
         if kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
-        elif kind == 'end': out.append(end(dict(d, draft=draft), world))
+        elif kind == 'end': out.append(end(dict(d, draft=draft, other=other), world))
         else: out.append(R[kind](d))
     return '\n  '.join(out)
 
 def page(cfg):
-    worlds_btns = '<button type="button" data-to-world="salon" aria-pressed="true">Salon</button><button type="button" data-to-world="coaching" aria-pressed="false">Coaching</button><i class="worlds__pill" aria-hidden="true"></i>'
+    names = cfg.get('worlds')
+    def wl(w):      # a long world name breaks before "with" where the switch is narrow
+        if not names: return 'Salon' if w == 'salon' else 'Coaching'
+        a, sep, b = names[w].partition(' with ')
+        return f'{E(a)} <span class="wl2">with {E(b)}</span>' if sep else E(names[w])
+    pick = ('Choose: salon or coaching' if not names else f'Choose: {names["salon"]} or {names["coaching"]}')
+    worlds_btns = f'<button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button><i class="worlds__pill" aria-hidden="true"></i>'
     menu_lists = ''.join(f'<ul data-world-list="{w}">' + ''.join(f'<li style="--i:{k}"><a href="#{h}"><small>{n}</small>{t}</a></li>' for k, (n, t, h) in enumerate(items)) + '</ul>' for w, items in cfg['menu'].items())
     rail = ''.join(f'<a href="#{h}"><span>{t}</span><b>0{k + 1}</b></a>' for k, (t, h) in enumerate(cfg['rail']))
     body = f'''<a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">
     <a class="hdr__logo" href="#" aria-label="Salon OM, back to the top" onclick="window.scrollTo({{top:0,behavior:'smooth'}});return false;">{svg('inline')}</a>
-    <div class="hdr__mid"><div class="worlds" role="group" aria-label="Choose: salon or coaching">{worlds_btns}</div></div>
+    <div class="hdr__mid"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>
     <div class="hdr__end">
       <button class="hdr__icon sound-btn is-sound" type="button" aria-pressed="true" aria-label="Mute sound"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
       <button class="hdr__icon" id="films-toggle" type="button" aria-pressed="false" aria-label="Pause the films">
@@ -425,18 +477,18 @@ def page(cfg):
     </div>
   </div>
 </header>
-<div class="dock"><div class="worlds" role="group" aria-label="Choose: salon or coaching">{worlds_btns}</div></div>
+<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
-  <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">Salon</button><button type="button" data-to-world="coaching" aria-pressed="false">Coaching</button></div>{menu_lists}</div>
+  <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button></div>{menu_lists}</div>
   <div class="menu__end"><a class="btn w-salon" href="#{cfg['book_salon']}">Book your time</a><a class="btn w-coaching" href="#{cfg['book_coaching']}">Book a free call</a></div>
 </div>
 <nav class="rail" id="rail" aria-label="The visit">{rail}</nav>
 <div class="wveil" id="wveil" aria-hidden="true">{svg('om')}</div>
 <main id="main-salon" data-world="salon">
-  {render_world('salon', cfg['salon'], cfg['draft'])}
+  {render_world('salon', cfg['salon'], cfg['draft'], names)}
 </main>
 <main id="main-coaching" data-world="coaching" hidden>
-  {render_world('coaching', cfg['coaching'], cfg['draft'])}
+  {render_world('coaching', cfg['coaching'], cfg['draft'], names)}
 </main>
 <script>
 {TW_JS}</script>
@@ -444,6 +496,7 @@ def page(cfg):
 {JS}</script>
 '''
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
+    for f in EXTRA_CSS.get(cfg['title'].split()[-1], []): css += '\n' + open(V + f).read()
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     assert 'home' not in re.sub(r'<[^>]+>', ' ', body).lower().replace('homepage', ''), 'no "home" in copy'
