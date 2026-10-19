@@ -36,6 +36,7 @@ Option 1 and Option 2 also carry the same four files inside their `design-system
 [`resources/`](resources) holds material from the client for use across the options:
 
 - `coach-photo-beach.jpg`: a photo supplied on 13 Oct 2026 (960 × 1280).
+- [`salon-photos/`](resources/salon-photos): eight real photos of the salon, supplied on 19 Oct 2026 (1280 × 854 or 854 × 1280). Portraits: `1-portrait-standing-product-wall`, `3-portrait-arms-crossed`, `5-portrait-seated-fireplace`. The space: `2-lounge-fireplace`, `4-styling-chair-window`, `6-shampoo-basins`, `7-aveda-product-shelves`, `8-glo-skincare-display`. They replace the AI placeholder photos as each slide is updated.
 
 ## What else is in here
 
