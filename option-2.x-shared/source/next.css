@@ -53,3 +53,5 @@ html[data-accent="b"] main[data-world="salon"] .voices__mark { color: var(--fore
 html[data-accent="b"] main[data-world="salon"] .voices figcaption { color: var(--ink-soft); }
 html[data-accent="b"] main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .hero__hook { text-wrap: balance; }
+/* the hero's lower-left line carries Aveda's story: a little wider so it sits in three calm lines */
+.hero__line { max-width: 40ch; }

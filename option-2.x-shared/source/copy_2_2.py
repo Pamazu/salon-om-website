@@ -27,12 +27,11 @@ CFG = {
   },
   'salon': [
     # HOOK. Maggie's first screen: the locked tagline, the locked pairing line, two equal doors.
-    ('hero_doors', dict(id='top', film='hero', next='pause',
-      eyebrow='Maggie Woodward', title='Where Beauty and Inner Work Belong', sub='One Source. Two Practices.',
-      doors=[dict(world='salon', href='#pause', label='An Aveda Concept Salon', who='For guests', title='Salon OM',
-                  text='Up to three unhurried hours of Aveda care, made around you.', go='Step inside'),
-             dict(world='coaching', label='Coaching', who='For clients', title='Inner Work with Maggie',
-                  text='Room to grow and reconnect with your inner wisdom, at your pace.', go='Enter')])),
+    ('hero_mark', dict(id='top', film='hero', next='pause',
+      hook='Where Beauty and Inner Work Belong',
+      eyebrow='An Aveda Concept Salon',
+      line='We use only Aveda: plant-based, vegan, made with wind power, and sourced in partnership with communities around the world.',
+      ctas=btn('Book your time', '#begin', 'light', arrow=True) + btn('Step inside', '#pause', 'ghost'))),
     # HOOK → UNDERSTANDING. One gentle question that names what guests carry.
     ('tease', dict(id='pause', label='A gentle question', accents=['care'],
       text='When did someone last take care of you, without rushing you or needing anything back?',
@@ -96,12 +95,9 @@ CFG = {
   'coaching': [
     # Mirrors the salon list slot for slot, same kinds and order (J, 19 Oct 16:50). Same element film per slot = the parallel.
     # 1 HOOK. The same first screen and two doors; here the Inner Work door is the one you are on.
-    ('hero_doors', dict(id='c-top', here='coaching', film='air', sound='air', next='c-pause',
-      eyebrow='Maggie Woodward', title='Where Beauty and Inner Work Belong', sub='One Source. Two Practices.',
-      doors=[dict(world='salon', label='An Aveda Concept Salon', who='For guests', title='Salon OM',
-                  text='Up to three unhurried hours of Aveda care, made around you.', go='Step inside'),
-             dict(world='coaching', href='#c-pause', label='Coaching', who='For clients', title='Inner Work with Maggie',
-                  text='Room to grow and reconnect with your inner wisdom, at your pace.', go='Enter')])),
+    ('hero_words', dict(id='c-top', film='air', sound='air', next='c-pause', at='.5s', sub_at='1.4s', foot_at='1.7s', eyebrow='Inner Work with Maggie', title='Return to yourself.',
+      sub='Room to grow and reconnect with your inner wisdom, at your pace. In person or online.',
+      ctas=btn('Book a Connection Call', '#c-begin', arrow=True) + btn('Step inside', '#c-pause', 'ghost'))),
     # 2 HOOK → UNDERSTANDING. What clients may carry, without assuming their story.
     ('tease', dict(id='c-pause', sound='air', label='Perhaps this is you', accents=['within'],
       text='You may have carried a great deal, for a long time. What if the strength you are looking for already exists within you?')),
