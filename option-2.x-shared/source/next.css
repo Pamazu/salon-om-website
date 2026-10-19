@@ -75,3 +75,4 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
   .ch__top { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 36%, transparent 54%); mask-image: linear-gradient(to bottom, #000 0%, #000 36%, transparent 54%); }
   .ch__top img, .ch__top video { object-position: 50% 22%; }
 }
+@media (max-width: 639px) { .ch__top .tag { white-space: normal; width: 80%; text-align: center; top: 16%; } }
