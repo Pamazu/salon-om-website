@@ -30,7 +30,7 @@ CFG = {
     ('hero_mark', dict(id='top', film='hero', next='pause',
       hook='Where Beauty and Inner Work Belong',
       eyebrow='An Aveda Concept Salon',
-      line='We use only Aveda: plant-based, vegan, made with wind power, and sourced in partnership with communities around the world.',
+      line='Only Aveda touches your hair: plant-based and 100% vegan. Aveda gives back, with clean water for communities worldwide and more than 30 years of partnership with the Yawanawá people of Brazil.',  # sources: aveda.com/mission-giving-back, /about (19 Oct 2026)
       ctas=btn('Book your time', '#begin', 'light', arrow=True) + btn('Step inside', '#pause', 'ghost'))),
     # HOOK → UNDERSTANDING. One gentle question that names what guests carry.
     ('tease', dict(id='pause', label='A gentle question', accents=['care'],
