@@ -84,3 +84,4 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .tl--wide .tl__ph { align-self: center; aspect-ratio: 3 / 2; height: auto; }
 .tl--wide .tl__ph img { object-position: 50% 30%; }
 @media (max-width: 1023px) { .tl--wide { grid-template-columns: 1fr; } }
+.tl__ph img[src$="real-maggie-standing-shelves.webp"] { object-position: 50% 20%; }
