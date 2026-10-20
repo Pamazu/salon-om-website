@@ -82,8 +82,10 @@ CFG = {
       facts=[('100%', 'vegan formulas', True), ('1st', 'beauty company to manufacture with 100% wind power (2007)'), ('B Corp', 'certified for people and planet (2023)'), ('1978', 'the year plant-based, holistic beauty began', True)],
       src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.')),
     # HOOK (meaning). The locked OM line.
-    ('tease', dict(id='om', label='OM · Unity', dark=True, accents=['everything.', 'one.', 'all.'],
-      text='OM is the first sound, the breath of everything. Earth, water, fire, air, and space, held as one. And you are part of it all.')),
+    # After Aveda ('knowledge of the whole'), the label bridges to the salon's own name; the OM line stays locked and first.
+    ('tease', dict(id='om', label='The whole, in one word · OM', dark=True, accents=['everything.', 'one.', 'all.'],
+      text='OM is the first sound, the breath of everything. Earth, water, fire, air, and space, held as one. And you are part of it all.',
+      after='That is why we are Salon OM.', after_at='5.2s')),
     # FEATURES AND BENEFITS (the second practice). Moved before the voices, so both doors sit in the offer.
     ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='One Source. Two Practices.', title='Some things go deeper than hair.',
       text='Each practice stands on its own, and they also work together. Inner Work with Maggie is coaching for anyone, guest or not: room to grow and reconnect with yourself.',
@@ -140,7 +142,7 @@ CFG = {
       facts=[('28', 'years of listening in the chair', True), ('1:1', 'in person or online'), ('[Training]', 'coaching training, to confirm'), ('[Year]', 'Inner Work began, to confirm')],
       src='Facts in brackets are placeholders until Maggie confirms them.')),
     # 3 HOOK (meaning). The OM line, turned inward. The locked phrase stays word for word.
-    ('tease', dict(id='c-om', sound='air', label='OM · Unity', dark=True, accents=['everything.', 'all.'],
+    ('tease', dict(id='c-om', sound='air', label='The whole, in one word · OM', dark=True, accents=['everything.', 'all.'],
       text='OM is the first sound, the breath of everything. The same breath moves in you, steady through every season. And you are part of it all.')),
     # 12 FEATURES AND BENEFITS (the second practice). The other equal door, and the stand-alone line.
     ('bridge', dict(id='c-salon', sound='air', img='real-lounge.webp', eyebrow='One Source. Two Practices.', title='Let yourself be cared for.',
