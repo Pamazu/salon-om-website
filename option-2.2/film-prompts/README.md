@@ -6,7 +6,8 @@ Video prompts for the films of Option 2.2, with the 3D blockout that sets the ca
 
 | File | What it is |
 | --- | --- |
-| `01-salon-rooted-top-v6-CURRENT.md` | **The one to use.** Salon OM moment 01 "Rooted", the TOP film (the hair ritual at the backwash basin). It is driven by the Mixar camera move. Designer 1 masks it over the existing roots film (`../site/media/earth.mp4`) with a soft vertical gradient. |
+| `01-salon-rooted-top-v7-CURRENT.md` | **The one to use.** Salon OM moment 01 "Rooted", the TOP film (the hair ritual at the backwash basin), driven by the Mixar camera move, with Maggie's notes from the 19 Oct stream: the stylist all in black, brown towels, a black smock, a right-handed stylist position, no back-of-house. Designer 1 masks it over the existing roots film (`../site/media/earth.mp4`). |
+| `01b-salon-rooted-top-v6.md` | The version before v7. |
 | `02` to `05` | Earlier versions of the same prompt, kept to show what changed and why (each failure is described in the next version). |
 | `06-inner-work-rooted-and-transform.md` | The two new Inner Work films: Rooted (feet on moss among roots) and Transform (a fern unfurling toward dawn light). |
 | `renders/salon-om-side-orbit-v5-10s.mp4` | The 10 s camera move from Mixar: a slow arc around the guest's head, from three-quarter to side view. Grey blockout, for angle and motion only. |
