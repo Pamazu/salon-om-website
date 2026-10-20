@@ -1158,6 +1158,26 @@ html[data-pause-look] .mani[data-parked] { display: grid; }
 }
 .pz-toast { position: fixed; z-index: 60; left: 50%; top: calc(var(--hdr) + 14px); transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: rgba(21, 16, 12, .78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: var(--ivory); font: 500 11px/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity .5s var(--io); pointer-events: none; }
 .pz-toast.is-on { opacity: 1; }
+/* ---- Inner Work: the film slides stay DARK (J, stream 19 Oct 2:08:08: "I'm not 100% sure of the readability here and not
+   sure about making it lighter ... I like the contrast of the dark which stands out. So maybe we keep it dark").
+   Only the hero, the five moments and Begin (the slides on film) go dark; the Inner Work identity stays: italic headlines,
+   sage buttons, and the light text slides. The two worlds differ by their films, not by a pale veil. */
+html[data-world="coaching"][data-theme="dawn"] main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta) {
+  --umber: #15100C; --bark: #2A1E16; --ivory: #F5EEE4; --ivory-soft: rgba(245, 238, 228, .76); --ivory-faint: rgba(245, 238, 228, .42);
+  --ink: #17110D; --ink-soft: #5E4E40; --forest-light: #3F9465; color: var(--ivory); color-scheme: dark; }
+html[data-theme="dawn"] main[data-world="coaching"] .hero__scrim { background: radial-gradient(ellipse 62% 52% at 50% 44%, rgba(10, 7, 5, .42), rgba(10, 7, 5, .12) 72%), linear-gradient(to top, rgba(10, 7, 5, .8), rgba(10, 7, 5, 0) 40%), linear-gradient(to bottom, rgba(10, 7, 5, .5), rgba(10, 7, 5, 0) 24%); }
+html[data-theme="dawn"] main[data-world="coaching"] .ch__scrim { background: linear-gradient(to top, rgba(10, 7, 5, .88) 0%, rgba(10, 7, 5, .58) 30%, rgba(10, 7, 5, .14) 58%, rgba(10, 7, 5, 0) 74%), linear-gradient(to right, rgba(10, 7, 5, .42), rgba(10, 7, 5, 0) 56%), linear-gradient(to bottom, rgba(10, 7, 5, .48), rgba(10, 7, 5, 0) 20%); }
+html[data-theme="dawn"] main[data-world="coaching"] .cta__scrim { background: radial-gradient(ellipse 58% 50% at 50% 50%, rgba(10, 7, 5, .64), rgba(10, 7, 5, .26) 78%), linear-gradient(to top, rgba(10, 7, 5, .6), rgba(10, 7, 5, 0) 46%), linear-gradient(to bottom, rgba(10, 7, 5, .45), rgba(10, 7, 5, 0) 22%); }
+html[data-theme="dawn"] main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta) :is(.s__veil, .s__shade) { background: #0A0705; }
+html[data-theme="dawn"] main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta) .s__zoom :is(video, img) { filter: saturate(.85); }
+html[data-theme="dawn"] main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta) :is(.ch__body, .hero__words .sub) { text-shadow: 0 1px 18px rgba(0, 0, 0, .35); }
+html[data-world="coaching"][data-theme="dawn"] main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta) .btn--light { --bg: #F5EEE4; --fg: #17110D; }
+html[data-world="coaching"][data-theme="dawn"] main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta) .btn--ghost { --bg: rgba(245, 238, 228, .06); --fg: #F5EEE4; --bd: rgba(245, 238, 228, .5); }
+/* the header over those dark slides reads light, as in the salon (next.js sets .is-film) */
+html[data-world="coaching"][data-theme="dawn"] .hdr.is-film { color: #F5EEE4; }
+html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds { background: rgba(245, 238, 228, .1); border-color: rgba(245, 238, 228, .28); }
+html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds__pill { background: #F5EEE4; }
+html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-pressed="true"] { color: #17110D; }
 </style>
 </head>
 <body>
@@ -1572,7 +1592,7 @@ html[data-pause-look] .mani[data-parked] { display: grid; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="21d03f2dc7e2";</script>
+<script>window.OM_BUILD="0a16df1632ce";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -1635,6 +1655,22 @@ html[data-pause-look] .mani[data-parked] { display: grid; }
     if (pauseOnScreen()) setPause((+root.getAttribute('data-pause-look') + 1) % 4, true);
     else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'a') + 1) % 3, true);
   });
+})();
+/* Inner Work keeps its film slides dark (J, 19 Oct 2:08:08), so the header turns light over them, as it does in the salon.
+   The engine only knows light/dark tones; this marks the header when an Inner Work film slide sits under it. */
+(function () {
+  var root = document.documentElement, hdr = document.getElementById('hdr'); if (!hdr) return;
+  var films = [].slice.call(document.querySelectorAll('main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta)')); if (!films.length) return;
+  var queued = false;
+  function check() {
+    queued = false;
+    var on = root.getAttribute('data-world') === 'coaching' && films.some(function (s) { var r = s.getBoundingClientRect(); return r.top <= 38 && r.bottom > 38; });
+    hdr.classList.toggle('is-film', on);
+  }
+  function q() { if (!queued) { queued = true; requestAnimationFrame(check); } }
+  document.addEventListener('scroll', q, { passive: true, capture: true }); addEventListener('resize', q);
+  new MutationObserver(function () { q(); setTimeout(q, 1200); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
+  q();
 })();
 </script>
 <script>

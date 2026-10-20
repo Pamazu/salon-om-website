@@ -60,3 +60,19 @@
     else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'a') + 1) % 3, true);
   });
 })();
+/* Inner Work keeps its film slides dark (J, 19 Oct 2:08:08), so the header turns light over them, as it does in the salon.
+   The engine only knows light/dark tones; this marks the header when an Inner Work film slide sits under it. */
+(function () {
+  var root = document.documentElement, hdr = document.getElementById('hdr'); if (!hdr) return;
+  var films = [].slice.call(document.querySelectorAll('main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta)')); if (!films.length) return;
+  var queued = false;
+  function check() {
+    queued = false;
+    var on = root.getAttribute('data-world') === 'coaching' && films.some(function (s) { var r = s.getBoundingClientRect(); return r.top <= 38 && r.bottom > 38; });
+    hdr.classList.toggle('is-film', on);
+  }
+  function q() { if (!queued) { queued = true; requestAnimationFrame(check); } }
+  document.addEventListener('scroll', q, { passive: true, capture: true }); addEventListener('resize', q);
+  new MutationObserver(function () { q(); setTimeout(q, 1200); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
+  q();
+})();
