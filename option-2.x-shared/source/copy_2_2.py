@@ -41,30 +41,30 @@ CFG = {
       text='OM is the first sound, the breath of everything. Earth, water, fire, air, and space, held as one. And you are part of it all.')),
     # ESTABLISH AUTHORITY. Moved up from after the rituals: trust before features (Maggie's step 03).
     ('team', dict(id='hosts', layout='letter', ph_tag=False, eyebrow='Founder, stylist, and guide', title='28 years in the chair.',
-      note='This is your space. Talk, laugh, or simply rest. For as long as you are here, I am holding it for you.', sign='Maggie',
-      intro='Maggie Woodward is the founder of Salon OM and of Inner Work with Maggie. [Her training and origin story, in her words, from the copy interview.]',
+      note='I’m the backdrop. It’s not about me, it’s about you. This is your time, your space.', sign='Maggie',  # Maggie verbatim, stream 19 Oct 2:30:13-2:30:21
+      intro='Maggie Woodward is the founder of Salon OM and of Inner Work with Maggie. The team dresses in black, as Aveda salons do, so the focus stays on you. [Her training and origin story, in her words, from the copy interview.]',
       people=[dict(name='Maggie Woodward', img='real-maggie-arms-crossed.webp', alt='Maggie Woodward in front of the Aveda shelves at Salon OM', role='Founder · stylist and guide', desc='Founder of Salon OM and Inner Work with Maggie. Stylist and guide.'),
               dict(name='Katie Paonessa', role='Stylist', desc='A full part of Salon OM. [Her page and services to come.]', img=None),
-              dict(name='Chesney', role='Salon Concierge', desc='Holds every detail, so you receive Maggie’s full attention.', img=None)])),
+              dict(name='Chesney', role='Salon Concierge', desc='Welcomes every guest, from booking to tea, coffee, or water.', img=None)])),
     # STORYTELLING. Five moments, each answering one quiet worry with warmth (Maggie's step 04).
     # Moment 01 is ROOTED (J, 19 Oct 16:39): hair roots, rooted in yourself, in nature, in care kind to the earth.
     # Ayurveda is NOT claimed: not found on aveda.com (19 Oct). Add it only with a source.
     ('ch', dict(id='arrive', chapter=0, sound='earth', film='earth',
       film_top=dict(poster='img/scalp-ritual.webp', stand='Stand-in: the salon hair-care film comes here'),  # J 17:20, Designer 1: two films stacked
       acc='earth', num='01', of='/ 05', name='Arrive', sub='The consultation', title='Rooted',
-      body='Beautiful hair begins at the root, and so do you. Over tea, we talk about your hair, your life, and how you would like to feel.',
+      body='Chesney welcomes you with tea. Beautiful hair begins at the root, and so do you, so first we talk: your hair, your life, how you would like to feel.',
       specs=[(SPECS[0], 'Consultation over tea'), (SPECS[1], 'Plant-based Aveda care'), (SPECS[2], 'Grounded')])),
     ('ch', dict(id='unwind', chapter=1, sound='water', film='water', acc='water', num='02', of='/ 05', name='Unwind', sub='The rituals', title='Release',
-      body='Warm water and slow hands, the way a river smooths a stone. You choose your scent on an Aveda aroma journey, and tension often begins to let go.',
-      specs=[(SPECS[0], 'Aroma journey'), (SPECS[1], 'Scalp & shoulder ritual'), (SPECS[2], 'Lighter')])),
+      body='At the shampoo basins: warm water and slow hands, the way a river smooths a stone. You choose your scent on an Aveda aroma journey, and tension often lets go.',
+      specs=[(SPECS[0], 'Aroma journey at the basin'), (SPECS[1], 'Scalp & shoulder ritual'), (SPECS[2], 'Lighter')])),
     ('ch', dict(id='renew', chapter=2, sound='fire', film='fire', acc='fire', num='03', of='/ 05', name='Renew', sub='Cut & color', title='Transform',
-      body='A cut that follows the way your hair naturally grows, and color drawn from plants: Aveda, 100% vegan. Beauty that is kind to you, and to the earth.',
+      body='At the Aveda color bar, your color is mixed from plants, 100% vegan. Then a cut that follows the way your hair naturally grows. Kind to you, and to the earth.',
       specs=[(SPECS[0], 'Bespoke cut & color'), (SPECS[1], 'Plant-based, vegan'), (SPECS[2], 'Radiant')])),
     ('ch', dict(id='unhurried', chapter=3, sound='air', film='air', acc='air', num='04', of='/ 05', name='Unhurried', sub='Your time', title='Breathe',
-      body='Your hair dries in warm, moving air while time slows. A visit may last up to three hours, because real care takes its time. This time is yours.',
+      body='A visit may last up to three hours, because real care takes its time. [Rest by the fireplace while your color develops: Maggie to confirm.] This time is yours.',
       specs=[(SPECS[0], 'One to three hours'), (SPECS[1], 'Your pace, your needs'), (SPECS[2], 'At ease')])),
     ('ch', dict(id='whole', chapter=4, sound='ether', film='ether', acc='ether', num='05', of='/ 05', name='Leave whole', sub='The finish', title='Glow',
-      body='Finished by hand, your hair catches the light like late-afternoon sun. Simple rituals carry the feeling into your week. Guests often leave lighter in spirit.',
+      body='Finished by hand at the styling chair, your hair catches the light like late-afternoon sun. Simple rituals carry the feeling into your week.',
       specs=[(SPECS[0], 'Finish & styling tips'), (SPECS[1], 'Aftercare ritual'), (SPECS[2], 'Cared for')])),
     # FEATURES AND BENEFITS (why us). The locked signature line meets Aveda's founding idea.
     ('facts', dict(id='aveda', eyebrow='Why Aveda', title='Beauty from the inside out.',
@@ -125,7 +125,7 @@ CFG = {
       body='Room to breathe, and to hear your own inner wisdom again. Sessions may be in person or online. This time is yours.',
       specs=[(CSPECS[0], 'Space to reflect'), (CSPECS[1], 'Inner wisdom'), (CSPECS[2], 'Clear')])),
     ('ch', dict(id='c-glow', chapter=4, sound='ether', film='ether', acc='ether', num='05', of='/ 05', name='Carry it forward', sub='After', title='Glow',
-      body='Choosing Joy, peace, and purpose, and carrying them into your week. Clients often leave lighter, and more themselves.',
+      body='Keep growing, in every aspect of your life: choosing Joy, peace, and purpose, and carrying them into your week. Clients often leave lighter.',
       specs=[(CSPECS[0], 'Next steps'), (CSPECS[1], 'Your own practice'), (CSPECS[2], 'Aligned')])),
     # 10 FEATURES AND BENEFITS (why Maggie). Her own sentence, verbatim; unconfirmed facts in brackets.
     ('facts', dict(id='c-facts', sound='air', eyebrow='Why Inner Work', title='Where the work comes from.',
