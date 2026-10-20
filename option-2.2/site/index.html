@@ -1067,6 +1067,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .ch__top img, .ch__top video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .ch__top video { opacity: 0; transition: opacity 1.2s var(--io-soft); }
 .ch__top video.is-on { opacity: 1; }
+.is-active .ch__top.is-stand img { animation: kenburns 22s var(--io-soft) both; }   /* the still stand-in drifts like the films (existing kenburns) */
 .ch__top .tag { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); color: rgba(245, 238, 228, .9); text-shadow: 0 1px 12px rgba(0, 0, 0, .5); white-space: nowrap; }
 .ch--stack .ch__scrim { background: linear-gradient(to top, rgba(10, 7, 5, .88) 0%, rgba(10, 7, 5, .58) 30%, rgba(10, 7, 5, .14) 58%, rgba(10, 7, 5, 0) 74%), linear-gradient(to right, rgba(10, 7, 5, .42), rgba(10, 7, 5, 0) 56%), linear-gradient(to bottom, rgba(10, 7, 5, .55), rgba(10, 7, 5, 0) 22%); }
 @media (max-aspect-ratio: 3/4) {   /* tall phones: the top film takes a little less of the height */
@@ -1230,7 +1231,7 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
     <div class="s__shade"></div>
   </section>
   <section class="s ch ch--stack" id="arrive" data-tone="dark" data-sound="earth" data-chapter="0" style="--acc: var(--earth)" aria-labelledby="arrive-t">
-    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/earth-poster.webp" alt="" decoding="async"><video data-src="media/earth.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top is-stand" aria-hidden="true"><img src="img/scalp-ritual.webp" alt="" decoding="async"><span class="tag label">Stand-in: the salon hair-care film comes here</span></div></div></div>
+    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/earth-poster.webp" alt="" decoding="async"><video data-src="media/earth.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top is-stand" aria-hidden="true"><img src="img/real-shampoo-basins.webp" alt="" decoding="async"><span class="tag label">The real basins: the hair-care film comes here</span></div></div></div>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">01<small>/ 05</small></span><span class="label"><b>Arrive</b> · The consultation</span></p>
@@ -1592,7 +1593,7 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="0a16df1632ce";</script>
+<script>window.OM_BUILD="9ea8ff7dcf7d";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

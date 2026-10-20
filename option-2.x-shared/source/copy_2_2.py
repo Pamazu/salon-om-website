@@ -40,7 +40,7 @@ CFG = {
     # Moment 01 is ROOTED (J, 19 Oct 16:39): hair roots, rooted in yourself, in nature, in care kind to the earth.
     # Ayurveda is NOT claimed: not found on aveda.com (19 Oct). Add it only with a source.
     ('ch', dict(id='arrive', chapter=0, sound='earth', film='earth',
-      film_top=dict(poster='img/scalp-ritual.webp', stand='Stand-in: the salon hair-care film comes here'),  # J 17:20, Designer 1: two films stacked
+      film_top=dict(poster='img/real-shampoo-basins.webp', stand='The real basins: the hair-care film comes here'),  # J 17:20: two films stacked. Stand-in = the REAL basins (J's cleaned photo), not AI (Maggie, stream 1:27:24: an AI salon is 'false advertisement')
       acc='earth', num='01', of='/ 05', name='Arrive', sub='The consultation', title='Rooted',
       body='Chesney welcomes you with tea. Beautiful hair begins at the root, and so do you, so first we talk: your hair, your life, how you would like to feel.',
       specs=[(SPECS[0], 'Consultation over tea'), (SPECS[1], 'Plant-based Aveda care'), (SPECS[2], 'Grounded')])),
