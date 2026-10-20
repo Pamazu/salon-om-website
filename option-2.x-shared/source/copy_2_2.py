@@ -61,7 +61,7 @@ CFG = {
       body='At the Aveda color bar, your color is mixed from plants, 100% vegan. Then a cut that follows the way your hair naturally grows. Kind to you, and to the earth.',
       specs=[(SPECS[0], 'Bespoke cut & color'), (SPECS[1], 'Plant-based, vegan'), (SPECS[2], 'Radiant')])),
     ('ch', dict(id='unhurried', chapter=3, sound='air', film='air', acc='air', num='04', of='/ 05', name='Unhurried', sub='Your time', title='Breathe',
-      body='A visit may last up to three hours, because real care takes its time. [Rest by the fireplace while your color develops: Maggie to confirm.] This time is yours.',
+      body='A visit may last up to three hours, because real care takes its time. Rest by the fireplace in the lounge while your color develops. This time is yours.',
       specs=[(SPECS[0], 'One to three hours'), (SPECS[1], 'Your pace, your needs'), (SPECS[2], 'At ease')])),
     ('ch', dict(id='whole', chapter=4, sound='ether', film='ether', acc='ether', num='05', of='/ 05', name='Leave whole', sub='The finish', title='Glow',
       body='Finished by hand at the styling chair, your hair catches the light like late-afternoon sun. Simple rituals carry the feeling into your week.',
