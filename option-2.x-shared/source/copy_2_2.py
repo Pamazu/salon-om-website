@@ -61,7 +61,7 @@ CFG = {
       note='I’m the backdrop. It’s not about me, it’s about you. This is your time, your space.', sign='Maggie',  # Maggie verbatim, stream 19 Oct 2:30:13-2:30:21
       intro='Maggie Woodward is the founder of Salon OM and of Inner Work with Maggie. The team dresses in black, as Aveda salons do, so the focus stays on you. [Her training and origin story, in her words, from the copy interview.]',
       people=[dict(name='Maggie Woodward', img='real-maggie-arms-crossed.webp', alt='Maggie Woodward in front of the Aveda shelves at Salon OM', role='Founder · stylist and guide', desc='Founder of Salon OM and Inner Work with Maggie. Stylist and guide.'),
-              dict(name='Katie Paonessa', role='Stylist', desc='A full part of Salon OM. [Her page and services to come.]', img=None),
+              dict(name='Katie Paonessa', role='Stylist', desc='A full part of Salon OM. [Her page and services to come.]', img='real-katie.webp', alt='Katie Paonessa at Salon OM'),  # photo 16; Maggie names her, stream 1:54:09-1:54:44
               dict(name='Chesney', role='Salon Concierge', desc='Welcomes every guest, from booking to tea, coffee, or water.', img=None)])),
     # FEATURES AND BENEFITS (the offer). Salon rituals, clearly laid out (Maggie's step 05).
     ('offers', dict(id='time', layout='menu', eyebrow='Salon rituals', title='Choose your visit.',
