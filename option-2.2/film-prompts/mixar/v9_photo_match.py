@@ -50,27 +50,35 @@ box("blind_base_dark", -1.83, 0.6, YL, YL + 0.20, 0.0, 0.30)
 box("poster_bw", -2.62, -2.12, YL, YL + 0.03, 1.10, 1.91)
 # ---- basins wall: mirror, small wood console, upper cabinets, colour poster, glass shelves + bottles ----
 box("mirror_frame", XW, XW + 0.06, -4.34, -3.55, 0.75, 2.07)
-box("console_wood", XW, XW + 0.45, -3.40, -2.60, 0.0, 1.00)
-box("cabinets_upper", XW, XW + 0.30, -2.87, -1.14, 1.76, 2.25)
+box("console_wood", XW, XW + 0.40, -3.48, -2.90, 0.0, 1.06)     # ends at the left basin, which hides its right end in the photo
+box("cabinets_upper", XW, XW + 0.35, -2.84, -1.09, 1.71, 2.30)     # depth 0.35 m from its side edge; right end at photo x 1045
 box("poster_colour", XW, XW + 0.03, -2.35, -1.77, 0.90, 1.63)
 box("shelf_L_top", XW, XW + 0.12, -2.95, -2.32, 1.32, 1.34); box("bottles_L_top", XW, XW + 0.09, -2.92, -2.35, 1.34, 1.62)
 box("shelf_L_low", XW, XW + 0.12, -2.83, -2.41, 0.95, 0.97); box("bottles_L_low", XW, XW + 0.09, -2.80, -2.44, 0.97, 1.26)
 box("shelf_R_top", XW, XW + 0.12, -1.72, -1.15, 1.32, 1.34); box("bottles_R_top", XW, XW + 0.09, -1.69, -1.18, 1.34, 1.63)
 box("shelf_R_low", XW, XW + 0.12, -1.65, -1.29, 0.95, 0.97); box("bottles_R_low", XW, XW + 0.09, -1.62, -1.32, 0.97, 1.23)
 box("shelf_black_small", XW, XW + 0.10, -1.28, -1.04, 0.69, 0.71)
-box("cabinet_wood_right", XW, -2.15, -0.85, -0.65, 0.0, 1.50)
+box("cabinet_wood_right", XW, XW + 0.50, -0.78, -0.55, 0.0, 1.50)   # the wood edge at photo x 1200-1280
 # ---- two backwash units, basins at the wall, chairs facing +x (toward the camera side) ----
-def backwash(p, yc):
-    box(p + "_basin", XW + 0.06, XW + 0.56, yc - 0.31, yc + 0.31, 0.66, 0.86)
-    box(p + "_pedestal", XW, XW + 0.40, yc - 0.18, yc + 0.18, 0.0, 0.66)
-    box(p + "_base", -2.45, -1.50, yc - 0.33, yc + 0.33, 0.0, 0.30)
-    box(p + "_seat", -2.15, -1.55, yc - 0.30, yc + 0.30, 0.30, 0.44)
-    box(p + "_arm_a", -2.15, -1.52, yc - 0.38, yc - 0.28, 0.30, 0.66)
-    box(p + "_arm_b", -2.15, -1.52, yc + 0.28, yc + 0.38, 0.30, 0.66)
-    b = box(p + "_back", -2.30, -2.15, yc - 0.30, yc + 0.30, 0.40, 0.98); b.rotation_euler.y = math.radians(-25)
-    box(p + "_pillow", -2.22, -2.10, yc - 0.20, yc + 0.20, 0.70, 1.02)
+def backwash(p, yc):       # sizes fitted to the photo's own edges (CEO MA QA 25 Oct: the first blocks rose ~100 px too high)
+    box(p + "_basin", XW + 0.05, XW + 0.45, yc - 0.24, yc + 0.24, 0.66, 0.88)
+    box(p + "_pedestal", XW, XW + 0.30, yc - 0.12, yc + 0.12, 0.0, 0.66)
+    box(p + "_base", -2.25, -1.50, yc - 0.25, yc + 0.25, 0.0, 0.30)
+    box(p + "_seat", -2.10, -1.55, yc - 0.28, yc + 0.28, 0.30, 0.44)
+    box(p + "_arm_a", -2.10, -1.52, yc - 0.36, yc - 0.27, 0.30, 0.64)
+    box(p + "_arm_b", -2.10, -1.52, yc + 0.27, yc + 0.36, 0.30, 0.64)
+    box(p + "_back", -2.25, -2.10, yc - 0.28, yc + 0.28, 0.40, 0.72)
+    box(p + "_pillow", -2.20, -2.08, yc - 0.20, yc + 0.20, 0.62, 0.86)
 backwash("bw_left", -2.49)       # THE CLIENT'S CHAIR (J: "on the seat on the left")
 backwash("bw_right", -1.37)
+# basins and pillows re-solved against the photo's pixel edges (fit to within 2-21 px; CEO MA QA 25 Oct item 2)
+FIT = {"bw_right_basin": [-2.545, -2.425, -1.71, -1.23, 0.66, 0.85], "bw_left_basin": [-2.565, -2.305, -2.83, -2.35, 0.68, 0.85], "bw_right_pillow": [-1.82, -1.74, -1.68, -1.26, 0.48, 0.76], "bw_left_pillow": [-1.84, -1.78, -2.7, -2.28, 0.6, 0.78]}
+for n, (x0, x1, y0, y1, z0, z1) in FIT.items():
+    bpy.data.objects.remove(bpy.data.objects[n], do_unlink=True); box(n, x0, x1, y0, y1, z0, z1)
+for side, yc in (("bw_left", -2.49), ("bw_right", -1.37)):      # the backrest sits right behind its pillow
+    px1 = FIT[side + "_pillow"][0]
+    bpy.data.objects.remove(bpy.data.objects[side + "_back"], do_unlink=True); box(side + "_back", px1 - 0.14, px1, yc - 0.28, yc + 0.28, 0.40, 0.70)
+bpy.data.objects.remove(bpy.data.objects["bw_left_pillow"], do_unlink=True)   # the client lies on the left chair: its cushion is under her back, not in front of her
 cyl("ottoman_left", -1.24, -2.77, 0.18, 0.0, 0.375)
 cyl("ottoman_front", -1.25, -1.60, 0.175, 0.0, 0.375)
 # ---- styling chair at the far left, and the out-of-focus styling chair in the right foreground ----
@@ -78,7 +86,7 @@ cyl("styling_mat", -1.55, -3.95, 0.45, 0.0, 0.01)
 cyl("styling_post", -1.60, -3.95, 0.05, 0.0, 0.45)
 box("styling_seat", -1.90, -1.30, -4.25, -3.65, 0.45, 0.58)
 box("styling_back", -1.95, -1.85, -4.20, -3.70, 0.58, 1.05)
-box("fg_chair", -0.80, -0.55, -0.32, -0.08, 0.10, 1.05)
+box("fg_chair", -0.86, -0.70, -0.27, -0.05, 0.22, 0.88)            # the blurred chair: its left edge on the photo x 1210-1215 rays, 0.9 m out
 
 # ---- the stand-in: the client reclining in the LEFT chair. Plain box, true size; red = the side her face looks at (up) ----
 import bmesh
@@ -95,7 +103,7 @@ def emat(nm, c):
 for m in (emat("PV_green", (0.16, 0.50, 0.17)), emat("PV_red", (0.62, 0.07, 0.08)), emat("PV_blue", (0.45, 0.66, 0.92))):
     me.materials.append(m)
 cl = bpy.data.objects.new("PV_Client", me); sc.collection.objects.link(cl)
-head = Vector((-2.30, -2.49, 0.80)); feet = Vector((-1.15, -2.62, 0.40))      # head in the left bowl, feet on the ottoman
+head = Vector((-2.42, -2.59, 0.80)); feet = Vector((-1.15, -2.62, 0.40))      # head in the left bowl, feet on the ottoman
 d = (feet - head).normalized()
 cl.matrix_world = Matrix.Translation(head) @ d.to_track_quat('X', 'Z').to_matrix().to_4x4() @ Matrix.Translation((0, 0, -T / 2))
 
