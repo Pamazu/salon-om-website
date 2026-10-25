@@ -3,7 +3,9 @@ v6 plus Maggie's notes from the 19 Oct stream (salon-om-stream-transcript, timec
 Designer 1 masks this film over the existing roots film (../site/media/earth.mp4).
 
 ATTACH (each image at most 2.5 times as wide as it is tall, or the platform rejects it; the stream at 2:23:25)
-- @salon_om_backwash: the client's cleaned photo of the backwash area, 1280 x 854 (ratio 1.5). How the room looks.
+- @salon_om_backwash: ../../resources/salon-photos/6-shampoo-basins-edit.png, J's favourite cleaned photo of the backwash area (25 Oct), 1280 x 854 (ratio 1.5). How the room looks.
+
+LOADED IN DREAMINA 25 Oct (J's settings): Seedance 2.5, Omni reference, 16:9, 480P, 15 s; Image 1 = @salon_om_backwash, Image 2 = @layout, Video 1 = @move; '10-second' read as '15-second', plus "Follow video 1 for the camera motion only; its grey shapes are not the look."
 - @layout: renders/v5-first-frame.png, 960 x 640 (ratio 1.5). Grey 3D blockout: ONLY the camera angle and where the basin, head, hair and hands are.
 - @move (if the platform takes a motion reference): renders/salon-om-side-orbit-v5-10s.mp4. ONLY the camera move.
 
