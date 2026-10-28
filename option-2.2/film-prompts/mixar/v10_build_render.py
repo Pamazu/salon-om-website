@@ -7,6 +7,9 @@
 #                  -> OUT/proj_####.png, and the invented share for EVERY 10th frame -> PROJ_FRAMES line
 #   --check        render frames first / mid / last -> OUT/v_####.png ;  --full  render all frames
 #   --frames N     360 (15 s, default) or 120 (5 s)
+#   --photocam     render frame 1 from cam_photo (OUT/photocam.png), to lay over the photo
+#   --shotcheck    run 0_Global/scripts/mixar-shot-check.py (subject PV_Head, camera cam_v10)
+#   --v11          the readable look: human mannequins, the basins photo projected on the room, real furniture shapes
 # Run: Mixar -b --factory-startup -P v10_build_render.py -- OUT [--frames 120] [--pose '{...}'] [--search|--proj|--check|--full]
 import bpy, os, sys, json
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -120,7 +123,17 @@ elif '--search' in args:
     for row in good[:12]: print('SEARCH', json.dumps(row))
 else:
     scene(POSE); cam = bpy.data.objects['cam_v10']
+    if '--v11' in args:          # v11: mannequins, the photo projected on the room, real furniture shapes (v11_look.py)
+        exec(compile(open(os.path.join(HERE, 'v11_look.py')).read(), 'v11_look.py', 'exec'), {'PHOTO_PATH': L['PHOTO'], '__name__': 'v11'})
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, 'salon_om_rooted_previz_v10.blend'))
+    if '--photocam' in args:     # orientation check: the scene seen from the photo's own solved camera, beside / over the photo
+        pc = bpy.data.objects['cam_photo']; sc.camera = pc; rx, ry = sc.render.resolution_x, sc.render.resolution_y
+        sc.render.resolution_x, sc.render.resolution_y = 1280, 854; sc.frame_set(1)
+        sc.render.filepath = os.path.join(OUT, 'photocam.png'); bpy.ops.render.render(write_still=True)
+        sc.camera = cam; sc.render.resolution_x, sc.render.resolution_y = rx, ry
+    if '--shotcheck' in args:    # 0_Global/scripts/mixar-shot-check.py on her head (the subject) and cam_v10, every frame
+        SC = os.path.expanduser('~/All/0_Global/scripts/mixar-shot-check.py')
+        exec(compile(open(SC).read(), 'mixar-shot-check.py', 'exec'), {'CFG': {'subject': 'PV_Head', 'camera': 'cam_v10', 'frames': [1, FRAMES]}, '__name__': 'chk'})
     if '--proj' in args or '--labels' in args:
         LG = dict(GROUP, wall_basins='wall', PV_Client='her body')
         dg = bpy.context.evaluated_depsgraph_get()

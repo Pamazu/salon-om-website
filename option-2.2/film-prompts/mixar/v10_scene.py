@@ -65,6 +65,43 @@ HAIRB = (-2.56, -2.36, -2.76, -2.42, 0.80, 0.93)      # hair spread in the bowl 
 wbox('PV_Head', *HEADB, emat("PV_skin", (0.80, 0.55, 0.40)))
 wbox('PV_Hair', *HAIRB, emat("PV_hair_yellow", (0.95, 0.80, 0.10)))
 blk = emat("PV_basin_black", (0.025, 0.025, 0.025))
+
+# ---- v10c (CEO MA, take v10b-5s-3): ONE basin. Seen from her left, the basin BOX showed a flat black side and a hard corner
+# to the left of her hair, between the console and her head, and the video model drew a SECOND basin there. Her basin is now
+# a rounded bowl like the photo's left basin: the same fitted footprint and rim height (v9 FIT), a rounded plan, a shell that
+# narrows to the bottom, a hollow for her hair and a neck dip on the chair side where her head rests. Nothing else changes.
+def bowl_mesh(name, x0, x1, y0, y1, z0, z1, n=56, levels=7, wall=0.025, dip=0.05):
+    cx, cy, hx, hy = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2, (y1 - y0) / 2
+    def ring(sx, sy, z_of):
+        out = []
+        for k in range(n):
+            t = 2 * math.pi * k / n; c, s = math.cos(t), math.sin(t)
+            ex, ey = math.copysign(abs(c) ** 0.5, c), math.copysign(abs(s) ** 0.5, s)   # superellipse, exponent 4
+            out.append((cx + sx * ex, cy + sy * ey, z_of(t)))
+        return out
+    def rim(t):        # the neck dip faces the chair (+x), centred on her head
+        return z1 - dip * math.exp(-((math.atan2(math.sin(t), math.cos(t))) / 0.45) ** 2)
+    bm = bmesh.new(); rings = []
+    for L in range(levels):            # outer shell, rim down to the foot; narrows like a bowl
+        u = L / (levels - 1); sc_ = 1.0 - 0.35 * (1 - math.sqrt(max(0.0, 1 - u * u)))
+        rings.append([bm.verts.new(p) for p in ring(hx * sc_, hy * sc_, (lambda t, u=u: rim(t) + (z0 - rim(t)) * u))])
+    inner = []
+    for L in range(levels - 2):        # inner hollow, rim down to a floor above the foot
+        u = L / (levels - 3); sc_ = 1.0 - 0.45 * (1 - math.sqrt(max(0.0, 1 - u * u)))
+        inner.append([bm.verts.new(p) for p in ring((hx - wall) * sc_, (hy - wall) * sc_, (lambda t, u=u: rim(t) - 0.005 + (z0 + 0.06 - rim(t)) * u))])
+    def strip(a, b):
+        for k in range(n): bm.faces.new((a[k], a[(k + 1) % n], b[(k + 1) % n], b[k]))
+    for a, b in zip(rings, rings[1:]): strip(a, b)
+    strip(inner[0], rings[0])
+    for a, b in zip(inner, inner[1:]): strip(b, a)
+    bm.faces.new(list(reversed(rings[-1]))); bm.faces.new(inner[-1])
+    me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free(); return me
+o = bpy.data.objects.get('bw_left_basin')
+if o and not o.get('v10c'):
+    FITL = (-2.565, -2.305, -2.83, -2.35, 0.68, 0.85)        # v9_photo_match.py FIT["bw_left_basin"]
+    old_me = o.data; o.data = bowl_mesh('bw_left_basin_bowl', *[v - c for v, c in zip(FITL, (o.location.x, o.location.x, o.location.y, o.location.y, o.location.z, o.location.z))])
+    o.scale = (1, 1, 1); o.rotation_euler = (0, 0, 0); o['v10c'] = 1
+    if old_me.users == 0: bpy.data.meshes.remove(old_me)
 for n in ('bw_left_basin', 'bw_right_basin'):
     o = bpy.data.objects.get(n)
     if o: o.data.materials.clear(); o.data.materials.append(blk)
