@@ -10,7 +10,10 @@ import bpy, math
 import numpy as np
 from mathutils import Vector
 
-PHOTO = '/Users/j/all-worktrees/salon-om-previz-v9/resources/salon-photos/6-shampoo-basins-edit.png'
+import os
+# the photo inside this repo (resources/salon-photos), found from this script's folder (HERE is passed in by the runner)
+_HERE = globals().get('HERE') or os.path.dirname(os.path.abspath(globals().get('__file__', '.')))
+PHOTO = os.path.normpath(os.path.join(_HERE, '..', '..', '..', 'resources', 'salon-photos', '6-shampoo-basins-edit.png'))
 BODY = {'PV_Client', 'PV_Stylist', 'PV_Head', 'PV_Hair', 'bw_left_pillow'}   # + her cushion: under her in the film, not in the photo's view of the wall
 OWN = ('bw_left_',)                       # the client's own chair and basin: reported apart from the background
 PW, PH, PF, PC = 1280, 854, 1072.0, (640.0, 427.0)

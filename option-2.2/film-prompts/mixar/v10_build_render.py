@@ -17,7 +17,7 @@ POSE = json.loads(args[args.index('--pose') + 1]) if '--pose' in args else {}
 # 1) the v9 room, exactly as committed (the v9 script reads only OUT and --frames from argv; no v9 render flag is passed)
 sys.argv = [sys.argv[0], '--', OUT, '--frames', str(FRAMES)]
 exec(compile(open(os.path.join(HERE, 'v9_build_render.py')).read(), 'v9_build_render.py', 'exec'), {'__file__': os.path.join(HERE, 'v9_build_render.py'), '__name__': 'v9b'})
-L = {}
+L = {'HERE': HERE}
 exec(compile(open(os.path.join(HERE, 'v10_projection.py')).read(), 'v10_projection.py', 'exec'), L)
 def scene(pose):
     exec(compile(open(os.path.join(HERE, 'v10_scene.py')).read(), 'v10_scene.py', 'exec'), {'POSE': pose, 'FRAMES': FRAMES, '__name__': 'v10'})
