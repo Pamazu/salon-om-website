@@ -47,6 +47,28 @@ for n in ('bw_left_pillow', 'bw_right_pillow'):
     o = bpy.data.objects.get(n)
     if o: o.data.materials.clear(); o.data.materials.append(cush)
 
+# ---- v10b (CEO MA QA 28 Oct, 805f1960): her HEAD and HAIR are their own blocks, the basins black, so the subject reads ----
+# The client box ran to the head point, so the close-up showed only her red top. Her body now starts at the neck; the head
+# (skin) rests on the basin's chair-side rim, face up; the hair (yellow) spills back from it over the black bowl, toward the wall.
+cl = bpy.data.objects['PV_Client']
+if not cl.get('v10b'):
+    for vx in cl.data.vertices:
+        if abs(vx.co.x) < 1e-6: vx.co.x = 0.20       # local x = along her, head -> feet
+    cl['v10b'] = 1
+def wbox(name, x0, x1, y0, y1, z0, z1, mat):
+    old = bpy.data.objects.get(name)
+    if old: bpy.data.objects.remove(old, do_unlink=True)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)); o = bpy.context.object
+    o.name = name; o.scale = (x1 - x0, y1 - y0, z1 - z0); o.data.materials.clear(); o.data.materials.append(mat); return o
+HEADB = (-2.40, -2.23, -2.66, -2.52, 0.80, 0.95)      # head on the rim (basin x -2.565..-2.305, top 0.85), face up
+HAIRB = (-2.56, -2.36, -2.76, -2.42, 0.80, 0.93)      # hair spread in the bowl behind her head, wider than it, so it shows past it
+wbox('PV_Head', *HEADB, emat("PV_skin", (0.80, 0.55, 0.40)))
+wbox('PV_Hair', *HAIRB, emat("PV_hair_yellow", (0.95, 0.80, 0.10)))
+blk = emat("PV_basin_black", (0.025, 0.025, 0.025))
+for n in ('bw_left_basin', 'bw_right_basin'):
+    o = bpy.data.objects.get(n)
+    if o: o.data.materials.clear(); o.data.materials.append(blk)
+
 # ---- cam_v10 ----
 old = bpy.data.objects.get('cam_v10')
 if old: bpy.data.objects.remove(old, do_unlink=True)

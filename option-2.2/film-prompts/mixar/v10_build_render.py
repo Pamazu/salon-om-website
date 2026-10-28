@@ -41,7 +41,51 @@ def near_share(cam, lim=0.35):
     for i, j, d in L['cam_rays'](cam, 32, 18):
         hit, loc, nn, k, ob, m = sc.ray_cast(dg, O, d, distance=lim); n += 1; near += bool(hit) and ob.name not in ('PV_Client', 'PV_Stylist')
     return near / n
-if '--grid' in args:
+GROUP = {'PV_Head': 'head', 'PV_Hair': 'hair', 'bw_left_basin': 'basin', 'PV_Stylist': 'stylist', 'console_wood': 'console', 'PV_Client': 'body'}
+def shares(cam, w=64, h=36):
+    """Per-block share of the frame (first hit), and the horizontal extent (0..1) of the subject (head+hair+basin) and stylist."""
+    dg = bpy.context.evaluated_depsgraph_get(); O = cam.matrix_world.translation; c = {}; xs = {'subj': [], 'stylist': [], 'console': []}
+    for i, j, d in L['cam_rays'](cam, w, h):
+        hit, loc, n, k, ob, m = sc.ray_cast(dg, O, d, distance=30.0)
+        g = GROUP.get(ob.name, 'room') if hit else 'sky'; c[g] = c.get(g, 0) + 1
+        if g in ('head', 'hair', 'basin'): xs['subj'].append((i + 0.5) / w)
+        if g in ('stylist', 'console'): xs[g].append((i + 0.5) / w)
+    n = w * h; return {k: v / n for k, v in c.items()}, {k: (min(v), sum(v) / len(v), max(v)) if v else None for k, v in xs.items()}
+WHY = {}
+def framing_ok(s, x):
+    def no(k): WHY[k] = WHY.get(k, 0) + 1; return False
+    if s.get('hair', 0) < 0.02 or x['subj'] is None: return no('hair')
+    if not (1/3 - 0.06 <= x['subj'][1] <= 2/3 + 0.06): return no('centre')     # subject centred: its mean in the centre third
+    if not (0.08 <= x['subj'][0] and x['subj'][2] <= 0.92): return no('extent') # head + hair + basin about the centre third
+    if not (0.10 <= s.get('head', 0) + s.get('hair', 0) + s.get('basin', 0) <= 0.45): return no('size')
+    if not (0.04 <= s.get('stylist', 0) <= 0.25): return no('stylist_size')     # the stylist seen, at the right edge
+    if x['stylist'] is None or x['stylist'][0] < 0.58: return no('stylist_x')   # stylist on the right side, never over the head
+    return s.get('console', 0) <= 0.04 or (s.get('console', 0) <= 0.12 and x['console'][2] <= 0.16) or no('console')   # a sliver at the LEFT edge
+if '--frame' in args:            # v10b: search start poses + a small move (right, closer) that keep the CEO MA's framing every frame
+    import itertools
+    from mathutils import Vector
+    AIMP = Vector(POSE.get('aim', (-2.42, -2.58, 0.86))); res = []; SAMPLE = []
+    XS = POSE.get('xs', (-2.00, -1.85, -1.70, -1.55, -1.40, -1.25)); YS = POSE.get('ys', (-3.60, -3.45, -3.30, -3.15, -3.00))
+    for x, y, z, lens, stp, mv in itertools.product(XS, YS, POSE.get('zs', (1.00, 1.10, 1.20)), POSE.get('lenses', (35, 50)), POSE.get('stylists', ((-2.42, -2.06, 0.0),)), POSE.get('moves', ((0.10, 0.10, 0.0),))):
+        p0 = Vector((x, y, z)); fwd = (AIMP - p0); fwd.z = 0; fwd.normalize()
+        right = fwd.cross(Vector((0, 0, 1))).normalized()       # camera right, looking along fwd with z up
+        p1 = p0 + right * mv[0] + fwd * mv[1] + Vector((0, 0, mv[2]))   # move: right, closer, up (metres)
+        pose = dict(POSE, p0=tuple(p0), p1=tuple(p1), aim=tuple(AIMP), lens=lens, stylist=stp); scene(pose); cam = bpy.data.objects['cam_v10']
+        ok = True; worst = 0; rows = []
+        for f in (1, mid, FRAMES):
+            sc.frame_set(f); s, xx = shares(cam)
+            if not framing_ok(s, xx):
+                ok = False
+                if f == 1 and len(SAMPLE) < 400: SAMPLE.append(((x, y, z, lens), {k: round(v, 3) for k, v in s.items()}, {k: [round(a, 2) for a in v] for k, v in xx.items() if v}))
+                break
+            cnt, bad, _ = L['projection_frame'](cam, 48, 27, image=False); nn = sum(cnt.values())
+            worst = max(worst, (cnt['bg'] + cnt['sky']) / nn); rows.append(dict({k: round(v, 3) for k, v in s.items()}, x={k: [round(a, 2) for a in v] for k, v in xx.items() if v}))
+        if ok: res.append((round(worst, 4), [round(v, 3) for v in p0], [round(v, 3) for v in p1], lens, stp, mv, rows[1]))
+    res.sort(key=lambda r: r[0])
+    print('FRAME_N', len(res), 'WHY', json.dumps(WHY))
+    for row in SAMPLE[::12]: print('MISS', json.dumps(row))
+    for row in res[:15]: print('FRAME', json.dumps(row))
+elif '--grid' in args:
     import itertools
     res = []
     for x, y, z in itertools.product((-2.30, -2.15, -2.00, -1.85, -1.70, -1.55, -1.40, -1.25, -1.10), (-3.55, -3.35, -3.15, -2.95, -2.75), (0.65, 0.80, 0.95, 1.10, 1.30, 1.50)):
