@@ -122,9 +122,8 @@ def client(bm):
         _ellipsoid(bm, an + Vector((0.06, 0, 0.03)), (0.11, 0.040, 0.045), Quaternion((0, 1, 0), math.radians(-60)))   # bare foot, toes up
 def head(bm):              # face up: crown toward the wall (into the bowl), chin toward her chest; seen in profile
     _ellipsoid(bm, (-2.37, Y, 0.875), (0.110, 0.078, 0.098), _tilt(-12))                     # skull + face (0.22 m long)
-    _ellipsoid(bm, (-2.335, Y, 0.966), (0.020, 0.010, 0.016), _tilt(20))                     # nose, small and sharp (a big one read as a fist)
     _ellipsoid(bm, (-2.385, Y, 0.958), (0.030, 0.050, 0.012))                                # brow
-    _ellipsoid(bm, (-2.285, Y, 0.912), (0.040, 0.060, 0.030), _tilt(-30))                    # jaw, blended into the skull (a separate chin read as a hand)
+    _ellipsoid(bm, (-2.300, Y, 0.900), (0.050, 0.058, 0.040), _tilt(-35))                    # jaw + chin, sunk into the skull so no knob stands out (a round chin read as a fist)
     for s in (-1, 1): _ellipsoid(bm, (-2.385, Y + s * 0.078, 0.870), (0.026, 0.010, 0.032))  # ears
 def hair(bm):              # long blond hair, the subject of the shot: around the back and sides of the head, over the rim, falling into the bowl
     _ellipsoid(bm, (-2.45, Y, 0.875), (0.090, 0.108, 0.092), _tilt(-12))                     # over the crown and the back of the head
@@ -157,7 +156,29 @@ for n in ('PV_Client', 'PV_Head', 'PV_Hair', 'PV_Stylist'):
     o = bpy.data.objects.get(n)
     if o: bpy.data.objects.remove(o, do_unlink=True)
 _obj('PV_Client', client, shaded("PV_m_client", C_CLIENT))
-_obj('PV_Head', head, shaded("PV_m_client", C_CLIENT))
+def _obj_parts(name, parts, mats):
+    """One object, several materials: parts = [(build, material index), ...] (the face's features stay part of PV_Head)."""
+    old = bpy.data.objects.get(name)
+    if old: bpy.data.objects.remove(old, do_unlink=True)
+    bm = bmesh.new()
+    for build, mi in parts:
+        before = set(bm.faces); build(bm)
+        for f in bm.faces:
+            if f not in before: f.material_index = mi; f.smooth = True
+    me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
+    for m in mats: me.materials.append(m)
+    o = bpy.data.objects.new(name, me); sc.collection.objects.link(o); o.visible_shadow = False; return o
+def face_dark(bm):         # v12: in the close-up the face is the subject: a closed eye, a brow and lashes read as a face (a plain head read as a fist)
+    _ellipsoid(bm, (-2.372, Y - 0.034, 0.957), (0.022, 0.009, 0.005), _tilt(-12))           # brow over her LEFT eye (camera side)
+    _ellipsoid(bm, (-2.372, Y + 0.034, 0.957), (0.022, 0.009, 0.005), _tilt(-12))           # brow, right
+    _ellipsoid(bm, (-2.352, Y - 0.034, 0.958), (0.016, 0.012, 0.004))                        # closed eye, lash line, left
+    _ellipsoid(bm, (-2.352, Y + 0.034, 0.958), (0.016, 0.012, 0.004))                        # closed eye, lash line, right
+def face_lips(bm):
+    _ellipsoid(bm, (-2.307, Y, 0.950), (0.010, 0.022, 0.008))                                # lips
+def face_nose(bm):
+    _ellipsoid(bm, (-2.333, Y, 0.968), (0.030, 0.014, 0.022), _tilt(25))                    # nose, a clear profile line above the lips
+_obj_parts('PV_Head', [(head, 0), (face_nose, 0), (face_dark, 1), (face_lips, 2)],
+           [shaded("PV_m_client", C_CLIENT), shaded("PV_m_brow", (0.18, 0.12, 0.08), lo=0.7), shaded("PV_m_lips", (0.62, 0.30, 0.28))])
 _obj('PV_Hair', hair, shaded("PV_m_hair", C_HAIR, lo=0.55))
 _obj('PV_Stylist', stylist, shaded("PV_m_stylist", C_STYLIST, lo=0.55))
 
