@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Rooted v10 runner (headless Mixar, free): builds the v9 room (v9_build_render.py, no render flags), adds the v10 stylist
+# and close-up camera (v10_scene.py), then on request:
+#   --search       try camera poses, print the invented-background share per pose (v10_projection.py), pick nothing
+#   --pose JSON    the pose to use (keys r, az, z, lens, aim, stylist), as found by --search
+#   --proj         projection proof: frames first / mid / last, photo projected from its own camera, MAGENTA = invented
+#                  -> OUT/proj_####.png, and the invented share for EVERY 10th frame -> PROJ_FRAMES line
+#   --check        render frames first / mid / last -> OUT/v_####.png ;  --full  render all frames
+#   --frames N     360 (15 s, default) or 120 (5 s)
+# Run: Mixar -b --factory-startup -P v10_build_render.py -- OUT [--frames 120] [--pose '{...}'] [--search|--proj|--check|--full]
+import bpy, os, sys, json
+HERE = os.path.dirname(os.path.abspath(__file__))
+args = sys.argv[sys.argv.index('--') + 1:]
+OUT = args[0]; os.makedirs(OUT, exist_ok=True)
+FRAMES = int(args[args.index('--frames') + 1]) if '--frames' in args else 360
+POSE = json.loads(args[args.index('--pose') + 1]) if '--pose' in args else {}
+# 1) the v9 room, exactly as committed (the v9 script reads only OUT and --frames from argv; no v9 render flag is passed)
+sys.argv = [sys.argv[0], '--', OUT, '--frames', str(FRAMES)]
+exec(compile(open(os.path.join(HERE, 'v9_build_render.py')).read(), 'v9_build_render.py', 'exec'), {'__file__': os.path.join(HERE, 'v9_build_render.py'), '__name__': 'v9b'})
+L = {}
+exec(compile(open(os.path.join(HERE, 'v10_projection.py')).read(), 'v10_projection.py', 'exec'), L)
+def scene(pose):
+    exec(compile(open(os.path.join(HERE, 'v10_scene.py')).read(), 'v10_scene.py', 'exec'), {'POSE': pose, 'FRAMES': FRAMES, '__name__': 'v10'})
+sc = bpy.context.scene
+def in_frame(cam, pts):
+    from bpy_extras.object_utils import world_to_camera_view
+    from mathutils import Vector
+    return all(0 <= c.x <= 1 and 0 <= c.y <= 1 and c.z > 0 for c in (world_to_camera_view(sc, cam, Vector(p)) for p in pts))
+HAIRPTS = [(-2.45, -2.59, 0.80), (-2.30, -2.59, 0.86), (-2.55, -2.60, 0.74)]
+mid = (FRAMES + 1) // 2
+
+def hair_seen(cam):
+    from mathutils import Vector
+    dg = bpy.context.evaluated_depsgraph_get(); O = cam.matrix_world.translation; ok = 0
+    for h in HAIRPTS:
+        d = Vector(h) - O; hit, loc, n, i, ob, m = sc.ray_cast(dg, O, d.normalized(), distance=d.length - 0.04)
+        ok += (not hit) or ob.name in ('PV_Client', 'bw_left_basin')
+    return ok / len(HAIRPTS)
+def near_share(cam, lim=0.35):
+    dg = bpy.context.evaluated_depsgraph_get(); O = cam.matrix_world.translation; near = 0; n = 0
+    for i, j, d in L['cam_rays'](cam, 32, 18):
+        hit, loc, nn, k, ob, m = sc.ray_cast(dg, O, d, distance=lim); n += 1; near += bool(hit) and ob.name not in ('PV_Client', 'PV_Stylist')
+    return near / n
+if '--grid' in args:
+    import itertools
+    res = []
+    for x, y, z in itertools.product((-2.30, -2.15, -2.00, -1.85, -1.70, -1.55, -1.40, -1.25, -1.10), (-3.55, -3.35, -3.15, -2.95, -2.75), (0.65, 0.80, 0.95, 1.10, 1.30, 1.50)):
+        for lens in (35, 50):
+            pose = dict(POSE, p0=(x, y, z), p1=(x, y, z), lens=lens); scene(pose); cam = bpy.data.objects['cam_v10']; sc.frame_set(1)
+            if not in_frame(cam, HAIRPTS): continue
+            seen = hair_seen(cam); near = near_share(cam)
+            if seen < 1.0 or near > 0.10: continue
+            cnt, bad, _ = L['projection_frame'](cam, 48, 27, image=False); nn = sum(cnt.values())
+            res.append((round((cnt['bg'] + cnt['sky']) / nn, 4), round(cnt['own'] / nn, 3), round(cnt['body'] / nn, 2), (x, y, z), lens, sorted(bad.items(), key=lambda kv: -kv[1])[:3]))
+    res = [r for r in res if 0.55 <= r[2] <= 0.85]   # a close-up: the two people fill most of the frame, the room is a background band
+    res.sort()
+    print('GRID_N', len(res))
+    for row in res[:20]: print('GRID', json.dumps(row))
+elif '--search' in args:
+    import itertools
+    res = []
+    for r, z, (a0, a1), lens in itertools.product((0.6, 0.7, 0.8), (0.92, 1.0, 1.08), ((-85, -70), (-80, -65), (-78, -60), (-75, -55)), (40, 50)):
+        pose = dict(POSE, r=(r, r), z=(z, z), az=(a0, a1), lens=lens); scene(pose); cam = bpy.data.objects['cam_v10']
+        worst = 0; own = 0; ok_frame = True; seen = 1; near = 0; objs = {}
+        for f in (1, (FRAMES + 3) // 4, mid, (3 * FRAMES) // 4, FRAMES):
+            sc.frame_set(f)
+            if not in_frame(cam, HAIRPTS): ok_frame = False
+            seen = min(seen, hair_seen(cam)); near = max(near, near_share(cam))
+            cnt, bad, _ = L['projection_frame'](cam, 48, 27, image=False)
+            nn = sum(cnt.values()); worst = max(worst, (cnt['bg'] + cnt['sky']) / nn); own = max(own, cnt['own'] / nn)
+            for k, vv in bad.items(): objs[k] = objs.get(k, 0) + vv
+        res.append((round(worst, 4), round(own, 3), ok_frame, round(seen, 2), round(near, 2), pose, sorted(objs.items(), key=lambda kv: -kv[1])[:3]))
+    good = list(res)
+    good.sort(key=lambda r: (not r[2], -r[3], r[4], r[0]))
+    print('SEARCH_N', len(res), 'usable', len(good))
+    for row in good[:12]: print('SEARCH', json.dumps(row))
+else:
+    scene(POSE); cam = bpy.data.objects['cam_v10']
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, 'salon_om_rooted_previz_v10.blend'))
+    if '--proj' in args:
+        rows = []
+        for f in range(1, FRAMES + 1, 10 if FRAMES > 120 else 4):
+            sc.frame_set(f); cnt, bad, _ = L['projection_frame'](cam, 96, 54, image=False); n = sum(cnt.values())
+            rows.append((f, round((cnt['bg'] + cnt['sky']) / n, 4), round(cnt['own'] / n, 3), bad))
+        print('PROJ_FRAMES', json.dumps(rows))
+        for f in (1, mid, FRAMES):
+            sc.frame_set(f); cnt, bad, img = L['projection_frame'](cam, 640, 360)
+            L['save_png'](img, os.path.join(OUT, f'proj_{f:04d}.png')); print('PROJ_IMG', f, json.dumps(cnt), json.dumps(bad))
+    fr = range(1, FRAMES + 1) if '--full' in args else ((1, mid, FRAMES) if '--check' in args else ())
+    for f in fr:
+        sc.frame_set(f); sc.render.filepath = os.path.join(OUT, f'v_{f:04d}.png'); bpy.ops.render.render(write_still=True)
+print('V10_DONE', OUT)
