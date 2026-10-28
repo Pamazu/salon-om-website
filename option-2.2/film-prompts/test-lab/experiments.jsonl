@@ -5,3 +5,5 @@
 {"kind": "arm", "id": "SR11", "experiment": "EXP-salon-rooted-1", "change": "v11 (planned, Designer 1): photo-textured room, human mannequins, readability check; prompt v11 sides named by fixed things in the photo", "prompt": "01-salon-rooted-top-v11-5s.md", "vs": "SR10B"}
 {"corrects": {"experiment": "EXP-salon-rooted-1"}, "features": ["room", "layout", "orientation", "anatomy", "stylist", "cushion", "poster_words", "feet", "invented", "hair", "hands", "console", "move"]}
 {"corrects": {"arm": "SR11"}, "change": "v11c previz (Designer 1 @ 20b7d42): human mannequins, the photo-projected room, 30 mm low from the left-wall side; prompt v11 @ 6cd00f4", "prompt": "01-salon-rooted-top-v11-5s.md"}
+{"kind": "arm", "id": "SR12", "experiment": "EXP-salon-rooted-1", "change": "ONE change from SR11: Designer 1's push-in (v12 previz @ bbb13be); prompt v12 @ 91aa77d follows it", "prompt": "01-salon-rooted-top-v12-5s.md", "vs": "SR11"}
+{"corrects": {"experiment": "EXP-salon-rooted-1"}, "features_added": ["bottle_labels"]}

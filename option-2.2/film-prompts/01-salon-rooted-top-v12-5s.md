@@ -55,4 +55,7 @@ KEEP CONSISTENT
 - The picture carries only the room's own printed words.
 
 WHAT CAME BACK
-(fill in after the take; logged in the Test Lab as its own arm, SR12)
+Take 5 (28 Oct, v12, Seedance 2.5, 480P, 5 s, 120 credits, Dreamina scene e64182f7d319; renders/take-v12-5s-5.mp4). Scored RIGHT by the CEO MA: the shot J asked for. Test Lab: EXP-salon-rooted-1, arm SR12, run 1, logged "partial" only because the Lab counts a pass with every feature right, and the bottle labels are wrong.
+RIGHT: J's close-up on the hair from the side; the woman in profile, eyes closed, natural adult anatomy; the stylist's hands work shampoo foam into her hair at the scalp, from beyond her head; black basin, black smock, brown towel; the photo's red and green bottle basket and the "Lush, replenished visibly healthy hair" poster behind; the layout follows the previz (head centre, hair into the bowl on the left, body to the right).
+MINOR (left as is: a fix needs a new 5 s test): (1) the hair reads short and wet rather than long; (2) the poster word EFFORTLESS is printed on the bottles (the quoted poster words leaked onto them).
+Next: the 15 s runs from 01-salon-rooted-top-v12-15s.md unchanged (times only). It needs J: about 360 credits, balance 228.
