@@ -43,4 +43,7 @@ KEEP CONSISTENT
 - No text or logos added.
 
 WHAT CAME BACK
-(fill in after the first take)
+Take 1 (28 Oct, Seedance 2.5, 480P, 5 s; 120 credits; Dreamina scene e7ec1a73ae43; renders/take-v9-5s-1.mp4). Scored by the CEO MA against the photo crops.
+RIGHT: the room is the photo (blind, both Aveda posters, mirror, console with orchid, bottle shelves, both chairs, basins, ottomans); the woman in the LEFT chair with the black smock and brown towel; the right chair empty; the pan runs left to right; sharp and wide, no close-up. v7's invented salon is gone.
+WRONG: (1) the RIGHT chair's dark purple cushion vanished (the photo shows it upright on the backrest); (2) the posters' printed words came out garbled ("EFFORTLESS", "Lush, replenished visibly healthy hair"); (3) her black heeled boots float in the air past the left ottoman. Fixed in v9.1 (01-salon-rooted-top-v9.1-5s.md).
+Not ours: Dreamina burns a small "AI" label into the top-left corner.
