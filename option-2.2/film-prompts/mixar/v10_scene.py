@@ -38,6 +38,15 @@ st = bpy.data.objects.new('PV_Stylist', me); bpy.context.scene.collection.object
 SPOS = Vector(P.get('stylist', (-2.42, -2.06, 0.0)))          # her front face just right of the basin's right rim
 st.location = SPOS; st.rotation_euler = (0, 0, math.radians(-90))   # +x (her front, red) turned to face -y: the hair
 
+# ---- cushions read as their own objects (5 s take 2: the right chair's cushion, grey on grey, was dropped) ----
+cush = emat("PV_cushion_purple", (0.36, 0.24, 0.48))
+if not bpy.data.objects.get('bw_left_pillow'):      # in a close-up her cushion shows beside her head: put it back, under her
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(-1.81, -2.49, 0.69)); o = bpy.context.object; o.name = 'bw_left_pillow'
+    o.scale = (0.06, 0.42, 0.18)
+for n in ('bw_left_pillow', 'bw_right_pillow'):
+    o = bpy.data.objects.get(n)
+    if o: o.data.materials.clear(); o.data.materials.append(cush)
+
 # ---- cam_v10 ----
 old = bpy.data.objects.get('cam_v10')
 if old: bpy.data.objects.remove(old, do_unlink=True)

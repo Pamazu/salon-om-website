@@ -11,7 +11,7 @@ import numpy as np
 from mathutils import Vector
 
 PHOTO = '/Users/j/all-worktrees/salon-om-previz-v9/resources/salon-photos/6-shampoo-basins-edit.png'
-BODY = {'PV_Client', 'PV_Stylist'}
+BODY = {'PV_Client', 'PV_Stylist', 'bw_left_pillow'}   # + her cushion: under her in the film, not in the photo's view of the wall
 OWN = ('bw_left_',)                       # the client's own chair and basin: reported apart from the background
 PW, PH, PF, PC = 1280, 854, 1072.0, (640.0, 427.0)
 
