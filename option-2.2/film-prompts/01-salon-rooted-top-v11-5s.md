@@ -52,4 +52,7 @@ KEEP CONSISTENT
 - The picture carries only the room's own printed words.
 
 WHAT CAME BACK
-(fill in after the take; log it in the Test Lab as a run of arm SR11 the same day)
+Take 4 (28 Oct, v11c, Seedance 2.5, 480P, 5 s, 120 credits, Dreamina scene c3b86f04219d; renders/take-v11c-5s-4.mp4). Scored by the CEO MA against the previz and the photo. Test Lab: EXP-salon-rooted-1, arm SR11, run 1, partial.
+RIGHT (keep): the layout follows the previz, not mirrored: she lies back with her head in the basin centre-left and her body running right toward the camera under the black smock and brown towel; the stylist stands at the right of her head between the basins, leaning over, face out of frame; adult anatomy reads natural; the room is the photo's (bottle baskets, the "Lush, replenished..." poster, upper glass shelves, the right basin at the right edge). After SR10B mirrored, sides named by the photo plus the photo-textured previz held the layout (SRH1, 2, 3, 4, 8 now 83%, one shared run, confounded).
+WRONG against J's 13:49 ask (a close-up on the hair from the side): (1) her hair is barely visible, with no blond hair falling into the bowl and no water or foam; (2) the stylist's hands sit over her forehead and eyes (it reads as a face massage), not in the hair at the scalp; (3) the wood console fills the left quarter of the frame; (4) the camera barely moves between 0 and 5 s.
+Fix for test 5, ONE change: Designer 1 pushes the camera in toward her head along the same side (hair >= 10% of the frame, the console a sliver, hands in the hair at the scalp). Prompt v12 changes only the camera and framing words, plus one line: "the stylist's fingers work the shampoo into her blond hair at the scalp, her hair falling into the bowl".
