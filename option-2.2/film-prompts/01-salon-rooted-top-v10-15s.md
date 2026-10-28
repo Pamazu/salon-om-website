@@ -1,13 +1,13 @@
 DREAMINA: Salon OM moment 01 "Rooted", TOP film (v10b, 28 Oct 2026)
 Why: J, 28 Oct 13:49 (verbatim): "Oh it seems you forgot your instruction about the camera position being actually pointing at the hair close up from the side (like we had it before) the thing is that even though your video in 3D you generated is great, the camera position is not the one we agreed on. Just ensure that what is in the camera is not something the video model would invent so it should be what the picture shows, I was imagining the camera from the left and the person that is providing the hair service (another tall box) to the right of the person laying down on the left seat. makes sense?"
-Camera choice A (CEO MA, 28 Oct 14:09): close from her LEFT at head height. Projection proof (renders/v10-projection-*.png): about 7% of the background is not in the photo: plain cream wall under the glass shelf and the wood console's side. Both are named in words below.
-v10b (CEO MA QA 28 Oct, before any credits): the v10 frame showed the console and the stylist's red side, not her head. Her head, hair and the black basin are now their own blocks in the centre third of every frame, the stylist a narrow strip at the right edge, the console a sliver at the left edge. The move now pushes in a little and drifts slightly LEFT, which keeps the wall behind the basin hidden: background the photo does not show is now about 4%, the cream wall above the console and under the glass shelf. Kept from v9.1 (5 s take 2 proved them): the posters' words quoted, her bare feet on the left ottoman.
+Camera choice A (CEO MA, 28 Oct 14:09): close from her LEFT at head height. Projection proof (renders/v10b-projection-*.png): 2-4% of the frame is background the photo does not show: cream wall above the console and under the glass shelf, named in words below.
+v10b (CEO MA QA 28 Oct, before any credits): the v10 frame showed the console and the stylist's red side, not her head. Her head, hair and the black basin are now their own blocks in the centre third of every frame, the stylist a narrow strip at the right edge, the console a sliver at the left edge. The move now pushes in a little and drifts slightly LEFT, which keeps the wall behind the basin hidden: see the projection proof above. Kept from v9.1 (5 s take 2 proved them): the posters' words quoted, her bare feet on the left ottoman.
 
 SETTINGS (J's): Dreamina Video, Seedance 2.5, references mode (not first/last frame), 16:9, 480P draft, 15 s.
 
 REFERENCES (upload both, then call each from the @ picker; Dreamina labels uploads itself, so match by file, not by number):
 - @loc_basins = resources/salon-photos/6-shampoo-basins-edit.png (J's pick). In the @ picker: the photo of the salon shampoo area (usually "Image 1").
-- @move = option-2.2/film-prompts/renders/salon-om-rooted-previz-v10-15s.mp4 (the Mixar previz, 15 s). In the @ picker: the grid video (usually "Video 1").
+- @move = option-2.2/film-prompts/renders/salon-om-rooted-previz-v10b-15s.mp4 (the Mixar previz, 15 s). In the @ picker: the grid video (usually "Video 1").
 
 PROMPT (paste as is; replace each @ handle with the picker chip for that file):
 
@@ -33,7 +33,7 @@ Soft room tone and gentle running water in the basin. No music, no voices.
 
 KEEP CONSISTENT
 - The room is @loc_basins, unchanged: the same basins, chairs, cushions, shelves, bottles, poster, console and cream wall.
-- The wall under the glass shelf is plain cream wall; the console's side is the same warm wood as its front, with its drawer.
+- The wall under the glass shelf and above the console is plain cream wall; the console is the same warm wood, with its drawer.
 - Nothing appears that the photo does not show: no other room, no door, no window, no extra furniture or objects.
 - The woman is in the LEFT chair, head in the LEFT basin, for the whole clip.
 - Her feet rest on the left ottoman the whole time.
