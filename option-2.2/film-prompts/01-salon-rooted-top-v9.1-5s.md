@@ -46,4 +46,7 @@ KEEP CONSISTENT
 - No text or logos added.
 
 WHAT CAME BACK
-(fill in after the take)
+Take 2 (28 Oct, Seedance 2.5, 480P, 5 s; renders/take-v9.1-5s-2.mp4). Scored by the CEO MA.
+FIXED: quoting the posters' words made them read right (AVEDA, EFFORTLESS, "Lush, replenished visibly healthy hair"); "her bare feet rest on the left ottoman" fixed the floating boots.
+STILL WRONG: the right chair's purple cushion is still missing. The likely cause: the previz has no cushion block in that chair, and the model follows the grey video over the words. Fix: a cushion block in the previz wherever a cushion is in frame (v10).
+Carried into v10: the posters' quoted words and the feet sentence, word for word.
