@@ -7,6 +7,7 @@ Video prompts for the films of Option 2.2, with the 3D blockout that sets the ca
 | File | What it is |
 | --- | --- |
 | `01-salon-rooted-top-v9-CURRENT.md` | **The one to use.** The TOP film from the real basins photo (`@loc_basins`) plus the v9 Mixar previz (`@move`): the guest in the LEFT backwash chair, one slow pan left to right from the photo's own camera, so every frame is a part of the photo and the model has nothing to invent. |
+| `01-salon-rooted-top-v9-5s.md` + `renders/salon-om-rooted-previz-v9-5s.mp4` | The 5-second TEST of v9 (J 28 Oct: test at 5 s before spending on 15 s). Same prompt, times only; same camera and same full 7.5 deg pan in 120 frames (`v9_build_render.py ... --full --frames 120`). |
 | `01-salon-rooted-top-v8.md` | v8: the photo as a still edit, then a first/last-frame move. Replaced because J: no new picture, only the 3D camera at the photo's angle. |
 | `01-salon-rooted-top-v7.md` | v7: Salon OM moment 01 "Rooted", the TOP film (the hair ritual at the backwash basin), driven by the Mixar camera move, with Maggie's notes from the 19 Oct stream: the stylist all in black, brown towels, a black smock, a right-handed stylist position, no back-of-house. Designer 1 masks it over the existing roots film (`../site/media/earth.mp4`). |
 | `01b-salon-rooted-top-v6.md` | The version before v7. |

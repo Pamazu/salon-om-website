@@ -119,7 +119,7 @@ photo = make_cam("cam_photo", 30.15)                  # the photo itself (1280 x
 pan = make_cam("cam_pan", 42.0)                       # the film (16:9): a 42 mm window panning inside the photo
 A0, A1 = math.radians(7.0), math.radians(-0.5)       # 7.0 deg left -> 0.5 deg right: every 16:9 frame inside the photo (limit 7.2)
                                                       # AND the client fully in frame (her feet reach the left edge at -1.0; shot check SUBJECT_OUT 198-360 at -7, 255-360 at -3)
-FR = 360                                              # 15 s at 24 fps
+FR = globals().get('FRAMES', 360)                    # 360 = 15 s at 24 fps; 120 = the 5 s test (J 28 Oct), same pan
 def ease(t): return 0.5 - 0.5 * math.cos(math.pi * t)
 for f in range(1, FR + 1):
     a = A0 + (A1 - A0) * ease((f - 1) / (FR - 1))     # left -> right, one continuous move, soft start and stop

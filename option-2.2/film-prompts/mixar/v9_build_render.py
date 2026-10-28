@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Headless Mixar runner for the v9 previz: builds the set (v9_photo_match.py), applies the shared grid look
 # (0_Global/skills/previz-for-video-models/scripts/previz_grid_set.py), saves the .blend, renders.
-# Run: Mixar -b --factory-startup -P v9_build_render.py -- OUT_DIR [--overlay] [--check] [--full]
+# Run: Mixar -b --factory-startup -P v9_build_render.py -- OUT_DIR [--overlay] [--check] [--full] [--frames 120]
 #   --overlay  one 1280x854 frame through cam_photo (the photo's own camera) -> OUT/v9_photo_cam.png
 #   --check    frames 1, 180, 360 of cam_pan -> OUT/p_####.png
 #   --full     all 360 frames of cam_pan -> OUT/p_####.png (encode with ffmpeg afterwards)
@@ -9,9 +9,10 @@ import bpy, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 args = sys.argv[sys.argv.index('--') + 1:]
 OUT = args[0]; os.makedirs(OUT, exist_ok=True)
-exec(compile(open(os.path.join(HERE, 'v9_photo_match.py')).read(), 'v9_photo_match.py', 'exec'))
+FRAMES = int(args[args.index('--frames') + 1]) if '--frames' in args else 360   # --frames 120 = the 5 s test
+exec(compile(open(os.path.join(HERE, 'v9_photo_match.py')).read(), 'v9_photo_match.py', 'exec'), {'FRAMES': FRAMES, '__name__': 'v9'})
 GRID = os.path.expanduser('~/All/0_Global/skills/previz-for-video-models/scripts/previz_grid_set.py')
-CFG = {"collection": "Set", "camera": "cam_pan", "name": "PV_unused", "res": [1280, 720], "fps": 24, "frames": 360,
+CFG = {"collection": "Set", "camera": "cam_pan", "name": "PV_unused", "res": [1280, 720], "fps": 24, "frames": FRAMES,
        "cell": 0.5, "line": 0.012,
        "tints": {"floor": [0.86, 0.78, 0.62], "wall": [0.93, 0.88, 0.76], "ceiling": [0.80, 0.80, 0.78], "baseboard": [0.70, 0.62, 0.52],
                  "pipe": [0.88, 0.88, 0.86], "blind": [0.90, 0.78, 0.50], "poster": [0.55, 0.62, 0.80], "mirror": [0.62, 0.48, 0.36],
@@ -37,7 +38,7 @@ if '--overlay' in args:
     sc.camera = bpy.data.objects['cam_photo']; sc.render.resolution_x, sc.render.resolution_y = 1280, 854
     sc.frame_set(1); sc.render.filepath = os.path.join(OUT, 'v9_photo_cam.png'); bpy.ops.render.render(write_still=True)
     sc.camera = bpy.data.objects['cam_pan']; sc.render.resolution_x, sc.render.resolution_y = 1280, 720
-frames = range(1, 361) if '--full' in args else ((1, 180, 360) if '--check' in args else ())
+frames = range(1, FRAMES + 1) if '--full' in args else ((1, (FRAMES + 1) // 2, FRAMES) if '--check' in args else ())
 for f in frames:
     sc.frame_set(f); sc.render.filepath = os.path.join(OUT, f'p_{f:04d}.png'); bpy.ops.render.render(write_still=True)
 print('V9_DONE', OUT)
