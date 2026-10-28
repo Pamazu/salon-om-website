@@ -1,0 +1,6 @@
+{"mark": "One continuous 15-second shot, 16:9, in the real Salon OM",
+ "prompt_has": ["work the shampoo into her blond hair at the scalp", "a close-up from the left-wall side", "EFFORTLESS", "0-15 s", "Halfway (7.5 s)"],
+ "prompt_lacks": ["\\b5-second shot", "\\b0-5 s\\b", "@loc_basins", "@move"],
+ "bar": {"model": "Dreamina Seedance 2.5", "mode": "Omni reference", "ratio": "16:9", "res": "480P", "dur": "15s"},
+ "max_credits": 360,
+ "refs": {"images": 1, "videos": 1, "audio": 0}}
