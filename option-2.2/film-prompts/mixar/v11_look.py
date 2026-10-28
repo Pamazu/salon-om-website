@@ -126,10 +126,12 @@ def head(bm):              # face up: crown toward the wall (into the bowl), chi
     _ellipsoid(bm, (-2.385, Y, 0.958), (0.030, 0.050, 0.012))                                # brow
     _ellipsoid(bm, (-2.285, Y, 0.912), (0.040, 0.060, 0.030), _tilt(-30))                    # jaw, blended into the skull (a separate chin read as a hand)
     for s in (-1, 1): _ellipsoid(bm, (-2.385, Y + s * 0.078, 0.870), (0.026, 0.010, 0.032))  # ears
-def hair(bm):              # long hair: from the crown over the basin rim and down into the bowl, wider than the head
-    _ellipsoid(bm, (-2.44, Y, 0.875), (0.090, 0.105, 0.090), _tilt(-12))                     # over the crown
-    _ellipsoid(bm, (-2.50, Y, 0.81), (0.085, 0.16, 0.070), _tilt(-35))                       # spilling into the bowl, wide
-    _ellipsoid(bm, (-2.50, Y, 0.755), (0.060, 0.15, 0.030))                                  # lying in the bowl
+def hair(bm):              # long blond hair, the subject of the shot: around the back and sides of the head, over the rim, falling into the bowl
+    _ellipsoid(bm, (-2.45, Y, 0.875), (0.090, 0.108, 0.092), _tilt(-12))                     # over the crown and the back of the head
+    for s in (-1, 1): _ellipsoid(bm, (-2.43, Y + s * 0.082, 0.865), (0.070, 0.030, 0.070))  # at the sides, above the ears (the scalp the fingers work)
+    _ellipsoid(bm, (-2.51, Y, 0.80), (0.090, 0.17, 0.075), _tilt(-40))                       # spilling over the rim into the bowl, wide
+    _ellipsoid(bm, (-2.53, Y, 0.745), (0.065, 0.19, 0.035))                                  # lying in the bowl
+
 # The stylist (J 13:49: "to the right of the person laying down on the left seat"): she stands on the photo's RIGHT of the
 # client, in the gap between the left basin (y -2.35) and the right basin (y -1.71), beside the basin (not behind it, not
 # between the camera and her head), facing the client's head (-y), leaning in, both hands in the hair. ~1.68 m.
@@ -144,7 +146,7 @@ def stylist(bm):
     _ellipsoid(bm, (SX, SY - 0.19, 1.27), (0.19, 0.11, 0.15), Quaternion((1, 0, 0), math.radians(32)))   # chest + shoulders
     _limb(bm, (SX, SY - 0.25, 1.38), (SX, SY - 0.29, 1.47), 0.05)                            # neck
     _ellipsoid(bm, (SX, SY - 0.32, 1.57), (0.075, 0.095, 0.11), Quaternion((1, 0, 0), math.radians(30)))  # head (out of frame)
-    for s, hand in ((-1, (-2.47, -2.725, 0.86)), (1, (-2.53, -2.47, 0.88))):                  # hands in the hair at both sides of her head, the camera-side one in view (never on her face)
+    for s, hand in ((-1, (-2.465, -2.678, 0.885)), (1, (-2.465, -2.502, 0.895))):                  # test 5 (CEO 517cb84c): fingers in the hair at the scalp, both sides of her head behind the ears, toward the crown (take 4 read them on her forehead)
         sh = Vector((SX + s * 0.19, SY - 0.22, 1.32)); hd = Vector(hand)
         el, hd2 = ik(sh, hd + Vector((0, 0.07, 0.02)), 0.29, 0.25, sh + Vector((s * 0.4, -0.1, -0.4)))   # elbows out and down
         _limb(bm, sh, el, 0.048, 0.040); _limb(bm, el, hd2, 0.038, 0.030)
