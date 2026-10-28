@@ -21,7 +21,7 @@ LOOK
 The photo's own look: a clean, real, sharp photograph of a calm salon, warm soft room light from above, cream walls, dark brown leather, black basins. Her hair is in sharp focus in the basin, and the room behind stays sharp too, as in the photo; no blurred background.
 
 WHERE EVERYTHING IS (fixed for the whole clip)
-In the centre of the frame: the woman's head, face up, resting on the basin's rim, and her long blond hair spread in the black basin behind it. At the right edge: the stylist's black-clothed torso and her hands reaching into the hair; the stylist's face is out of frame above. Behind her, left to right as in @loc_basins: a sliver of the small warm wood console at the left edge, the lower glass shelf of red, pink, green and white bottles above it, plain cream wall under that glass shelf, and the bottom of the colour Aveda poster with its printed line "Lush, replenished visibly healthy hair".
+In the centre of the frame: the woman's head, face up, resting on the basin's rim, and her long blond hair spread in the black basin behind it. At the right edge: the stylist's black-clothed torso and her hands reaching into the hair; the stylist's face is out of frame above. Behind her, left to right as in @loc_basins: a sliver of the small warm wood console at the left edge, the lower glass shelf of red, pink, green and white bottles above it, plain cream wall under that glass shelf, and the bottom of the colour Aveda poster with its printed line "Lush, replenished visibly healthy hair". Behind her, between the wood console and her basin, there is only the cream wall: no second basin.
 
 SHOT
 0-5 s: THE VERY FIRST FRAME IS the close side view: her face-up head and her blond hair in the black basin in the centre of the frame, the stylist's torso and hands at the right edge, a sliver of the wood console at the left edge, the lower glass shelf of bottles and the bottom of the colour poster above and behind. The camera moves slowly a little closer, drifting very slightly left, smoothly, with a soft start and a soft stop, never cutting. Halfway (2.5 s) the stylist's hands are working the shampoo through her hair at the crown. THE LAST FRAME (5 s): the same view a little closer, her head and hair still in the centre, the stylist still at the right edge.
@@ -35,6 +35,7 @@ KEEP CONSISTENT
 - The room is @loc_basins, unchanged: the same basins, chairs, cushions, shelves, bottles, poster, console and cream wall.
 - The wall under the glass shelf and above the console is plain cream wall; the console is the same warm wood, with its drawer.
 - Nothing appears that the photo does not show: no other room, no door, no window, no extra furniture or objects.
+- Behind her, between the wood console and her basin, there is only the cream wall: no second basin.
 - The woman is in the LEFT chair, head in the LEFT basin, for the whole clip.
 - Her feet rest on the left ottoman the whole time.
 - The posters' printed words stay exactly as in the photo: "AVEDA", "EFFORTLESS" and "Lush, replenished visibly healthy hair", sharp and unchanged.
@@ -46,4 +47,7 @@ KEEP CONSISTENT
 - No text or logos added.
 
 WHAT CAME BACK
-(fill in after the take)
+Take 3 (28 Oct, v10b, Seedance 2.5, 480P, 5 s, Dreamina scene e5c4a8d00037; renders/take-v10b-5s-3.mp4). Scored by the CEO MA.
+RIGHT (keep): the close side view of the hair wash; the stylist at her right, her hands in the foamy hair, face out of frame; black smock, brown towel, bare feet; the poster's words "Lush, replenished visibly healthy hair" and the wire basket of blue, coral, white and yellow bottles as in the photo; the camera reads left to right with a slight push-in; her head reads adult size.
+WRONG: a SECOND black basin is invented at the top left, between the console and her own basin. The photo has only the wall and the console there.
+Fix for take 4: this prompt (5 s and 15 s) adds one line in WHERE EVERYTHING IS and one in KEEP CONSISTENT: "Behind her, between the wood console and her basin, there is only the cream wall: no second basin." Designer 1 (task 63623d0c) checks the previz basin block: one basin, hers, nothing black between the console and it.
