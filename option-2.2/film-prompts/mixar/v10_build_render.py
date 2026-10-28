@@ -127,6 +127,15 @@ else:
             sc.frame_set(f); cnt, bad, _ = L['projection_frame'](cam, 96, 54, image=False); n = sum(cnt.values())
             rows.append((f, round((cnt['bg'] + cnt['sky']) / n, 4), round(cnt['own'] / n, 3), bad))
         print('PROJ_FRAMES', json.dumps(rows))
+        LG = dict(GROUP, wall_basins='wall'); LG.pop('PV_Client')
+        dg = bpy.context.evaluated_depsgraph_get()
+        for f in (1, mid, FRAMES):            # label anchors for the contact sheet: centroid of each block's visible pixels
+            sc.frame_set(f); O = cam.matrix_world.translation; acc = {}
+            for i, j, d in L['cam_rays'](cam, 64, 36):
+                hit, loc, n, k, ob, m = sc.ray_cast(dg, O, d, distance=30.0)
+                g = LG.get(ob.name) if hit else None
+                if g: a = acc.setdefault(g, [0, 0, 0]); a[0] += i; a[1] += j; a[2] += 1
+            print('LABELS', f, json.dumps({g: [round((a[0] / a[2] + 0.5) / 64, 3), round((a[1] / a[2] + 0.5) / 36, 3), round(a[2] / 2304, 3)] for g, a in acc.items()}))
         for f in (1, mid, FRAMES):
             sc.frame_set(f); cnt, bad, img = L['projection_frame'](cam, 640, 360)
             L['save_png'](img, os.path.join(OUT, f'proj_{f:04d}.png')); print('PROJ_IMG', f, json.dumps(cnt), json.dumps(bad))
