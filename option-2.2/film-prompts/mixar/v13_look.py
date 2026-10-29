@@ -1,0 +1,221 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Rooted v13 look (J 29 Oct, task 63623d0c), exec'd by v10_build_render.py --v13 right after v11_look.py:
+#   1. NO PHOTO IN THE RENDER. J: the wall, the poster and the bottles "look very flat ... because the video includes a flat
+#      image". The photo stays the REFERENCE only: every room surface becomes a plain solid shape whose colour is read from
+#      the photo (6-shampoo-basins-edit.png through its solved camera), and only things the photos show are built.
+#      The bottles become real bottles (cylinders, caps, pumps; one colour each, read from the photo; no labels, no words),
+#      the low shelves become the wire baskets the photos show, the colour poster a black frame round a plain panel.
+#   2. THE WATER, FROM ITS SOURCE. The photos (12, 17) show a chrome gooseneck tap at the back of each bowl. It is built at
+#      the back of her bowl, swung a little toward the camera, and a slow clear stream falls from it onto her hair on the
+#      camera's side and runs down the hair into the bowl. Its streaks drift down slowly (slow motion, calm).
+#   3. SLOW, GENTLE HANDS. J: the hands felt "robotic and a bit creepy". The stylist's fingers stay at the scalp (test 5)
+#      and now draw one slow small circle each (1 cm, 5 s a turn, the two hands half a turn apart), shape-keyed every
+#      4 frames, linear between: no jerks, no fast moves.
+import bpy, bmesh, math
+import numpy as np
+from mathutils import Vector, Matrix, Quaternion
+
+sc = bpy.context.scene
+bpy.context.preferences.edit.keyframe_new_interpolation_type = 'LINEAR'   # every key below: linear, no ease, no overshoot
+G = V11                                   # the v11 look's namespace (helpers, the stylist's place), passed by the runner
+shaded, _ellipsoid, _limb, ik = G['shaded'], G['_ellipsoid'], G['_limb'], G['ik']
+SX, SY, Y = G['SX'], G['SY'], G['Y']
+XW = -2.665
+FR = FRAMES
+
+# ---------------------------------------------------------------- colours, read from the photo (reference only)
+im = bpy.data.images.load(PHOTO_PATH, check_existing=True)
+PX = np.array(im.pixels[:], dtype=np.float32).reshape(im.size[1], im.size[0], 4)[::-1, :, :3]
+PC = bpy.data.objects['cam_photo'].matrix_world.inverted(); PF, PW, PH = 1072.0, 1280, 854
+def photo_colour(P, r=4, fallback=(0.7, 0.65, 0.58)):
+    q = PC @ Vector(P)
+    if q.z >= 0: return fallback
+    u = int(PW / 2 + PF * q.x / -q.z); v = int(PH / 2 - PF * q.y / -q.z)
+    if not (r <= u < PW - r and r <= v < PH - r): return fallback
+    c = np.median(PX[v - r:v + r + 1, u - r:u + r + 1].reshape(-1, 3), axis=0)
+    return tuple(float(x) ** 2.2 for x in c)
+def at_px(u, v, r=6):
+    return tuple(float(x) ** 2.2 for x in np.median(PX[v - r:v + r, u - r:u + r].reshape(-1, 3), axis=0))
+CREAM, TILE = at_px(1110, 560), at_px(820, 800)
+WOOD = photo_colour((XW + 0.40, -3.25, 0.55), r=10)     # the drawer unit's own front, lit as in the photo
+M_CREAM = shaded('V13_cream', CREAM, lo=0.62); M_WOOD = shaded('V13_wood', WOOD, lo=0.5); M_TILE = shaded('V13_tile', TILE, lo=0.6)
+M_BLACK = shaded('V13_black', (0.02, 0.02, 0.022), gloss=0.25); M_GLASS = shaded('V13_glass', (0.50, 0.58, 0.56), gloss=0.3, lo=0.7)
+M_METAL = shaded('V13_metal', (0.42, 0.42, 0.44), gloss=0.6, lo=0.55); M_CHROME = shaded('V13_chrome', (0.55, 0.56, 0.60), gloss=0.9, lo=0.35)
+M_CAP = shaded('V13_cap', (0.80, 0.79, 0.76), lo=0.6)
+
+def set_mat(o, m):
+    o.data.materials.clear(); o.data.materials.append(m)
+def box(name, x0, x1, y0, y1, z0, z1, m):
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+    for v in bm.verts: v.co = Vector(((x0 + x1) / 2 + v.co.x * (x1 - x0), (y0 + y1) / 2 + v.co.y * (y1 - y0), (z0 + z1) / 2 + v.co.z * (z1 - z0)))
+    me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free(); me.materials.append(m)
+    o = bpy.data.objects.new(name, me); sc.collection.objects.link(o); return o
+def mesh_obj(name, build, m, smooth=True):
+    old = bpy.data.objects.get(name)
+    if old: bpy.data.objects.remove(old, do_unlink=True)
+    bm = bmesh.new(); build(bm)
+    for f in bm.faces: f.smooth = smooth
+    me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
+    for mm in (m if isinstance(m, list) else [m]): me.materials.append(mm)
+    o = bpy.data.objects.new(name, me); sc.collection.objects.link(o); o.visible_shadow = False; return o
+
+# ---------------------------------------------------------------- 1. the room: solid shapes, photo colours, no photo
+FURN = ('bw_', 'ottoman_')
+for o in list(bpy.data.objects):
+    if o.type != 'MESH' or o.name.startswith(FURN) or o.name.startswith(('PV_', 'V13_')): continue
+    n = o.name
+    if n.startswith('bottles_'): o.hide_render = True; o.hide_viewport = True; continue      # rebuilt as bottles below
+    if n.startswith(('console', 'mirror', 'cabinet_wood')): m = M_WOOD
+    elif n == 'floor': m = M_TILE
+    elif n.startswith(('poster_', 'shelf_black', 'styling_', 'blind_base')): m = M_BLACK
+    elif n.startswith('shelf_L_low') or n.startswith('shelf_R_low'): m = M_METAL
+    elif n.startswith('shelf_'): m = M_GLASS
+    elif n == 'cabinets_upper': m = shaded('V13_cabinets', photo_colour(o.matrix_world.translation + Vector((0.18, 0, 0))), lo=0.55)
+    elif n == 'blind': m = shaded('V13_blind', photo_colour(o.matrix_world.translation), lo=0.6)
+    elif n == 'fg_chair': m = bpy.data.materials.get('PV_m_leather') or M_BLACK
+    else: m = M_CREAM
+    set_mat(o, m)
+# the colour poster: its black frame (poster_colour) + a plain panel in the poster's own mean colour, proud of the frame
+pan_col = photo_colour((XW + 0.03, -2.06, 1.27), r=40)
+box('V13_poster_panel', XW + 0.030, XW + 0.034, -2.33, -1.79, 0.93, 1.60, shaded('V13_poster_panel', pan_col, lo=0.6))
+box('V13_poster_bw_panel', -2.60, -2.14, -4.681 + 0.030, -4.681 + 0.034, 1.13, 1.88, shaded('V13_poster_bw', (0.30, 0.30, 0.30), lo=0.6))
+# the low shelves are wire baskets in the photos: a front rail and two end rails
+for side, (y0, y1, z0) in (('L', (-2.83, -2.41, 0.97)), ('R', (-1.65, -1.29, 0.97))):
+    box(f'V13_basket_{side}_front', XW + 0.115, XW + 0.125, y0, y1, z0 + 0.06, z0 + 0.075, M_METAL)
+    for y in (y0, y1 - 0.01): box(f'V13_basket_{side}_end{y:.2f}', XW, XW + 0.125, y, y + 0.01, z0 + 0.06, z0 + 0.075, M_METAL)
+# bottles: one per 6.5 cm along each old block, each one colour read from the photo at its own middle
+BOTTLE_MATS = {}
+def bottle_row(tag, y0, y1, z0, z1, pumps):
+    n = max(1, int((y1 - y0) / 0.065)); dy = (y1 - y0) / n; parts = []
+    for k in range(n):
+        y = y0 + dy * (k + 0.5); h = (z1 - z0) * (0.80, 1.0, 0.90, 0.97, 0.85)[k % 5] - 0.03; r = min(0.029, dy * 0.44)
+        col = photo_colour((XW + 0.05, y, z0 + h * 0.5), r=3)
+        key = tuple(round(c, 2) for c in col)
+        if key not in BOTTLE_MATS: BOTTLE_MATS[key] = shaded(f'V13_bottle_{len(BOTTLE_MATS)}', col, gloss=0.15, lo=0.5)
+        parts.append((y, h, r, BOTTLE_MATS[key]))
+    for k, (y, h, r, m) in enumerate(parts):
+        cx = XW + 0.05
+        def build(bm, y=y, h=h, r=r):
+            bmesh.ops.create_cone(bm, cap_ends=True, segments=20, radius1=r, radius2=r, depth=h, matrix=Matrix.Translation((cx, y, z0 + h / 2)))
+            bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=r * 0.75, radius2=r * 0.35, depth=0.02, matrix=Matrix.Translation((cx, y, z0 + h + 0.01)))   # shoulder
+        mesh_obj(f'V13_bottle_{tag}_{k}', build, m)
+        def cap(bm, y=y, h=h, r=r):
+            bmesh.ops.create_cone(bm, cap_ends=True, segments=12, radius1=0.010, radius2=0.010, depth=0.03, matrix=Matrix.Translation((cx, y, z0 + h + 0.035)))
+            if pumps: bmesh.ops.create_cube(bm, size=1.0, matrix=Matrix.Translation((cx + 0.012, y, z0 + h + 0.052)) @ Matrix.Diagonal((0.035, 0.009, 0.008, 1)))
+        mesh_obj(f'V13_cap_{tag}_{k}', cap, M_CAP)
+bottle_row('L_top', -2.92, -2.35, 1.34, 1.62, True); bottle_row('L_low', -2.80, -2.44, 0.97, 1.26, False)
+bottle_row('R_top', -1.69, -1.18, 1.34, 1.63, True); bottle_row('R_low', -1.62, -1.32, 0.97, 1.23, False)
+
+# ---------------------------------------------------------------- 2. the tap and the water
+BACK = Vector((-2.600, Y, 0.85))                      # the back of her bowl, centre (the tap in photos 12 and 17)
+LAND = Vector((-2.515, Y - 0.055, 0.0))               # where the stream meets her hair: the camera's side, just behind the near hand
+# the hair surface under LAND: cast down onto PV_Hair
+dg = bpy.context.evaluated_depsgraph_get()
+hit, loc, nrm, _, ob, _ = sc.ray_cast(dg, Vector((LAND.x, LAND.y, 0.94)), Vector((0, 0, -1)), distance=0.3)   # from under the low shelf (z 0.95): the hair, not the basket
+LAND = loc if hit else Vector((LAND.x, LAND.y, 0.86))
+print('V13 water lands on', ob.name if hit else None, tuple(round(c, 3) for c in LAND))
+TIP = Vector((LAND.x, LAND.y, min(LAND.z + 0.07, 0.935)))   # a short gentle fall; the tap stays under the low shelf (photos 12, 17)
+def tap(bm):
+    _limb(bm, BACK + Vector((0, 0, -0.01)), BACK + Vector((0, 0, 0.04)), 0.017)                  # body
+    top = BACK + Vector((0, 0, 0.075)); _limb(bm, BACK + Vector((0, 0, 0.04)), top, 0.011)       # riser, below the shelf
+    arc = [top]
+    for k in range(1, 9):                             # gooseneck from the riser over to the tip, ending pointing down
+        t = k / 8; a = math.pi * t
+        p = top.lerp(Vector((TIP.x, TIP.y, top.z)), 0.5 - 0.5 * math.cos(a)) + Vector((0, 0, 0.012 * math.sin(a)))
+        p.z = p.z + (TIP.z + 0.012 - top.z) * t * t
+        arc.append(p)
+    for a_, b_ in zip(arc, arc[1:]): _limb(bm, a_, b_, 0.010)
+    _limb(bm, arc[-1], TIP, 0.012, 0.010)                                                       # spray head
+    _limb(bm, BACK + Vector((0.0, 0.0, 0.03)), BACK + Vector((-0.04, 0.0, 0.05)), 0.006)          # lever, toward the wall
+mesh_obj('V13_tap', tap, M_CHROME)
+box('V13_basin_deck', -2.64, -2.56, Y - 0.16, Y + 0.16, 0.80, 0.85, bpy.data.materials.get('PV_m_basin') or M_BLACK)
+
+def water_material():
+    m = bpy.data.materials.get('V13_water') or bpy.data.materials.new('V13_water'); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear()
+    N = nt.nodes.new; Lk = nt.links.new
+    tc = N('ShaderNodeTexCoord'); mp = N('ShaderNodeMapping'); Lk(tc.outputs['Object'], mp.inputs['Vector'])
+    mp.inputs['Scale'].default_value = (90, 90, 9)
+    nz = N('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1.0; nz.inputs['Detail'].default_value = 3.0; Lk(mp.outputs[0], nz.inputs['Vector'])
+    ramp = N('ShaderNodeValToRGB'); Lk(nz.outputs['Fac'], ramp.inputs['Fac'])
+    ramp.color_ramp.elements[0].position = 0.35; ramp.color_ramp.elements[0].color = (0.62, 0.74, 0.80, 1)
+    ramp.color_ramp.elements[1].position = 0.70; ramp.color_ramp.elements[1].color = (0.97, 0.99, 1.0, 1)
+    lw = N('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.4
+    a = N('ShaderNodeMath'); a.operation = 'MULTIPLY_ADD'; a.inputs[1].default_value = 0.45; a.inputs[2].default_value = 0.45
+    Lk(lw.outputs['Fresnel'], a.inputs[0]); a.use_clamp = True
+    em = N('ShaderNodeEmission'); Lk(ramp.outputs['Color'], em.inputs['Color'])
+    tr = N('ShaderNodeBsdfTransparent'); mix = N('ShaderNodeMixShader'); Lk(a.outputs[0], mix.inputs['Fac'])
+    Lk(tr.outputs[0], mix.inputs[1]); Lk(em.outputs[0], mix.inputs[2])
+    out = N('ShaderNodeOutputMaterial'); Lk(mix.outputs[0], out.inputs[0])
+    try: m.surface_render_method = 'BLENDED'
+    except Exception: m.blend_method = 'BLEND'
+    loc = mp.inputs['Location']                        # streaks drift down ~4 cm a second: slow motion
+    loc.default_value = (0, 0, 0); loc.keyframe_insert('default_value', frame=1)
+    loc.default_value = (0, 0, 0.04 * (FR - 1) / 24); loc.keyframe_insert('default_value', frame=FR)
+    return m
+M_WATER = water_material()
+def hair_path(start, n=9, step=0.022):
+    """From `start`, walk down the hair's surface toward the bowl (gravity along the surface), a few mm proud of it."""
+    pts = [start]; p = start.copy()
+    for _ in range(n):
+        q = p + Vector((-0.35, -0.10, -1.0)).normalized() * step + Vector((0, 0, 0.06))
+        h, l, nn, _, o, _ = sc.ray_cast(dg, q, Vector((0, 0, -1)), distance=0.3)
+        if not h or l.z < 0.70: break
+        p = l + nn * 0.004; pts.append(p)
+    return pts
+def water(bm):
+    _limb(bm, TIP, LAND + Vector((0, 0, 0.004)), 0.0055, 0.0075)                                 # the falling stream
+    for dy, r in ((0.0, 0.0065), (0.012, 0.0045), (-0.012, 0.0045)):                              # running down the hair into the bowl
+        pts = hair_path(LAND + Vector((0, dy, 0.004)))
+        for a_, b_ in zip(pts, pts[1:]): _limb(bm, a_, b_, r, r * 0.9)
+    _ellipsoid(bm, LAND + Vector((0, 0, 0.004)), (0.016, 0.016, 0.004))                          # where it meets the hair
+mesh_obj('V13_water', water, M_WATER).visible_shadow = False
+
+# ---------------------------------------------------------------- 3. the stylist, hands circling slowly
+HANDS = [(-1, Vector((-2.465, -2.678, 0.885))), (1, Vector((-2.465, -2.502, 0.895)))]     # test 5: at the scalp, behind the ears
+R_CIRCLE, PERIOD = 0.010, 120.0                        # 1 cm, 5 s a turn
+def hand_offsets(f):
+    out = []
+    for k, (s, _) in enumerate(HANDS):
+        a = 2 * math.pi * (f - 1) / PERIOD + k * math.pi
+        out.append(Vector((R_CIRCLE * math.cos(a), 0.0, R_CIRCLE * 0.7 * math.sin(a))))    # in the plane of the side of her head
+    return out
+def stylist_at(f):
+    offs = hand_offsets(f)
+    def build(bm):
+        for s in (-1, 1):
+            _limb(bm, (SX + s * 0.09, SY + 0.02, 0.07), (SX + s * 0.09, SY, 0.49), 0.055, 0.065)
+            _limb(bm, (SX + s * 0.09, SY, 0.49), (SX + s * 0.10, SY - 0.03, 0.91), 0.068, 0.090)
+            _ellipsoid(bm, (SX + s * 0.09, SY - 0.07, 0.035), (0.05, 0.12, 0.035))
+        _ellipsoid(bm, (SX, SY - 0.04, 0.96), (0.18, 0.11, 0.12))
+        _ellipsoid(bm, (SX, SY - 0.10, 1.12), (0.15, 0.10, 0.13), Quaternion((1, 0, 0), math.radians(22)))
+        _ellipsoid(bm, (SX, SY - 0.19, 1.27), (0.19, 0.11, 0.15), Quaternion((1, 0, 0), math.radians(32)))
+        _limb(bm, (SX, SY - 0.25, 1.38), (SX, SY - 0.29, 1.47), 0.05)
+        _ellipsoid(bm, (SX, SY - 0.32, 1.57), (0.075, 0.095, 0.11), Quaternion((1, 0, 0), math.radians(30)))
+        for (s, hand), d in zip(HANDS, offs):
+            sh = Vector((SX + s * 0.19, SY - 0.22, 1.32)); hd = hand + d
+            el, hd2 = ik(sh, hd + Vector((0, 0.07, 0.02)), 0.29, 0.25, sh + Vector((s * 0.4, -0.1, -0.4)))
+            _limb(bm, sh, el, 0.048, 0.040); _limb(bm, el, hd2, 0.038, 0.030)
+            _ellipsoid(bm, hd, (0.085, 0.042, 0.020), Quaternion((0, 1, 0), math.radians(35)))
+    bm = bmesh.new(); build(bm); co = [v.co.copy() for v in bm.verts]; return bm, co
+bm0, _ = stylist_at(1)
+st = mesh_obj('PV_Stylist', lambda bm: None, bpy.data.materials.get('PV_m_stylist'))
+me = st.data; bm0.to_mesh(me); bm0.free()
+for p in me.polygons: p.use_smooth = True
+st.shape_key_add(name='Basis', from_mix=False)
+STEP = 4; samples = list(range(1, FR + 1, STEP)) + ([FR] if (FR - 1) % STEP else [])
+keys = []
+for f in samples[1:]:
+    bm, co = stylist_at(f); bm.free(); k = st.shape_key_add(name=f'f{f}', from_mix=False)
+    k.data.foreach_set('co', [c for v in co for c in v]); keys.append((f, k))
+allf = samples
+for i, (f, k) in enumerate(keys):
+    j = i + 1; prev = allf[j - 1]; nxt = allf[j + 1] if j + 1 < len(allf) else None
+    k.value = 0.0; k.keyframe_insert('value', frame=prev); k.value = 1.0; k.keyframe_insert('value', frame=f)
+    if nxt: k.value = 0.0; k.keyframe_insert('value', frame=nxt)
+
+# ---------------------------------------------------------------- the light: no photo, no visibility light; a soft dark world
+lt = bpy.data.objects.get('PV_photo_light')
+if lt: bpy.data.objects.remove(lt, do_unlink=True)
+w = bpy.data.worlds.new('V13_world'); w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.02, 0.018, 0.016, 1); sc.world = w
+left = [o.name for o in bpy.data.objects if o.type == 'MESH' and any(s.material and s.material.name == 'PV_photo' for s in o.material_slots) and not o.hide_render]
+print('V13_LOOK ok: photo on %d objects (must be 0), %d bottle colours, stylist %d shape keys, water + tap built' % (len(left), len(BOTTLE_MATS), len(keys)))
