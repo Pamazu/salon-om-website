@@ -1,0 +1,6 @@
+{"mark": "One continuous 5-second shot, 16:9, cinematic, in the real Salon OM",
+ "prompt_has": ["low chrome spout", "pools around her hair", "long, slow strokes", "Cinematic and calm", "0:00-0:05"],
+ "prompt_lacks": ["15-second", "0:00-0:15", "@loc_basins", "@move", "gooseneck", "The room in the video is the photo"],
+ "bar": {"model": "Dreamina Seedance 2.5", "mode": "Omni reference", "ratio": "16:9", "res": "480P", "dur": "5s"},
+ "max_credits": 120,
+ "refs": {"images": 1, "videos": 1, "audio": 0}}
