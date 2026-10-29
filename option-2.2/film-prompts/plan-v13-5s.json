@@ -1,0 +1,6 @@
+{"mark": "One continuous 5-second shot, 16:9, cinematic, in the real Salon OM",
+ "prompt_has": ["chrome gooseneck tap at the back of her black bowl", "cradles the back of the woman's head", "long, slow strokes", "Cinematic and calm", "0:00-0:05"],
+ "prompt_lacks": ["15-second", "0:00-0:15", "@loc_basins", "@move", "The room in the video is the photo"],
+ "bar": {"model": "Dreamina Seedance 2.5", "mode": "Omni reference", "ratio": "16:9", "res": "480P", "dur": "5s"},
+ "max_credits": 120,
+ "refs": {"images": 1, "videos": 1, "audio": 0}}
