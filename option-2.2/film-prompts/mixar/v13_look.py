@@ -37,7 +37,7 @@ def photo_colour(P, r=4, fallback=(0.7, 0.65, 0.58)):
 def at_px(u, v, r=6):
     return tuple(float(x) ** 2.2 for x in np.median(PX[v - r:v + r, u - r:u + r].reshape(-1, 3), axis=0))
 CREAM, TILE = at_px(1110, 560), at_px(820, 800)
-WOOD = photo_colour((XW + 0.40, -3.25, 0.55), r=10)     # the drawer unit's own front, lit as in the photo
+WOOD = at_px(505, 400)                                  # the drawer unit's front in the photo (as v11)
 M_CREAM = shaded('V13_cream', CREAM, lo=0.62); M_WOOD = shaded('V13_wood', WOOD, lo=0.5); M_TILE = shaded('V13_tile', TILE, lo=0.6)
 M_BLACK = shaded('V13_black', (0.02, 0.02, 0.022), gloss=0.25); M_GLASS = shaded('V13_glass', (0.50, 0.58, 0.56), gloss=0.3, lo=0.7)
 M_METAL = shaded('V13_metal', (0.42, 0.42, 0.44), gloss=0.6, lo=0.55); M_CHROME = shaded('V13_chrome', (0.55, 0.56, 0.60), gloss=0.9, lo=0.35)
@@ -107,17 +107,17 @@ bottle_row('L_top', -2.92, -2.35, 1.34, 1.62, True); bottle_row('L_low', -2.80, 
 bottle_row('R_top', -1.69, -1.18, 1.34, 1.63, True); bottle_row('R_low', -1.62, -1.32, 0.97, 1.23, False)
 
 # ---------------------------------------------------------------- 2. the tap and the water
-BACK = Vector((-2.600, Y, 0.85))                      # the back of her bowl, centre (the tap in photos 12 and 17)
-LAND = Vector((-2.515, Y - 0.055, 0.0))               # where the stream meets her hair: the camera's side, just behind the near hand
+BACK = Vector((-2.530, Y - 0.03, 0.85))               # the back rim of her bowl (the tap in photos 12 and 17), just clear of the low shelf
+LAND = Vector((-2.470, Y - 0.045, 0.0))               # where the stream meets her hair: on the crown, between the hands, seen against the bottles
 # the hair surface under LAND: cast down onto PV_Hair
 dg = bpy.context.evaluated_depsgraph_get()
-hit, loc, nrm, _, ob, _ = sc.ray_cast(dg, Vector((LAND.x, LAND.y, 0.94)), Vector((0, 0, -1)), distance=0.3)   # from under the low shelf (z 0.95): the hair, not the basket
+hit, loc, nrm, _, ob, _ = sc.ray_cast(dg, Vector((LAND.x, LAND.y, 1.20)), Vector((0, 0, -1)), distance=0.6)   # in front of the shelves: straight down onto the hair
 LAND = loc if hit else Vector((LAND.x, LAND.y, 0.86))
 print('V13 water lands on', ob.name if hit else None, tuple(round(c, 3) for c in LAND))
-TIP = Vector((LAND.x, LAND.y, min(LAND.z + 0.07, 0.935)))   # a short gentle fall; the tap stays under the low shelf (photos 12, 17)
+TIP = Vector((LAND.x, LAND.y, LAND.z + 0.10))         # 10 cm of gentle fall, above her hair line: the camera sees the stream
 def tap(bm):
     _limb(bm, BACK + Vector((0, 0, -0.01)), BACK + Vector((0, 0, 0.04)), 0.017)                  # body
-    top = BACK + Vector((0, 0, 0.075)); _limb(bm, BACK + Vector((0, 0, 0.04)), top, 0.011)       # riser, below the shelf
+    top = Vector((BACK.x, BACK.y, TIP.z + 0.03)); _limb(bm, BACK + Vector((0, 0, 0.04)), top, 0.011)   # riser
     arc = [top]
     for k in range(1, 9):                             # gooseneck from the riser over to the tip, ending pointing down
         t = k / 8; a = math.pi * t
@@ -163,7 +163,7 @@ def hair_path(start, n=9, step=0.022):
         p = l + nn * 0.004; pts.append(p)
     return pts
 def water(bm):
-    _limb(bm, TIP, LAND + Vector((0, 0, 0.004)), 0.0055, 0.0075)                                 # the falling stream
+    _limb(bm, TIP, LAND + Vector((0, 0, 0.004)), 0.0070, 0.0095)                                 # the falling stream
     for dy, r in ((0.0, 0.0065), (0.012, 0.0045), (-0.012, 0.0045)):                              # running down the hair into the bowl
         pts = hair_path(LAND + Vector((0, dy, 0.004)))
         for a_, b_ in zip(pts, pts[1:]): _limb(bm, a_, b_, r, r * 0.9)
