@@ -56,4 +56,7 @@ KEEP CONSISTENT
 - One continuous move from the first frame to the last.
 
 WHAT CAME BACK
-(fill in after the take; logged in the Test Lab as arm SR13)
+Take 6 (29 Oct, v13, Seedance 2.5, 480P, 5 s, 120 credits, Dreamina scene 18655b2ffe64; renders/take-v13-5s-6.mp4). Scored WRONG by the CEO MA. Test Lab: EXP-salon-rooted-1, arm SR13, run 1, fail.
+WORKED (J's 29 Oct notes): the flat look is gone, with real depth, soft cinematic blur and warm light (SRH12 now 83%); the camera sits between tests 4 and 5 with the wood drawer unit at the left; the hands are calm, one hand cradling her head behind the ear the whole clip, no robotic circles.
+FAILED: no water in any frame. A tall chrome column rises from the bowl to above her crown, exactly where the previz's glassy water stand-in was: the model copied the stand-in as a solid object. Minor: the bottles read "AVENA" (invented text, SRH15 still failing); her hair reads short.
+Next, test 7 = arm SR14, ONE change: Designer 1's previz v13b with the water stand-in removed (the short chrome tap kept, nothing between the tap and her crown). This prompt is unchanged except @move -> renders/salon-om-rooted-previz-v13b-5s.mp4 (SRH16: with the water in words only, the model draws water).
