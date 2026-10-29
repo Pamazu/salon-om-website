@@ -200,8 +200,8 @@ if V13B and globals().get('V13C'):
         except Exception: m.blend_method = 'BLEND'
         return m
     TOPZ = SPOUT.z + 0.070
-    P0 = SPOUT + Vector((0.016, 0.010, 0.064))                      # the mouth: the top edge of the cylinder, on her side
-    aim = Vector((-2.535, Y - 0.055, 0.0))                          # the back of her head, between tap and crown
+    P0 = SPOUT + Vector((0.0, -0.017, 0.064))                       # the mouth: the top edge of the cylinder, on the camera's side
+    aim = Vector((-2.530, Y - 0.110, 0.0))                          # the back of her head, camera side: the only landing the stylist's near hand does not hide (searched, 100 % of the arc visible)
     h, LND, _, _, o_, _ = sc.ray_cast(dg, Vector((aim.x, aim.y, TOPZ - 0.002)), Vector((0, 0, -1)), distance=0.4)
     LND = LND if h else Vector((aim.x, aim.y, 0.86))
     print('V13c arc lands on', o_.name if h else None, tuple(round(c, 3) for c in LND))
