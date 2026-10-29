@@ -144,6 +144,15 @@ def plain_cylinder(bm):      # v13b-b (CEO 675d5797): Dreamina refused v13b's up
 V13B_TAP = globals().get('V13B_TAP', 'spout')   # spout (v13b) | none (v13b-a) | cylinder (v13b-b)
 if V13B and V13B_TAP == 'none': pass
 elif V13B and V13B_TAP == 'cylinder': mesh_obj('V13_tap', plain_cylinder, M_CHROME)
+elif V13B and V13B_TAP == 'faucet':          # v13f (CEO 646a8174): a SMALL recognisable faucet, top below her crown: short curved neck,
+    def small_faucet(bm):                     # a downturned spout whose mouth is where the v13c/d stream starts, and a lever
+        _limb(bm, SPOUT, SPOUT + Vector((0, 0, 0.008)), 0.020, 0.020)                              # base ring
+        _limb(bm, SPOUT + Vector((0, 0, 0.008)), SPOUT + Vector((0, 0, 0.060)), 0.011, 0.010)      # neck
+        pts = [SPOUT + Vector((0, -0.022 * (0.5 - 0.5 * math.cos(math.pi * t)), 0.060 + 0.022 * math.sin(math.pi * t) + (0.069 - 0.060) * t - 0.009 * t)) for t in [k / 8 for k in range(9)]]
+        for a_, b_ in zip(pts, pts[1:]): _limb(bm, a_, b_, 0.0095, 0.0095)                       # the curve over and down, toward the camera side
+        _limb(bm, pts[-1], pts[-1] + Vector((0, 0, -0.008)), 0.011, 0.010)                        # downturned mouth
+        _limb(bm, SPOUT + Vector((0, 0, 0.040)), SPOUT + Vector((-0.030, 0, 0.055)), 0.005)       # lever, toward the wall
+    mesh_obj('V13_tap', small_faucet, M_CHROME)
 elif V13B: mesh_obj('V13_tap', short_spout, M_CHROME)
 else: mesh_obj('V13_tap', tap, M_CHROME)
 box('V13_basin_deck', -2.64, -2.56, Y - 0.16, Y + 0.16, 0.80, 0.85, bpy.data.materials.get('PV_m_basin') or M_BLACK)
@@ -186,7 +195,7 @@ def water(bm):
         pts = hair_path(LAND + Vector((0, dy, 0.004)))
         for a_, b_ in zip(pts, pts[1:]): _limb(bm, a_, b_, r, r * 0.9)
     _ellipsoid(bm, LAND + Vector((0, 0, 0.004)), (0.016, 0.016, 0.004))                          # where it meets the hair
-if not V13B: mesh_obj('V13_water', water, M_WATER).visible_shadow = False   # v13b: no stand-in; the prompt's words carry the water
+if not V13B and not globals().get('V13_NOWATER'): mesh_obj('V13_water', water, M_WATER).visible_shadow = False   # v13e (CEO 646a8174): --nowater = v13 with the column removed, the tall tap kept   # v13b: no stand-in; the prompt's words carry the water
 # v13c (CEO 402ab8d3): Dreamina refused every previz WITHOUT water (v13b, -a, -b), approved v13 WITH it. So: the plain cylinder tap
 # + ONE short thin clear arc from its mouth, curving down onto the back of her head and on into the bowl. ~1 cm thick, pale blue,
 # half see-through, never higher than the tap's top (test 6 copied v13's tall glassy column as a chrome pipe).
@@ -201,6 +210,7 @@ if V13B and globals().get('V13C'):
         return m
     TOPZ = SPOUT.z + 0.070
     P0 = SPOUT + Vector((0.0, -0.017, 0.064))                       # the mouth: the top edge of the cylinder, on the camera's side
+    if V13B_TAP == 'faucet': P0 = SPOUT + Vector((0.0, -0.022, 0.052))   # v13f: the small faucet's downturned mouth
     aim = Vector((-2.530, Y - 0.110, 0.0))                          # the back of her head, camera side: the only landing the stylist's near hand does not hide (searched, 100 % of the arc visible)
     h, LND, _, _, o_, _ = sc.ray_cast(dg, Vector((aim.x, aim.y, TOPZ - 0.002)), Vector((0, 0, -1)), distance=0.4)
     LND = LND if h else Vector((aim.x, aim.y, 0.86))
