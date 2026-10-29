@@ -131,7 +131,16 @@ def tap(bm):
     for a_, b_ in zip(arc, arc[1:]): _limb(bm, a_, b_, 0.010)
     _limb(bm, arc[-1], TIP, 0.012, 0.010)                                                       # spray head
     _limb(bm, BACK + Vector((0.0, 0.0, 0.03)), BACK + Vector((-0.04, 0.0, 0.05)), 0.006)          # lever, toward the wall
-mesh_obj('V13_tap', tap, M_CHROME)
+def short_spout(bm):         # v13b (J 29 Oct 10:00): the real tap in photos 12/17 is a SHORT, LOW chrome spout on the back rim, not a gooseneck:
+    B = SPOUT                 # a flat base ring, a ~6 cm round body, a squat lever head with two small wings, a 3 cm stub spout over the bowl
+    _limb(bm, B, B + Vector((0, 0, 0.008)), 0.024, 0.024)                                      # base ring on the rim
+    _limb(bm, B + Vector((0, 0, 0.008)), B + Vector((0, 0, 0.058)), 0.016, 0.015)              # body
+    _ellipsoid(bm, B + Vector((0, 0, 0.064)), (0.019, 0.019, 0.010))                           # head
+    for s_ in (-1, 1): _limb(bm, B + Vector((0, s_ * 0.010, 0.068)), B + Vector((0.004, s_ * 0.020, 0.080)), 0.004)   # lever wings
+    _limb(bm, B + Vector((0.008, 0, 0.040)), B + Vector((0.038, 0, 0.032)), 0.007, 0.006)       # stub spout, toward her crown
+SPOUT = Vector((-2.578, Y - 0.085, 0.85))     # back rim, left of the bowl's centre as in photo 12 (the camera's side)
+if V13B: mesh_obj('V13_tap', short_spout, M_CHROME)
+else: mesh_obj('V13_tap', tap, M_CHROME)
 box('V13_basin_deck', -2.64, -2.56, Y - 0.16, Y + 0.16, 0.80, 0.85, bpy.data.materials.get('PV_m_basin') or M_BLACK)
 
 def water_material():
