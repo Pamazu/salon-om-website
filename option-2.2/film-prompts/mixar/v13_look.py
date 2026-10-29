@@ -187,6 +187,31 @@ def water(bm):
         for a_, b_ in zip(pts, pts[1:]): _limb(bm, a_, b_, r, r * 0.9)
     _ellipsoid(bm, LAND + Vector((0, 0, 0.004)), (0.016, 0.016, 0.004))                          # where it meets the hair
 if not V13B: mesh_obj('V13_water', water, M_WATER).visible_shadow = False   # v13b: no stand-in; the prompt's words carry the water
+# v13c (CEO 402ab8d3): Dreamina refused every previz WITHOUT water (v13b, -a, -b), approved v13 WITH it. So: the plain cylinder tap
+# + ONE short thin clear arc from its mouth, curving down onto the back of her head and on into the bowl. ~1 cm thick, pale blue,
+# half see-through, never higher than the tap's top (test 6 copied v13's tall glassy column as a chrome pipe).
+if V13B and globals().get('V13C'):
+    def arc_material():
+        m = bpy.data.materials.new('V13c_water'); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear(); N = nt.nodes.new; Lk = nt.links.new
+        em = N('ShaderNodeEmission'); em.inputs['Color'].default_value = (0.62, 0.80, 0.95, 1)
+        tr = N('ShaderNodeBsdfTransparent'); mix = N('ShaderNodeMixShader'); mix.inputs['Fac'].default_value = 0.55
+        Lk(tr.outputs[0], mix.inputs[1]); Lk(em.outputs[0], mix.inputs[2]); out = N('ShaderNodeOutputMaterial'); Lk(mix.outputs[0], out.inputs[0])
+        try: m.surface_render_method = 'BLENDED'
+        except Exception: m.blend_method = 'BLEND'
+        return m
+    TOPZ = SPOUT.z + 0.070
+    P0 = SPOUT + Vector((0.016, 0.010, 0.064))                      # the mouth: the top edge of the cylinder, on her side
+    aim = Vector((-2.535, Y - 0.055, 0.0))                          # the back of her head, between tap and crown
+    h, LND, _, _, o_, _ = sc.ray_cast(dg, Vector((aim.x, aim.y, TOPZ - 0.002)), Vector((0, 0, -1)), distance=0.4)
+    LND = LND if h else Vector((aim.x, aim.y, 0.86))
+    print('V13c arc lands on', o_.name if h else None, tuple(round(c, 3) for c in LND))
+    C1 = Vector((P0.x + (LND.x - P0.x) * 0.65, P0.y + (LND.y - P0.y) * 0.65, P0.z))   # quadratic arc: leaves level, falls (top = P0.z < TOPZ)
+    ARC = [(1 - t) ** 2 * P0 + 2 * (1 - t) * t * C1 + t * t * (LND + Vector((0, 0, 0.003))) for t in [k / 10 for k in range(11)]]
+    ARC += hair_path(LND + Vector((0, 0, 0.003)))[1:]                # then on down the hair into the bowl
+    assert max(p.z for p in ARC) <= TOPZ, 'arc above the tap'
+    def arc_mesh(bm):
+        for a_, b_ in zip(ARC, ARC[1:]): _limb(bm, a_, b_, 0.005, 0.005)
+    mesh_obj('V13c_water_arc', arc_mesh, arc_material()).visible_shadow = False
 
 # ---------------------------------------------------------------- 3. the stylist, hands circling slowly
 HANDS = [(-1, Vector((-2.465, -2.678, 0.885))), (1, Vector((-2.465, -2.502, 0.895)))]     # test 5: at the scalp, behind the ears
