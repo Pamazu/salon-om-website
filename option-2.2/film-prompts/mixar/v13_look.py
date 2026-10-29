@@ -209,9 +209,26 @@ if V13B and globals().get('V13C'):
     ARC = [(1 - t) ** 2 * P0 + 2 * (1 - t) * t * C1 + t * t * (LND + Vector((0, 0, 0.003))) for t in [k / 10 for k in range(11)]]
     ARC += hair_path(LND + Vector((0, 0, 0.003)))[1:]                # then on down the hair into the bowl
     assert max(p.z for p in ARC) <= TOPZ, 'arc above the tap'
+    V13D = globals().get('V13D', False)        # v13d (J 'Yes continue' 10:56, CEO bd901926): v13's water LOOK at the low tap's height
+    RW = 0.0095 if V13D else 0.005             # v13d: as thick and glassy as v13's stand-in (r 7-9.5 mm, its streaky material)
     def arc_mesh(bm):
-        for a_, b_ in zip(ARC, ARC[1:]): _limb(bm, a_, b_, 0.005, 0.005)
-    mesh_obj('V13c_water_arc', arc_mesh, arc_material()).visible_shadow = False
+        for k, (a_, b_) in enumerate(zip(ARC, ARC[1:])): _limb(bm, a_, b_, RW if k < 10 else RW * 0.75, RW if k < 9 else RW * 0.75)
+        if V13D: _ellipsoid(bm, LND + Vector((0, 0, 0.004)), (0.018, 0.018, 0.005))      # where it meets her hair
+    mesh_obj('V13c_water_arc', arc_mesh, M_WATER if V13D else arc_material()).visible_shadow = False
+    if V13D:                                   # clear pale water pooled in the black bowl around her hair
+        def pool_mat():
+            m = bpy.data.materials.new('V13d_pool'); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear(); N = nt.nodes.new; Lk = nt.links.new
+            lw = N('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.3
+            mp = N('ShaderNodeMapRange'); mp.inputs['To Min'].default_value = 0.35; mp.inputs['To Max'].default_value = 0.85; Lk(lw.outputs['Facing'], mp.inputs['Value'])
+            em = N('ShaderNodeEmission'); em.inputs['Color'].default_value = (0.60, 0.78, 0.90, 1)
+            tr = N('ShaderNodeBsdfTransparent'); mix = N('ShaderNodeMixShader'); Lk(mp.outputs['Result'], mix.inputs['Fac'])
+            Lk(tr.outputs[0], mix.inputs[1]); Lk(em.outputs[0], mix.inputs[2]); out = N('ShaderNodeOutputMaterial'); Lk(mix.outputs[0], out.inputs[0])
+            try: m.surface_render_method = 'BLENDED'
+            except Exception: m.blend_method = 'BLEND'
+            return m
+        POOL = globals().get('POOL', (-2.445, Y, 0.775, 0.105, 0.215, 0.006))
+        def pool(bm): _ellipsoid(bm, POOL[:3], POOL[3:])
+        mesh_obj('V13d_pool', pool, pool_mat()).visible_shadow = False
 
 # ---------------------------------------------------------------- 3. the stylist, hands circling slowly
 HANDS = [(-1, Vector((-2.465, -2.678, 0.885))), (1, Vector((-2.465, -2.502, 0.895)))]     # test 5: at the scalp, behind the ears
