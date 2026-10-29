@@ -226,7 +226,7 @@ if V13B and globals().get('V13C'):
             try: m.surface_render_method = 'BLENDED'
             except Exception: m.blend_method = 'BLEND'
             return m
-        POOL = globals().get('POOL', (-2.445, Y, 0.775, 0.105, 0.215, 0.006))
+        POOL = globals().get('POOL', (-2.437, Y - 0.01, 0.818, 0.118, 0.225, 0.006))   # just under the rim, so the camera sees it around her hair (at 0.775 the near rim hid it)
         def pool(bm): _ellipsoid(bm, POOL[:3], POOL[3:])
         mesh_obj('V13d_pool', pool, pool_mat()).visible_shadow = False
 
