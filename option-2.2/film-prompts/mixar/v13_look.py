@@ -134,13 +134,13 @@ def water_material():
     m = bpy.data.materials.get('V13_water') or bpy.data.materials.new('V13_water'); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear()
     N = nt.nodes.new; Lk = nt.links.new
     tc = N('ShaderNodeTexCoord'); mp = N('ShaderNodeMapping'); Lk(tc.outputs['Object'], mp.inputs['Vector'])
-    mp.inputs['Scale'].default_value = (90, 90, 9)
+    mp.inputs['Scale'].default_value = (140, 140, 6)
     nz = N('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1.0; nz.inputs['Detail'].default_value = 3.0; Lk(mp.outputs[0], nz.inputs['Vector'])
     ramp = N('ShaderNodeValToRGB'); Lk(nz.outputs['Fac'], ramp.inputs['Fac'])
-    ramp.color_ramp.elements[0].position = 0.35; ramp.color_ramp.elements[0].color = (0.62, 0.74, 0.80, 1)
-    ramp.color_ramp.elements[1].position = 0.70; ramp.color_ramp.elements[1].color = (0.97, 0.99, 1.0, 1)
+    ramp.color_ramp.elements[0].position = 0.40; ramp.color_ramp.elements[0].color = (0.55, 0.70, 0.80, 1)
+    ramp.color_ramp.elements[1].position = 0.55; ramp.color_ramp.elements[1].color = (1.0, 1.0, 1.0, 1)
     lw = N('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.4
-    a = N('ShaderNodeMath'); a.operation = 'MULTIPLY_ADD'; a.inputs[1].default_value = 0.45; a.inputs[2].default_value = 0.45
+    a = N('ShaderNodeMath'); a.operation = 'MULTIPLY_ADD'; a.inputs[1].default_value = 0.25; a.inputs[2].default_value = 0.70   # mostly opaque, white streaks: reads as running water, not a glass rod (blind check v13)
     Lk(lw.outputs['Fresnel'], a.inputs[0]); a.use_clamp = True
     em = N('ShaderNodeEmission'); Lk(ramp.outputs['Color'], em.inputs['Color'])
     tr = N('ShaderNodeBsdfTransparent'); mix = N('ShaderNodeMixShader'); Lk(a.outputs[0], mix.inputs['Fac'])
@@ -150,7 +150,7 @@ def water_material():
     except Exception: m.blend_method = 'BLEND'
     loc = mp.inputs['Location']                        # streaks drift down ~4 cm a second: slow motion
     loc.default_value = (0, 0, 0); loc.keyframe_insert('default_value', frame=1)
-    loc.default_value = (0, 0, 0.04 * (FR - 1) / 24); loc.keyframe_insert('default_value', frame=FR)
+    loc.default_value = (0, 0, 0.12 * (FR - 1) / 24); loc.keyframe_insert('default_value', frame=FR)
     return m
 M_WATER = water_material()
 def hair_path(start, n=9, step=0.022):
