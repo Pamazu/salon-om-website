@@ -13,6 +13,7 @@
 #   --v13b         (with --v13) v13b / test 7: no water stand-in, the tap at the photos' size
 #   --v13c         (with --v13b --tap cylinder) v13c: + a thin pale water arc from the tap onto the back of her head
 #   --v13d         (with --v13c) v13d: the arc thick and glassy like v13's stream, + clear water pooled in the bowl
+#   --v13g         (with --v13) her head a plain faceless adult mannequin head (Dreamina refused the cartoon face)
 #   --nowater      (with --v13, not --v13b) v13e: v13 with its water column removed, the tall gooseneck kept
 #   --tap T        (with --v13b) spout (default) | none (v13b-a) | cylinder (v13b-b) | faucet (v13f, small curved faucet): Dreamina upload refusal bisect
 #   --v13          (with --v11) NO photo in the render: solid room in the photo's colours, bottles, tap + water, slow hands
@@ -133,7 +134,7 @@ else:
         V11 = {'PHOTO_PATH': L['PHOTO'], '__name__': 'v11'}
         exec(compile(open(os.path.join(HERE, 'v11_look.py')).read(), 'v11_look.py', 'exec'), V11)
         if '--v13' in args:      # v13: no photo in the render, solid room in the photo's colours, tap + water, slow hands (v13_look.py)
-            exec(compile(open(os.path.join(HERE, 'v13_look.py')).read(), 'v13_look.py', 'exec'), {'V11': V11, 'PHOTO_PATH': L['PHOTO'], 'FRAMES': FRAMES, 'V13B': '--v13b' in args, 'V13C': '--v13c' in args, 'V13D': '--v13d' in args, 'V13_NOWATER': '--nowater' in args, 'V13B_TAP': args[args.index('--tap') + 1] if '--tap' in args else 'spout', '__name__': 'v13'})
+            exec(compile(open(os.path.join(HERE, 'v13_look.py')).read(), 'v13_look.py', 'exec'), {'V11': V11, 'PHOTO_PATH': L['PHOTO'], 'FRAMES': FRAMES, 'V13B': '--v13b' in args, 'V13C': '--v13c' in args, 'V13D': '--v13d' in args, 'V13G': '--v13g' in args, 'V13_NOWATER': '--nowater' in args, 'V13B_TAP': args[args.index('--tap') + 1] if '--tap' in args else 'spout', '__name__': 'v13'})
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, 'salon_om_rooted_previz_v10.blend'))
     if '--photocam' in args:     # orientation check: the scene seen from the photo's own solved camera, beside / over the photo
         pc = bpy.data.objects['cam_photo']; sc.camera = pc; rx, ry = sc.render.resolution_x, sc.render.resolution_y

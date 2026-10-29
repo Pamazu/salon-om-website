@@ -240,6 +240,13 @@ if V13B and globals().get('V13C'):
         def pool(bm): _ellipsoid(bm, POOL[:3], POOL[3:])
         mesh_obj('V13d_pool', pool, pool_mat()).visible_shadow = False
 
+# v13g (CEO be49598a): Dreamina's review refused the cartoon face (round head, eyes, blush on a reclining figure read as a child);
+# the same video with the face covered was approved. So her head is a plain FACELESS ADULT mannequin head: the v11 skull, jaw and
+# ears only (adult 0.22 m head), one skin tone: no eyes, brows, lips, blush or nose bump. Hair unchanged. The stylist's head was
+# already a plain oval (and is out of frame).
+if globals().get('V13G'):
+    G['_obj']('PV_Head', G['head'], G['shaded']("PV_m_client", G['C_CLIENT']))
+
 # ---------------------------------------------------------------- 3. the stylist, hands circling slowly
 HANDS = [(-1, Vector((-2.465, -2.678, 0.885))), (1, Vector((-2.465, -2.502, 0.895)))]     # test 5: at the scalp, behind the ears
 R_CIRCLE, PERIOD = 0.010, 120.0                        # 1 cm, 5 s a turn
