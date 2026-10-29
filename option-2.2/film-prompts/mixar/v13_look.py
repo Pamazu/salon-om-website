@@ -139,7 +139,12 @@ def short_spout(bm):         # v13b (J 29 Oct 10:00): the real tap in photos 12/
     for s_ in (-1, 1): _limb(bm, B + Vector((0, s_ * 0.010, 0.068)), B + Vector((0.004, s_ * 0.020, 0.080)), 0.004)   # lever wings
     _limb(bm, B + Vector((0.008, 0, 0.040)), B + Vector((0.038, 0, 0.032)), 0.007, 0.006)       # stub spout, toward her crown
 SPOUT = Vector((-2.578, Y - 0.085, 0.85))     # back rim, left of the bowl's centre as in photo 12 (the camera's side)
-if V13B: mesh_obj('V13_tap', short_spout, M_CHROME)
+def plain_cylinder(bm):      # v13b-b (CEO 675d5797): Dreamina refused v13b's upload; the tap as ONE plain low chrome cylinder, same place, same height
+    _limb(bm, SPOUT, SPOUT + Vector((0, 0, 0.070)), 0.017, 0.017)
+V13B_TAP = globals().get('V13B_TAP', 'spout')   # spout (v13b) | none (v13b-a) | cylinder (v13b-b)
+if V13B and V13B_TAP == 'none': pass
+elif V13B and V13B_TAP == 'cylinder': mesh_obj('V13_tap', plain_cylinder, M_CHROME)
+elif V13B: mesh_obj('V13_tap', short_spout, M_CHROME)
 else: mesh_obj('V13_tap', tap, M_CHROME)
 box('V13_basin_deck', -2.64, -2.56, Y - 0.16, Y + 0.16, 0.80, 0.85, bpy.data.materials.get('PV_m_basin') or M_BLACK)
 
