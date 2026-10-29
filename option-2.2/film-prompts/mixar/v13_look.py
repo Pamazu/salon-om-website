@@ -115,9 +115,13 @@ hit, loc, nrm, _, ob, _ = sc.ray_cast(dg, Vector((LAND.x, LAND.y, 1.20)), Vector
 LAND = loc if hit else Vector((LAND.x, LAND.y, 0.86))
 print('V13 water lands on', ob.name if hit else None, tuple(round(c, 3) for c in LAND))
 TIP = Vector((LAND.x, LAND.y, LAND.z + 0.10))         # 10 cm of gentle fall, above her hair line: the camera sees the stream
+V13B = globals().get('V13B', False)                  # v13b (test 7, CEO bd151538): test 6 drew the water stand-in as a tall chrome column and no water.
+if V13B:                                             # so: NO water stand-in, and the tap at the photos' size (12, 17): a short gooseneck
+    BACK = Vector((-2.555, Y - 0.03, 0.85))           # on the back rim, ~11 cm tall, its spout curving over the bowl toward her crown
+    TIP = Vector((-2.505, Y - 0.035, 0.925))
 def tap(bm):
     _limb(bm, BACK + Vector((0, 0, -0.01)), BACK + Vector((0, 0, 0.04)), 0.017)                  # body
-    top = Vector((BACK.x, BACK.y, TIP.z + 0.03)); _limb(bm, BACK + Vector((0, 0, 0.04)), top, 0.011)   # riser
+    top = Vector((BACK.x, BACK.y, TIP.z + (0.035 if V13B else 0.03))); _limb(bm, BACK + Vector((0, 0, 0.04)), top, 0.011)   # riser
     arc = [top]
     for k in range(1, 9):                             # gooseneck from the riser over to the tip, ending pointing down
         t = k / 8; a = math.pi * t
@@ -168,7 +172,7 @@ def water(bm):
         pts = hair_path(LAND + Vector((0, dy, 0.004)))
         for a_, b_ in zip(pts, pts[1:]): _limb(bm, a_, b_, r, r * 0.9)
     _ellipsoid(bm, LAND + Vector((0, 0, 0.004)), (0.016, 0.016, 0.004))                          # where it meets the hair
-mesh_obj('V13_water', water, M_WATER).visible_shadow = False
+if not V13B: mesh_obj('V13_water', water, M_WATER).visible_shadow = False   # v13b: no stand-in; the prompt's words carry the water
 
 # ---------------------------------------------------------------- 3. the stylist, hands circling slowly
 HANDS = [(-1, Vector((-2.465, -2.678, 0.885))), (1, Vector((-2.465, -2.502, 0.895)))]     # test 5: at the scalp, behind the ears
