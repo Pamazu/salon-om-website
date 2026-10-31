@@ -88,7 +88,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .tl__ph img[src$="real-maggie-standing-shelves.webp"] { object-position: 50% 20%; }
 
 /* ==== how the second world is signposted (J, 19 Oct 18:42: "IT's not clear that you can change to the inner work
-   variation"). ?switch=a (default) is today's pill; b adds a door strip at the foot of the screen; c names the pill
+   variation"). ?switch=a is the pill alone; b (the default since 31 Oct, For-you 6c4f8253) adds a door strip at the foot of the screen; c names the pill
    and lets the other practice breathe. Existing motion only: .intro rise, --io / --io-soft, the 9s breathe. ==== */
 .wdoor { display: none; }
 [data-switch="b"] .wdoor { position: fixed; z-index: 44; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 2 * var(--gutter)); white-space: nowrap; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 16px; padding: 12px 14px 12px 22px; border-radius: 999px; background: rgba(21, 16, 12, .5); backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%); color: var(--ivory); text-decoration: none; opacity: 0; animation: intro 1.5s var(--io) 3.2s forwards; transition: background-color var(--t-ui) var(--io), opacity .6s var(--io); }

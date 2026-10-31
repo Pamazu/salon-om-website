@@ -27,13 +27,13 @@
 })();
 /* Shift+V: live option cycling for J (19 Oct). It cycles the option set of the slide on screen:
    - on the parked pause slide ("A gentle question", shown with ?pause=1|2|3|0): 1 Photo, 2 Framed, 3 Letter, 0 the old clay look;
-   - anywhere else: the world switch, 1 the pill (today's), 2 the "Also here" door, 3 "Two practices" (?switch=a|b|c or 1|2|3).
+   - anywhere else: the world switch, 1 the pill, 2 the "Also here" door (the default since 31 Oct, For-you 6c4f8253), 3 "Two practices" (?switch=a|b|c or 1|2|3).
    The URL follows each change, so any option can be sent as a link. */
 (function () {
   var root = document.documentElement, slides = document.querySelectorAll('.mani[data-pause]'), toast, tt;
   var P_NAMES = ['The old clay look (for comparison)', 'Idea 1 of 3 · Photo', 'Idea 2 of 3 · Framed', 'Idea 3 of 3 · Letter'];
   var P_TONE = ['light', 'dark', 'dark', 'light'];
-  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill (today\u2019s)', '2 of 3 · The \u201cAlso here\u201d door', '3 of 3 · \u201cTwo practices\u201d'];
+  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill', '2 of 3 · The \u201cAlso here\u201d door (default)', '3 of 3 · \u201cTwo practices\u201d'];
   function url(k, v) { try { var u = new URL(location.href); u.searchParams.set(k, v); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {} }
   function say(t) {
     if (!toast) { toast = document.createElement('div'); toast.className = 'pz-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
@@ -57,7 +57,7 @@
     var t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
     e.preventDefault();
     if (pauseOnScreen()) setPause((+root.getAttribute('data-pause-look') + 1) % 4, true);
-    else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'a') + 1) % 3, true);
+    else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'b') + 1) % 3, true);
   });
 })();
 /* Inner Work keeps its film slides dark (J, 19 Oct 2:08:08), so the header turns light over them, as it does in the salon.

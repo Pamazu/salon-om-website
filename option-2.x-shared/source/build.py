@@ -15,7 +15,7 @@ TW_CSS = open(V + 'tweaks.css').read()
 EXTRA_CSS = {'2.2': ['next.css']}
 EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
 # 2.2 next: ?switch=a|b|c picks how the second world is signposted, before first paint (J 18:42); a = today's pill
-PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc123])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?({"1":"a","2":"b","3":"c"}[m[1]]||m[1]):"a");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>\n'}
+PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc123])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?({"1":"a","2":"b","3":"c"}[m[1]]||m[1]):"b");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>\n'}
 E = html.escape
 
 def svg(key):

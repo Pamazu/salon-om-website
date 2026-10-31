@@ -1086,7 +1086,7 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
 .tl__ph img[src$="real-maggie-standing-shelves.webp"] { object-position: 50% 20%; }
 
 /* ==== how the second world is signposted (J, 19 Oct 18:42: "IT's not clear that you can change to the inner work
-   variation"). ?switch=a (default) is today's pill; b adds a door strip at the foot of the screen; c names the pill
+   variation"). ?switch=a is the pill alone; b (the default since 31 Oct, For-you 6c4f8253) adds a door strip at the foot of the screen; c names the pill
    and lets the other practice breathe. Existing motion only: .intro rise, --io / --io-soft, the 9s breathe. ==== */
 .wdoor { display: none; }
 [data-switch="b"] .wdoor { position: fixed; z-index: 44; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 2 * var(--gutter)); white-space: nowrap; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 16px; padding: 12px 14px 12px 22px; border-radius: 999px; background: rgba(21, 16, 12, .5); backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%); color: var(--ivory); text-decoration: none; opacity: 0; animation: intro 1.5s var(--io) 3.2s forwards; transition: background-color var(--t-ui) var(--io), opacity .6s var(--io); }
@@ -1182,7 +1182,7 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 </style>
 </head>
 <body>
-<script>(function(){var m=/[?&]switch=([abc123])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?({"1":"a","2":"b","3":"c"}[m[1]]||m[1]):"a");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>
+<script>(function(){var m=/[?&]switch=([abc123])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?({"1":"a","2":"b","3":"c"}[m[1]]||m[1]):"b");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>
 <a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
   <div class="hdr__in">
@@ -1593,7 +1593,7 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="c662c8bc5c0f";</script>
+<script>window.OM_BUILD="203b181d8548";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -1624,13 +1624,13 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 })();
 /* Shift+V: live option cycling for J (19 Oct). It cycles the option set of the slide on screen:
    - on the parked pause slide ("A gentle question", shown with ?pause=1|2|3|0): 1 Photo, 2 Framed, 3 Letter, 0 the old clay look;
-   - anywhere else: the world switch, 1 the pill (today's), 2 the "Also here" door, 3 "Two practices" (?switch=a|b|c or 1|2|3).
+   - anywhere else: the world switch, 1 the pill, 2 the "Also here" door (the default since 31 Oct, For-you 6c4f8253), 3 "Two practices" (?switch=a|b|c or 1|2|3).
    The URL follows each change, so any option can be sent as a link. */
 (function () {
   var root = document.documentElement, slides = document.querySelectorAll('.mani[data-pause]'), toast, tt;
   var P_NAMES = ['The old clay look (for comparison)', 'Idea 1 of 3 · Photo', 'Idea 2 of 3 · Framed', 'Idea 3 of 3 · Letter'];
   var P_TONE = ['light', 'dark', 'dark', 'light'];
-  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill (today\u2019s)', '2 of 3 · The \u201cAlso here\u201d door', '3 of 3 · \u201cTwo practices\u201d'];
+  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill', '2 of 3 · The \u201cAlso here\u201d door (default)', '3 of 3 · \u201cTwo practices\u201d'];
   function url(k, v) { try { var u = new URL(location.href); u.searchParams.set(k, v); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {} }
   function say(t) {
     if (!toast) { toast = document.createElement('div'); toast.className = 'pz-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
@@ -1654,7 +1654,7 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
     var t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
     e.preventDefault();
     if (pauseOnScreen()) setPause((+root.getAttribute('data-pause-look') + 1) % 4, true);
-    else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'a') + 1) % 3, true);
+    else setSwitch((S_KEYS.indexOf(root.getAttribute('data-switch') || 'b') + 1) % 3, true);
   });
 })();
 /* Inner Work keeps its film slides dark (J, 19 Oct 2:08:08), so the header turns light over them, as it does in the salon.
