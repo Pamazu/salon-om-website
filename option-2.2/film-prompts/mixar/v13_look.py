@@ -153,6 +153,10 @@ elif V13B and V13B_TAP == 'faucet':          # v13f (CEO 646a8174): a SMALL reco
         _limb(bm, pts[-1], pts[-1] + Vector((0, 0, -0.008)), 0.011, 0.010)                        # downturned mouth
         _limb(bm, SPOUT + Vector((0, 0, 0.040)), SPOUT + Vector((-0.030, 0, 0.055)), 0.005)       # lever, toward the wall
     mesh_obj('V13_tap', small_faucet, M_CHROME)
+elif V13B and V13B_TAP == 'lip':             # v13h (Designer 1, 31 Oct bisect): round 1 refused every bare chrome ROD by her head (v13e tall tap without
+    box('V13_tap', SPOUT.x - 0.024, SPOUT.x + 0.024, SPOUT.y - 0.010, SPOUT.y + 0.014, SPOUT.z, SPOUT.z + 0.058, M_CHROME)          # its water,
+    box('V13_tap_lip', SPOUT.x - 0.026, SPOUT.x + 0.026, SPOUT.y - 0.034, SPOUT.y + 0.014, SPOUT.z + 0.058, SPOUT.z + 0.066, M_CHROME)  # v13b-b), so: a flat
+elif V13B and V13B_TAP == 'hidden': pass     # waterfall block with a wide lip, not a cylinder.  'hidden' (v13i): no tap object, the water alone from the rim
 elif V13B: mesh_obj('V13_tap', short_spout, M_CHROME)
 else: mesh_obj('V13_tap', tap, M_CHROME)
 box('V13_basin_deck', -2.64, -2.56, Y - 0.16, Y + 0.16, 0.80, 0.85, bpy.data.materials.get('PV_m_basin') or M_BLACK)
@@ -211,6 +215,7 @@ if V13B and globals().get('V13C'):
     TOPZ = SPOUT.z + 0.070
     P0 = SPOUT + Vector((0.0, -0.017, 0.064))                       # the mouth: the top edge of the cylinder, on the camera's side
     if V13B_TAP == 'faucet': P0 = SPOUT + Vector((0.0, -0.022, 0.052))   # v13f: the small faucet's downturned mouth
+    if V13B_TAP == 'lip': P0 = SPOUT + Vector((0.0, -0.030, 0.060))      # v13h: the front edge of the flat lip
     aim = Vector((-2.530, Y - 0.110, 0.0))                          # the back of her head, camera side: the only landing the stylist's near hand does not hide (searched, 100 % of the arc visible)
     h, LND, _, _, o_, _ = sc.ray_cast(dg, Vector((aim.x, aim.y, TOPZ - 0.002)), Vector((0, 0, -1)), distance=0.4)
     LND = LND if h else Vector((aim.x, aim.y, 0.86))
@@ -239,6 +244,27 @@ if V13B and globals().get('V13C'):
         POOL = globals().get('POOL', (-2.437, Y - 0.01, 0.818, 0.118, 0.225, 0.006))   # just under the rim, so the camera sees it around her hair (at 0.775 the near rim hid it)
         def pool(bm): _ellipsoid(bm, POOL[:3], POOL[3:])
         mesh_obj('V13d_pool', pool, pool_mat()).visible_shadow = False
+
+# v13m (Designer 1, 31 Oct bisect): every addition to the approved v13b-a was refused on its own (faceless head, pooled water,
+# thin stream), and the client's whole body is ONE skin-toned shape, so she may read as unclothed. One change: her body
+# (PV_Client, not the head) in a dark teal salon cape, as a backwash client wears.
+if globals().get('V13_CAPE'):
+    G['_obj']('PV_Client', G['client'], G['shaded']("PV_m_cape", (0.10, 0.24, 0.26)))
+
+# v13k (Designer 1, 31 Oct bisect): ONLY the pooled water of v13d, no stream and no tap: one change from the approved v13b-a
+if V13B and globals().get('V13_POOL') and not globals().get('V13C'):
+    def pool_mat_k():
+        m = bpy.data.materials.new('V13k_pool'); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear(); N = nt.nodes.new; Lk = nt.links.new
+        lw = N('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.3
+        mp = N('ShaderNodeMapRange'); mp.inputs['To Min'].default_value = 0.35; mp.inputs['To Max'].default_value = 0.85; Lk(lw.outputs['Facing'], mp.inputs['Value'])
+        em = N('ShaderNodeEmission'); em.inputs['Color'].default_value = (0.60, 0.78, 0.90, 1)
+        tr = N('ShaderNodeBsdfTransparent'); mix = N('ShaderNodeMixShader'); Lk(mp.outputs['Result'], mix.inputs['Fac'])
+        Lk(tr.outputs[0], mix.inputs[1]); Lk(em.outputs[0], mix.inputs[2]); out = N('ShaderNodeOutputMaterial'); Lk(mix.outputs[0], out.inputs[0])
+        try: m.surface_render_method = 'BLENDED'
+        except Exception: m.blend_method = 'BLEND'
+        return m
+    POOL_K = (-2.437, Y - 0.01, 0.818, 0.118, 0.225, 0.006)     # = v13d's POOL
+    mesh_obj('V13d_pool', lambda bm: _ellipsoid(bm, POOL_K[:3], POOL_K[3:]), pool_mat_k()).visible_shadow = False
 
 # v13g (CEO be49598a): Dreamina's review refused the cartoon face (round head, eyes, blush on a reclining figure read as a child);
 # the same video with the face covered was approved. So her head is a plain FACELESS ADULT mannequin head: the v11 skull, jaw and

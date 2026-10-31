@@ -15,7 +15,9 @@
 #   --v13d         (with --v13c) v13d: the arc thick and glassy like v13's stream, + clear water pooled in the bowl
 #   --v13g         (with --v13) her head a plain faceless adult mannequin head (Dreamina refused the cartoon face)
 #   --nowater      (with --v13, not --v13b) v13e: v13 with its water column removed, the tall gooseneck kept
-#   --tap T        (with --v13b) spout (default) | none (v13b-a) | cylinder (v13b-b) | faucet (v13f, small curved faucet): Dreamina upload refusal bisect
+#   --tap T        (with --v13b) spout (default) | none (v13b-a) | cylinder (v13b-b) | faucet (v13f, small curved faucet) | lip (v13h, flat waterfall block) | hidden (v13i, water only): Dreamina upload refusal bisect
+#   --cape         (with --v13) the client's body dressed in a dark teal salon cape (the head stays skin): one change (Designer 1 bisect, 31 Oct)
+#   --pool         (with --v13b, without --v13c) v13k: only the clear water pooled in the bowl, no stream (Designer 1 bisect, 31 Oct)
 #   --v13          (with --v11) NO photo in the render: solid room in the photo's colours, bottles, tap + water, slow hands
 # Run: Mixar -b --factory-startup -P v10_build_render.py -- OUT [--frames 120] [--pose '{...}'] [--search|--proj|--check|--full]
 import bpy, os, sys, json
@@ -134,7 +136,7 @@ else:
         V11 = {'PHOTO_PATH': L['PHOTO'], '__name__': 'v11'}
         exec(compile(open(os.path.join(HERE, 'v11_look.py')).read(), 'v11_look.py', 'exec'), V11)
         if '--v13' in args:      # v13: no photo in the render, solid room in the photo's colours, tap + water, slow hands (v13_look.py)
-            exec(compile(open(os.path.join(HERE, 'v13_look.py')).read(), 'v13_look.py', 'exec'), {'V11': V11, 'PHOTO_PATH': L['PHOTO'], 'FRAMES': FRAMES, 'V13B': '--v13b' in args, 'V13C': '--v13c' in args, 'V13D': '--v13d' in args, 'V13G': '--v13g' in args, 'V13_NOWATER': '--nowater' in args, 'V13B_TAP': args[args.index('--tap') + 1] if '--tap' in args else 'spout', '__name__': 'v13'})
+            exec(compile(open(os.path.join(HERE, 'v13_look.py')).read(), 'v13_look.py', 'exec'), {'V11': V11, 'PHOTO_PATH': L['PHOTO'], 'FRAMES': FRAMES, 'V13B': '--v13b' in args, 'V13C': '--v13c' in args, 'V13D': '--v13d' in args, 'V13G': '--v13g' in args, 'V13_NOWATER': '--nowater' in args, 'V13_POOL': '--pool' in args, 'V13_CAPE': '--cape' in args, 'V13B_TAP': args[args.index('--tap') + 1] if '--tap' in args else 'spout', '__name__': 'v13'})
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, 'salon_om_rooted_previz_v10.blend'))
     if '--photocam' in args:     # orientation check: the scene seen from the photo's own solved camera, beside / over the photo
         pc = bpy.data.objects['cam_photo']; sc.camera = pc; rx, ry = sc.render.resolution_x, sc.render.resolution_y
