@@ -17,7 +17,7 @@ SETTINGS (J's): Dreamina Video, Seedance 2.5 (full, not Draft), references mode 
 
 REFERENCES (upload, then call each from the @ picker; Dreamina labels uploads itself, so match by file, not by number):
 - @loc_basins = resources/salon-photos/6-shampoo-basins-edit.png (J's pick, the real Salon OM). In the @ picker: the photo of the salon shampoo area (usually "Image 1").
-- @move = option-2.2/film-prompts/renders/salon-om-rooted-previz-v13g-15s.mp4 (Designer 1's v13g previz, 15 s, @ [CONFIRM SHA ON v13g]). In the @ picker: the previz video (usually "Video 1").
+- @move = option-2.2/film-prompts/renders/salon-om-rooted-previz-v13g-15s.mp4 (Designer 1's v13g previz, 15 s: NOT RENDERED YET, only the 5 s exists @ d1b1dbd). In the @ picker: the previz video (usually "Video 1").
 
 PROMPT (paste as is; replace each @ handle with the picker chip for that file):
 
