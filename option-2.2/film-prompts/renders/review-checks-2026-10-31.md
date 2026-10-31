@@ -23,6 +23,6 @@ Every check by `scripts/dreamina_review_check.py` (brain project folder), in its
 The client was ONE skin-toned shape from head to foot, so she can read as unclothed; any liquid on her or a smooth faceless head then trips "community guidelines". One change, `--cape`: her body in a dark teal salon cape, the head stays skin.
 - 00:05 v13n (still: v13g = all of J's notes + cape): APPROVED
 - 00:08 v13m (still: v13b-a + cape): APPROVED
-- v13n (the 5 s VIDEO, `salon-om-rooted-previz-v13n-5s.mp4`): check running, result in the next commit
+- 00:15 v13n (the 5 s VIDEO, `salon-om-rooted-previz-v13n-5s.mp4`, read at +3 min 30 s): APPROVED
 
 Reading: the cause is the uncaped one-colour body, not the tap, the water or the face (supported by rounds 3 and 4; not proven beyond these checks).
