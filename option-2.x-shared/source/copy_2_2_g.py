@@ -27,5 +27,5 @@ SALON = [
 COACHING = [iw_hero(short_cred=True), iw_deeper(), iw_how(cta=True), iw_credentials(), iw_path(cta=True), iw_begin(), iw_end(LEGEND)]
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
-  [('01', 'The visit', 'visit'), ('02', 'Why Aveda', 'aveda'), ('03', 'The team', 'hosts'), ('04', 'The menu', 'menu'), ('05', 'Begin', 'begin')],
+  [('01', 'The visit', 'visit'), ('02', 'Why Aveda', 'aveda'), ('03', 'The team', 'hosts'), ('04', 'The menu', 'services'), ('05', 'Begin', 'begin')],
   [('01', 'Look a little deeper', 'c-deeper'), ('02', 'How we work together', 'c-how'), ('03', 'Credentials', 'c-cred'), ('04', 'The path', 'c-path'), ('05', 'Begin', 'c-begin')])

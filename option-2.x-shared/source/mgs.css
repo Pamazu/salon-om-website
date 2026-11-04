@@ -123,3 +123,23 @@ html[data-shot] .tl__ph img, html[data-shot] .om__ph img.is-on { transform: none
 html[data-shot] .pv__list { transform: none; opacity: 1; }
 html[data-shot] .wdoor { display: none !important; }
 html[data-shot] .mani__ring circle { stroke-dashoffset: 0 !important; animation: none !important; }
+
+/* Voices: Maggie's key line "Lighter, inside and out." is the section's heading, readable on the clay ground */
+.voices__t { display: block; margin: 0 0 6px; font: italic 300 clamp(26px, 2.4vw, 40px)/1.15 var(--serif); letter-spacing: 0; text-transform: none; color: var(--forest-deep); }
+main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
+/* a placeholder title is a note, not a headline */
+.cta--long h2 .ph-copy, .steps h2 .ph-copy { font-size: .62em; }
+
+/* the six services (M/G/S): the menu grows with its list instead of riding up under the heading; each row reads
+   name, then its triplet and price on one quiet line under it */
+.offers-menu { height: auto; min-height: 100vh; min-height: 100svh; }
+.offers-menu .om__list { align-self: start; }
+.offers-menu .om__head h2 { font-size: clamp(40px, 4.4vw, 80px); }
+.offers-menu .om__row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 6px; }
+.offers-menu .om__row h3 { grid-column: 1; grid-row: 1; }
+.offers-menu .om__arr { grid-column: 2; grid-row: 1; }
+.offers-menu .om__dur { grid-column: 1 / -1; grid-row: 2; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+.offers-menu .om__dur small { display: inline; margin: 0; white-space: normal; letter-spacing: .12em; }
+.offers-menu .om__more { grid-column: 1 / -1; grid-row: 3; }
+.offers-menu .om__more p:empty { display: none; }
+.offers-menu .om__more > div > p.tx:empty + .om__btns { margin-top: 10px; }

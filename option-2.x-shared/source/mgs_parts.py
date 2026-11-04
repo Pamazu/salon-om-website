@@ -81,7 +81,7 @@ def team(note=False, sid='hosts'):
     return ('team', d)
 
 
-def services(per_service_cta=True, sid='menu'):
+def services(per_service_cta=True, sid='services'):
     tiles = []
     for k, (svc, trip, price) in enumerate(M.SERVICES):
         tiles.append(dict(img=SERVICE_IMG[k], alt=SERVICE_ALT[k], tag=trip, price=price, title=svc, text='',
@@ -113,7 +113,7 @@ def begin(summary=False):
 
 def salon_end(legend):
     return ('end', dict(id='letters', title='', tagline=M.OPENING, no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
-                        explore=[('The visit', 'arrive' if legend != 'S' else 'visit'), ('The team', 'hosts'), ('The menu', 'menu'), ('Begin', 'begin')]))
+                        explore=[('The visit', 'arrive' if legend != 'S' else 'visit'), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
 
 
 # ---------------------------------------------------------------- Inner Work with Maggie
