@@ -26,3 +26,6 @@ The client was ONE skin-toned shape from head to foot, so she can read as unclot
 - 00:15 v13n (the 5 s VIDEO, `salon-om-rooted-previz-v13n-5s.mp4`, read at +3 min 30 s): APPROVED
 
 Reading: the cause is the uncaped one-colour body, not the tap, the water or the face (supported by rounds 3 and 4; not proven beyond these checks).
+
+## 4 Nov 2026: test 11 reference (Designer 1)
+- 02:54 6-shampoo-basins-edit-notext.png (still, photo 6 with only its readable brand words softened): APPROVED
