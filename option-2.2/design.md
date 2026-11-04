@@ -118,3 +118,16 @@ Salon world: the Option 2 grounds (umber, bark, clay) with the forest-green acce
 
 - How the films should change once the client's beach reference arrives (the water film is the place).
 - Final copy, services and prices; the second person's name and role; real portraits.
+
+
+## M, G and S: three copy versions on this design (4 Nov 2026, task cf7dd8fd)
+
+The same look and motion as 2.2; only the words and the order of sections change, as Copywriter 1's conversion study names them (record `salon-om-conversion-study-2026-11.md`, section 8). Reference page: `option-2.2-mgs/refs/`, live at salon-om-2-2-m.web.app/refs/.
+
+- **M · Maggie's order.** Salon: first screen (her locked lines, two equal doors, "Change begins with you."), the pause, OM, five steps, Why Aveda, team, her six services, Voices, the second door, "Your moment awaits.". Inner Work: opening, Look a little deeper, How we work together, credentials, the path, voices placeholder, Begin. Her words only.
+- **G · Guided.** The first screen adds the proof line and "Book your visit" first; a five-step preview (`preview`) whose list moves right and shrinks as it leaves (`--q`), handing over to the step rail; one benefit line per step; Why Aveda with the facts; team and Voices before the menu; "Book your visit" inside the sections where a reward lands (step 05, Why Aveda, Voices, each service, Begin). Inner Work: short credentials in the opening, a Connection Call after the practices and on the path.
+- **S · Short.** Salon in six screens: the visit as one row of five (`steps`), team + two quotes + the Aveda line (`proof`), menu, the second door, Begin. Inner Work in five.
+
+**New pieces** (`build.py`, styles in `mgs.css`, loaded only for the three): `preview`, `prose` (long approved text: heading left and sticky, words right, a list, a closing line in forest italic; grows past one screen), `proof`; optional fields: hero `note`/`cls`/`line`, a `btn` on a step, facts, voices and steps, a Voices `title`, a bridge `more`, footer `no_letters`/`connect`/`disclaimer`/`legend`. The six services sit in 2.2's quiet menu, which here grows with its list: name, then triplet and price on one line.
+**Marks:** new words for Maggie have a dotted underline (`draft()`); words still to come are a faded italic bracket (`ph()`); the footer says what both mean, and carries her disclaimer on every page.
+**Steps:** each step stacks a real salon photo over its element film (the 2.2 two-film mask) until the film of that real moment exists.
