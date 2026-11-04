@@ -93,7 +93,9 @@ main[data-world="salon"] .voices figcaption b { color: var(--ink); }
    only at the top and in its own section; c names the pill
    and lets the other practice breathe. Existing motion only: .intro rise, --io / --io-soft, the 9s breathe. ==== */
 .wdoor { display: none; }
-[data-switch="b"] .wdoor { position: fixed; z-index: 44; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 2 * var(--gutter)); white-space: nowrap; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 16px; padding: 12px 14px 12px 22px; border-radius: 999px; background: rgba(21, 16, 12, .5); backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%); color: var(--ivory); text-decoration: none; opacity: 0; animation: intro 1.5s var(--io) 3.2s forwards; transition: background-color var(--t-ui) var(--io), opacity .6s var(--io); }
+[data-switch="b"] .wdoor { position: fixed; z-index: 44; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 2 * var(--gutter)); white-space: nowrap; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 16px; padding: 12px 14px 12px 22px; border-radius: 999px; background: rgba(21, 16, 12, .5); backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%); color: var(--ivory); text-decoration: none; opacity: 0; pointer-events: none; transform: translateY(12px); transition: background-color var(--t-ui) var(--io), opacity .6s var(--io), transform .6s var(--io); }
+/* CEO QA 4 Nov: shown only while neither this world's hero buttons nor its Begin button is on screen (next.js), so no screen shows the same action twice */
+[data-switch="b"].wdoor-on .wdoor { opacity: 1; pointer-events: auto; transform: none; }
 [data-switch="b"] .wdoor:hover { background: rgba(21, 16, 12, .7); }
 [data-switch="b"] .wdoor__k { color: var(--ivory-soft); font-size: 10.5px; }
 [data-switch="b"] .wdoor__n { font: 300 22px/1 var(--serif); }

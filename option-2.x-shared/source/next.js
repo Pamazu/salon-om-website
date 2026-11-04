@@ -76,3 +76,18 @@
   new MutationObserver(function () { q(); setTimeout(q, 1200); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
   q();
 })();
+
+/* the bottom anchor (J 4 Nov: it leads to this world's one main action): shown only once this world's hero booking button has
+   scrolled away, hidden again while its Begin section's button is on screen (CEO QA 4 Nov), so the same action is never shown twice */
+(function () {
+  var root = document.documentElement; if (!('IntersectionObserver' in window)) { root.classList.add('wdoor-on'); return; }
+  var watch = { salon: ['#top .hero__cta', '#begin .btn'], coaching: ['#c-top .hero__cta', '#c-begin .btn'] }, seen = new Map();
+  function update() {
+    var w = root.getAttribute('data-world') || 'salon', any = false;
+    (watch[w] || []).forEach(function (sel) { var el = document.querySelector(sel); if (el && seen.get(el)) any = true; });
+    root.classList.toggle('wdoor-on', !any);
+  }
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); update(); }, { threshold: 0 });
+  Object.keys(watch).forEach(function (w) { watch[w].forEach(function (sel) { var el = document.querySelector(sel); if (el) { seen.set(el, false); io.observe(el); } }); });
+  new MutationObserver(update).observe(root, { attributes: true, attributeFilter: ['data-world'] });
+})();

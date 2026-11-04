@@ -31,7 +31,7 @@ CFG = {
       hook='Where Beauty and Inner Work Belong',
       eyebrow='An Aveda Concept Salon',
       line='Only Aveda: plant-based, 100% vegan, and giving back, with clean water worldwide and the Yawanawá of Brazil.',  # sources: aveda.com/mission-giving-back, /about (19 Oct 2026)
-      ctas=btn('Book your time', '#begin', 'light', arrow=True) + btn('Step inside', '#arrive', 'ghost'))),
+      ctas=btn('Book your visit', '#begin', 'light', arrow=True) + btn('Step inside', '#arrive', 'ghost'))),
     # HOOK → UNDERSTANDING. One gentle question that names what guests carry.
     ('tease', dict(id='pause', parked='J 19 Oct 17:23: remove, park for later', looks=dict(photo='rest.webp', frame='real-styling-chair.webp'), label='A gentle question', accents=['care'],
       text='When did someone last take care of you, without rushing you or needing anything back?',
