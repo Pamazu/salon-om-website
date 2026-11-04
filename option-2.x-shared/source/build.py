@@ -28,6 +28,14 @@ def btn(label, href='#', kind='', arrow=False, world=None):
     cls = 'btn' + (f' btn--{kind}' if kind else '')
     a = f' data-to-world="{world}"' if world else ''
     return f'<a class="{cls}" href="{href}"{a}>{E(label)}' + (' <span class="arr" aria-hidden="true">→</span>' if arrow else '') + '</a>'
+def draft(t):
+    """new words for Maggie to approve (the study's [draft] lines): a dotted underline, explained in the footer"""
+    return f'<span class="draft">{t}</span>'
+def ph(t):
+    """Maggie's words still to come: a visible placeholder, never invented copy"""
+    return f'<span class="ph-copy">{t}</span>'
+def _cta_note(d):
+    return d['ctas'] + (f'<p class="hero__note">{d["note"]}</p>' if d.get('note') else '')
 def film(name, lazy=False):
     if name.endswith('.webp'):
         return f'<div class="s__media"><div class="s__zoom"><img src="img/{name}" alt="" decoding="async"></div></div>'
@@ -36,14 +44,14 @@ def film(name, lazy=False):
 
 # ---------------------------------------------------------------- slide renderers
 def hero_mark(d):
-    return f'''<section class="s hero" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-label="Salon OM">
+    return f'''<section class="s hero{(' ' + d['cls']) if d.get('cls') else ''}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-label="Salon OM">
     {film(d['film'])}
     <div class="s__scrim hero__scrim"></div>
     <div class="s__leave hero__lv">
       <h1 class="hero__mark"><span class="sr">Salon OM</span>{HERO_SVG}<span class="hero__hook intro" style="--d:2.3s">{d['hook']}</span></h1>
       <div class="hero__foot">
         <p class="hero__line intro" style="--d:2.6s"><b>{d['eyebrow']}</b>{d['line']}<br>{SOUND_CTA}</p>
-        <div class="hero__cta intro" style="--d:2.8s">{d['ctas']}</div>
+        <div class="hero__cta intro" style="--d:2.8s">{_cta_note(d)}</div>
         <a class="hero__cue label intro" style="--d:3s" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
       </div>
     </div>
@@ -53,7 +61,7 @@ def hero_mark(d):
 def hero_words(d):
     stop = f' data-stop="{d["stop"]}"' if d.get('stop') else ''
     vid = film(d['film']).replace('<video ', f'<video{stop} ', 1)
-    return f'''<section class="s hero hero--words" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-h">
+    return f'''<section class="s hero hero--words{(' ' + d['cls']) if d.get('cls') else ''}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-h">
     {vid}
     <div class="s__scrim hero__scrim"></div>
     <div class="s__leave hero__lv">
@@ -63,8 +71,8 @@ def hero_words(d):
         <p class="sub intro" style="--d:{d.get('sub_at','2.2s')}">{d['sub']}</p>
       </div>
       <div class="hero__foot">
-        <p class="hero__line intro" style="--d:{d.get('foot_at','2.5s')}">{SOUND_CTA}</p>
-        <div class="hero__cta intro" style="--d:{d.get('foot_at','2.5s')}">{d['ctas']}</div>
+        <p class="hero__line intro" style="--d:{d.get('foot_at','2.5s')}">{(d['line'] + '<br>') if d.get('line') else ''}{SOUND_CTA}</p>
+        <div class="hero__cta intro" style="--d:{d.get('foot_at','2.5s')}">{_cta_note(d)}</div>
         <a class="hero__cue label intro" style="--d:{d.get('foot_at','2.5s')}" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
       </div>
     </div>
@@ -134,7 +142,7 @@ def chapter(d, i, n):
       <div class="ch__side">
         <p class="ch__body a-up" style="--d:.75s">{d['body']}</p>
         <dl class="ch__specs"{cls}>{specs}</dl>
-      </div>
+      </div>{('<div class="ch__btn a-up" style="--d:1.3s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -170,7 +178,7 @@ def facts(d):
       <div>
         <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
-        {paras}{q}
+        {paras}{q}{('<div class="facts__btn a-up" style="--d:1.1s">' + d['btn'] + '</div>') if d.get('btn') else ''}
       </div>
       <div>
         <div class="facts__grid">{''.join(fact(f, k) for k, f in enumerate(d['facts']))}</div>
@@ -197,7 +205,7 @@ def steps(d):
     row = ''.join(f'<div class="step a-up" style="--d:{0.55 + k * .16:.2f}s"><b>{s[0]}</b><h3>{s[1]}</h3><p>{s[2]}</p></div>' for k, s in enumerate(d['steps']))
     return f'''<section class="s steps{' light' if d.get('light') else ''}" id="{d['id']}" data-tone="{'light' if d.get('light') else 'dark'}" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     <div class="steps__head s__leave"><p class="eyebrow a-left" style="--d:.1s">{d['eyebrow']}</p><h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.25s">{d['title']}</span></span></h2></div>
-    <div class="steps__row" style="--n:{len(d['steps'])}">{row}</div>
+    <div class="steps__row" style="--n:{len(d['steps'])}">{row}</div>{('<div class="steps__foot a-up" style="--d:1.4s">' + ('<p>' + d['after'] + '</p>' if d.get('after') else '') + d.get('btn', '') + '</div>') if (d.get('after') or d.get('btn')) else ''}
     <div class="s__shade"></div>
   </section>'''
 
@@ -251,7 +259,7 @@ def team_letter(d):
     <figure class="tl__ph"><img src="img/{m['img']}" alt="{E(m['alt'])}" decoding="async">{tag}</figure>
     <div class="tl__copy s__leave">
       {head(d, 'tl', 'tl__intro', .35)}
-      <blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“{d['note']}”</span><cite class="tx">{d['sign']}</cite></blockquote>
+      {f'<blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“{d["note"]}”</span><cite class="tx">{d["sign"]}</cite></blockquote>' if d.get('note') else ''}
       {withs}
     </div>
     <div class="s__shade"></div>
@@ -361,8 +369,8 @@ def voices(d):
     return f'''<section class="s voices" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-label="Kind words">
     <div class="voices__aura" aria-hidden="true"></div>
     <div class="s__leave">
-      <span class="voices__mark a-fade" style="--d:.1s" aria-hidden="true">“</span>
-      <div class="qs a-up" style="--d:.4s" data-quotes>{qs}</div>
+      {('<p class="voices__t label a-fade" style="--d:.1s">' + d['title'] + '</p>') if d.get('title') else ''}<span class="voices__mark a-fade" style="--d:.1s" aria-hidden="true">“</span>
+      <div class="qs a-up" style="--d:.4s" data-quotes>{qs}</div>{('<div class="voices__btn a-up" style="--d:.9s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -374,7 +382,7 @@ def bridge(d):
     <div class="bridge__in s__leave">
       <p class="eyebrow a-up" style="--d:.2s">{d['eyebrow']}</p>
       <h2 class="big" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.35s">{d['title']}</span></span></h2>
-      <p class="a-up" style="--d:.8s">{d['text']}</p>
+      <p class="a-up" style="--d:.8s">{d['text']}</p>{''.join(f'<p class="a-up bridge__more" style="--d:{.9 + k * .1:.2f}s">{t}</p>' for k, t in enumerate(d.get('more', [])))}
       <div class="a-up" style="--d:1s">{d['btn']}</div>
     </div>
     <div class="s__shade"></div>
@@ -403,13 +411,13 @@ def walkin(d):
   </section>'''
 
 def cta(d):
-    return f'''<section class="s cta" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
+    return f'''<section class="s cta{(' ' + d['cls']) if d.get('cls') else ''}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     {film(d['film'])}
     <div class="s__scrim cta__scrim"></div><div class="s__veil"></div>
     <div class="cta__in s__leave">
       <p class="label a-up" style="--d:.2s">{d['label']}</p>
       <h2 id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.35s">{d['title']}</span></span></h2>
-      <p class="a-up" style="--d:.8s">{d['text']}</p>
+      {f'<p class="a-up" style="--d:.8s">{d["text"]}</p>' if d.get('text') is not None and d.get('text') != '' else ('' if 'text' in d else '')}
       <div class="a-up" style="--d:1s">{d['btn']}</div>
     </div>
     <div class="s__shade"></div>
@@ -417,7 +425,7 @@ def cta(d):
 
 def end(d, world):
     expl = ''.join(f'<li><a href="#{h}">{t}</a></li>' for t, h in d['explore'])
-    return f'''<section class="s s--auto end" data-tone="light" data-sound="{d.get('sound','bed')}" aria-label="Letters and contact">
+    letters = '' if d.get('no_letters') else f'''
     <div class="letters" id="{d['id']}">
       <div class="letters__in">
         <div><p class="label a-left" style="--d:.1s">Letters</p><h2><span class="mask"><span class="mask__in" style="--d:.2s">{d['title']}</span></span></h2></div>
@@ -427,20 +435,80 @@ def end(d, world):
           <p class="letters__msg" role="status"></p>
         </form>
       </div>
-    </div>
-    <footer class="foot">
+    </div>'''
+    conn = (''.join(f'<li>{c}</li>' for c in d['connect'])) if d.get('connect') else ('<li>Instagram (link to come)</li><li>Email (to confirm)</li>' + ('' if d.get('no_other') else f'<li><a href="#" data-to-world="{"coaching" if world == "salon" else "salon"}">{d["other"]}</a></li>'))
+    legal = ''.join(f'<p class="foot__legal">{t}</p>' for t in [d.get('disclaimer'), d.get('legend')] if t)
+    fid = f' id="{d["id"]}"' if d.get('no_letters') else ''
+    return f'''<section class="s s--auto end" data-tone="light" data-sound="{d.get('sound','bed')}" aria-label="Letters and contact">{letters}
+    <footer class="foot"{fid}>
       <div class="foot__in">
         <div class="foot__brand a-up" style="--d:.6s">{svg('stacked')}<p>{d['tagline']}</p></div>
         <div class="a-up" style="--d:.7s"><h3 class="label">Explore</h3><ul>{expl}</ul></div>
         <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>{d.get('foot_visit', 'Salon in person · coaching in person and online')}</li></ul></div>
-        <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul><li>Instagram (link to come)</li><li>Email (to confirm)</li>{'' if d.get('no_other') else f'<li><a href="#" data-to-world="{"coaching" if world == "salon" else "salon"}">{d["other"]}</a></li>'}</ul></div>
-      </div>
+        <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul>{conn}</ul></div>
+      </div>{legal}
       <div class="foot__base"><span>© 2026 Salon OM · {d.get('foot_base', 'an Aveda concept salon')} · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
     </footer>
   </section>'''
 
+# ---------------------------------------------------------------- M / G / S (copy versions on the 2.2 design, task cf7dd8fd)
+def preview(d):
+    """G: the five-step visit at a glance (the study's open loop). As it leaves, the list shrinks into the right edge,
+    where the step rail takes over through the five steps."""
+    rows = ''.join(f'<li class="pv__row a-up" style="--d:{0.55 + k * .14:.2f}s"><b>{n}</b><span class="pv__name">{a}</span><span class="pv__line">{l}</span></li>' for k, (n, a, l) in enumerate(d['rows']))
+    return f'''<section class="s preview" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
+    <div class="pv__head s__leave">
+      <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+      <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+    </div>
+    <ol class="pv__list">{rows}</ol>
+    <div class="s__shade"></div>
+  </section>'''
+
+def prose(d):
+    """Long approved text (Inner Work): the heading on the left, the words on the right; a list, a small line and a
+    closing line when the section has them. Grows past one screen when the text needs it."""
+    paras = ''.join(f'<p class="a-up" style="--d:{0.6 + k * .1:.2f}s">{t}</p>' for k, t in enumerate(d.get('paras', [])))
+    lst = ''
+    if d.get('list'):
+        lst = '<dl class="pr__list a-up" style="--d:.9s">' + ''.join(f'<div><dt>{a}</dt><dd>{b}</dd></div>' if b else f'<div class="pr__one"><dt>{a}</dt></div>' for a, b in d['list']) + '</dl>'
+    small = f'<p class="pr__small a-up" style="--d:1s">{d["small"]}</p>' if d.get('small') else ''
+    close = f'<p class="pr__close a-up" style="--d:1.1s">{d["close"]}</p>' if d.get('close') else ''
+    b = f'<div class="pr__btn a-up" style="--d:1.2s">{d["btn"]}</div>' if d.get('btn') else ''
+    lead = f'<p class="pr__lead a-up" style="--d:.5s">{d["lead"]}</p>' if d.get('lead') else ''
+    return f'''<section class="s s--auto prose" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
+    <div class="pr__in s__leave">
+      <div class="pr__head">
+        <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+        {lead}
+      </div>
+      <div class="pr__body">{paras}{lst}{small}{close}{b}</div>
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+def proof(d):
+    """S: the proof screen. The team as three small cards, two guest quotes, one Aveda line."""
+    def av(w):
+        if w.get('img'): return f'<img src="img/{w["img"]}" alt="{E(w.get("alt", ""))}" decoding="async">'
+        return f'<span class="pf__initial" aria-hidden="true">{E(w["name"][0])}</span>'
+    people = ''.join(f'<article class="pf__p a-up" style="--d:{0.5 + k * .14:.2f}s">{av(w)}<div><h3>{w["name"]}</h3><p class="pf__role">{w["role"]}</p></div></article>' for k, w in enumerate(d['people']))
+    qs = ''.join(f'<figure class="pf__q a-up" style="--d:{1.0 + k * .14:.2f}s"><blockquote>“{q[0]}”</blockquote><figcaption>{q[1]} · {q[2]}</figcaption></figure>' for k, q in enumerate(d['quotes']))
+    return f'''<section class="s proof" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
+    <div class="pf__in s__leave">
+      <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+      <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+      <div class="pf__team">{people}</div>
+      <div class="pf__qs">{qs}</div>
+      <p class="pf__line a-up" style="--d:1.4s"><b>{d['line_k']}</b>{d['line']}</p>
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
 R = {'hero_mark': hero_mark, 'hero_words': hero_words, 'hero_doors': hero_doors, 'hero_arch': hero_arch, 'tease': tease, 'split': split, 'facts': facts, 'team': team,
-     'steps': steps, 'offers': offers, 'voices': voices, 'bridge': bridge, 'doors': doors, 'walkin': walkin, 'cta': cta}
+     'steps': steps, 'offers': offers, 'voices': voices, 'bridge': bridge, 'doors': doors, 'walkin': walkin, 'cta': cta,
+     'preview': preview, 'prose': prose, 'proof': proof}
 
 def render_world(world, slides, draft, names=None, foot=None):
     foot = foot or {}
@@ -454,6 +522,12 @@ def render_world(world, slides, draft, names=None, foot=None):
         else: out.append(R[kind](d))
     return '\n  '.join(out)
 
+# M/G/S: ?shot shows every section in its arrived state, for full-page review captures (mgs.css)
+SHOT = '<script>if(/[?&]shot\\b/.test(location.search))document.documentElement.setAttribute("data-shot","");</script>\n'
+def css_files(vkey):
+    xk = vkey.split('-')[0]
+    return EXTRA_CSS.get(xk, []) + (['mgs.css'] if '-' in vkey else [])
+
 def page(cfg):
     names = cfg.get('worlds')
     foot = {k: cfg[k] for k in ('foot_visit', 'foot_base') if k in cfg}
@@ -466,11 +540,12 @@ def page(cfg):
     menu_lists = ''.join(f'<ul data-world-list="{w}">' + ''.join(f'<li style="--i:{k}"><a href="#{h}"><small>{n}</small>{t}</a></li>' for k, (n, t, h) in enumerate(items)) + '</ul>' for w, items in cfg['menu'].items())
     rail = ''.join(f'<a href="#{h}"><span>{t}</span><b>0{k + 1}</b></a>' for k, (t, h) in enumerate(cfg['rail']))
     vkey = cfg['title'].split()[-1]
-    pre = PRE_PAINT.get(vkey, '')
-    xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(vkey, []))
-    if vkey in EXTRA_JS:      # a build stamp, so a tweak draft saved against an older build is dropped (next.js)
+    xk = vkey.split('-')[0]          # 2.2-m, 2.2-g, 2.2-s: the copy versions on the 2.2 design share its extras
+    pre = PRE_PAINT.get(xk, '') + (SHOT if '-' in vkey else '')
+    xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(xk, []))
+    if xk in EXTRA_JS:      # a build stamp, so a tweak draft saved against an older build is dropped (next.js)
         import hashlib
-        stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in EXTRA_CSS.get(vkey, []))).encode()).hexdigest()[:12]
+        stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in css_files(vkey))).encode()).hexdigest()[:12]
         xjs = f'<script>window.OM_BUILD="{stamp}";</script>\n' + xjs
     body = pre + f'''<a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
@@ -507,10 +582,11 @@ def page(cfg):
 {JS}</script>
 '''
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
-    for f in EXTRA_CSS.get(cfg['title'].split()[-1], []): css += '\n' + open(V + f).read()
+    for f in css_files(vkey): css += '\n' + open(V + f).read()
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
-    assert 'home' not in re.sub(r'<[^>]+>', ' ', body).lower().replace('homepage', ''), 'no "home" in copy'
+    # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused
+    assert 'home' not in re.sub(r'<[^>]+>', ' ', body).lower().replace('homepage', '').replace('carry it home', '').replace('style at home', ''), 'no "home" in copy'
     key = cfg['title'].split()[-1]
     doc = ('<!doctype html>\n<html lang="en" data-theme="' + cfg['theme'] + '" data-world="salon" data-variant="' + key + '">\n<head>\n<meta charset="utf-8">\n'
            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + title +
@@ -530,9 +606,10 @@ if __name__ == '__main__':
     check = '--check' in sys.argv
     bad = 0
     for key in args or ['2.2']:
-        spec = importlib.util.spec_from_file_location('c', V + f'copy_{key.replace(".", "_")}.py'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+        spec = importlib.util.spec_from_file_location('c', V + f'copy_{key.replace(".", "_").replace("-", "_")}.py'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
         art, doc = page(m.CFG)
-        out = REPO + f'option-{key}/site/index.html'
+        out = REPO + (f'option-2.2-mgs/{key.split("-")[1]}/index.html' if '-' in key else f'option-{key}/site/index.html')
+        os.makedirs(os.path.dirname(out), exist_ok=True)
         if check:
             same = open(out).read() == doc
             bad += not same

@@ -1,0 +1,125 @@
+/* ==== Option 2.2 · M / G / S: three copy versions on the 2.2 design (task cf7dd8fd, study febe2c3a).
+   The 2.2 look and motion only: its tokens, type, .a-up / .mask reveals, --io easing, the leave parallax (--q).
+   What is new: the marks for new and missing words, the five-step preview, the long-text section, the short
+   proof screen, room for Maggie's longer headlines, and one booking button inside the sections that end a cycle. */
+
+/* new words for Maggie (the study's [draft] lines): a quiet dotted underline, explained in the footer */
+.draft { text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: .22em; text-decoration-color: currentColor; }
+/* Maggie's words still to come: a visible bracket, never invented copy */
+.ph-copy { opacity: .62; font-style: italic; }
+
+/* the first screen: Maggie's "Change begins with you." under the two doors */
+.hero__cta { flex-wrap: wrap; }
+.hero__note { flex-basis: 100%; margin: 4px 0 0; text-align: center; font: italic 300 clamp(17px, 1.3vw, 21px)/1.3 var(--serif); color: var(--ivory-soft); }
+.hero__line .draft { color: var(--ivory); }
+/* Inner Work's opening is a sentence, not two words: the same write-in, at a size that keeps it on two lines */
+.hero--long .hero__words h1 { font-size: clamp(52px, 7.4vw, 128px); line-height: .95; max-width: 12em; margin: 0 auto; }
+.hero--long .hero__words p.sub { max-width: 40ch; }
+.hero--long .hero__line { max-width: 40ch; }
+
+/* one booking button where a cycle's reward has just landed (study section 7) */
+.ch__btn { margin-top: clamp(18px, 3vh, 30px); }
+.facts__btn, .voices__btn, .pr__btn { margin-top: clamp(20px, 3.4vh, 34px); }
+.voices__t { color: var(--ivory-soft); margin-bottom: 18px; }
+.bridge__more { margin-top: -14px !important; }
+.bridge__more:last-of-type { font: italic 300 clamp(20px, 1.6vw, 26px)/1.3 var(--serif); }
+
+/* Begin and other long closing titles: the 2.2 Begin. is one word at 320px; a sentence needs a calmer size */
+.cta--long h2 { font-size: clamp(56px, 8.6vw, 150px); line-height: .92; max-width: 11em; margin-left: auto; margin-right: auto; }
+
+/* the steps: a row of five (S: the whole visit on one screen; the Inner Work path, four steps + the pricing line) */
+.steps__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; }
+.steps__foot p { margin: 0; max-width: 52ch; color: var(--ivory-soft); }
+.steps.light .steps__foot p { color: var(--ink-soft); }
+#visit.steps .step p { max-width: 26ch; }
+#visit.steps .steps__head .mid { font-size: clamp(36px, 4.2vw, 76px); }
+
+/* ---- G: the five-step preview. The list leaves to the right edge as you scroll on, where the step rail takes over */
+.preview { background: var(--clay); color: var(--ink); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: clamp(28px, 5vw, 96px); padding: calc(var(--top) + 2vh) var(--gutter) calc(var(--base) + var(--dock)); }
+.pv__head .eyebrow { color: var(--ink-soft); margin-bottom: 16px; }
+.pv__list { list-style: none; margin: 0; padding: 0; transform-origin: 100% 50%; transform: translate3d(calc(var(--q) * 22vw), 0, 0) scale(calc(1 - var(--q) * .55)); opacity: calc(1 - var(--q) * 1.4); }
+.pv__row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: baseline; gap: 18px; padding: clamp(12px, 2vh, 20px) 0; border-top: 1px solid rgba(23, 17, 13, .14); }
+.pv__row:last-child { border-bottom: 1px solid rgba(23, 17, 13, .14); }
+.pv__row b { font: italic 300 clamp(26px, 2.2vw, 36px)/1 var(--serif); color: var(--forest-deep); }
+.pv__name { font: 300 clamp(28px, 2.6vw, 46px)/1 var(--serif); }
+.pv__line { font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* ---- the long-text section (Inner Work's approved pages): heading left, words right, a list, a closing line */
+.prose { background: var(--clay); color: var(--ink); display: grid; align-items: center; padding: calc(var(--top) + 4vh) var(--gutter) calc(var(--base) + var(--dock) + 2vh); }
+.pr__in { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 96px); align-items: start; }
+.pr__head { position: sticky; top: calc(var(--top) + 3vh); }
+.pr__head .eyebrow { color: var(--ink-soft); margin-bottom: 16px; }
+.pr__lead { margin: 22px 0 0; font: italic 300 clamp(22px, 1.9vw, 30px)/1.3 var(--serif); color: var(--ink); max-width: 26ch; }
+.pr__body > p { margin: 0 0 16px; color: var(--ink-soft); max-width: 60ch; }
+.pr__list { margin: 18px 0 0; display: grid; gap: 0; }
+.pr__list > div { display: grid; grid-template-columns: minmax(150px, .42fr) minmax(0, 1fr); gap: 20px; padding: 14px 0; border-top: 1px solid rgba(23, 17, 13, .14); }
+.pr__list > div:last-child { border-bottom: 1px solid rgba(23, 17, 13, .14); }
+.pr__list dt { font: 300 clamp(22px, 1.7vw, 28px)/1.15 var(--serif); }
+.pr__list dd { margin: 0; color: var(--ink-soft); font-size: 15.5px; }
+.pr__list .pr__one { grid-template-columns: 1fr; }
+.pr__list .pr__one dt { font: 400 16px/1.5 var(--sans); }
+.pr__small { margin: 18px 0 0 !important; font-size: 14.5px; color: var(--ink-soft); }
+.pr__close { margin: clamp(22px, 4vh, 40px) 0 0 !important; font: italic 300 clamp(28px, 2.6vw, 44px)/1.15 var(--serif); color: var(--forest-deep) !important; }
+
+/* ---- S: the proof screen. Three small team cards, two guest quotes, one Aveda line */
+.proof { background: var(--clay); color: var(--ink); display: grid; align-items: center; padding: calc(var(--top) + 2vh) var(--gutter) calc(var(--base) + var(--dock)); }
+.pf__in .eyebrow { color: var(--ink-soft); margin-bottom: 14px; }
+.pf__team { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: clamp(22px, 4vh, 40px); }
+.pf__p { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; }
+.pf__p img, .pf__initial { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+.pf__initial { display: grid; place-items: center; background: rgba(30, 90, 58, .12); color: var(--forest-deep); font: 300 32px/1 var(--serif); }
+.pf__p h3 { margin: 0; font: 300 clamp(24px, 1.9vw, 30px)/1.05 var(--serif); }
+.pf__role { margin: 6px 0 0; color: var(--forest-deep); font: 500 11.5px/1.3 var(--sans); letter-spacing: .18em; text-transform: uppercase; }
+.pf__qs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(20px, 3vw, 48px); margin-top: clamp(26px, 5vh, 56px); padding-top: clamp(20px, 3.5vh, 36px); border-top: 1px solid rgba(23, 17, 13, .14); }
+.pf__q { margin: 0; }
+.pf__q blockquote { margin: 0; font: italic 300 clamp(24px, 2.2vw, 36px)/1.2 var(--serif); }
+.pf__q figcaption { margin-top: 12px; color: var(--ink-soft); font: 500 11.5px/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
+.pf__line { margin-top: clamp(22px, 4vh, 40px); color: var(--ink-soft); }
+.pf__line b { margin-right: 14px; color: var(--ink); font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; }
+
+/* the six services: name, triplet and price visible at once (the triplet sits where 2.2 showed a duration) */
+.offers-menu .om__row { padding: clamp(10px, 1.6vh, 18px) 0; }
+.offers-menu .om__row h3 { font-size: clamp(26px, 2.3vw, 40px); }
+.offers-menu .om__dur small { color: var(--ivory-soft); }
+
+/* the footer: Maggie's disclaimer on every page, and what the marks mean */
+.foot__legal { margin: 18px 0 0; max-width: 90ch; font-size: 12.5px; line-height: 1.55; color: var(--ivory-faint); }
+
+@media (max-width: 1023px) {
+  .preview, .pr__in { grid-template-columns: 1fr; }
+  .pr__head { position: static; }
+  .pf__team { grid-template-columns: 1fr; gap: 12px; }
+}
+@media (max-width: 639px) {
+  .hero--long .hero__words h1 { font-size: 46px; }
+  .hero--long .hero__words p.sub { font-size: 15.5px; }
+  .hero__note { font-size: 16px; }
+  .cta--long h2 { font-size: 54px; }
+  .pv__row { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; }
+  .pv__name { font-size: 26px; }
+  .pv__line { font-size: 10.5px; letter-spacing: .16em; }
+  .pr__list > div { grid-template-columns: 1fr; gap: 4px; }
+  .pf__p { grid-template-columns: 52px minmax(0, 1fr); }
+  .pf__p img, .pf__initial { width: 52px; height: 52px; }
+  .pf__qs { grid-template-columns: 1fr; gap: 16px; }
+  .pf__q blockquote { font-size: 21px; }
+  .pf__line b { display: block; margin: 0 0 4px; }
+  /* sections whose words outgrow one phone screen grow with them instead of clipping */
+  #visit.steps, #c-path.steps, .proof, .offers-menu { height: auto; min-height: 100svh; }
+  .ch__btn .btn { width: 100%; }
+}
+
+/* ?shot (review captures only, never a visitor's view): every section shown as it looks once it has arrived, so a
+   full-page capture can be read. Motion is finished, not removed: the end state of each reveal. */
+html[data-shot] { scroll-snap-type: none; }
+html[data-shot] .a-up, html[data-shot] .a-left, html[data-shot] .a-right, html[data-shot] .a-fade, html[data-shot] .intro { opacity: 1 !important; filter: none !important; transform: none !important; animation: none !important; }
+html[data-shot] .mask__in { transform: none !important; }
+html[data-shot] .mani__text .l, html[data-shot] [data-write] .wd, html[data-shot] .voices blockquote .wd { opacity: 1 !important; filter: none !important; transform: none !important; animation: none !important; }
+html[data-shot] .s__veil, html[data-shot] .hero__veil, html[data-shot] .s__shade { opacity: 0 !important; animation: none !important; }
+html[data-shot] .s__leave { transform: none !important; opacity: 1 !important; }
+html[data-shot] .s__media { transform: none !important; }
+html[data-shot] .tl__ph, html[data-shot] .om__ph, html[data-shot] .portrait, html[data-shot] .ph { clip-path: none !important; opacity: 1 !important; }
+html[data-shot] .tl__ph img, html[data-shot] .om__ph img.is-on { transform: none !important; }
+html[data-shot] .pv__list { transform: none; opacity: 1; }
+html[data-shot] .wdoor { display: none !important; }
+html[data-shot] .mani__ring circle { stroke-dashoffset: 0 !important; animation: none !important; }
