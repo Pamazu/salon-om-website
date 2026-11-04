@@ -433,7 +433,7 @@ def end(d, world):
         <div class="foot__brand a-up" style="--d:.6s">{svg('stacked')}<p>{d['tagline']}</p></div>
         <div class="a-up" style="--d:.7s"><h3 class="label">Explore</h3><ul>{expl}</ul></div>
         <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>{d.get('foot_visit', 'Salon in person · coaching in person and online')}</li></ul></div>
-        <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul><li>Instagram (link to come)</li><li>Email (to confirm)</li><li><a href="#" data-to-world="{'coaching' if world == 'salon' else 'salon'}">{d['other']}</a></li></ul></div>
+        <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul><li>Instagram (link to come)</li><li>Email (to confirm)</li>{'' if d.get('no_other') else f'<li><a href="#" data-to-world="{"coaching" if world == "salon" else "salon"}">{d["other"]}</a></li>'}</ul></div>
       </div>
       <div class="foot__base"><span>© 2026 Salon OM · {d.get('foot_base', 'an Aveda concept salon')} · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
     </footer>
@@ -450,7 +450,7 @@ def render_world(world, slides, draft, names=None, foot=None):
     for kind, d in slides:
         if d.get('parked') and not d.get('looks'): continue      # kept in the copy file, off the page until it returns
         if kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
-        elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, **foot), world))
+        elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, no_other=bool(names), **foot), world))
         else: out.append(R[kind](d))
     return '\n  '.join(out)
 
@@ -488,7 +488,7 @@ def page(cfg):
     </div>
   </div>
 </header>
-<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>{'' if not names else chr(10) + f'<a class="wdoor" href="#coaching" data-to-world="coaching"><span class="wdoor__k label">Also here</span><span class="wdoor__n">{E(names["coaching"])}</span><span class="wdoor__go label">Enter <span class="arr" aria-hidden="true">→</span></span></a><a class="wdoor wdoor--back" href="#" data-to-world="salon"><span class="wdoor__k label">Also here</span><span class="wdoor__n">{E(names["salon"])}</span><span class="wdoor__go label">Enter <span class="arr" aria-hidden="true">→</span></span></a>'}
+<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>{'' if not names else chr(10) + f'<a class="wdoor" href="#{cfg["book_salon"]}"><span class="wdoor__k label">{E(names["salon"])}</span><span class="wdoor__n">{E(cfg.get("menu_salon_btn", "Book your time"))}</span><span class="wdoor__go label">Begin <span class="arr" aria-hidden="true">→</span></span></a><a class="wdoor wdoor--back" href="#{cfg["book_coaching"]}"><span class="wdoor__k label">{E(names["coaching"])}</span><span class="wdoor__n">{E(cfg.get("menu_coaching_btn", "Book a free call"))}</span><span class="wdoor__go label">Begin <span class="arr" aria-hidden="true">→</span></span></a>'}
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button></div>{menu_lists}</div>
   <div class="menu__end"><a class="btn w-salon" href="#{cfg['book_salon']}">{E(cfg.get('menu_salon_btn', 'Book your time'))}</a><a class="btn w-coaching" href="#{cfg['book_coaching']}">{E(cfg.get('menu_coaching_btn', 'Book a free call'))}</a></div>

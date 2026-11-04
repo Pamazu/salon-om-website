@@ -33,7 +33,7 @@
   var root = document.documentElement, slides = document.querySelectorAll('.mani[data-pause]'), toast, tt;
   var P_NAMES = ['The old clay look (for comparison)', 'Idea 1 of 3 · Photo', 'Idea 2 of 3 · Framed', 'Idea 3 of 3 · Letter'];
   var P_TONE = ['light', 'dark', 'dark', 'light'];
-  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill', '2 of 3 · The \u201cAlso here\u201d door (default)', '3 of 3 · \u201cTwo practices\u201d'];
+  var S_KEYS = ['a', 'b', 'c'], S_NAMES = ['1 of 3 · The pill', '2 of 3 · The bottom anchor to this world\u2019s booking (default, J 4 Nov)', '3 of 3 · \u201cTwo practices\u201d'];
   function url(k, v) { try { var u = new URL(location.href); u.searchParams.set(k, v); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {} }
   function say(t) {
     if (!toast) { toast = document.createElement('div'); toast.className = 'pz-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
