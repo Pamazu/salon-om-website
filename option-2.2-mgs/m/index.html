@@ -1238,6 +1238,20 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 .preview.pv--morph .pv__row b { justify-self: start; will-change: transform; }
 /* the one action under a section that had none (M's Why Aveda; the menu, in place of a button per service) */
 .mani__btn, .om__btn { margin-top: clamp(20px, 3.4vh, 34px); }
+/* G round 2 (tasks 9456424d, 0ab956d4): each section's cycle is visible. The ROT line under Maggie's opening; a proof
+   line under a hook; the objection answered; the reward that pays off the hook in forest italic, right before the button */
+.hero__rot { display: block; margin: 10px 0 12px; font-size: 16px; line-height: 1.5; color: var(--ivory); }
+.hero__rot .draft { color: var(--ivory); }
+.mani__proof { margin: clamp(16px, 2.6vh, 26px) 0 0; max-width: 52ch; font: italic 300 clamp(18px, 1.5vw, 24px)/1.35 var(--serif); color: var(--ink-soft); }
+.cy__answer { margin: clamp(14px, 2.2vh, 22px) 0 0; max-width: 52ch; font-size: 15.5px; line-height: 1.55; color: var(--ink-soft); }
+.cy__reward { margin: clamp(14px, 2.2vh, 22px) 0 0; max-width: 40ch; font: italic 300 clamp(20px, 1.7vw, 28px)/1.3 var(--serif); color: var(--forest-deep); }
+.cy__answer + .cy__reward { margin-top: 10px; }
+.offers-menu .cy__answer, .cta .cy__answer, .steps:not(.light) .cy__answer { color: var(--ivory-soft); }
+.offers-menu .cy__reward, .cta .cy__reward, .steps:not(.light) .cy__reward { color: var(--ivory); }
+.cta .cy__reward { margin-left: auto; margin-right: auto; }
+.voices .cy__reward { margin-left: auto; margin-right: auto; text-align: center; }
+.tl__btn { margin-top: clamp(18px, 3vh, 30px); }
+.om__btn .btn { margin-top: clamp(16px, 2.6vh, 26px); }
 .offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
 .offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
 .offers-menu .om__ph { grid-row: 1 / span 3; }
@@ -1291,6 +1305,7 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
   .offers-menu { grid-template-rows: auto minmax(0, 1fr) auto auto; }
   .offers-menu .om__ph { grid-row: 2; }
   .offers-menu .om__btn { grid-row: 4; }
+  .offers-menu .om__intro:not(:empty) { display: block; }    /* G carries Maggie's menu line here */
   .preview, .pr__in { grid-template-columns: 1fr; }
   .pr__head { position: static; }
   .pf__team { grid-template-columns: 1fr; gap: 12px; }
@@ -1658,7 +1673,7 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="d0e0268bd326";</script>
+<script>window.OM_BUILD="c713819b3b2d";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

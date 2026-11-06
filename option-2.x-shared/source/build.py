@@ -37,6 +37,12 @@ def ph(t):
     return f'<span class="ph-copy">{t}</span>'
 def _cta_note(d):
     return d['ctas'] + (f'<p class="hero__note">{d["note"]}</p>' if d.get('note') else '')
+def cycle(d, at, cls=''):
+    """M/G/S round 2 (tasks 9456424d, 0ab956d4): a section's closing cycle lines, each only when the version gives it:
+    the objection answered, then the reward that pays off the section's hook, right before its button."""
+    c = f' {cls}' if cls else ''
+    return ((f'<p class="cy__answer{c} a-up" style="--d:{at:.2f}s">{d["answer"]}</p>' if d.get('answer') else '')
+            + (f'<p class="cy__reward{c} a-up" style="--d:{at + .1:.2f}s">{d["reward"]}</p>' if d.get('reward') else ''))
 def film(name, lazy=False):
     if name.endswith('.webp'):
         return f'<div class="s__media"><div class="s__zoom"><img src="img/{name}" alt="" decoding="async"></div></div>'
@@ -51,7 +57,7 @@ def hero_mark(d):
     <div class="s__leave hero__lv">
       <h1 class="hero__mark"><span class="sr">Salon OM</span>{HERO_SVG}<span class="hero__hook intro" style="--d:2.3s">{d['hook']}</span></h1>
       <div class="hero__foot">
-        <p class="hero__line intro" style="--d:2.6s"><b>{d['eyebrow']}</b>{d['line']}<br>{SOUND_CTA}</p>
+        <p class="hero__line intro" style="--d:2.6s"><b>{d['eyebrow']}</b>{d['line']}{('<span class="hero__rot">' + d['rot'] + '</span>') if d.get('rot') else '<br>'}{SOUND_CTA}</p>
         <div class="hero__cta intro" style="--d:2.8s">{_cta_note(d)}</div>
         <a class="hero__cue label intro" style="--d:3s" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
       </div>
@@ -72,7 +78,7 @@ def hero_words(d):
         <p class="sub intro" style="--d:{d.get('sub_at','2.2s')}">{d['sub']}</p>
       </div>
       <div class="hero__foot">
-        <p class="hero__line intro" style="--d:{d.get('foot_at','2.5s')}">{(d['line'] + '<br>') if d.get('line') else ''}{SOUND_CTA}</p>
+        <p class="hero__line intro" style="--d:{d.get('foot_at','2.5s')}">{(d['line'] + '<br>') if d.get('line') else ''}{('<span class="hero__rot">' + d['rot'] + '</span>') if d.get('rot') else ''}{SOUND_CTA}</p>
         <div class="hero__cta intro" style="--d:{d.get('foot_at','2.5s')}">{_cta_note(d)}</div>
         <a class="hero__cue label intro" style="--d:{d.get('foot_at','2.5s')}" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
       </div>
@@ -118,7 +124,7 @@ def tease(d):
     <div class="s__leave mani__in">
       <p class="mani__label label a-left" style="--d:.1s">{d['label']}</p>
       <p class="mani__text" data-write="letters" data-accents="{'|'.join(d.get('accents',[]))}">{d['text']}</p>
-      {after}{('<div class="mani__btn a-up" style="--d:' + d.get('btn_at', '1.6s') + '">' + d['btn'] + '</div>') if d.get('btn') else ''}
+      {after}{('<p class="mani__proof a-up" style="--d:' + d.get('proof_at', '3.8s') + '">' + d['proof_line'] + '</p>') if d.get('proof_line') else ''}{cycle(d, 1.4)}{('<div class="mani__btn a-up" style="--d:' + d.get('btn_at', '1.6s') + '">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -179,7 +185,7 @@ def facts(d):
       <div>
         <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
-        {paras}{q}{('<div class="facts__btn a-up" style="--d:1.1s">' + d['btn'] + '</div>') if d.get('btn') else ''}
+        {paras}{q}{cycle(d, .95)}{('<div class="facts__btn a-up" style="--d:1.1s">' + d['btn'] + '</div>') if d.get('btn') else ''}
       </div>
       <div>
         <div class="facts__grid">{''.join(fact(f, k) for k, f in enumerate(d['facts']))}</div>
@@ -206,7 +212,7 @@ def steps(d):
     row = ''.join(f'<div class="step a-up" style="--d:{0.55 + k * .16:.2f}s"><b>{s[0]}</b><h3>{s[1]}</h3><p>{s[2]}</p></div>' for k, s in enumerate(d['steps']))
     return f'''<section class="s steps{' light' if d.get('light') else ''}" id="{d['id']}" data-tone="{'light' if d.get('light') else 'dark'}" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     <div class="steps__head s__leave"><p class="eyebrow a-left" style="--d:.1s">{d['eyebrow']}</p><h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.25s">{d['title']}</span></span></h2></div>
-    <div class="steps__row" style="--n:{len(d['steps'])}">{row}</div>{('<div class="steps__foot a-up" style="--d:1.4s">' + ('<p>' + d['after'] + '</p>' if d.get('after') else '') + d.get('btn', '') + '</div>') if (d.get('after') or d.get('btn')) else ''}
+    <div class="steps__row" style="--n:{len(d['steps'])}">{row}</div>{('<div class="steps__foot a-up" style="--d:1.4s">' + ('<p>' + d['after'] + '</p>' if d.get('after') else '') + cycle(d, 1.5) + d.get('btn', '') + '</div>') if (d.get('after') or d.get('btn')) else ''}
     <div class="s__shade"></div>
   </section>'''
 
@@ -261,7 +267,7 @@ def team_letter(d):
     <div class="tl__copy s__leave">
       {head(d, 'tl', 'tl__intro', .35)}
       {f'<blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“{d["note"]}”</span><cite class="tx">{d["sign"]}</cite></blockquote>' if d.get('note') else ''}
-      {withs}
+      {withs}{('<div class="tl__btn a-up" style="--d:1.5s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -318,7 +324,7 @@ def offers_menu(d):
       <h2 id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.2s">{d['title']}</span></span></h2>
       <p class="om__intro tx a-up" style="--d:.5s">{d['intro']}</p>
     </div>
-    <ol class="om__list">{rows}</ol>{('<div class="om__btn a-up" style="--d:1.4s">' + d['btn'] + '</div>') if d.get('btn') else ''}
+    <ol class="om__list">{rows}</ol>{('<div class="om__btn a-up" style="--d:1.4s">' + cycle(d, 1.3) + d['btn'] + '</div>') if d.get('btn') else ''}
     <div class="om__ph">{ims}</div>
     <div class="s__shade"></div>
   </section>'''
@@ -371,7 +377,7 @@ def voices(d):
     <div class="voices__aura" aria-hidden="true"></div>
     <div class="s__leave">
       {('<p class="voices__t label a-fade" style="--d:.1s">' + d['title'] + '</p>') if d.get('title') else ''}<span class="voices__mark a-fade" style="--d:.1s" aria-hidden="true">“</span>
-      <div class="qs a-up" style="--d:.4s" data-quotes>{qs}</div>{('<div class="voices__btn a-up" style="--d:.9s">' + d['btn'] + '</div>') if d.get('btn') else ''}
+      <div class="qs a-up" style="--d:.4s" data-quotes>{qs}</div>{cycle(d, .8)}{('<div class="voices__btn a-up" style="--d:.9s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -418,7 +424,7 @@ def cta(d):
     <div class="cta__in s__leave">
       <p class="label a-up" style="--d:.2s">{d['label']}</p>
       <h2 id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.35s">{d['title']}</span></span></h2>
-      {f'<p class="a-up" style="--d:.8s">{d["text"]}</p>' if d.get('text') is not None and d.get('text') != '' else ('' if 'text' in d else '')}
+      {f'<p class="a-up" style="--d:.8s">{d["text"]}</p>' if d.get('text') is not None and d.get('text') != '' else ('' if 'text' in d else '')}{cycle(d, .85)}
       <div class="a-up" style="--d:1s">{d['btn']}</div>
     </div>
     <div class="s__shade"></div>
@@ -460,7 +466,7 @@ def preview(d):
     return f'''<section class="s preview" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     <div class="pv__head s__leave">
       <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
-      <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+      <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>{cycle(d, .9)}
     </div>
     <ol class="pv__list">{rows}</ol>
     <div class="s__shade"></div>
