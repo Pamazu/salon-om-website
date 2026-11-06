@@ -1,0 +1,7 @@
+{
+  "name": "salon-om-qa",
+  "private": true,
+  "type": "module",
+  "description": "Drives a built Salon OM page from this repo in a real browser on the PC (sDelegate): screen-sized shots and recordings",
+  "dependencies": { "playwright": "1.63.0" }
+}

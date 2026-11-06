@@ -43,6 +43,18 @@
 .pv__row b { font: italic 300 clamp(26px, 2.2vw, 36px)/1 var(--serif); color: var(--forest-deep); }
 .pv__name { font: 300 clamp(28px, 2.6vw, 46px)/1 var(--serif); }
 .pv__line { font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
+/* the preview becomes the step rail (mgs.js, task 0ab956d4): the list holds still, each number travels to its own number
+   on the rail while the words and lines fade (--pf, the travel 0..1); the rows draw over the next slide as they go */
+.preview.pv--morph { overflow: visible; z-index: 2; }
+.preview.pv--morph .pv__list { transform: none; opacity: 1; }
+.preview.pv--morph .pv__row { border-color: rgba(23, 17, 13, calc(.14 * (1 - var(--pf, 0)))); }
+.preview.pv--morph .pv__name, .preview.pv--morph .pv__line { opacity: calc(1 - var(--pf, 0) * 1.8); transform: translate3d(calc(var(--pf, 0) * 3vw), 0, 0); }
+.preview.pv--morph .pv__row b { justify-self: start; will-change: transform; }
+/* the one action under a section that had none (M's Why Aveda; the menu, in place of a button per service) */
+.mani__btn, .om__btn { margin-top: clamp(20px, 3.4vh, 34px); }
+.offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
+.offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
+.offers-menu .om__ph { grid-row: 1 / span 3; }
 
 /* ---- the long-text section (Inner Work's approved pages): heading left, words right, a list, a closing line */
 .prose { background: var(--clay); color: var(--ink); display: grid; align-items: center; padding: calc(var(--top) + 4vh) var(--gutter) calc(var(--base) + var(--dock) + 2vh); }
@@ -86,6 +98,13 @@
 .foot__legal { margin: 18px 0 0; max-width: 90ch; font-size: 12.5px; line-height: 1.55; color: var(--ivory-faint); }
 
 @media (max-width: 1023px) {
+  /* G: the rail the preview becomes shows on phone too, numbers only, as a quiet progress mark through the five steps */
+  html[data-variant="2.2-g"] .rail { display: grid; right: 12px; gap: 0; pointer-events: none; }
+  html[data-variant="2.2-g"] .rail a { padding: 5px 0; }
+  html[data-variant="2.2-g"] .rail a span { display: none; }
+  .offers-menu { grid-template-rows: auto minmax(0, 1fr) auto auto; }
+  .offers-menu .om__ph { grid-row: 2; }
+  .offers-menu .om__btn { grid-row: 4; }
   .preview, .pr__in { grid-template-columns: 1fr; }
   .pr__head { position: static; }
   .pf__team { grid-template-columns: 1fr; gap: 12px; }

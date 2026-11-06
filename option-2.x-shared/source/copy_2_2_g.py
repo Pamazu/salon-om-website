@@ -9,7 +9,7 @@ PREVIEW = ('preview', dict(id='visit', eyebrow='The visit', title=draft(D['previ
                            rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)]))
 AVEDA = ('facts', dict(id='aveda', light=True, eyebrow='Why Aveda', title=M.AVEDA, paras=[],
                        facts=[(n, draft(t), *c) for n, t, *c in AVEDA_FACTS], src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
-                       btn=btn(BOOK, '#begin', arrow=True)))
+                       btn=btn(BOOK, BOOK_URL, arrow=True)))
 SALON = [
   salon_hero(proof=True),
   ('tease', dict(id='pause', label='The pause', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s')),
@@ -19,7 +19,7 @@ SALON = [
   AVEDA,
   team(note=True),
   voices(cta=True),
-  services(per_service_cta=True),
+  services(),
   door(short=False),
   begin(summary=True),
   salon_end(LEGEND),

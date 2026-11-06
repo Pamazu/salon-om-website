@@ -1,0 +1,133 @@
+// Salon OM QA on the PC through sDelegate (run-at-ref; task 0ab956d4). Serves the built pages of THIS commit on
+// loopback (/m/, /g/, /s/ = option-2.2-mgs/<v>/index.html over option-2.2/site's films, photos and fonts) and drives
+// them in Chromium. Writes to qa/out: <v>-<world>-<section>-<width>.jpg (screen-sized shots), links.json (where every
+// booking button goes), morph-<width>-q<NN>.jpg (stills of the preview becoming the rail) and *.webm (recordings).
+//   node record.mjs
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
+
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const OUT = path.join(REPO, 'qa', 'out');
+fs.mkdirSync(OUT, { recursive: true });
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml',
+  '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg',
+  '.woff2': 'font/woff2', '.json': 'application/json' };
+
+function serve() {
+  return new Promise((done) => {
+    const srv = http.createServer((req, res) => {
+      const m = decodeURIComponent(new URL(req.url, 'http://x').pathname).match(/^\/([mgs])\/(.*)$/);
+      if (!m) { res.writeHead(404); return res.end(); }
+      const file = !m[2] || m[2] === 'index.html' ? path.join(REPO, 'option-2.2-mgs', m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
+      fs.stat(file, (err, st) => {
+        if (err || !st.isFile()) { res.writeHead(404); return res.end(); }
+        const type = TYPES[path.extname(file)] || 'application/octet-stream', r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
+        if (r) {
+          const a = r[1] ? +r[1] : 0, b = r[2] ? Math.min(+r[2], st.size - 1) : st.size - 1;
+          res.writeHead(206, { 'Content-Type': type, 'Content-Length': b - a + 1, 'Content-Range': `bytes ${a}-${b}/${st.size}`, 'Accept-Ranges': 'bytes' });
+          return fs.createReadStream(file, { start: a, end: b }).pipe(res);
+        }
+        res.writeHead(200, { 'Content-Type': type, 'Content-Length': st.size, 'Accept-Ranges': 'bytes' });
+        fs.createReadStream(file).pipe(res);
+      });
+    }).listen(0, '127.0.0.1', () => done(srv));
+  });
+}
+
+const DESK = { viewport: { width: 1440, height: 900 } };
+const TAB = { viewport: { width: 1024, height: 768 } };
+const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
+const wait = (p, ms) => p.waitForTimeout(ms);
+
+async function open(ctx, url) {
+  const p = await ctx.newPage();
+  await p.addInitScript(() => { try { localStorage.setItem('om-sound', 'off'); } catch (e) {} });
+  await p.goto(url, { waitUntil: 'load' });
+  await wait(p, 1500);
+  return p;
+}
+async function toWorld(p, w) {
+  await p.evaluate((w) => document.querySelector(`.worlds [data-to-world="${w}"]`).click(), w);
+  await wait(p, 2800);
+}
+
+// screen-sized shots of named sections, as the visitor sees each one arrive
+async function shots(b, base, v, world, ids, sizes) {
+  for (const [w, opt] of sizes) {
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/?shot`);
+    if (world === 'coaching') await toWorld(p, 'coaching');
+    for (const id of ids) {
+      const ok = await p.evaluate((id) => { const e = id === 'top' ? document.body : document.getElementById(id); if (!e) return false; e.scrollIntoView({ block: 'start' }); return true; }, id);
+      if (!ok) { console.log('missing section', v, world, id); continue; }
+      await wait(p, 1800);
+      await p.screenshot({ path: path.join(OUT, `${v}-${world}-${id}-${w}.jpg`), type: 'jpeg', quality: 82 });
+    }
+    await ctx.close();
+  }
+}
+
+// where every booking button goes, per version and world
+async function links(b, base) {
+  const all = {};
+  for (const v of ['m', 'g', 's']) {
+    const ctx = await b.newContext(DESK), p = await open(ctx, `${base}/${v}/`);
+    all[v] = await p.evaluate(() => [...document.querySelectorAll('a.btn, a.wdoor, a.door')].map((a) => ({
+      world: a.closest('[data-world]') ? a.closest('[data-world]').getAttribute('data-world') : 'chrome',
+      section: a.closest('section') ? a.closest('section').id : (a.closest('header') ? 'header' : a.className),
+      label: a.textContent.replace(/\s+/g, ' ').replace('→', '').trim(), href: a.getAttribute('href'),
+      target: a.getAttribute('target') || '', toWorld: a.getAttribute('data-to-world') || '' })));
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, 'links.json'), JSON.stringify(all, null, 1));
+}
+
+// G: the preview becoming the rail. A recording (real wheel steps with the page's own snap, then a slow scrub down
+// and back up) and stills at fixed points of the preview's leave (q).
+async function scrub(p, from, to, ms) {
+  await p.evaluate(([from, to, ms]) => new Promise((done) => {
+    const el = document.documentElement; el.style.scrollSnapType = 'none'; el.style.scrollBehavior = 'auto';
+    const t0 = performance.now();
+    (function step(t) { const k = Math.min(1, (t - t0) / ms); scrollTo(0, from + (to - from) * k); if (k < 1) requestAnimationFrame(step); else done(); })(t0);
+  }), [from, to, ms]);
+}
+async function morph(b, base, w, opt) {
+  const ctx = await b.newContext({ ...opt, recordVideo: { dir: OUT, size: opt.viewport } });
+  const p = await open(ctx, `${base}/g/`);
+  const [a, z] = await p.evaluate(() => [document.getElementById('visit').offsetTop, document.getElementById('arrive').offsetTop]);
+  await scrub(p, 0, a, 1); await p.evaluate(() => { document.documentElement.style.scrollSnapType = ''; document.documentElement.style.scrollBehavior = ''; });
+  await wait(p, 2600);
+  try { await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2); await p.mouse.wheel(0, 240); await wait(p, 2600); await p.mouse.wheel(0, -240); await wait(p, 2600); }
+  catch (e) { console.log('wheel', w, e.message); }
+  await scrub(p, a, a, 1); await wait(p, 600);
+  await scrub(p, a, z, 4200); await wait(p, 1400);
+  await scrub(p, z, a, 4200); await wait(p, 1400);
+  const vid = p.video(); await ctx.close();
+  fs.renameSync(await vid.path(), path.join(OUT, `morph-${w}.webm`));
+
+  const c2 = await b.newContext(opt), s = await open(c2, `${base}/g/`);
+  await scrub(s, 0, a, 1); await wait(s, 2600);
+  for (const q of [0, .1, .2, .3, .4, .46, .5, .56, .7, 1]) {
+    await scrub(s, a, a + (z - a) * q, 1); await wait(s, 120);
+    await s.screenshot({ path: path.join(OUT, `morph-${w}-q${String(Math.round(q * 100)).padStart(3, '0')}.jpg`), type: 'jpeg', quality: 82 });
+  }
+  await c2.close();
+}
+
+const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
+const b = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
+try {
+  await links(b, base);
+  const both = [['1440', DESK], ['390', PHONE]];
+  await morph(b, base, '1440', DESK);
+  await morph(b, base, '390', PHONE);
+  await shots(b, base, 'm', 'salon', ['top', 'arrive', 'unhurried', 'home', 'aveda', 'services', 'kind', 'deeper', 'begin', 'letters'], both);
+  await shots(b, base, 'm', 'coaching', ['c-top', 'c-how', 'c-path', 'c-begin'], both);
+  await shots(b, base, 'g', 'salon', ['top', 'visit', 'arrive', 'unhurried', 'services', 'deeper'], both);
+  await shots(b, base, 's', 'salon', ['services'], both);
+  await shots(b, base, 'g', 'salon', ['top'], [['1024', TAB]]);
+  await shots(b, base, 'g', 'coaching', ['c-top'], [['1024', TAB], ['1440', DESK]]);
+} finally { await b.close(); srv.close(); }
+console.log('done', fs.readdirSync(OUT).length, 'files in qa/out');

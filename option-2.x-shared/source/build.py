@@ -27,6 +27,7 @@ SOUND_CTA = '<button class="sound-cta sound-btn is-sound" type="button" aria-pre
 def btn(label, href='#', kind='', arrow=False, world=None):
     cls = 'btn' + (f' btn--{kind}' if kind else '')
     a = f' data-to-world="{world}"' if world else ''
+    if href.startswith('http'): a += ' target="_blank" rel="noopener"'     # M/G/S: the salon's real booking page
     return f'<a class="{cls}" href="{href}"{a}>{E(label)}' + (' <span class="arr" aria-hidden="true">→</span>' if arrow else '') + '</a>'
 def draft(t):
     """new words for Maggie to approve (the study's [draft] lines): a dotted underline, explained in the footer"""
@@ -117,7 +118,7 @@ def tease(d):
     <div class="s__leave mani__in">
       <p class="mani__label label a-left" style="--d:.1s">{d['label']}</p>
       <p class="mani__text" data-write="letters" data-accents="{'|'.join(d.get('accents',[]))}">{d['text']}</p>
-      {after}
+      {after}{('<div class="mani__btn a-up" style="--d:' + d.get('btn_at', '1.6s') + '">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>
   </section>'''
@@ -317,7 +318,7 @@ def offers_menu(d):
       <h2 id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.2s">{d['title']}</span></span></h2>
       <p class="om__intro tx a-up" style="--d:.5s">{d['intro']}</p>
     </div>
-    <ol class="om__list">{rows}</ol>
+    <ol class="om__list">{rows}</ol>{('<div class="om__btn a-up" style="--d:1.4s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     <div class="om__ph">{ims}</div>
     <div class="s__shade"></div>
   </section>'''
@@ -539,6 +540,8 @@ def page(cfg):
     worlds_btns = f'<button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button><i class="worlds__pill" aria-hidden="true"></i>'
     menu_lists = ''.join(f'<ul data-world-list="{w}">' + ''.join(f'<li style="--i:{k}"><a href="#{h}"><small>{n}</small>{t}</a></li>' for k, (n, t, h) in enumerate(items)) + '</ul>' for w, items in cfg['menu'].items())
     rail = ''.join(f'<a href="#{h}"><span>{t}</span><b>0{k + 1}</b></a>' for k, (t, h) in enumerate(cfg['rail']))
+    hs = cfg.get('book_salon_href', '#' + cfg['book_salon']); hc = cfg.get('book_coaching_href', '#' + cfg['book_coaching'])
+    ts = ' target="_blank" rel="noopener"' if hs.startswith('http') else ''
     vkey = cfg['title'].split()[-1]
     xk = vkey.split('-')[0]          # 2.2-m, 2.2-g, 2.2-s: the copy versions on the 2.2 design share its extras
     pre = PRE_PAINT.get(xk, '') + (SHOT if '-' in vkey else '')
@@ -558,15 +561,15 @@ def page(cfg):
         <svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="2" height="10" fill="currentColor"/><rect x="9" y="2" width="2" height="10" fill="currentColor"/></svg>
         <svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.2v9.6L11.6 7z" fill="currentColor"/></svg>
       </button>
-      <a class="btn btn--sm hdr__book w-salon" href="#{cfg['book_salon']}">{E(cfg.get('book_salon_label', 'Book'))}</a><a class="btn btn--sm hdr__book w-coaching" href="#{cfg['book_coaching']}">{E(cfg.get('book_coaching_label', 'Free call'))}</a>
+      <a class="btn btn--sm hdr__book w-salon" href="{hs}"{ts}>{E(cfg.get('book_salon_label', 'Book'))}</a><a class="btn btn--sm hdr__book w-coaching" href="{hc}">{E(cfg.get('book_coaching_label', 'Free call'))}</a>
       <button class="hdr__icon hdr__menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
-<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>{'' if not names else chr(10) + f'<a class="wdoor" href="#{cfg["book_salon"]}"><span class="wdoor__k label">{E(names["salon"])}</span><span class="wdoor__n">{E(cfg.get("menu_salon_btn", "Book your time"))}</span><span class="wdoor__go label">Begin <span class="arr" aria-hidden="true">→</span></span></a><a class="wdoor wdoor--back" href="#{cfg["book_coaching"]}"><span class="wdoor__k label">{E(names["coaching"])}</span><span class="wdoor__n">{E(cfg.get("menu_coaching_btn", "Book a free call"))}</span><span class="wdoor__go label">Begin <span class="arr" aria-hidden="true">→</span></span></a>'}
+<div class="dock"><div class="worlds{" worlds--named" if names else ""}" role="group" aria-label="{E(pick)}">{worlds_btns}</div></div>{'' if not names else chr(10) + f'<a class="wdoor" href="{hs}"{ts}><span class="wdoor__k label">{E(names["salon"])}</span><span class="wdoor__n">{E(cfg.get("menu_salon_btn", "Book your time"))}</span><span class="wdoor__go label">Begin <span class="arr" aria-hidden="true">→</span></span></a><a class="wdoor wdoor--back" href="{hc}"><span class="wdoor__k label">{E(names["coaching"])}</span><span class="wdoor__n">{E(cfg.get("menu_coaching_btn", "Book a free call"))}</span><span class="wdoor__go label">Begin <span class="arr" aria-hidden="true">→</span></span></a>'}
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div><div class="menu__worlds"><button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button></div>{menu_lists}</div>
-  <div class="menu__end"><a class="btn w-salon" href="#{cfg['book_salon']}">{E(cfg.get('menu_salon_btn', 'Book your time'))}</a><a class="btn w-coaching" href="#{cfg['book_coaching']}">{E(cfg.get('menu_coaching_btn', 'Book a free call'))}</a></div>
+  <div class="menu__end"><a class="btn w-salon" href="{hs}"{ts}>{E(cfg.get('menu_salon_btn', 'Book your time'))}</a><a class="btn w-coaching" href="{hc}">{E(cfg.get('menu_coaching_btn', 'Book a free call'))}</a></div>
 </div>
 <nav class="rail" id="rail" aria-label="The visit">{rail}</nav>
 <div class="wveil" id="wveil" aria-hidden="true">{svg('om')}</div>
@@ -580,7 +583,7 @@ def page(cfg):
 {TW_JS}</script>
 <script>
 {JS}</script>
-'''
+''' + (f'<script>\n{open(V + "mgs.js").read()}</script>\n' if '-' in vkey else '')
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     for f in css_files(vkey): css += '\n' + open(V + f).read()
     title = f'<title>{cfg["title"]}</title>\n'
