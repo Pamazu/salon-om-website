@@ -6,13 +6,7 @@
     "code": [
       "."
     ],
-    "note": "Drafted by StorySafe from the code at 99470f3cd8c6: every route handler found in .. Each \"draft\" note says the line of code a suggestion rests on.",
-    "draft": {
-      "by": "StorySafe routes draft (a61f15f0)",
-      "sha": "99470f3cd8c6a3ca37278525605859cf8b59ff59",
-      "at": "2026-11-06T19:29:31.757Z",
-      "confirm": "The app's owner confirms: set every \"unsure\" to public (with its why), owner, members or admin; correct any suggestion; then delete this \"draft\" key. Until then the route check reports the list as a draft."
-    },
+    "note": "Confirmed by the owner (Design Business CEO Main-Agent, 6 Nov 2026): a static site on Firebase Hosting, no functions, rewrites or redirects in any firebase.json, no server code; no routes. Drafted by StorySafe from the code at 99470f3cd8c6.",
     "list": []
   }
 }
