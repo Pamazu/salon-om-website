@@ -1,0 +1,18 @@
+{
+  "app": "salon-om-website",
+  "version": 1,
+  "_why": "StorySafe declaration (a61f15f0). Only the routes block is here so far: StorySafe drafted it from the code for the owner to confirm. Data kinds are not declared yet.",
+  "routes": {
+    "code": [
+      "."
+    ],
+    "note": "Drafted by StorySafe from the code at 99470f3cd8c6: every route handler found in .. Each \"draft\" note says the line of code a suggestion rests on.",
+    "draft": {
+      "by": "StorySafe routes draft (a61f15f0)",
+      "sha": "99470f3cd8c6a3ca37278525605859cf8b59ff59",
+      "at": "2026-11-06T19:29:31.757Z",
+      "confirm": "The app's owner confirms: set every \"unsure\" to public (with its why), owner, members or admin; correct any suggestion; then delete this \"draft\" key. Until then the route check reports the list as a draft."
+    },
+    "list": []
+  }
+}
