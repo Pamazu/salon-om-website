@@ -1,4 +1,6 @@
-// Salon OM QA on the PC through sDelegate (run-at-ref; task 0ab956d4). Serves the built pages of THIS commit on
+// Salon OM QA on the PC through sDelegate (task 0ab956d4): from qa/,
+//   sdelegate run --include .,../option-2.2-mgs,../option-2.2/site --out out -- node record.mjs
+// Serves the built pages of THIS commit on
 // loopback (/m/, /g/, /s/ = option-2.2-mgs/<v>/index.html over option-2.2/site's films, photos and fonts) and drives
 // them in Chromium. Writes to qa/out: <v>-<world>-<section>-<width>.jpg (screen-sized shots), links.json (where every
 // booking button goes), morph-<width>-q<NN>.jpg (stills of the preview becoming the rail) and *.webm (recordings).
@@ -117,7 +119,8 @@ async function morph(b, base, w, opt) {
 }
 
 const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
-const b = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
+const exe = process.env.CHROME || process.env.SDELEGATE_CHROMIUM;     // a granted pinned asset, else the PC's own headless Chromium
+const b = await chromium.launch(exe ? { executablePath: exe } : {});
 try {
   await links(b, base);
   const both = [['1440', DESK], ['390', PHONE]];

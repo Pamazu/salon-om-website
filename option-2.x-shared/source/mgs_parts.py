@@ -97,7 +97,7 @@ def services(eyebrow='The menu', sid='services'):
 
 def voices(cta=False, n=4):
     d = dict(id='kind', title=M.VOICES_LINE, quotes=M.QUOTES[:n])
-    if cta: d['btn'] = btn(BOOK, BOOK_URL, 'light', arrow=True)
+    if cta: d['btn'] = btn(BOOK, BOOK_URL, arrow=True)          # forest: Voices sits on light clay in the salon world
     return ('voices', d)
 
 
