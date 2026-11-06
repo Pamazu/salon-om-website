@@ -1,5 +1,6 @@
-// Salon OM QA on the PC through sDelegate (task 0ab956d4): from qa/,
-//   sdelegate run --include .,../option-2.2-mgs,../option-2.2/site --out out -- node record.mjs
+// Salon OM QA on the PC through sDelegate (task 0ab956d4). sdelegate run sends the whole git tree (--include only adds),
+// so stage a lean copy (qa/, option-2.2-mgs/<v>/index.html, option-2.2/site/{img,fonts,brand,media/*-poster.webp}) in a
+// folder outside git and, from its qa/:  sdelegate run --name salon-om-qaN --root .. --timeout 25m --out out -- node record.mjs
 // Serves the built pages of THIS commit on
 // loopback (/m/, /g/, /s/ = option-2.2-mgs/<v>/index.html over option-2.2/site's films, photos and fonts) and drives
 // them in Chromium. Writes to qa/out: <v>-<world>-<section>-<width>.jpg (screen-sized shots), links.json (where every
@@ -18,10 +19,18 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg',
   '.woff2': 'font/woff2', '.json': 'application/json' };
 
+// /film/blank, /film/frame/<i> and POST /film/save/<name>: the page that turns screencast frames into a .webm (see film())
+const FILM = { frames: [] };
 function serve() {
   return new Promise((done) => {
     const srv = http.createServer((req, res) => {
-      const m = decodeURIComponent(new URL(req.url, 'http://x').pathname).match(/^\/([mgs])\/(.*)$/);
+      const u = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+      if (u === '/film/blank') { res.writeHead(200, { 'Content-Type': TYPES['.html'] }); return res.end('<!doctype html><body style="margin:0">'); }
+      const fr = u.match(/^\/film\/frame\/(\d+)$/);
+      if (fr && FILM.frames[+fr[1]]) { res.writeHead(200, { 'Content-Type': 'image/jpeg' }); return res.end(FILM.frames[+fr[1]].data); }
+      const sv = u.match(/^\/film\/save\/([\w.-]+\.webm)$/);
+      if (sv && req.method === 'POST') { const f = fs.createWriteStream(path.join(OUT, sv[1])); req.pipe(f); return f.on('finish', () => { res.writeHead(204); res.end(); }); }
+      const m = u.match(/^\/([mgs])\/(.*)$/);
       if (!m) { res.writeHead(404); return res.end(); }
       const file = !m[2] || m[2] === 'index.html' ? path.join(REPO, 'option-2.2-mgs', m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
       fs.stat(file, (err, st) => {
@@ -95,19 +104,55 @@ async function scrub(p, from, to, ms) {
     (function step(t) { const k = Math.min(1, (t - t0) / ms); scrollTo(0, from + (to - from) * k); if (k < 1) requestAnimationFrame(step); else done(); })(t0);
   }), [from, to, ms]);
 }
+// A recording without Playwright's recordVideo (the PC's Playwright has no ffmpeg): the page's own screencast frames,
+// replayed at their timestamps onto a canvas in a second page and encoded there by MediaRecorder (VP9, else VP8).
+async function film(b, base, p, name, run) {
+  const cdp = await p.context().newCDPSession(p), frames = [];
+  cdp.on('Page.screencastFrame', (f) => { frames.push({ t: f.metadata.timestamp, data: Buffer.from(f.data, 'base64') }); cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); });
+  await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 80 });
+  await run();
+  await cdp.send('Page.stopScreencast');
+  if (frames.length < 2) return console.log('film', name, 'no frames');
+  FILM.frames = frames;
+  const ctx = await b.newContext({ viewport: { width: 320, height: 240 } }), e = await ctx.newPage();
+  await e.goto(`${base}/film/blank`);
+  const r = await e.evaluate(async ({ ts, name }) => {
+    const first = await createImageBitmap(await (await fetch('/film/frame/0')).blob());
+    const c = document.createElement('canvas'); c.width = first.width; c.height = first.height; document.body.append(c);
+    const g = c.getContext('2d'); g.drawImage(first, 0, 0);
+    const type = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find((t) => MediaRecorder.isTypeSupported(t));
+    const rec = new MediaRecorder(c.captureStream(30), { mimeType: type, videoBitsPerSecond: 8e6 }), chunks = [];
+    rec.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data); rec.start(500);
+    const t0 = performance.now();
+    for (let i = 1; i < ts.length; i++) {
+      const bm = await createImageBitmap(await (await fetch(`/film/frame/${i}`)).blob());
+      const due = (ts[i] - ts[0]) * 1000 - (performance.now() - t0); if (due > 0) await new Promise((ok) => setTimeout(ok, due));
+      g.drawImage(bm, 0, 0); bm.close();
+    }
+    await new Promise((ok) => setTimeout(ok, 800)); const stopped = new Promise((ok) => { rec.onstop = ok; }); rec.stop(); await stopped;
+    await fetch(`/film/save/${name}`, { method: 'POST', body: new Blob(chunks, { type: 'video/webm' }) });
+    return { type, w: c.width, h: c.height };
+  }, { ts: frames.map((f) => f.t), name });
+  console.log('film', name, frames.length, 'frames', `${(frames.at(-1).t - frames[0].t).toFixed(1)} s`, r.type, `${r.w}x${r.h}`);
+  FILM.frames = []; await ctx.close();
+}
 async function morph(b, base, w, opt) {
-  const ctx = await b.newContext({ ...opt, recordVideo: { dir: OUT, size: opt.viewport } });
+  const ctx = await b.newContext(opt);
   const p = await open(ctx, `${base}/g/`);
   const [a, z] = await p.evaluate(() => [document.getElementById('visit').offsetTop, document.getElementById('arrive').offsetTop]);
   await scrub(p, 0, a, 1); await p.evaluate(() => { document.documentElement.style.scrollSnapType = ''; document.documentElement.style.scrollBehavior = ''; });
   await wait(p, 2600);
-  try { await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2); await p.mouse.wheel(0, 240); await wait(p, 2600); await p.mouse.wheel(0, -240); await wait(p, 2600); }
-  catch (e) { console.log('wheel', w, e.message); }
-  await scrub(p, a, a, 1); await wait(p, 600);
-  await scrub(p, a, z, 4200); await wait(p, 1400);
-  await scrub(p, z, a, 4200); await wait(p, 1400);
-  const vid = p.video(); await ctx.close();
-  fs.renameSync(await vid.path(), path.join(OUT, `morph-${w}.webm`));
+  try {
+    await film(b, base, p, `morph-${w}.webm`, async () => {
+      await wait(p, 600);
+      try { await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2); await p.mouse.wheel(0, 240); await wait(p, 2600); await p.mouse.wheel(0, -240); await wait(p, 2600); }
+      catch (e) { console.log('wheel', w, e.message); }
+      await scrub(p, a, a, 1); await wait(p, 600);
+      await scrub(p, a, z, 4200); await wait(p, 1400);
+      await scrub(p, z, a, 4200); await wait(p, 1400);
+    });
+  } catch (e) { console.log('film', w, e.message.split('\n')[0]); }
+  await ctx.close();
 
   const c2 = await b.newContext(opt), s = await open(c2, `${base}/g/`);
   await scrub(s, 0, a, 1); await wait(s, 2600);
@@ -124,13 +169,13 @@ const b = await chromium.launch(exe ? { executablePath: exe } : {});
 try {
   await links(b, base);
   const both = [['1440', DESK], ['390', PHONE]];
-  await morph(b, base, '1440', DESK);
-  await morph(b, base, '390', PHONE);
   await shots(b, base, 'm', 'salon', ['top', 'arrive', 'unhurried', 'home', 'aveda', 'services', 'kind', 'deeper', 'begin', 'letters'], both);
   await shots(b, base, 'm', 'coaching', ['c-top', 'c-how', 'c-path', 'c-begin'], both);
   await shots(b, base, 'g', 'salon', ['top', 'visit', 'arrive', 'unhurried', 'services', 'deeper'], both);
   await shots(b, base, 's', 'salon', ['services'], both);
   await shots(b, base, 'g', 'salon', ['top'], [['1024', TAB]]);
   await shots(b, base, 'g', 'coaching', ['c-top'], [['1024', TAB], ['1440', DESK]]);
+  await morph(b, base, '1440', DESK);
+  await morph(b, base, '390', PHONE);
 } finally { await b.close(); srv.close(); }
 console.log('done', fs.readdirSync(OUT).length, 'files in qa/out');
