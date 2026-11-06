@@ -2397,7 +2397,8 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
   if (!nums.length || marks.length < nums.length) return;
   sec.classList.add('pv--morph');
 
-  var TRAVEL = .42, STAGGER = .02, HAND = .44, HAND_LEN = .1, HOLD = .62;   // all in units of the preview's leave (0..1)
+  // in units of the preview's leave (0..1): the numbers land once step 01's film is behind the rail (its middle fifth)
+  var TRAVEL = .58, STAGGER = .02, HAND = .56, HAND_LEN = .12, HOLD = .8;
   var held = false, cFrom = null, cTo = null;
   function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
   function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }   // in-out, as the site's --io
@@ -2424,7 +2425,8 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
         var e = ease(clamp((q - k * STAGGER) / TRAVEL)), s = 1 + (m.height / a.h - 1) * e;
         var dx = (m.left + m.width / 2 - (r.left + a.x)) * e, dy = (m.top + m.height / 2 - (r.top + a.y)) * e;
         n.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
-        n.style.color = mix(cFrom, cTo, e);
+        // each number takes the colour of what is behind it: forest over the clay preview, the rail's ivory over the film
+        n.style.color = mix(cFrom, cTo, clamp((r.top + a.y + dy - r.bottom + 14) / 28));
         n.style.opacity = (1 - h).toFixed(3);
       }
       if (q > 0 && q < HOLD) {         // the rail appears exactly as the numbers land, then the engine keeps it on

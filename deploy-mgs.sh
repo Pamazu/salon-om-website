@@ -4,6 +4,7 @@
 # Never touches the five checkpoint sites or salon-om-2-2-next.
 #   bash deploy-mgs.sh            # m g s
 #   bash deploy-mgs.sh g          # one
+#   CHANNEL=r2 bash deploy-mgs.sh # to a 7-day preview address per site (QA before the links J reviews change)
 set -euo pipefail
 cd "$(dirname "$0")"
 letters=("${@:-m g s}"); [ $# -eq 0 ] && letters=(m g s)
@@ -21,6 +22,10 @@ c = json.load(open('option-2.2/site/firebase.json')); c['hosting']['site'] = sys
 json.dump(c, open(sys.argv[1] + '/firebase.json', 'w'), indent=2)
 open(sys.argv[1] + '/.firebaserc', 'w').write('{ "projects": { "default": "salon-om-sites" } }\n')
 PY
-  (cd "$d" && firebase deploy --only hosting --project salon-om-sites --non-interactive) | tail -2
-  echo "https://$site.web.app"
+  if [ -n "${CHANNEL:-}" ]; then
+    (cd "$d" && firebase hosting:channel:deploy "$CHANNEL" --only "$site" --expires 7d --project salon-om-sites --non-interactive) | grep 'Channel URL' | grep -o 'https://[^ ]*web.app'
+  else
+    (cd "$d" && firebase deploy --only hosting --project salon-om-sites --non-interactive) | tail -2
+    echo "https://$site.web.app"
+  fi
 done
