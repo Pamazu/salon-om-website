@@ -167,8 +167,13 @@ const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
 const exe = process.env.CHROME || process.env.SDELEGATE_CHROMIUM;     // a granted pinned asset, else the PC's own headless Chromium
 const b = await chromium.launch(exe ? { executablePath: exe } : {});
 try {
-  await links(b, base);
   const both = [['1440', DESK], ['390', PHONE]];
+  if (process.env.QA_ONLY === 'hero') {      // the two openings only, every version, at 1024 / 1280 / 1440 / 390
+    const four = [['1024', TAB], ['1280', { viewport: { width: 1280, height: 800 } }], ...both];
+    for (const v of ['m', 'g', 's']) { await shots(b, base, v, 'salon', ['top'], four); await shots(b, base, v, 'coaching', ['c-top'], four); }
+    process.exit(0);
+  }
+  await links(b, base);
   await shots(b, base, 'm', 'salon', ['top', 'arrive', 'unhurried', 'home', 'aveda', 'services', 'kind', 'deeper', 'begin', 'letters'], both);
   await shots(b, base, 'm', 'coaching', ['c-top', 'c-how', 'c-path', 'c-begin'], both);
   await shots(b, base, 'g', 'salon', ['top', 'visit', 'arrive', 'unhurried', 'services', 'deeper'], both);

@@ -1257,7 +1257,15 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 @media (min-width: 1024px) and (max-width: 1279px) {
   .hdr__mid .worlds--named button { padding: 0 14px; height: 44px; line-height: 1.15; letter-spacing: .14em; font-size: 10.5px; white-space: normal; }
   .hdr__mid .worlds--named .wl2 { display: block; }
+  /* Inner Work's opening: its two equal buttons stack in one column, so the lower-left credentials and ROT line keep a
+     readable measure (one word per line, up over the logo, at 1024 before; task 0ab956d4) */
+  .hero--long .hero__cta { max-width: 300px; }
+  .hero--long .hero__cta .btn { width: 100%; }
+  .hero--long .hero__line { max-width: 32ch; }
 }
+/* the note under the hero's doors wraps at the buttons' width instead of widening their column: the grid sized the middle
+   column to buttons + note on one line, which starved the lower-left line at 1024 to 1440 */
+@media (min-width: 1024px) { .hero__foot .hero__note { contain: inline-size; } }
 .offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
 .offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
 .offers-menu .om__ph { grid-row: 1 / span 3; }
@@ -1563,7 +1571,7 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="9afd5b93fd5e";</script>
+<script>window.OM_BUILD="3924ffef1d2c";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
