@@ -31,9 +31,9 @@ AVEDA_FACTS = [('100%', 'vegan formulas', True), ('1st', 'beauty company to manu
 TEAM_NOTE = 'I’m the backdrop. It’s not about me, it’s about you. This is your time, your space.'
 
 # one real photo per step (study section 6: a picture now, the film of that moment later), over its element film
-# each checked against its step's feature: 01 a welcome and a real conversation (Maggie seated in the lounge; no photo
-# shows the tea), 02 the basins of the scalp ritual, 03 the color bar, 04 unhurried time (the lounge clock), 05 the styling stations
-STEP_IMG = ['real-maggie-fireplace.webp', 'real-shampoo-basins.webp', 'real-color-bar.webp', 'real-lounge.webp', 'real-styling-stations.webp']
+# each checked against its step's feature: 01 the welcome (the team who greet you; no photo shows the tea, and the lounge
+# photos carry the clock), 02 the basins of the scalp ritual, 03 the color bar, 04 unhurried time (the lounge clock), 05 the styling stations
+STEP_IMG = ['real-team-of-three.webp', 'real-shampoo-basins.webp', 'real-color-bar.webp', 'real-lounge.webp', 'real-styling-stations.webp']
 STEP_FILM = ['earth', 'water', 'fire', 'air', 'ether']
 STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
 SERVICE_IMG = ['real-color-bar.webp', 'real-katie.webp', 'real-aveda-shelves.webp', 'real-styling-chair.webp',

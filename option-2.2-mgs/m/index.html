@@ -1252,6 +1252,12 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 .voices .cy__reward { margin-left: auto; margin-right: auto; text-align: center; }
 .tl__btn { margin-top: clamp(18px, 3vh, 30px); }
 .om__btn .btn { margin-top: clamp(16px, 2.6vh, 26px); }
+/* the header's full action labels ("Book a Connection Call") need room from 1024 to 1279 px: the world switch takes its
+   own compact two-line form there (as below 1024), so the logo keeps its size; both worlds alike so the header never jumps */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .hdr__mid .worlds--named button { padding: 0 14px; height: 44px; line-height: 1.15; letter-spacing: .14em; font-size: 10.5px; white-space: normal; }
+  .hdr__mid .worlds--named .wl2 { display: block; }
+}
 .offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
 .offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
 .offers-menu .om__ph { grid-row: 1 / span 3; }
@@ -1425,7 +1431,7 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
     <div class="s__shade"></div>
   </section>
   <section class="s ch ch--stack" id="arrive" data-tone="dark" data-sound="earth" data-chapter="0" style="--acc: var(--earth)" aria-labelledby="arrive-t">
-    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/earth-poster.webp" alt="" decoding="async"><video data-src="media/earth.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img src="img/real-maggie-fireplace.webp" alt="" decoding="async"></div></div></div>
+    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/earth-poster.webp" alt="" decoding="async"><video data-src="media/earth.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img src="img/real-team-of-three.webp" alt="" decoding="async"></div></div></div>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">01<small>/ 05</small></span><span class="label"><b>Arrive</b></span></p>
@@ -1673,7 +1679,7 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="c713819b3b2d";</script>
+<script>window.OM_BUILD="7a4e38931fc8";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

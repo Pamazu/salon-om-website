@@ -66,6 +66,12 @@
 .voices .cy__reward { margin-left: auto; margin-right: auto; text-align: center; }
 .tl__btn { margin-top: clamp(18px, 3vh, 30px); }
 .om__btn .btn { margin-top: clamp(16px, 2.6vh, 26px); }
+/* the header's full action labels ("Book a Connection Call") need room from 1024 to 1279 px: the world switch takes its
+   own compact two-line form there (as below 1024), so the logo keeps its size; both worlds alike so the header never jumps */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .hdr__mid .worlds--named button { padding: 0 14px; height: 44px; line-height: 1.15; letter-spacing: .14em; font-size: 10.5px; white-space: normal; }
+  .hdr__mid .worlds--named .wl2 { display: block; }
+}
 .offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
 .offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
 .offers-menu .om__ph { grid-row: 1 / span 3; }
