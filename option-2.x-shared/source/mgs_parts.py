@@ -59,12 +59,12 @@ def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
     }
 
 
-def salon_hero(proof=False):
+def salon_hero(proof=False, visit='arrive'):
     f = M.FIRST
     line = f['pair'] + ' ' + M.OPENING + ((' ' + draft(D['proof'])) if proof else '')
     ctas = (btn(BOOK, BOOK_URL, 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching')) if proof else \
            (btn(f['doors'][0], '#pause', 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching'))
-    return ('hero_mark', dict(id='top', film='hero', next='pause' if not proof else 'arrive', hook=f['tagline'],
+    return ('hero_mark', dict(id='top', film='hero', next='pause' if not proof else visit, hook=f['tagline'],
                               eyebrow=f['name'], line=line, ctas=ctas, note=f['close']))
 
 
@@ -117,10 +117,10 @@ def begin(summary=False):
                         text=draft(D['begin']) if summary else '', btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
 
 
-def salon_end(legend):
+def salon_end(legend, visit='arrive'):
     return ('end', dict(id='letters', title='', tagline=M.OPENING, no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
                         connect=[f'<a href="{BOOK_URL}" target="_blank" rel="noopener">Book online</a>', 'Instagram (link to come)', 'Email (to confirm)'],
-                        explore=[('The visit', 'arrive' if legend != 'S' else 'visit'), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
+                        explore=[('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
 
 
 # ---------------------------------------------------------------- Inner Work with Maggie

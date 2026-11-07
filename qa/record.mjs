@@ -169,8 +169,20 @@ const b = await chromium.launch(exe ? { executablePath: exe } : {});
 try {
   const both = [['1440', DESK], ['390', PHONE]];
   if (process.env.QA_ONLY === 'hero') {      // the two openings only, every version, at 1024 / 1280 / 1440 / 390
-    const four = [['1024', TAB], ['1280', { viewport: { width: 1280, height: 800 } }], ...both];
+    const four = [['1024', TAB], ['1280', { viewport: { width: 1280, height: 800 } }], ...both,
+      ['430', { viewport: { width: 430, height: 932 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }],
+      ['768', { viewport: { width: 768, height: 1024 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }],
+      ['1366', { viewport: { width: 1366, height: 768 } }]];
     for (const v of ['m', 'g', 's']) { await shots(b, base, v, 'salon', ['top'], four); await shots(b, base, v, 'coaching', ['c-top'], four); }
+    // every in-page link lands somewhere: a #id that exists, or a world switch
+    const dead = {};
+    for (const v of ['m', 'g', 's']) {
+      const ctx = await b.newContext(DESK), p = await open(ctx, `${base}/${v}/`);
+      dead[v] = await p.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].filter((a) => !a.dataset.toWorld && a.getAttribute('href').length > 1
+        && !document.getElementById(a.getAttribute('href').slice(1))).map((a) => `${a.getAttribute('href')} "${a.textContent.trim().slice(0, 30)}"`));
+      await ctx.close();
+    }
+    fs.writeFileSync(path.join(OUT, 'dead-links.json'), JSON.stringify(dead, null, 1)); console.log('dead links', JSON.stringify(dead));
     process.exit(0);
   }
   await links(b, base);

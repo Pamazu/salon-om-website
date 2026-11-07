@@ -1257,15 +1257,33 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 @media (min-width: 1024px) and (max-width: 1279px) {
   .hdr__mid .worlds--named button { padding: 0 14px; height: 44px; line-height: 1.15; letter-spacing: .14em; font-size: 10.5px; white-space: normal; }
   .hdr__mid .worlds--named .wl2 { display: block; }
-  /* Inner Work's opening: its two equal buttons stack in one column, so the lower-left credentials and ROT line keep a
-     readable measure (one word per line, up over the logo, at 1024 before; task 0ab956d4) */
+  .hero--long .hero__line { max-width: 32ch; }
+}
+/* Inner Work's opening up to 1439 (laptops included): its two equal buttons stack in one column, so the lower-left
+   credentials and ROT line keep a readable measure and stay clear of the heading (one word per line, up over the logo,
+   at 1024 before; tight under the heading at 1280; task 0ab956d4) */
+@media (min-width: 1024px) and (max-width: 1439px) {
   .hero--long .hero__cta { max-width: 300px; }
   .hero--long .hero__cta .btn { width: 100%; }
-  .hero--long .hero__line { max-width: 32ch; }
 }
 /* the note under the hero's doors wraps at the buttons' width instead of widening their column: the grid sized the middle
    column to buttons + note on one line, which starved the lower-left line at 1024 to 1440 */
 @media (min-width: 1024px) { .hero__foot .hero__note { contain: inline-size; } }
+/* below 1024 the opening is one column: the mark or the words sit centred in the room the lower block leaves, so a longer
+   lower block (G's proof and ROT lines, S's credentials) never runs into them (task 0ab956d4) */
+@media (max-width: 1023px) {
+  .hero__lv { display: flex; flex-direction: column; padding-top: var(--top); }
+  .hero__lv > .hero__mark { position: relative; inset: auto; transform: none; margin: auto; }
+  .hero__lv > .hero__words { position: relative; inset: auto; transform: none; margin: auto 0; padding: 0 var(--gutter); }
+  .hero__lv > .hero__foot { position: relative; inset: auto; flex: none; }
+}
+/* the salon opening's OM mark is sized by width; on a short laptop screen (1366 x 768) its tagline ran into the doors.
+   Its height now caps it too (72vh: 553 px wide at 768 tall, 648 at 900, 660 from 917 up) */
+@media (min-width: 1024px) { .hero__mark { width: calc(min(58vw, 660px, 72vh) * var(--logo-s)); } }
+/* Inner Work's credentials and ROT line over the bright curtains: full ivory with the sub-line's soft shadow, a step
+   larger where the column has room */
+main[data-world="coaching"] .hero .hero__line { color: var(--ivory); text-shadow: 0 1px 18px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .35); }
+@media (min-width: 1280px) { main[data-world="coaching"] .hero .hero__line { font-size: 16px; } main[data-world="coaching"] .hero .hero__rot { font-size: 17px; } }
 .offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
 .offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
 .offers-menu .om__ph { grid-row: 1 / span 3; }
@@ -1691,7 +1709,7 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="29165e88a5b9";</script>
+<script>window.OM_BUILD="18478c5212b2";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

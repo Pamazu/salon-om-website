@@ -10,7 +10,7 @@ VISIT = ('steps', dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
 PROOF = ('proof', dict(id='hosts', eyebrow='Meet the team', title=M.TEAM_LINE,
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
                        quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA))
-SALON = [salon_hero(proof=True), VISIT, PROOF, services(), door(short=True), begin(summary=True), salon_end(LEGEND)]
+SALON = [salon_hero(proof=True, visit='visit'), VISIT, PROOF, services(), door(short=True), begin(summary=True), salon_end(LEGEND, visit='visit')]
 COACHING = [iw_hero(short_cred=True), iw_deeper(short=True), iw_how(cta=False, short=True), iw_path(cta=True), iw_begin(), iw_end(LEGEND)]
 
 CFG = cfg('s', 'Short', SALON, COACHING,
