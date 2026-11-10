@@ -444,6 +444,8 @@ def end(d, world):
       </div>
     </div>'''
     conn = (''.join(f'<li>{c}</li>' for c in d['connect'])) if d.get('connect') else ('<li>Instagram (link to come)</li><li>Email (to confirm)</li>' + ('' if d.get('no_other') else f'<li><a href="#" data-to-world="{"coaching" if world == "salon" else "salon"}">{d["other"]}</a></li>'))
+    visit = ''.join(f'<li>{v}</li>' for v in d['visit']) if d.get('visit') else \
+        f"<li>Address to confirm</li><li>Opening hours to confirm</li><li>{d.get('foot_visit', 'Salon in person · coaching in person and online')}</li>"
     legal = ''.join(f'<p class="foot__legal">{t}</p>' for t in [d.get('disclaimer'), d.get('legend')] if t)
     fid = f' id="{d["id"]}"' if d.get('no_letters') else ''
     return f'''<section class="s s--auto end" data-tone="light" data-sound="{d.get('sound','bed')}" aria-label="Letters and contact">{letters}
@@ -451,7 +453,7 @@ def end(d, world):
       <div class="foot__in">
         <div class="foot__brand a-up" style="--d:.6s">{svg('stacked')}<p>{d['tagline']}</p></div>
         <div class="a-up" style="--d:.7s"><h3 class="label">Explore</h3><ul>{expl}</ul></div>
-        <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>{d.get('foot_visit', 'Salon in person · coaching in person and online')}</li></ul></div>
+        <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul>{visit}</ul></div>
         <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul>{conn}</ul></div>
       </div>{legal}
       <div class="foot__base"><span>© 2026 Salon OM · {d.get('foot_base', 'an Aveda concept salon')} · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
@@ -490,7 +492,7 @@ def prose(d):
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
         {lead}
       </div>
-      <div class="pr__body">{paras}{lst}{small}{close}{b}</div>
+      <div class="pr__body">{paras}{lst}{small}{close}{cycle(d, 1.15)}{b}</div>
     </div>
     <div class="s__shade"></div>
   </section>'''

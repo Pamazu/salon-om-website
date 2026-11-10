@@ -24,11 +24,23 @@ D = dict(
   benefits=['You are heard before anything is done to your hair.', 'The week’s tension lets go.',
             'Hair that suits you, from plant-based Aveda color.', 'Nothing is rushed. The time is yours.',
             'It still looks right next week.'],
-  begin='Tea, a real conversation and unhurried time, made around you.',
+  begin='Care and attention made around you, from your first cup of tea.',   # J 10 Nov 08:56: no "unhurried time" in new lines
 )
 # Q10/Q11 (Copywriter 1, 4 Nov): not in Maggie's decks, so left out of M and shown as [draft] in G and S
-AVEDA_FACTS = [('100%', 'vegan formulas', True), ('1st', 'beauty company to manufacture with 100% wind power (2007)'),
-               ('B Corp', 'certified for people and planet (2023)'), ('1978', 'the year plant-based, holistic beauty began')]   # a year never counts up (J, 10 Nov)
+# each checked on aveda.com, 10 Nov 2026 (task df14fa0d): 100% vegan since 2021 (aveda.com/living-aveda-article-vegan-haircare-beauty);
+# first beauty company to manufacture with 100% wind power at its primary facility, 2007 (aveda.com/carbon-neutrality-green-initiatives);
+# Certified B Corporation, 2023 (aveda.com/b-corp-certification); founded 1978 by Horst Rechelbacher (aveda.com/horst-rechelbacher-aveda-history).
+# A year never counts up (third field off).
+AVEDA_FACTS = [('100%', 'vegan formulas, since 2021', True), ('1st', 'beauty company to manufacture with 100% wind power, at its primary facility (2007)'),
+               ('B Corp', 'Certified B Corporation since 2023'), ('1978', 'the year Aveda began, with botanical products kind to people and the earth')]
+# the salon's public details, 10 Nov 2026 (task df14fa0d): address and hours from Maggie's own booking page
+# (maggiewoodward.glossgenius.com/about), phone from salonom.com, email from maggiewoodward.glossgenius.com/services,
+# Instagram @salonomavilabeach (both). salonom.com: "Open by appointment only".
+SALON_INFO = dict(address='56 Landing Passage, Avila Beach, CA 93424',
+                  hours='Tuesday and Wednesday, 10 am to 4:30 pm. Thursday, 12:30 to 5 pm. By appointment.',
+                  phone='<a href="tel:+18056271550">805 627 1550</a>',
+                  email='<a href="mailto:contact@salonomavilabeach.com">contact@salonomavilabeach.com</a>',
+                  instagram='<a href="https://www.instagram.com/salonomavilabeach/" target="_blank" rel="noopener">Instagram @salonomavilabeach</a>')
 TEAM_NOTE = 'I’m the backdrop. It’s not about me, it’s about you. This is your time, your space.'
 
 # one real photo per step (study section 6: a picture now, the film of that moment later), over its element film
@@ -136,7 +148,8 @@ def begin(summary=False):
 
 def salon_end(legend, visit='arrive'):
     return ('end', dict(id='letters', title='', tagline=M.OPENING, no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
-                        connect=[f'<a href="{BOOK_URL}" target="_blank" rel="noopener">Book online</a>', 'Instagram (link to come)', 'Email (to confirm)'],
+                        connect=[f'<a href="{BOOK_URL}" target="_blank" rel="noopener">Book online</a>', SALON_INFO['phone'], SALON_INFO['email'], SALON_INFO['instagram']],
+                        visit=[SALON_INFO['address'], SALON_INFO['hours']],
                         explore=[('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
 
 
@@ -164,8 +177,9 @@ def iw_how(cta=False, short=False):
     return ('prose', d)
 
 
-def iw_credentials():
-    return (S.cred, dict(id='c-cred', sound='air', eyebrow='Credentials', title='Maggie Woodward', list=[(c, '') for c in M.CREDENTIALS],
+def iw_credentials(n=None):
+    """n: only her first n credentials (S)"""
+    return (S.cred, dict(id='c-cred', sound='air', eyebrow='Credentials', title='Maggie Woodward', list=[(c, '') for c in M.CREDENTIALS[:n]],
                          img=CRED_IMG[0], alt=CRED_IMG[1]))
 
 
@@ -185,6 +199,8 @@ def iw_begin():
 
 
 def iw_end(legend):
+    # where Inner Work sessions happen is not public: the town only, the rest is a question for Maggie (task df14fa0d)
     return ('end', dict(id='c-letters', sound='air', title='', tagline=M.FIRST['tagline'], no_letters=True, connect=M.FOOT_IW,
+                        visit=['Avila Beach, California', 'Inner Work in person and online'],
                         disclaimer=M.DISCLAIMER, legend=legend,
                         explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))

@@ -1,4 +1,4 @@
-"""Option 2.2 · G, Guided (study febe2c3a, round 2 of 6 Nov 2026, task 9456424d): every section is one cycle,
+"""Option 2.2 · G, Guided (study febe2c3a, round 2 of 6 Nov 2026, task 9456424d; round 3 of 10 Nov, task df14fa0d): every section is one cycle,
 Hook, Proof, Retain, Reward, CTA (study section 3b), inside one page cycle per world. Maggie's words in every section;
 new words are the study's [draft] lines (dotted underline), kept in G below.
 Fields the build already shows carry what they can: title = the written hook, close/after = the reward, small = an
@@ -12,27 +12,32 @@ from mgs_parts import *
 
 # the study's round 2 [draft] lines, word for word (section 3b); everything else comes from copy_2_2_maggie.py
 G = dict(
-  rot_salon='Hair that feels like you, in one visit, without the rush.',
+  # round 3 (CEO MA critique 10 Nov, section 5.3): the hook names the pain. J 10 Nov 08:56: less emphasis on time ("unhurried
+  # time" can make a visit sound long), so the objection is answered with attention, in Maggie's phrase from her direction deck
+  rot_salon='Hair that finally feels like you, with Maggie’s full attention.',
   rot_iw='Uncover the beliefs that may be holding you back, without reliving the past. It starts with one Connection Call.',
   preview='Your visit, from the first sip to the last look, in five steps.',
   preview_reward='You know what happens, and in what order, before you book.',
   benefits=['You are heard before anything is done to your hair.', 'The week’s tension lets go.',
-            'Planned around your hair and the upkeep you want, with plant-based Aveda color.',
-            'Nothing is rushed, and nothing runs longer than your service needs.',
-            'You leave knowing how to style it yourself, so it still looks right next week.'],
-  om_reward='Your hair, your rest and your time, cared for in one visit.',
+            'Planned around your hair and the upkeep you want.',     # round 3: the Aveda product claim cut (Aveda's own figures vary by line)
+            None,                                                     # round 3: the promise cut; Maggie's own line says it
+            None],                                                    # round 3: Shine is Maggie's line alone
+  om_reward='Your hair, your rest and you, cared for as one.',
   aveda_hook='What is in your color?',
-  aveda_reward='You never have to choose between hair you love and products you trust.',
+  aveda_reward='Care for your hair and care for the earth, in the same visit.',
   team_hook='The people who listen first.',
   voices_reward='A great haircut, and a lighter spirit. Both are part of the visit.',
   menu_hook='Every service, and every price, before you book.',
   menu_answer='Not sure which to choose? Your visit begins with a real conversation, and your service is shaped with you there.',
-  menu_reward='Choose yours, and the visit is shaped around it.',
-  begin_stack='Comforting Tea and a real conversation. A scalp ritual with Stress-Fix oil. Color and a cut made for you. A lesson to carry it home.',
-  begin_reward='Hair that feels like you, and time that is only yours.',
+  # round 3 (critique 5.1): the value stack beside the prices. Whether every hair visit includes all of it is Maggie's to confirm
+  menu_reward='Every hair visit includes your favorite drink, a real conversation, a scalp ritual with Stress-Fix oil and time shaped around you.',
+  # round 3: the stack in Maggie's own step lines, "lesson" cut (her words: "We teach you to recreate your style at home.")
+  begin_stack='Comforting Tea and a real conversation. A scalp ritual with Stress-Fix oil. Cut, color, blonding or extensions, designed for you alone. We teach you to recreate your style at home.',
+  begin_reward='Hair that feels like you, and attention that is only on you.',
   cred_hook='Who will walk beside you?',
-  cred_reward='Maggie Woodward, coach and hypnotherapist, trained in each method she uses.',
-  cred_answer='Inner Work is coaching and hypnotherapy for personal growth. It is not a substitute for care from a licensed healthcare professional.',
+  # round 3: the reworded disclaimer and "trained in each method she uses" cut (compliance words exactly or not at all;
+  # neuroscience is study, EMDR education only). Her exact disclaimer stays in the footer.
+  how_reward='The aim is to meet old patterns with more calm, and more choice.',   # round 3 (critique 5.7): the outcome, in her gentle register
   path_hook='Four steps, and the first is a conversation.',
   path_answer='How many sessions you need is something you decide together, in your Connection Call.',
   path_reward='The first step is complimentary, and every step after it is your choice.',
@@ -73,9 +78,10 @@ SALON = [
 COACHING = [
   _with(iw_hero(short_cred=True), rot=draft(G['rot_iw'])),
   _with(iw_deeper(), btn=btn(CALL, CALL_URL, arrow=True)),
-  iw_how(cta=True),
-  _with(iw_credentials(), title=draft(G['cred_hook']), close=draft(G['cred_reward']), small=draft(G['cred_answer'])),
+  _with(iw_how(cta=True), reward=draft(G['how_reward'])),
+  _with(iw_credentials(), title=draft(G['cred_hook']), lead='Maggie Woodward'),
   _with(iw_path(cta=True), title=draft(G['path_hook']), answer=draft(G['path_answer']), reward=draft(G['path_reward'])),
+  iw_voices_placeholder(),                           # round 3: her section 5, client words still being gathered
   _with(iw_begin(), title=M.FIRST['close'], text=draft(G['iw_begin_text']), reward=draft(G['iw_begin_reward'])),
   iw_end(LEGEND),
 ]

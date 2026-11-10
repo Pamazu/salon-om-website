@@ -55,12 +55,15 @@ def menu(d, world):
 def _foot(e, draft):
     expl = ''.join(f'<li><a href="#{h}">{t}</a></li>' for t, h in e['explore'])
     conn = ''.join(f'<li>{c}</li>' for c in e['connect'])
+    # the salon's and Inner Work's real lines (Copywriter 1, task df14fa0d); 2.2's placeholders only when a world has none
+    visit = ''.join(f'<li>{v}</li>' for v in e['visit']) if e.get('visit') else \
+        f'<li>Address to confirm</li><li>Opening hours to confirm</li><li>{e["foot_visit"]}</li>'
     legal = ''.join(f'<p class="foot__legal">{t}</p>' for t in [e.get('disclaimer'), e.get('legend')] if t)
     return f'''<footer class="foot cl__foot" id="{e['id']}">
       <div class="foot__in">
         <div class="foot__brand">{svg('stacked')}<p>{e['tagline']}</p></div>
         <div><h3 class="label">Explore</h3><ul>{expl}</ul></div>
-        <div><h3 class="label">Visit</h3><ul><li>Address to confirm</li><li>Opening hours to confirm</li><li>{e['foot_visit']}</li></ul></div>
+        <div><h3 class="label">Visit</h3><ul>{visit}</ul></div>
         <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>
       </div>{legal}
       <div class="foot__base"><span>© 2026 Salon OM · an Aveda concept salon · {draft}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
@@ -92,6 +95,7 @@ def cred(d, world):
     """Inner Work's credentials as a card laid over Maggie's portrait (Esalen), so the third text section of Inner Work
     has a shape of its own."""
     items = ''.join(f'<li class="a-up" style="--d:{0.55 + k * .07:.2f}s">{c}</li>' for k, (c, _) in enumerate(d['list']))
+    lead = f'<p class="cr__lead a-up" style="--d:.45s">{d["lead"]}</p>' if d.get('lead') else ''
     small = f'<p class="cr__small a-up" style="--d:1s">{d["small"]}</p>' if d.get('small') else ''
     close_ = f'<p class="pr__close a-up" style="--d:1.1s">{d["close"]}</p>' if d.get('close') else ''
     return f'''<section class="s s--auto cr" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
@@ -99,7 +103,7 @@ def cred(d, world):
       <figure class="cr__ph"><img src="img/{d['img']}" alt="{E(d['alt'])}" decoding="async" loading="lazy"></figure>
       <div class="cr__card">
         <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
-        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>{lead}
         <ul class="cr__list">{items}</ul>{small}{close_}
       </div>
     </div>
