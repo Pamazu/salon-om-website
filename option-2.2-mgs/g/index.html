@@ -1417,51 +1417,9 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 .pr__body > p, .ch__body, .mn__intro, .cy__answer { font-size: var(--t-body); }
 .hero__line { font-size: max(16px, var(--t-body)); }
 .pr__in, .facts__in, .pf__in { gap: var(--sp-6); }
+@media (max-width: 1023px) { .pr__in, .facts__in, .pf__in { gap: var(--sp-4); } }
 /* Voices: its heading line sat on the big quote mark; the mark gets its own room */
 .voices__t { margin-bottom: var(--sp-5); }
-
-/* ---- the five steps: one rhythm, five shapes (Heyday, Esalen). 01 full photo (2.2); 02 photo right, words left;
-   03 a wide photo band with a card over its corner; 04 words centred under one small framed photo; 05 photo left,
-   words right. The element film shows around the framed photos. Each photo wipes in from the side it opens on. */
-.ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__top { -webkit-mask-image: none; mask-image: none; overflow: hidden; border-radius: var(--r-photo);
-  transition: clip-path 1.6s var(--io-strong) .15s; }
-.ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__top img { transform: scale(1.06); transition: transform 2.4s var(--io-strong) .15s; }
-.ch--stack:is(#unwind, #renew, #unhurried, #home).is-active .ch__top img { transform: none; }
-.ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__scrim { background: rgba(10, 7, 5, .42); }
-#unwind .ch__top { clip-path: inset(0 0 0 100%); }\n#unwind .ch__top img { object-position: 50% 78%; }
-#home .ch__top, #renew .ch__top { clip-path: inset(0 100% 0 0); }
-#unhurried .ch__top { clip-path: inset(100% 0 0 0); }
-.ch--stack:is(#unwind, #renew, #unhurried, #home).is-active .ch__top { clip-path: inset(0); }
-#renew .ch__copy { background: var(--clay); color: var(--ink); padding: var(--sp-5); border-radius: var(--r-photo); box-shadow: 0 30px 90px rgba(0, 0, 0, .28); }
-#renew .ch__meta, #renew .ch__meta .label, #renew .ch__specs dt { color: var(--ink-soft); }\n#renew .ch__num, #renew .ch__num small, #renew .ch__meta b { color: var(--forest-deep); }
-#renew .ch__body { color: var(--ink); text-shadow: none; }
-#renew .ch__title em { color: var(--forest-deep); }
-#renew .ch__side, #unwind .ch__side, #home .ch__side { grid-template-columns: 1fr; gap: var(--sp-3); }
-#unhurried .ch__copy { justify-items: center; text-align: center; }
-#unhurried .ch__meta { justify-content: center; }
-#unhurried .ch__side { grid-template-columns: 1fr; justify-items: center; gap: var(--sp-3); }
-#unhurried .ch__specs { justify-items: center; }
-@media (min-width: 1024px) {
-  #unwind .ch__top { inset: calc(var(--top) + var(--sp-4)) var(--gutter) var(--base) 52%; }
-  #unwind .ch__copy { right: 52%; padding-right: var(--sp-5); }
-  #home .ch__top { inset: calc(var(--top) + var(--sp-4)) 52% var(--base) var(--gutter); }
-  #home .ch__copy { left: 52%; right: calc(var(--gutter) + 120px); padding-left: var(--sp-5); }   /* clear of the step rail */
-  :is(#unwind, #home) .ch__title { font-size: clamp(72px, 9.4vw, 176px); }
-  #renew .ch__top { inset: calc(var(--top) + var(--sp-4)) 30% auto var(--gutter); height: 52vh; }
-  #renew .ch__copy { left: auto; width: min(600px, 42vw); }
-  #renew .ch__title { font-size: clamp(60px, 6.2vw, 116px); }
-  #unhurried .ch__top { inset: calc(var(--top) + var(--sp-4)) auto auto 50%; height: min(30vh, 360px); width: auto; aspect-ratio: 4 / 5; translate: -50% 0; }
-  #unhurried .ch__title { font-size: clamp(72px, 8.6vw, 156px); }
-}
-@media (max-width: 1023px) {
-  :is(#unwind, #home) .ch__top { inset: calc(var(--top) + var(--sp-2)) var(--gutter) auto; height: 40svh; }
-  #renew .ch__top { inset: calc(var(--top) + var(--sp-2)) 0 auto; height: 30svh; border-radius: 0; }
-  #renew .ch__copy { padding: var(--sp-4) var(--sp-3); }
-  #renew .ch__title { font-size: clamp(56px, 15vw, 96px); }
-  #unhurried .ch__top { inset: calc(var(--top) + var(--sp-2)) auto auto 24vw; width: 52vw; aspect-ratio: 4 / 5; }
-  #home .ch__top { height: 30svh; }                     /* 05 also carries the booking button */
-  .pr__in, .facts__in, .pf__in { gap: var(--sp-4); }
-}
 
 /* ---- the pause and OM never look alike: the pause is a centred line; OM keeps 2.2's line beside its rings; M's Why
    Aveda sits beside a real photo of the Aveda shelves at Salon OM */
@@ -1576,11 +1534,11 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 }
 
 /* ?shot review captures and reduced motion: every photo shown whole, no wipes */
-html[data-shot] .ch__top, html[data-shot] .mn__ph, html[data-shot] .cr__ph { clip-path: none !important; }
-html[data-shot] .cl__ph { clip-path: none !important; }\nhtml[data-shot] .ch__top img, html[data-shot] .cl__ph img { transform: none !important; }
+html[data-shot] .mn__ph, html[data-shot] .cr__ph { clip-path: none !important; }
+html[data-shot] .cl__ph { clip-path: none !important; }\nhtml[data-shot] .cl__ph img { transform: none !important; }
 @media (prefers-reduced-motion: reduce) {
-  .ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__top, .mn__ph, .cr__ph { clip-path: none; transition: opacity .6s var(--io); }
-  .cl__ph { clip-path: none; }\n  .ch__top img, .cl__ph img { transform: none !important; }
+  .mn__ph, .cr__ph { clip-path: none; transition: opacity .6s var(--io); }
+  .cl__ph { clip-path: none; }\n  .cl__ph img { transform: none !important; }
 }
 </style>
 </head>
@@ -1656,7 +1614,7 @@ html[data-shot] .cl__ph { clip-path: none !important; }\nhtml[data-shot] .ch__to
     <div class="s__shade"></div>
   </section>
   <section class="s ch ch--stack" id="unwind" data-tone="dark" data-sound="water" data-chapter="1" style="--acc: var(--water)" aria-labelledby="unwind-t">
-    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/water-poster.webp" alt="" decoding="async"><video data-src="media/water.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img src="img/real-basins-backbar.webp" alt="" decoding="async"></div></div></div>
+    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/water-poster.webp" alt="" decoding="async"><video data-src="media/water.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img src="img/real-shampoo-basins.webp" alt="" decoding="async"></div></div></div>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">02<small>/ 05</small></span><span class="label"><b>Unwind</b></span></p>
@@ -1669,7 +1627,7 @@ html[data-shot] .cl__ph { clip-path: none !important; }\nhtml[data-shot] .ch__to
     <div class="s__shade"></div>
   </section>
   <section class="s ch ch--stack" id="renew" data-tone="dark" data-sound="fire" data-chapter="2" style="--acc: var(--fire)" aria-labelledby="renew-t">
-    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/fire-poster.webp" alt="" decoding="async"><video data-src="media/fire.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img src="img/real-color-wall.webp" alt="" decoding="async"></div></div></div>
+    <div class="s__media"><div class="s__zoom ch__stack"><img src="media/fire-poster.webp" alt="" decoding="async"><video data-src="media/fire.mp4" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img src="img/real-color-bar.webp" alt="" decoding="async"></div></div></div>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">03<small>/ 05</small></span><span class="label"><b>Renew</b></span></p>
@@ -1894,7 +1852,7 @@ html[data-shot] .cl__ph { clip-path: none !important; }\nhtml[data-shot] .ch__to
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="707c872d07e5";</script>
+<script>window.OM_BUILD="0e60d7463b6b";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
