@@ -12,7 +12,7 @@ def dict_with(sec, **kw):
 # round 3 (task df14fa0d): one Aveda proof line (aveda.com, 100% vegan since 2021), the salon hook with its ROT line as G,
 # and on Inner Work her Credentials, cut to her first three items (whole items, never reworded), and her Voices placeholder
 S_AVEDA = 'Every Aveda formula is 100% vegan.'
-S_ROT = 'Hair that finally feels like you, in one visit, with no one rushing you.'
+S_ROT = 'Hair that finally feels like you, with Maggie’s full attention.'   # as G (J 10 Nov 08:56: attention, not duration)
 CRED_S = ('prose', dict(id='c-cred', sound='air', eyebrow='Credentials', title='Maggie Woodward', list=[(c, '') for c in M.CREDENTIALS[:3]]))
 
 VISIT = ('steps', dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,

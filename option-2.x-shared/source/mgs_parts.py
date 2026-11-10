@@ -23,7 +23,7 @@ D = dict(
   benefits=['You are heard before anything is done to your hair.', 'The week’s tension lets go.',
             'Hair that suits you, from plant-based Aveda color.', 'Nothing is rushed. The time is yours.',
             'It still looks right next week.'],
-  begin='Tea, a real conversation and unhurried time, made around you.',
+  begin='Care and attention made around you, from your first cup of tea.',   # J 10 Nov 08:56: no "unhurried time" in new lines
 )
 # Q10/Q11 (Copywriter 1, 4 Nov): not in Maggie's decks, so left out of M and shown as [draft] in G and S
 # each checked on aveda.com, 10 Nov 2026 (task df14fa0d): 100% vegan since 2021 (aveda.com/living-aveda-article-vegan-haircare-beauty);

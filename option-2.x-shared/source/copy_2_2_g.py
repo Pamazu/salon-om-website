@@ -12,8 +12,9 @@ from mgs_parts import *
 
 # the study's round 2 [draft] lines, word for word (section 3b); everything else comes from copy_2_2_maggie.py
 G = dict(
-  # round 3 (CEO MA critique 10 Nov, section 5.3): the hook names the pain. "in one visit" is a promise Maggie approves knowingly
-  rot_salon='Hair that finally feels like you, in one visit, with no one rushing you.',
+  # round 3 (CEO MA critique 10 Nov, section 5.3): the hook names the pain. J 10 Nov 08:56: less emphasis on time ("unhurried
+  # time" can make a visit sound long), so the objection is answered with attention, in Maggie's phrase from her direction deck
+  rot_salon='Hair that finally feels like you, with Maggie’s full attention.',
   rot_iw='Uncover the beliefs that may be holding you back, without reliving the past. It starts with one Connection Call.',
   preview='Your visit, from the first sip to the last look, in five steps.',
   preview_reward='You know what happens, and in what order, before you book.',
@@ -21,7 +22,7 @@ G = dict(
             'Planned around your hair and the upkeep you want.',     # round 3: the Aveda product claim cut (Aveda's own figures vary by line)
             None,                                                     # round 3: the promise cut; Maggie's own line says it
             None],                                                    # round 3: Shine is Maggie's line alone
-  om_reward='Your hair, your rest and your time, cared for in one visit.',
+  om_reward='Your hair, your rest and you, cared for as one.',
   aveda_hook='What is in your color?',
   aveda_reward='Care for your hair and care for the earth, in the same visit.',
   team_hook='The people who listen first.',
@@ -32,7 +33,7 @@ G = dict(
   menu_reward='Every hair visit includes your favorite drink, a real conversation, a scalp ritual with Stress-Fix oil and time shaped around you.',
   # round 3: the stack in Maggie's own step lines, "lesson" cut (her words: "We teach you to recreate your style at home.")
   begin_stack='Comforting Tea and a real conversation. A scalp ritual with Stress-Fix oil. Cut, color, blonding or extensions, designed for you alone. We teach you to recreate your style at home.',
-  begin_reward='Hair that feels like you, and time that is only yours.',
+  begin_reward='Hair that feels like you, and attention that is only on you.',
   cred_hook='Who will walk beside you?',
   # round 3: the reworded disclaimer and "trained in each method she uses" cut (compliance words exactly or not at all;
   # neuroscience is study, EMDR education only). Her exact disclaimer stays in the footer.
