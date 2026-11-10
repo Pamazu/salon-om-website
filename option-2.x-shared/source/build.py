@@ -524,7 +524,8 @@ def render_world(world, slides, draft, names=None, foot=None):
     ci = 0
     for kind, d in slides:
         if d.get('parked') and not d.get('looks'): continue      # kept in the copy file, off the page until it returns
-        if kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
+        if callable(kind): out.append(kind(dict(d, draft=draft), world))    # M/G/S: a section drawn by mgs_sections.py
+        elif kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
         elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, no_other=bool(names), **foot), world))
         else: out.append(R[kind](d))
     return '\n  '.join(out)

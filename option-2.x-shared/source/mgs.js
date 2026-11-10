@@ -49,3 +49,25 @@
   }
   requestAnimationFrame(frame);
 })();
+/* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
+   a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
+(function () {
+  [].forEach.call(document.querySelectorAll('.mn'), function (s) {
+    var rows = [].slice.call(s.querySelectorAll('.mn__row')), ph = [].slice.call(s.querySelectorAll('.mn__ph > [data-i]'));
+    function sync() { var on = rows.findIndex(function (r) { return r.classList.contains('is-on'); }); ph.forEach(function (p, k) { p.classList.toggle('is-on', k === on); }); }
+    var mo = new MutationObserver(sync);
+    rows.forEach(function (r) { mo.observe(r, { attributes: true, attributeFilter: ['class'] }); });
+    sync();
+  });
+})();
+/* review captures only (task a2e5a9d0): ?shot&at=<section id> opens the page at that section, in its own world, so a
+   screenshot service that cannot scroll or keep a #hash can still shoot every section. Never in a visitor's link. */
+(function () {
+  var m = /[?&]at=([\w-]+)/.exec(location.search), el = m && document.getElementById(m[1]);
+  if (!el) return;
+  function go() { document.documentElement.style.scrollBehavior = 'auto'; scrollTo(0, el.getBoundingClientRect().top + scrollY); }
+  var main = el.closest('main');
+  if (main && main.hidden) { var b = document.querySelector('[data-to-world="' + main.getAttribute('data-world') + '"]'); if (b) b.click(); setTimeout(go, 1800); }
+  else setTimeout(go, 300);
+  setTimeout(go, 2600);
+})();

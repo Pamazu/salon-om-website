@@ -5,6 +5,7 @@ choices (films, photos, ids), never new words."""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import copy_2_2_maggie as M
+import mgs_sections as S
 from build import btn, draft, ph
 
 BOOK = 'Book your visit'                 # the salon's one action, the same words everywhere (study section 7, Q1)
@@ -27,19 +28,22 @@ D = dict(
 )
 # Q10/Q11 (Copywriter 1, 4 Nov): not in Maggie's decks, so left out of M and shown as [draft] in G and S
 AVEDA_FACTS = [('100%', 'vegan formulas', True), ('1st', 'beauty company to manufacture with 100% wind power (2007)'),
-               ('B Corp', 'certified for people and planet (2023)'), ('1978', 'the year plant-based, holistic beauty began', True)]
+               ('B Corp', 'certified for people and planet (2023)'), ('1978', 'the year plant-based, holistic beauty began')]   # a year never counts up (J, 10 Nov)
 TEAM_NOTE = 'I’m the backdrop. It’s not about me, it’s about you. This is your time, your space.'
 
 # one real photo per step (study section 6: a picture now, the film of that moment later), over its element film
 # each checked against its step's feature: 01 the welcome (the team who greet you; no photo shows the tea, and the lounge
 # photos carry the clock), 02 the basins of the scalp ritual, 03 the color bar, 04 unhurried time (the lounge clock), 05 the styling stations
-STEP_IMG = ['real-team-of-three.webp', 'real-shampoo-basins.webp', 'real-color-bar.webp', 'real-lounge.webp', 'real-styling-stations.webp']
+STEP_IMG = ['real-team-of-three.webp', 'real-basins-backbar.webp', 'real-color-wall.webp', 'real-lounge.webp', 'real-styling-stations.webp']
 STEP_FILM = ['earth', 'water', 'fire', 'air', 'ether']
 STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
-SERVICE_IMG = ['real-color-bar.webp', 'real-katie.webp', 'real-aveda-shelves.webp', 'real-styling-chair.webp',
-               'real-styling-stations.webp', 'real-shampoo-basins.webp']
-SERVICE_ALT = ['The Aveda color bar at Salon OM', 'Katie Paonessa at Salon OM', 'The Aveda shelves at Salon OM',
-               'A styling chair at Salon OM', 'The styling stations at Salon OM', 'The shampoo basins at Salon OM']
+# round 3 (task a2e5a9d0): each service shows a real photo of ITS result, never the salon's rooms or an Aveda advert. None
+# of Maggie's 17 photos shows a result yet, so each row shows a [photo to come] frame; drop (file, alt) in when she sends them
+SERVICE_PHOTO = [None] * 6
+# Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
+CLOSE_IMG = {'begin': ('real-styling-chair.webp', '50% 62%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
+CRED_IMG = ('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer')
+FOOT_VISIT = 'Salon OM in person · Inner Work in person and online'
 TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the Aveda shelves at Salon OM'),
             ('real-katie.webp', 'Katie Paonessa at Salon OM'), (None, '')]
 
@@ -52,11 +56,23 @@ def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
       'worlds': {'salon': 'Salon OM', 'coaching': 'Inner Work with Maggie'},
       'book_salon_label': BOOK, 'book_coaching_label': CALL,
       'menu_salon_btn': BOOK, 'menu_coaching_btn': CALL,
-      'foot_visit': 'Salon OM in person · Inner Work in person and online',
+      'foot_visit': FOOT_VISIT,
       'rail': [(s[0], STEP_ID[k] if steps else 'visit') for k, s in enumerate(M.STEPS)],
       'menu': {'salon': menu_salon, 'coaching': menu_coaching},
-      'salon': salon, 'coaching': coaching,
+      'salon': _close(salon), 'coaching': _close(coaching),
     }
+
+
+def _close(slides):
+    """Begin and the footer become one closing screen (mgs_sections.close): an adjacent cta + end pair is merged."""
+    out = []
+    for kind, d in slides:
+        if kind == 'end' and out and out[-1][0] == 'cta':
+            c = out.pop()[1]
+            out.append((S.close, dict(cta=c, end=dict(d, foot_visit=FOOT_VISIT), img=CLOSE_IMG[c['id']])))
+        else:
+            out.append((kind, d))
+    return out
 
 
 def salon_hero(proof=False, visit='arrive'):
@@ -89,9 +105,10 @@ def team(note=False, sid='hosts'):
 
 def services(eyebrow='The menu', sid='services'):
     # one booking button under the menu: the booking page has no link per service, so six buttons would all go to one place
-    tiles = [dict(img=SERVICE_IMG[k], alt=SERVICE_ALT[k], tag=trip, price=price, title=svc, text='', btns='')
+    tiles = [dict(img=(SERVICE_PHOTO[k] or (None, ''))[0], alt=(SERVICE_PHOTO[k] or (None, ''))[1],
+                  missing=f'Photo to come: a {svc} result from Salon OM', tag=trip, price=price, title=svc)
              for k, (svc, trip, price) in enumerate(M.SERVICES)]
-    return ('offers', dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro='', tiles=tiles,
+    return (S.menu, dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro='', tiles=tiles,
                            btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
 
 
@@ -148,7 +165,8 @@ def iw_how(cta=False, short=False):
 
 
 def iw_credentials():
-    return ('prose', dict(id='c-cred', sound='air', eyebrow='Credentials', title='Maggie Woodward', list=[(c, '') for c in M.CREDENTIALS]))
+    return (S.cred, dict(id='c-cred', sound='air', eyebrow='Credentials', title='Maggie Woodward', list=[(c, '') for c in M.CREDENTIALS],
+                         img=CRED_IMG[0], alt=CRED_IMG[1]))
 
 
 def iw_path(cta=False):

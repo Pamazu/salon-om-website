@@ -209,3 +209,190 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 .offers-menu .om__more { grid-column: 1 / -1; grid-row: 3; }
 .offers-menu .om__more p:empty { display: none; }
 .offers-menu .om__more > div > p.tx:empty + .om__btns { margin-top: 10px; }
+
+/* ==== round 3 (task a2e5a9d0, references: record/salon-om-mgs-refs-round-3-2026-11-10) ========================
+   ONE spacing scale and ONE type scale for every section of M, G and S. Gaps between label, heading, text and button
+   come only from --sp-*; sizes only from --t-* (plus 2.2's display size for the step words and the openings). */
+:root {
+  --sp-1: 8px; --sp-2: 16px; --sp-3: 24px; --sp-4: 40px; --sp-5: 64px; --sp-6: 104px; --sp-7: 168px;
+  --gutter: clamp(24px, 4.45vw, 112px);                 /* 24 on a phone, 64 on a 1440 laptop, 112 on wide screens */
+  --t-label: 11.5px;                                     /* tracked capitals */
+  --t-body: clamp(16px, 1.08vw, 18px);
+  --t-lead: clamp(19px, 1.5vw, 25px);                    /* italic serif lines: triplets, leads, rewards */
+  --t-h3: clamp(28px, 2.3vw, 40px);
+  --t-h2: clamp(40px, 4.4vw, 80px);
+  --r-photo: 4px;
+}
+.eyebrow, .pr__head .eyebrow, .pv__head .eyebrow, .pf__in .eyebrow, .om__head .label, .mn__head .label { margin-bottom: var(--sp-3); }
+.mani__label { margin-bottom: var(--sp-4); }
+.pr__lead, .om__intro, .mn__intro { margin-top: var(--sp-3); }
+.ch__btn, .facts__btn, .voices__btn, .pr__btn, .mani__btn, .om__btn, .tl__btn, .mn__after .om__btn { margin-top: var(--sp-4); }
+.cy__answer, .cy__reward { margin-top: var(--sp-3); }
+.pr__body > p, .ch__body, .mn__intro, .cy__answer { font-size: var(--t-body); }
+.hero__line { font-size: max(16px, var(--t-body)); }
+.pr__in, .facts__in, .pf__in { gap: var(--sp-6); }
+/* Voices: its heading line sat on the big quote mark; the mark gets its own room */
+.voices__t { margin-bottom: var(--sp-5); }
+
+/* ---- the five steps: one rhythm, five shapes (Heyday, Esalen). 01 full photo (2.2); 02 photo right, words left;
+   03 a wide photo band with a card over its corner; 04 words centred under one small framed photo; 05 photo left,
+   words right. The element film shows around the framed photos. Each photo wipes in from the side it opens on. */
+.ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__top { -webkit-mask-image: none; mask-image: none; overflow: hidden; border-radius: var(--r-photo);
+  transition: clip-path 1.6s var(--io-strong) .15s; }
+.ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__top img { transform: scale(1.06); transition: transform 2.4s var(--io-strong) .15s; }
+.ch--stack:is(#unwind, #renew, #unhurried, #home).is-active .ch__top img { transform: none; }
+.ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__scrim { background: rgba(10, 7, 5, .42); }
+#unwind .ch__top { clip-path: inset(0 0 0 100%); }\n#unwind .ch__top img { object-position: 50% 78%; }
+#home .ch__top, #renew .ch__top { clip-path: inset(0 100% 0 0); }
+#unhurried .ch__top { clip-path: inset(100% 0 0 0); }
+.ch--stack:is(#unwind, #renew, #unhurried, #home).is-active .ch__top { clip-path: inset(0); }
+#renew .ch__copy { background: var(--clay); color: var(--ink); padding: var(--sp-5); border-radius: var(--r-photo); box-shadow: 0 30px 90px rgba(0, 0, 0, .28); }
+#renew .ch__meta, #renew .ch__meta .label, #renew .ch__specs dt { color: var(--ink-soft); }\n#renew .ch__num, #renew .ch__num small, #renew .ch__meta b { color: var(--forest-deep); }
+#renew .ch__body { color: var(--ink); text-shadow: none; }
+#renew .ch__title em { color: var(--forest-deep); }
+#renew .ch__side, #unwind .ch__side, #home .ch__side { grid-template-columns: 1fr; gap: var(--sp-3); }
+#unhurried .ch__copy { justify-items: center; text-align: center; }
+#unhurried .ch__meta { justify-content: center; }
+#unhurried .ch__side { grid-template-columns: 1fr; justify-items: center; gap: var(--sp-3); }
+#unhurried .ch__specs { justify-items: center; }
+@media (min-width: 1024px) {
+  #unwind .ch__top { inset: calc(var(--top) + var(--sp-4)) var(--gutter) var(--base) 52%; }
+  #unwind .ch__copy { right: 52%; padding-right: var(--sp-5); }
+  #home .ch__top { inset: calc(var(--top) + var(--sp-4)) 52% var(--base) var(--gutter); }
+  #home .ch__copy { left: 52%; right: calc(var(--gutter) + 120px); padding-left: var(--sp-5); }   /* clear of the step rail */
+  :is(#unwind, #home) .ch__title { font-size: clamp(72px, 9.4vw, 176px); }
+  #renew .ch__top { inset: calc(var(--top) + var(--sp-4)) 30% auto var(--gutter); height: 52vh; }
+  #renew .ch__copy { left: auto; width: min(600px, 42vw); }
+  #renew .ch__title { font-size: clamp(60px, 6.2vw, 116px); }
+  #unhurried .ch__top { inset: calc(var(--top) + var(--sp-4)) auto auto 50%; height: min(30vh, 360px); width: auto; aspect-ratio: 4 / 5; translate: -50% 0; }
+  #unhurried .ch__title { font-size: clamp(72px, 8.6vw, 156px); }
+}
+@media (max-width: 1023px) {
+  :is(#unwind, #home) .ch__top { inset: calc(var(--top) + var(--sp-2)) var(--gutter) auto; height: 40svh; }
+  #renew .ch__top { inset: calc(var(--top) + var(--sp-2)) 0 auto; height: 30svh; border-radius: 0; }
+  #renew .ch__copy { padding: var(--sp-4) var(--sp-3); }
+  #renew .ch__title { font-size: clamp(56px, 15vw, 96px); }
+  #unhurried .ch__top { inset: calc(var(--top) + var(--sp-2)) auto auto 24vw; width: 52vw; aspect-ratio: 4 / 5; }
+  #home .ch__top { height: 30svh; }                     /* 05 also carries the booking button */
+  .pr__in, .facts__in, .pf__in { gap: var(--sp-4); }
+}
+
+/* ---- the pause and OM never look alike: the pause is a centred line; OM keeps 2.2's line beside its rings; M's Why
+   Aveda sits beside a real photo of the Aveda shelves at Salon OM */
+#pause .mani__in { text-align: center; }
+#pause .mani__text, #pause .lead, #pause .mani__proof { margin-left: auto; margin-right: auto; }
+#pause .mani__ring { right: auto; left: 50%; transform: translate(-50%, -50%); }
+@media (min-width: 1024px) {
+  .mani#aveda .mani__ring { display: none; }
+  .mani#aveda .mani__in { padding-right: 50%; }
+  .mani#aveda .mani__text { font-size: var(--t-h2); }
+  .mani#aveda::before { content: ""; position: absolute; z-index: 1; top: calc(var(--top) + var(--sp-4)); bottom: var(--sp-5); right: var(--gutter); width: calc(50% - var(--gutter) - var(--sp-4));
+    background: url(img/real-aveda-shelves.webp) 50% 50% / cover no-repeat; border-radius: var(--r-photo); }
+}
+
+/* ---- the menu as a price list (Spoke & Weal, JUUT, Gene Juarez): number, serif name, Maggie's triplet in italic,
+   her prices one per line with the price on the right; the open row's photo in the panel beside (above, on a phone) */
+.mn { background: #14231A; color: var(--ivory); display: block; padding: calc(var(--top) + var(--sp-5)) 0 var(--sp-6); }
+.mn__in { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); column-gap: var(--sp-6); max-width: 1680px; margin: 0 auto; padding: 0 var(--gutter); }
+.mn__head, .mn__list, .mn__after { grid-column: 1; }
+.mn__head .label { color: var(--ivory-soft); }
+.mn__head h2 { margin: 0; font: 300 var(--t-h2)/1 var(--serif); letter-spacing: -.015em; }
+.mn__intro { color: var(--ivory-soft); max-width: 52ch; margin-bottom: 0; }
+.mn__list { list-style: none; margin: var(--sp-5) 0 0; padding: 0; }
+.mn .mn__row { display: grid; grid-template-columns: 48px minmax(0, 1fr) minmax(210px, .85fr); column-gap: var(--sp-4); align-items: start; padding: var(--sp-4) 0; cursor: pointer; }
+.mn__n { font: italic 300 var(--t-lead)/1.2 var(--serif); color: var(--forest-light); padding-top: .2em; }
+.mn__name h3 { margin: 0; font: 300 var(--t-h3)/1.05 var(--serif); }
+.mn__trip { margin: var(--sp-1) 0 0; font: italic 300 var(--t-lead)/1.3 var(--serif); color: var(--ivory-soft); transition: color 1s var(--io); }
+.mn__row.is-on .mn__trip { color: var(--ivory); }
+.mn__prices { list-style: none; margin: .45em 0 0; padding: 0; display: grid; gap: var(--sp-1); font-size: 15px; }
+.mn__prices li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); padding-bottom: var(--sp-1); border-bottom: 1px solid rgba(245, 238, 228, .1); }
+.mn__prices span { color: var(--ivory-soft); }
+.mn__prices b { font-weight: 400; color: var(--ivory); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mn__row:not(.is-on) .mn__prices { opacity: .7; transition: opacity 1s var(--io); }
+.mn .btn:not(.btn--ghost) { --bg: var(--ivory); --fg: var(--ink); }
+.mn__ph { grid-column: 2; grid-row: 1 / span 3; align-self: start; position: sticky; top: calc(var(--top) + var(--sp-4)); height: min(78vh, 760px); margin-top: calc(var(--sp-5) + 4px); clip-path: inset(0 0 0 100%); }
+.mn.is-active .mn__ph { clip-path: inset(0); transition: clip-path 1.9s var(--io-strong) .3s; }
+.mn__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.04); transition: opacity 1.2s var(--io), transform 6s var(--io-soft); }
+.mn__img.is-on { opacity: 1; transform: none; }
+.mn__none { display: grid; place-items: center; padding: var(--sp-4); background: rgba(245, 238, 228, .05); text-align: center; }
+.mn__none p { margin: 0; max-width: 18ch; font: italic 300 var(--t-lead)/1.35 var(--serif); }
+@media (max-width: 1023px) {
+  .mn__in { grid-template-columns: 1fr; }
+  .mn__ph { grid-column: 1; grid-row: 2; position: relative; top: auto; height: auto; aspect-ratio: 4 / 3; margin-top: var(--sp-4); }
+  .mn__list { grid-row: 3; margin-top: var(--sp-3); }
+  .mn__after { grid-row: 4; }
+  .mn .mn__row { grid-template-columns: 32px minmax(0, 1fr); column-gap: var(--sp-2); padding: var(--sp-3) 0; }
+  .mn__prices { grid-column: 2; margin-top: var(--sp-2); }
+  .mn__after .btn { width: 100%; }
+}
+
+/* ---- Begin and the footer: ONE closing screen (Spoke & Weal, JUUT, Heyday). The call to action on the left and Begin's
+   own photo framed whole on the right, then the details in a short band under both, on the world's own ground */
+.cl { display: flex; flex-direction: column; background: var(--umber); color: var(--ivory); }
+.cl__cta { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-6); width: 100%; max-width: 1680px; margin: 0 auto;
+  padding: calc(var(--top) + var(--sp-5)) var(--gutter) var(--sp-4); }
+.cl__words { display: grid; justify-items: start; gap: var(--sp-3); }
+.cl__words .label { margin: 0; color: var(--ivory-soft); }
+.cl__words h2 { margin: 0; max-width: 11em; font: 300 clamp(48px, 5.8vw, 108px)/.95 var(--serif); letter-spacing: -.02em; }
+.cl__words h2 .ph-copy { font-size: .62em; }
+.cl__text { margin: 0; max-width: 46ch; font-size: var(--t-body); color: var(--ivory-soft); }
+.cl__words .cy__answer, .cl__words .cy__reward { margin: 0; }
+.cl__words .cy__reward { color: var(--ivory); }
+.cl__btn { margin-top: var(--sp-2); }
+.cl__ph { margin: 0; height: min(46vh, 520px); aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--r-photo); clip-path: inset(0 0 0 100%); transition: clip-path 1.8s var(--io-strong) .2s; }
+.cl.is-active .cl__ph { clip-path: inset(0); }
+.cl__ph img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform 2.6s var(--io-strong) .2s; }
+.cl.is-active .cl__ph img { transform: none; }
+.cl__foot { padding: var(--sp-5) var(--gutter) calc(var(--sp-3) + env(safe-area-inset-bottom, 0px)); width: 100%; max-width: 1680px; margin: 0 auto; }
+.cl__foot .foot__in { gap: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid color-mix(in srgb, var(--ivory) 14%, transparent); }
+.cl__foot .foot__brand svg { width: min(100%, 124px); }
+.cl__foot .foot__brand p { margin-top: var(--sp-2); font-size: var(--t-lead); }
+.cl__foot .foot__legal { margin-top: var(--sp-3); }
+.cl__foot .foot__base { margin-top: var(--sp-3); }
+.cl__foot { padding-top: 0; }
+@media (max-width: 1023px) {
+  .cl__cta { grid-template-columns: 1fr; gap: var(--sp-4); padding-top: calc(var(--top) + var(--sp-3)); }
+  .cl__ph { order: -1; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+  .cl__btn .btn { width: 100%; }
+  .cl__btn { width: 100%; }
+}
+
+/* ---- Inner Work: three text sections, three shapes. Look a little deeper: the heading and lead on the left, Maggie's
+   words on the right (2.2). How we work together: the heading across the top, her words in two columns, the practices
+   as a grid. Credentials: a card laid over Maggie's portrait (Esalen). */
+#c-deeper .pr__lead { font-size: calc(var(--t-lead) * 1.18); max-width: 22ch; }
+@media (min-width: 1024px) {
+  #c-how .pr__in { grid-template-columns: 1fr; gap: var(--sp-5); }
+  #c-how .pr__head { position: static; }
+  #c-how .pr__head h2 { max-width: 18em; }
+  #c-how .pr__body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--sp-5); }
+  #c-how .pr__body > p { max-width: 58ch; }
+  #c-how .pr__list { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4) var(--sp-5); margin-top: var(--sp-5); }
+  #c-how .pr__list > div { grid-template-columns: 1fr; gap: var(--sp-1); padding: var(--sp-3) 0 0; border-bottom: 0; }
+  #c-how .pr__small, #c-how .pr__close, #c-how .pr__btn { grid-column: 1 / -1; }
+}
+.cr { background: var(--clay); color: var(--ink); display: grid; align-items: center; padding: calc(var(--top) + var(--sp-5)) var(--gutter) var(--sp-6); }
+.cr__in { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1fr); align-items: center; width: 100%; max-width: 1360px; margin: 0 auto; }
+.cr__ph { grid-column: 1; grid-row: 1; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--r-photo); clip-path: inset(100% 0 0 0); transition: clip-path 1.6s var(--io-strong) .1s; }
+.cr.is-active .cr__ph { clip-path: inset(0); }
+.cr__ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+.cr__card { position: relative; z-index: 2; grid-column: 2; grid-row: 1; margin-left: calc(-1 * var(--sp-6)); padding: var(--sp-5); border-radius: var(--r-photo);
+  background: color-mix(in srgb, var(--clay) 35%, #fff); color: var(--ink); box-shadow: 0 30px 90px rgba(23, 17, 13, .12); }
+.cr__card .eyebrow { color: var(--ink-soft); }
+.cr__list { list-style: none; margin: var(--sp-4) 0 0; padding: 0; display: grid; gap: var(--sp-2); font-size: var(--t-body); }
+.cr__list li { position: relative; padding-left: var(--sp-3); }
+.cr__list li::before { content: ""; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; border-radius: 50%; background: var(--forest-deep); }
+.cr__small { margin: var(--sp-3) 0 0; font-size: 14.5px; color: var(--ink-soft); }
+.cr .pr__close { margin-top: var(--sp-4) !important; }
+@media (max-width: 1023px) {
+  .cr__in { grid-template-columns: 1fr; }
+  .cr__card { grid-column: 1; grid-row: 2; margin: calc(-1 * var(--sp-6)) var(--sp-2) 0; padding: var(--sp-4) var(--sp-3); }
+}
+
+/* ?shot review captures and reduced motion: every photo shown whole, no wipes */
+html[data-shot] .ch__top, html[data-shot] .mn__ph, html[data-shot] .cr__ph { clip-path: none !important; }
+html[data-shot] .cl__ph { clip-path: none !important; }\nhtml[data-shot] .ch__top img, html[data-shot] .cl__ph img { transform: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .ch--stack:is(#unwind, #renew, #unhurried, #home) .ch__top, .mn__ph, .cr__ph { clip-path: none; transition: opacity .6s var(--io); }
+  .cl__ph { clip-path: none; }\n  .ch__top img, .cl__ph img { transform: none !important; }
+}
