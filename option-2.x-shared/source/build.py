@@ -557,7 +557,7 @@ def page(cfg):
     xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(xk, []))
     if xk in EXTRA_JS:      # a build stamp, so a tweak draft saved against an older build is dropped (next.js)
         import hashlib
-        stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in css_files(vkey))).encode()).hexdigest()[:12]
+        stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=lambda o: getattr(o, '__qualname__', None) or str(o)).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in css_files(vkey))).encode()).hexdigest()[:12]
         xjs = f'<script>window.OM_BUILD="{stamp}";</script>\n' + xjs
     body = pre + f'''<a class="skip" href="#main-salon">Skip to content</a>
 <header class="hdr" id="hdr">
