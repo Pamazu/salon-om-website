@@ -51,6 +51,8 @@ function serve() {
 const DESK = { viewport: { width: 1440, height: 900 } };
 const TAB = { viewport: { width: 1024, height: 768 } };
 const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
+const PHONE430 = { viewport: { width: 430, height: 932 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
+const LAP = { viewport: { width: 1280, height: 800 } };
 const wait = (p, ms) => p.waitForTimeout(ms);
 
 async function open(ctx, url) {
@@ -136,6 +138,40 @@ async function film(b, base, p, name, run) {
   console.log('film', name, frames.length, 'frames', `${(frames.at(-1).t - frames[0].t).toFixed(1)} s`, r.type, `${r.w}x${r.h}`);
   FILM.frames = []; await ctx.close();
 }
+// every in-page link lands somewhere: a #id that exists, or a world switch
+async function deadLinks(b, base) {
+  const dead = {};
+  for (const v of ['m', 'g', 's']) {
+    const ctx = await b.newContext(DESK), p = await open(ctx, `${base}/${v}/`);
+    dead[v] = await p.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].filter((a) => !a.dataset.toWorld && a.getAttribute('href').length > 1
+      && !document.getElementById(a.getAttribute('href').slice(1))).map((a) => `${a.getAttribute('href')} "${a.textContent.trim().slice(0, 30)}"`));
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, 'dead-links.json'), JSON.stringify(dead, null, 1)); console.log('dead links', JSON.stringify(dead));
+}
+// a section arriving as a visitor scrolls to it (no ?shot, so its real motion plays): stills at fixed times after it
+// lands (ms) and a recording of the same arrival; the menu also gets a pointer on its third row, as a hand would
+async function arrive(b, base, v, world, id, w, opt, at, menu = false) {
+  for (const rec of [false, true]) {
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
+    if (world === 'coaching') await toWorld(p, 'coaching');
+    const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
+    await scrub(p, 0, Math.max(0, top - opt.viewport.height), 1); await wait(p, 1200);
+    const go = async () => {
+      await scrub(p, Math.max(0, top - opt.viewport.height), top, 1100);
+      let t = 0;
+      for (const ms of at) { await wait(p, ms - t); t = ms; if (!rec) await p.screenshot({ path: path.join(OUT, `move-${v}-${id}-${w}-${String(ms).padStart(5, '0')}.jpg`), type: 'jpeg', quality: 80 }); }
+      if (menu && w === '1440') {
+        const r = await p.evaluate(() => { const e = document.querySelectorAll('.mn__row')[2].getBoundingClientRect(); return [e.left + 80, e.top + 30]; });
+        await p.mouse.move(r[0], r[1]); await wait(p, 1600);
+        if (!rec) await p.screenshot({ path: path.join(OUT, `move-${v}-${id}-${w}-hover3.jpg`), type: 'jpeg', quality: 80 });
+      }
+    };
+    if (rec) { try { await film(b, base, p, `move-${v}-${id}-${w}.webm`, go); } catch (e) { console.log('film', id, w, e.message.split('\n')[0]); } }
+    else await go();
+    await ctx.close();
+  }
+}
 async function morph(b, base, w, opt) {
   const ctx = await b.newContext(opt);
   const p = await open(ctx, `${base}/g/`);
@@ -174,15 +210,23 @@ try {
       ['768', { viewport: { width: 768, height: 1024 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }],
       ['1366', { viewport: { width: 1366, height: 768 } }]];
     for (const v of ['m', 'g', 's']) { await shots(b, base, v, 'salon', ['top'], four); await shots(b, base, v, 'coaching', ['c-top'], four); }
-    // every in-page link lands somewhere: a #id that exists, or a world switch
-    const dead = {};
-    for (const v of ['m', 'g', 's']) {
-      const ctx = await b.newContext(DESK), p = await open(ctx, `${base}/${v}/`);
-      dead[v] = await p.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].filter((a) => !a.dataset.toWorld && a.getAttribute('href').length > 1
-        && !document.getElementById(a.getAttribute('href').slice(1))).map((a) => `${a.getAttribute('href')} "${a.textContent.trim().slice(0, 30)}"`));
-      await ctx.close();
+    await deadLinks(b, base);
+    process.exit(0);
+  }
+  if (process.env.QA_ONLY === 'r3') {        // round 3 (task a2e5a9d0): its sections at 390 / 430 / 1280 / 1440, both worlds, and their motion
+    const r3 = [['390', PHONE], ['430', PHONE430], ['1280', LAP], ['1440', DESK]];
+    await shots(b, base, 'm', 'salon', ['pause', 'om', 'aveda', 'services', 'kind', 'begin'], r3);
+    await shots(b, base, 'm', 'coaching', ['c-deeper', 'c-how', 'c-cred', 'c-begin'], r3);
+    await shots(b, base, 'g', 'salon', ['pause', 'om', 'aveda', 'services', 'begin'], r3);
+    await shots(b, base, 'g', 'coaching', ['c-how', 'c-cred', 'c-begin'], r3);
+    await shots(b, base, 's', 'salon', ['services', 'begin'], r3);
+    await shots(b, base, 's', 'coaching', ['c-cred', 'c-begin'], r3);
+    for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
+      await arrive(b, base, 'm', 'salon', 'services', w, opt, [300, 1200, 2600, 9600], true);
+      await arrive(b, base, 'm', 'coaching', 'c-cred', w, opt, [200, 800, 1600, 3200]);
+      await arrive(b, base, 'm', 'salon', 'begin', w, opt, [200, 800, 1600, 3200]);
     }
-    fs.writeFileSync(path.join(OUT, 'dead-links.json'), JSON.stringify(dead, null, 1)); console.log('dead links', JSON.stringify(dead));
+    await deadLinks(b, base);
     process.exit(0);
   }
   await links(b, base);
