@@ -15,8 +15,9 @@ S_AVEDA = 'Every Aveda formula is 100% vegan.'
 S_ROT = 'Hair that finally feels like you, with Maggie’s full attention.'   # as G (J 10 Nov 08:56: attention, not duration)
 CRED_S = iw_credentials(n=3)          # her first three credentials, on the same card as M and G (task a2e5a9d0)
 
-VISIT = ('steps', dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
-                       steps=[(f'0{k + 1}', s[0], f'{s[2]}. {s[3]}') for k, s in enumerate(M.STEPS)],
+# round 4 (task 2846db82): the five steps with their real photos (mgs_sections.visit), the words unchanged
+VISIT = (S.visit, dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
+                       steps=[(f'0{k + 1}', s[0], f'{s[2]}. {s[3]}', STEP_IMG[k], STEP_ALT[k]) for k, s in enumerate(M.STEPS)],
                        btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
 PROOF = ('proof', dict(id='hosts', eyebrow='Meet the team', title=M.TEAM_LINE,
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],

@@ -23,6 +23,14 @@ def _photo(t, k):
     return f'<div class="mn__img mn__none{on}" data-i="{k}"><p class="ph-copy">[{t["missing"]}]</p></div>'
 
 
+def _row_photo(t):
+    """the same photo in the row itself, shown on a phone only (round 4: the picture sits with its row there)"""
+    if t.get('img'):
+        pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''
+        return f'<figure class="mn__rph" aria-hidden="true"><img src="img/{t["img"]}" alt="" decoding="async" loading="lazy"{pos}></figure>'
+    return f'<figure class="mn__rph" aria-hidden="true"><div class="mn__none"><p class="ph-copy">[{t["missing"]}]</p></div></figure>'
+
+
 def menu(d, world):
     """The menu as a price list (Spoke & Weal, JUUT): each row has its number, the serif name with Maggie's triplet in
     italic under it, and her prices one per line with the price at the right. One row is open at a time (engine.js's
@@ -32,7 +40,7 @@ def menu(d, world):
     for k, t in enumerate(d['tiles']):
         lines = ''.join(f'<li><span>{a}</span><b>{b}</b></li>' for a, b in _prices(t['price']))
         rows.append(f'''<li class="om__row mn__row a-up{' is-on' if k == 0 else ''}" style="--d:{0.45 + k * .08:.2f}s" data-i="{k}" tabindex="0" aria-expanded="{'true' if k == 0 else 'false'}">
-          <span class="mn__n">0{k + 1}</span>
+          {_row_photo(t)}<span class="mn__n">0{k + 1}</span>
           <div class="mn__name"><h3>{t['title']}</h3><p class="mn__trip">{t['tag']}</p></div>
           <ul class="mn__prices">{lines}</ul>
         </li>''')
@@ -110,3 +118,111 @@ def cred(d, world):
     </div>
     <div class="s__shade"></div>
   </section>'''
+
+
+def visit(d, world):
+    """S's visit (round 4, J 11 Nov: "it doesn't have any image so it's just words"): the five steps as five pictures, each
+    the same real photo its long step uses in M and G, with its number, name and line under it. The heading and the one
+    button share the top row. On a phone the five become a row you swipe, the next one peeking in."""
+    cards = ''.join(f'''<li class="vs__step a-up" style="--d:{0.45 + k * .12:.2f}s">
+          <figure class="vs__ph" style="--d:{0.35 + k * .12:.2f}s"><img src="img/{img}" alt="{E(alt)}" decoding="async" loading="lazy"></figure>
+          <p class="vs__n"><b>{n}</b>{name}</p>
+          <p class="vs__t">{line}</p>
+        </li>''' for k, (n, name, line, img, alt) in enumerate(d['steps']))
+    return f'''<section class="s vs" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="vs__in s__leave">
+      <div class="vs__head">
+        <div><p class="eyebrow a-left" style="--d:.1s">{d['eyebrow']}</p>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.25s">{d['title']}</span></span></h2></div>
+        <div class="vs__btn a-up" style="--d:1.2s">{d['btn']}</div>
+      </div>
+      <ol class="vs__row">{cards}</ol>
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+def _wave(n, hi=18, lo=46):
+    """the line through n stops: one smooth wave in a 1000 x 100 box, the stops alternating high and low, flat at each
+    stop so a dot sits on it exactly. Returns the SVG path and each stop's (x %, y %)."""
+    pts = [((k + .5) * 1000 / n, hi if k % 2 == 0 else lo) for k in range(n)]
+    d = f'M0,{pts[0][1]} L{pts[0][0]:.1f},{pts[0][1]}'
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        dx = (x1 - x0) / 2
+        d += f' C{x0 + dx:.1f},{y0} {x1 - dx:.1f},{y1} {x1:.1f},{y1}'
+    d += f' L1000,{pts[-1][1]}'
+    return d, [(x / 10, y) for x, y in pts]
+
+
+def line(stops):
+    """ONE block for every set of steps read in order (round 4, task 2846db82; Heyday's process line): the steps sit as
+    stops on a drawn line that draws itself in when its section arrives, a dot on the line at each stop, the number, name
+    and words under it. Used by G's visit preview and by Inner Work's path. On a phone the line runs down the left."""
+    path, pos = _wave(len(stops))
+    items = ''.join(f'''<li class="ln__stop" style="--y:{y / 100:.2f};--k:{k}">
+          <i class="ln__dot" aria-hidden="true"></i>
+          <div class="ln__words a-up" style="--d:{0.9 + k * .32:.2f}s"><b class="ln__n">{n}</b><h3 class="ln__name">{name}</h3>{f'<p class="ln__t">{t}</p>' if t else ''}</div>
+        </li>''' for k, ((n, name, t), (x, y)) in enumerate(zip(stops, pos)))
+    return f'''<div class="ln" style="--n:{len(stops)}">
+      <svg class="ln__svg" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path class="ln__path" d="{path}" pathLength="1"/></svg>
+      <ol class="ln__stops">{items}</ol>
+    </div>'''
+
+
+def preview_line(d, world):
+    """G's visit preview (round 4): the heading and its reward, then the five steps of the visit as stops on the line."""
+    return f'''<section class="s lnsec" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="lnsec__in s__leave">
+      <div class="lnsec__head">
+        <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>{cycle(d, .7)}
+      </div>
+      {line(d['rows'])}
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+def path_line(d, world):
+    """Inner Work's path (round 4): the four steps as stops on the same line as G's preview, then the pricing line, the
+    answer and reward where the version has them, and its one button."""
+    after = f'<p class="lnsec__after">{d["after"]}</p>' if d.get('after') else ''
+    foot = (f'<div class="lnsec__foot a-up" style="--d:2.2s">{after}{cycle(d, 2.3)}{d.get("btn", "")}</div>') if (after or d.get('btn') or d.get('answer') or d.get('reward')) else ''
+    return f'''<section class="s s--auto lnsec lnsec--path lnsec--dark" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="lnsec__in s__leave">
+      <div class="lnsec__head">
+        <p class="eyebrow a-left" style="--d:.1s">{d['eyebrow']}</p>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.25s">{d['title']}</span></span></h2>
+      </div>
+      {line(d['steps'])}{foot}
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+def voices_row(d, world):
+    """Voices (round 4; The Well): one guest's words at a time, large, on the forest ground, in a row you scroll sideways
+    with arrows and a count; the next card peeks in so the reader sees there is more. No auto-advance: the reader moves it."""
+    cards = ''.join(f'''<figure class="vo__card" data-i="{k}"><blockquote>“{q[0]}”</blockquote><figcaption><b>{q[1]}</b>{(' ' + q[2]) if len(q) > 2 and q[2] else ''}</figcaption></figure>'''
+                    for k, q in enumerate(d['quotes']))
+    n = len(d['quotes'])
+    btn = f'<div class="vo__btn a-up" style="--d:1s">{d["btn"]}</div>' if d.get('btn') else ''
+    return f'''<section class="s s--auto vo" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="vo__in s__leave">
+      <div class="vo__head">
+        <p class="label a-left" style="--d:.1s">Kind words</p>
+        <h2 class="vo__t" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.25s">{d['title']}</span></span></h2>
+        <div class="vo__nav a-fade" style="--d:.6s"><button class="vo__arr" type="button" data-dir="-1" aria-label="Previous words">←</button><span class="vo__count" aria-live="polite"><b>1</b> / {n}</span><button class="vo__arr" type="button" data-dir="1" aria-label="Next words">→</button></div>
+      </div>
+      <div class="vo__row a-up" style="--d:.45s" tabindex="0" aria-label="Kind words from guests">{cards}</div>
+      <div class="vo__foot">{cycle(d, .85)}{btn}</div>
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+def dark_prose(d, world):
+    """How we work together on the dark ground (round 4), so Inner Work alternates dark and light: 2.2's long-text section
+    as it is, its tone set to dark so the header turns ivory over it"""
+    from build import prose
+    return prose(d).replace('class="s s--auto prose"', 'class="s s--auto prose prose--dark"', 1).replace('data-tone="light"', 'data-tone="dark"', 1)

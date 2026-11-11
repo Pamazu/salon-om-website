@@ -57,22 +57,24 @@ SALON = [
   _with(salon_hero(proof=True), rot=draft(G['rot_salon'])),
   ('tease', dict(id='pause', label='The pause', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s',
                  proof_line=f'“{PAUSE_QUOTE[0]}” {PAUSE_QUOTE[1]}')),
-  ('preview', dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
+  (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)])),
+  # round 4 (task 2846db82; J 11 Nov: "having the services that down I'm unsure", the CEO MA's order): the menu comes 4th,
+  # once the visit preview has framed the value, then the five steps, team, voices, Why Aveda, OM, the second door, Begin
+  _with(services(), eyebrow='The menu', title=draft(G['menu_hook']), intro=M.MENU_LINE,
+        answer=draft(G['menu_answer']), reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
 ] + [step(k, extra=G['benefits'][k]) for k in range(5)] + [
-  ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['OM.'], text=M.OM, proof_line=M.VISIT_LINE,
-                 reward=draft(G['om_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),
+  _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True)),
+  (S.voices_row, dict(id='kind', title=M.VOICES_LINE, quotes=VOICE_QUOTES, reward=draft(G['voices_reward']),
+                  btn=btn(BOOK, BOOK_URL, arrow=True))),
   ('facts', dict(id='aveda', light=True, eyebrow='Why Aveda', title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  facts=[(n, draft(t), *c) for n, t, *c in AVEDA_FACTS], src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
                  reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),
-  _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True)),
-  ('voices', dict(id='kind', title=M.VOICES_LINE, quotes=VOICE_QUOTES, reward=draft(G['voices_reward']),
-                  btn=btn(BOOK, BOOK_URL, arrow=True))),
-  _with(services(), eyebrow='The menu', title=draft(G['menu_hook']), intro=M.MENU_LINE,
-        answer=draft(G['menu_answer']), reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
+  ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['OM.'], text=M.OM, proof_line=M.VISIT_LINE,
+                 reward=draft(G['om_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),
   _with(begin(), text=draft(G['begin_stack']), reward=draft(G['begin_reward'])),
-  salon_end(LEGEND),
+  salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')]),
 ]
 
 COACHING = [
@@ -87,5 +89,5 @@ COACHING = [
 ]
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
-  [('01', 'The visit', 'visit'), ('02', 'Why Aveda', 'aveda'), ('03', 'The team', 'hosts'), ('04', 'The menu', 'services'), ('05', 'Begin', 'begin')],
+  [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'The team', 'hosts'), ('04', 'Why Aveda', 'aveda'), ('05', 'Begin', 'begin')],
   [('01', 'Look a little deeper', 'c-deeper'), ('02', 'How we work together', 'c-how'), ('03', 'Credentials', 'c-cred'), ('04', 'The path', 'c-path'), ('05', 'Begin', 'c-begin')])

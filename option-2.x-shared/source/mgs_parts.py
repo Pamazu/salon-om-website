@@ -47,6 +47,8 @@ TEAM_NOTE = 'I’m the backdrop. It’s not about me, it’s about you. This is 
 # each checked against its step's feature: 01 the welcome (the team who greet you; no photo shows the tea, and the lounge
 # photos carry the clock), 02 the basins of the scalp ritual, 03 the color bar, 04 unhurried time (the lounge clock), 05 the styling stations
 STEP_IMG = ['real-team-of-three.webp', 'real-shampoo-basins.webp', 'real-color-bar.webp', 'real-lounge.webp', 'real-styling-stations.webp']
+STEP_ALT = ['Maggie, Katie and Chesney at Salon OM', 'The shampoo basins at Salon OM', 'The color bar at Salon OM',
+            'The lounge by the fireplace at Salon OM', 'The styling stations at Salon OM']
 STEP_FILM = ['earth', 'water', 'fire', 'air', 'ether']
 STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
 # round 3 (task a2e5a9d0): each service shows its result on a guest. J, 11 Nov (handbook section 6 item 7): no more photo asks
@@ -54,15 +56,19 @@ STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
 # the guest's zone pasted back by region_edit, Test Lab EXP-salonom-menu-guest-1), never captioned as a real result.
 # (file, alt, focus point for the panel's crop); None keeps the [photo to come] frame
 SERVICE_PHOTO = [
-  ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour, in a photo of Salon OM', '58% 62%'),
-  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair, in a photo of Salon OM', '48% 50%'),
+  # round 4 (task 2846db82, J 11 Nov: "She's sat in a pretty weird way ... give more variety to the angles"): Signature Color is
+  # a new view of the real styling stations made from Maggie's photo 11, the guest seated in a styling chair; Blonding is
+  # her photo 12 with the guest reclined at the basin, neck at the bowl, only the guest's zone pasted back (0 px outside)
+  ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour in a styling chair, in a view of Salon OM made from its photos', '42% 52%'),
+  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair reclining at a shampoo basin, in a photo of Salon OM', '45% 58%'),
   None,     # Color Correction: its backdrop (15) was refused three times by the safety system (Test Lab), still to make
   ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
   ('om-menu-extensions.webp', 'A generated guest with long, full hair beside Maggie Woodward, in a photo of Salon OM', '22% 40%'),
   ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows beside the skincare display at Salon OM', '6% 40%'),
 ]
 # Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
-CLOSE_IMG = {'begin': ('real-styling-chair.webp', '50% 62%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
+# round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
+CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
 CRED_IMG = ('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer')
 FOOT_VISIT = 'Salon OM in person · Inner Work in person and online'
 TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the Aveda shelves at Salon OM'),
@@ -137,7 +143,7 @@ def services(eyebrow='The menu', sid='services'):
 def voices(cta=False, n=4):
     d = dict(id='kind', title=M.VOICES_LINE, quotes=M.QUOTES[:n])
     if cta: d['btn'] = btn(BOOK, BOOK_URL, arrow=True)          # forest: Voices sits on light clay in the salon world
-    return ('voices', d)
+    return (S.voices_row, d)
 
 
 def door(short=False):
@@ -156,11 +162,11 @@ def begin(summary=False):
                         text=draft(D['begin']) if summary else '', btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
 
 
-def salon_end(legend, visit='arrive'):
+def salon_end(legend, visit='arrive', explore=None):
     return ('end', dict(id='letters', title='', tagline=M.OPENING, no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
                         connect=[f'<a href="{BOOK_URL}" target="_blank" rel="noopener">Book online</a>', SALON_INFO['phone'], SALON_INFO['email'], SALON_INFO['instagram']],
                         visit=[SALON_INFO['address'], SALON_INFO['hours']],
-                        explore=[('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
+                        explore=explore or [('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
 
 
 # ---------------------------------------------------------------- Inner Work with Maggie
@@ -184,7 +190,7 @@ def iw_how(cta=False, short=False):
     d = dict(id='c-how', sound='air', eyebrow=h['eyebrow'], title=h['title'], paras=[] if short else h['paras'],
              list=h['practices'], small='' if short else h['cred_line'], close=h['close'])
     if cta: d['btn'] = btn(CALL, CALL_URL, arrow=True)
-    return ('prose', d)
+    return (S.dark_prose, d)
 
 
 def iw_credentials(n=None):
@@ -194,7 +200,7 @@ def iw_credentials(n=None):
 
 
 def iw_path(cta=False):
-    return ('steps', dict(id='c-path', sound='air', light=True, eyebrow='The path', title=ph(M.TO_COME['path_title']),
+    return (S.path_line, dict(id='c-path', sound='air', light=True, eyebrow='The path', title=ph(M.TO_COME['path_title']),
                           steps=[(f'0{k + 1}', n, t) for k, (_, n, t) in enumerate(M.PATH)], after=M.PRICING,
                           btn=btn(CALL, CALL_URL, arrow=True) if cta else ''))
 
