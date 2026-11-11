@@ -3,11 +3,11 @@
    Scrubbed by the scroll (the same leave value as every slide's --q), so it plays backwards on the way up.
    Off in ?shot review mode and with reduced motion, where the list keeps 2.2's plain leave. */
 (function () {
-  var sec = document.querySelector('.preview'), rail = document.getElementById('rail'), root = document.documentElement;
+  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;   // round 4: the preview is the line block
   if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // round 4: only where step 01 follows the preview (G now has the menu between them, so its rail simply arrives with the steps)
   var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;
-  var nums = [].slice.call(sec.querySelectorAll('.pv__row b')), marks = [].slice.call(rail.querySelectorAll('a b'));
+  var nums = [].slice.call(sec.querySelectorAll('.ln__n')), marks = [].slice.call(rail.querySelectorAll('a b'));
   if (!nums.length || marks.length < nums.length) return;
   sec.classList.add('pv--morph');
 

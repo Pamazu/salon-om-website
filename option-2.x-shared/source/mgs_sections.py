@@ -172,8 +172,8 @@ def line(stops):
 def preview_line(d, world):
     """G's visit preview (round 4): the heading and its reward, then the five steps of the visit as stops on the line."""
     return f'''<section class="s lnsec" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
-    <div class="lnsec__in s__leave">
-      <div class="lnsec__head">
+    <div class="lnsec__in">
+      <div class="lnsec__head s__leave">
         <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>{cycle(d, .7)}
       </div>

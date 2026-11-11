@@ -178,7 +178,7 @@ async function morph(b, base) {
     const nextIsStep = await p.evaluate(() => document.getElementById('visit').nextElementSibling.id);
     for (const q of [0, .2, .4, .56, .7, 1]) {
       await jump(p, a + (z - a) * q); await wait(p, 700);
-      const st = await p.evaluate(() => { const n = document.querySelector('.pv__row b'), r = document.getElementById('rail'); return { numMoved: n ? n.style.transform !== '' : null, railOpacity: r ? +getComputedStyle(r).opacity : null }; });
+      const st = await p.evaluate(() => { const n = document.querySelector('#visit .ln__n'), r = document.getElementById('rail'); return { numMoved: n ? n.style.transform !== '' : null, railOpacity: r ? +getComputedStyle(r).opacity : null }; });
       await p.screenshot({ path: path.join(OUT, `morph-${w}-q${String(Math.round(q * 100)).padStart(3, '0')}.jpg`), type: 'jpeg', quality: 80 });
       res.push({ w, q, wired, nextIsStep, ...st });
     }

@@ -1805,6 +1805,14 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 /* Breathe's guest line: full ivory with a soft shadow, as the body line has, so it reads over the clock photo */
 .ch__specs dd { color: var(--ivory); text-shadow: 0 1px 18px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4); }
 .ch__specs dt { color: var(--ivory); opacity: .86; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
+/* the visit preview becomes the step rail (J, 4 Nov; mgs.js): the line block's numbers travel to their own numbers on the
+   rail while the line, the dots and the words fade (--pf, the travel 0..1), drawing over the next slide as they go */
+.ln__n { display: inline-block; }
+.lnsec.pv--morph { overflow: visible; z-index: 2; }
+.lnsec.pv--morph .ln__n { will-change: transform; }
+.lnsec.pv--morph .ln__name, .lnsec.pv--morph .ln__t, .lnsec.pv--morph .ln__dot { opacity: calc(1 - var(--pf, 0) * 1.8); }
+.lnsec.pv--morph .ln__name, .lnsec.pv--morph .ln__t { transform: translate3d(calc(var(--pf, 0) * 3vw), 0, 0); }
+.lnsec.pv--morph .ln__svg, .lnsec.pv--morph .ln__stops::before { opacity: calc(1 - var(--pf, 0) * 1.8); }
 </style>
 </head>
 <body>
@@ -1858,8 +1866,8 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     <div class="s__shade"></div>
   </section>
   <section class="s lnsec" id="visit" data-tone="light" data-sound="bed" aria-labelledby="visit-t">
-    <div class="lnsec__in s__leave">
-      <div class="lnsec__head">
+    <div class="lnsec__in">
+      <div class="lnsec__head s__leave">
         <p class="eyebrow a-left" style="--d:.15s">The visit</p>
         <h2 class="mid" id="visit-t"><span class="mask"><span class="mask__in" style="--d:.3s"><span class="draft">Your visit, from the first sip to the last look, in five steps.</span></span></span></h2><p class="cy__reward a-up" style="--d:0.80s"><span class="draft">The service you choose shapes the rest.</span></p>
       </div>
@@ -2100,7 +2108,7 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
         <h2 class="mid" id="c-how-t"><span class="mask"><span class="mask__in" style="--d:.3s">Grounded in research. Space to Grow.</span></span></h2>
         
       </div>
-      <figure class="pr__ph pr__ph--band a-fade" style="--d:.5s"><img src="img/real-lounge-iw.webp" alt="The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light" decoding="async" loading="lazy" style="object-position:50% 40%"></figure>
+      <figure class="pr__ph pr__ph--band a-fade" style="--d:.5s"><img src="img/real-lounge-iw.webp" alt="The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light" decoding="async" loading="lazy" style="object-position:50% 14%"></figure>
       <div class="pr__body"><p class="a-up" style="--d:0.60s">Your courage to reach out is where it all begins. Our evidence-informed work draws on coaching, hypnotherapy, Rapid Transformational Therapy®, somatic practices, IFS-informed parts work and neuroscience. Together, we explore how your thoughts, emotions, beliefs and past experiences may shape the way you see yourself and move through life. Every part of you is welcome here, met with curiosity and compassion, so new understanding and new choices can emerge.</p><p class="a-up" style="--d:0.70s">This is identity-level work. It reaches beyond surface change to the core of who you are and how you meet the world. As you discover your own agency over your patterns and habits, the insights and tools you gain become yours to keep, so you move forward feeling empowered, with change designed to last.</p><dl class="pr__list a-up" style="--d:.9s"><div><dt>Coaching</dt><dd>gives you clear goals, practical tools and support to put new insights into action.</dd></div><div><dt>Hypnotherapy</dt><dd>guides you into a deeply relaxed, focused state, where new thoughts and habits can take root more easily.</dd></div><div><dt>Rapid Transformational Therapy® (RTT®)</dt><dd>uses hypnosis to reach the subconscious mind, where many patterns and beliefs are formed, and helps you understand and reframe them.</dd></div><div><dt>Somatic practices</dt><dd>help you notice where emotions live in the body and build a greater sense of calm and steadiness.</dd></div><div><dt>IFS-informed parts work</dt><dd>helps you get to know the different parts of yourself with kindness and understanding.</dd></div><div><dt>Neuroscience</dt><dd>explains how the brain forms habits and creates new pathways, so the changes you make can last.</dd></div></dl><p class="pr__small a-up" style="--d:1s">I am certified through The School of Rapid Transformational Therapy®, with ongoing study through The Embody Lab and the IFS Institute, and nearly three decades of listening to people’s stories.</p><p class="pr__close a-up" style="--d:1.1s">Knowing yourself is where Becoming begins.</p><p class="cy__reward a-up" style="--d:1.25s"><span class="draft">The aim is to meet old patterns with more calm, and more choice.</span></p><div class="pr__btn a-up" style="--d:1.2s"><a class="btn" href="mailto:connect@maggiewoodward.com?subject=Connection%20Call">Book a Connection Call <span class="arr" aria-hidden="true">→</span></a></div></div>
     </div>
     <div class="s__shade"></div>
@@ -2171,7 +2179,7 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="e1373efaa988";</script>
+<script>window.OM_BUILD="9a24f9168c31";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -2900,11 +2908,11 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
    Scrubbed by the scroll (the same leave value as every slide's --q), so it plays backwards on the way up.
    Off in ?shot review mode and with reduced motion, where the list keeps 2.2's plain leave. */
 (function () {
-  var sec = document.querySelector('.preview'), rail = document.getElementById('rail'), root = document.documentElement;
+  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;   // round 4: the preview is the line block
   if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // round 4: only where step 01 follows the preview (G now has the menu between them, so its rail simply arrives with the steps)
   var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;
-  var nums = [].slice.call(sec.querySelectorAll('.pv__row b')), marks = [].slice.call(rail.querySelectorAll('a b'));
+  var nums = [].slice.call(sec.querySelectorAll('.ln__n')), marks = [].slice.call(rail.querySelectorAll('a b'));
   if (!nums.length || marks.length < nums.length) return;
   sec.classList.add('pv--morph');
 

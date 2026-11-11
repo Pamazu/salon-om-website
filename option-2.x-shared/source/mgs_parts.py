@@ -192,7 +192,7 @@ def iw_how(cta=False, short=False):
     d = dict(id='c-how', sound='air', eyebrow=h['eyebrow'], title=h['title'], paras=[] if short else h['paras'],
              list=h['practices'], small='' if short else h['cred_line'], close=h['close'])
     if cta: d['btn'] = btn(CALL, CALL_URL, arrow=True)
-    d['photo'] = ('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light', 'band', '50% 40%')
+    d['photo'] = ('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light', 'band', '50% 14%')
     return (S.photo_deep_prose, d)
 
 

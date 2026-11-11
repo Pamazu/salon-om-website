@@ -619,3 +619,11 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 /* Breathe's guest line: full ivory with a soft shadow, as the body line has, so it reads over the clock photo */
 .ch__specs dd { color: var(--ivory); text-shadow: 0 1px 18px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4); }
 .ch__specs dt { color: var(--ivory); opacity: .86; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
+/* the visit preview becomes the step rail (J, 4 Nov; mgs.js): the line block's numbers travel to their own numbers on the
+   rail while the line, the dots and the words fade (--pf, the travel 0..1), drawing over the next slide as they go */
+.ln__n { display: inline-block; }
+.lnsec.pv--morph { overflow: visible; z-index: 2; }
+.lnsec.pv--morph .ln__n { will-change: transform; }
+.lnsec.pv--morph .ln__name, .lnsec.pv--morph .ln__t, .lnsec.pv--morph .ln__dot { opacity: calc(1 - var(--pf, 0) * 1.8); }
+.lnsec.pv--morph .ln__name, .lnsec.pv--morph .ln__t { transform: translate3d(calc(var(--pf, 0) * 3vw), 0, 0); }
+.lnsec.pv--morph .ln__svg, .lnsec.pv--morph .ln__stops::before { opacity: calc(1 - var(--pf, 0) * 1.8); }
