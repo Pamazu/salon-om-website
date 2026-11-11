@@ -49,9 +49,18 @@ TEAM_NOTE = 'I’m the backdrop. It’s not about me, it’s about you. This is 
 STEP_IMG = ['real-team-of-three.webp', 'real-shampoo-basins.webp', 'real-color-bar.webp', 'real-lounge.webp', 'real-styling-stations.webp']
 STEP_FILM = ['earth', 'water', 'fire', 'air', 'ether']
 STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
-# round 3 (task a2e5a9d0): each service shows a real photo of ITS result, never the salon's rooms or an Aveda advert. None
-# of Maggie's 17 photos shows a result yet, so each row shows a [photo to come] frame; drop (file, alt) in when she sends them
-SERVICE_PHOTO = [None] * 6
+# round 3 (task a2e5a9d0): each service shows its result on a guest. J, 11 Nov (handbook section 6 item 7): no more photo asks
+# to Maggie; each picture is one of her real salon photos, the room kept exactly, with ONE generated guest (gpt-image-2, only
+# the guest's zone pasted back by region_edit, Test Lab EXP-salonom-menu-guest-1), never captioned as a real result.
+# (file, alt, focus point for the panel's crop); None keeps the [photo to come] frame
+SERVICE_PHOTO = [
+  ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour, in a photo of Salon OM', '58% 62%'),
+  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair, in a photo of Salon OM', '48% 50%'),
+  None,     # Color Correction: its backdrop (15) was refused three times by the safety system (Test Lab), still to make
+  ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
+  ('om-menu-extensions.webp', 'A generated guest with long, full hair beside Maggie Woodward, in a photo of Salon OM', '22% 40%'),
+  ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows beside the skincare display at Salon OM', '6% 40%'),
+]
 # Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
 CLOSE_IMG = {'begin': ('real-styling-chair.webp', '50% 62%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
 CRED_IMG = ('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer')
@@ -118,7 +127,7 @@ def team(note=False, sid='hosts'):
 
 def services(eyebrow='The menu', sid='services'):
     # one booking button under the menu: the booking page has no link per service, so six buttons would all go to one place
-    tiles = [dict(img=(SERVICE_PHOTO[k] or (None, ''))[0], alt=(SERVICE_PHOTO[k] or (None, ''))[1],
+    tiles = [dict(img=(SERVICE_PHOTO[k] or (None, '', ''))[0], alt=(SERVICE_PHOTO[k] or (None, '', ''))[1], pos=(SERVICE_PHOTO[k] or (None, '', ''))[2],
                   missing=f'Photo to come: a {svc} result from Salon OM', tag=trip, price=price, title=svc)
              for k, (svc, trip, price) in enumerate(M.SERVICES)]
     return (S.menu, dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro='', tiles=tiles,

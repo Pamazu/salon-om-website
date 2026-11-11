@@ -18,7 +18,8 @@ def _photo(t, k):
     """the row's photo: a real photo of that service's result, or a quiet frame saying it is still to come"""
     on = ' is-on' if k == 0 else ''
     if t.get('img'):
-        return f'<img class="mn__img{on}" src="img/{t["img"]}" alt="{E(t["alt"])}" decoding="async" loading="lazy" data-i="{k}">'
+        pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''
+        return f'<img class="mn__img{on}" src="img/{t["img"]}" alt="{E(t["alt"])}" decoding="async" loading="lazy" data-i="{k}"{pos}>'
     return f'<div class="mn__img mn__none{on}" data-i="{k}"><p class="ph-copy">[{t["missing"]}]</p></div>'
 
 
