@@ -124,9 +124,13 @@ const edges = (p, id) => p.evaluate((id) => {
 // steps as scroll positions, which fire the same scroll events a finger's scroll does
 async function wheel(p, dy, step = 60) {
   const n = Math.max(1, Math.round(Math.abs(dy) / step)), mobile = p.viewportSize().width < 600;
-  if (mobile && BROWSER === 'chromium') {      // Chromium can drive a real touch scroll (a finger's drag, no fling)
-    const cdp = await p.context().newCDPSession(p), vp = p.viewportSize();
-    await cdp.send('Input.synthesizeScrollGesture', { x: vp.width / 2, y: vp.height / 2, yDistance: -dy, gestureSourceType: 'touch', speed: 600, preventFling: true });
+  if (mobile && BROWSER === 'chromium') {      // Chromium: a finger's drag (touch down, move in small steps, lift)
+    const cdp = await p.context().newCDPSession(p), vp = p.viewportSize(), x = vp.width / 2;
+    const y0 = dy > 0 ? vp.height * .8 : vp.height * .2;
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: y0 }] });
+    for (let i = 1; i <= n; i++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y0 - dy * i / n }] }); await wait(p, 40); }
+    await wait(p, 120);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     return;
   }
   for (let i = 0; i < n; i++) {
