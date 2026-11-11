@@ -97,7 +97,7 @@
         var els = document.elementsFromPoint(x, y);
         for (var k = 0; k < els.length; k++) {
           var e = els[k];
-          if (b.contains(e) || e.closest('.wdoor, .hdr, .tw, [aria-hidden="true"]')) continue;
+          if (b.contains(e) || e.closest('.wdoor, .hdr, .tw, .tw-btn, [aria-hidden="true"]')) continue;
           if (e.tagName === 'SECTION' || e.tagName === 'MAIN' || e.tagName === 'BODY' || e.tagName === 'HTML') break;
           if (words(e) && getComputedStyle(e).opacity > .1) { hit = true; break; }
         }
@@ -141,7 +141,9 @@
     var ground = null;
     secs().forEach(function (s) {
       var r = s.getBoundingClientRect();
-      if (r.bottom > 2 && r.top < vh - 2 && r.height > vh + 2) tall = true;   // 2 px: a settled page can sit a pixel off
+      // the browser's snap stays off while a tall section is on screen OR within one window of it: coming back up from the
+      // slide after the menu, Safari snapped to the menu's top before the menu was on screen to turn it off (WebKit QA)
+      if (r.bottom > -vh * .95 && r.top < vh * 1.95 && r.height > vh + 2) tall = true;
       if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
     });
     if (ground) root.style.setProperty('--hdr-ground', getComputedStyle(ground).backgroundColor);
@@ -190,3 +192,6 @@
 })();
 /* round 4: voices after the dark menu wears the light ground (mgs.css .mn + .vo), so the header reads it as light */
 [].forEach.call(document.querySelectorAll('.mn + .vo'), function (s) { s.setAttribute('data-tone', 'light'); });
+/* round 4: the salon world's dark teases are dark again in M, G and S (mgs.css), so the header reads them as dark; 2.2
+   next marks them light (next.js), which ran first */
+[].forEach.call(document.querySelectorAll('main[data-world="salon"] .mani.dark'), function (s) { s.setAttribute('data-tone', 'dark'); });

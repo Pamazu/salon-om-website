@@ -1691,12 +1691,13 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
   clip-path: inset(100% 0 0 0 round 999px 999px var(--r-photo) var(--r-photo)); transition: clip-path 1.8s var(--io-strong) .2s; }
 #pause.is-active .mani__in::before, html[data-shot] #pause .mani__in::before { clip-path: inset(0 0 0 0 round 999px 999px var(--r-photo) var(--r-photo)); }
 @media (min-width: 1024px) {
-  #pause .mani__in { display: grid; grid-template-columns: minmax(0, 1fr) min(27vw, 40vh, 400px) minmax(0, 1fr); grid-template-rows: auto auto auto; column-gap: var(--sp-6); align-items: center; text-align: left; }
-  #pause .mani__in::before { grid-column: 2; grid-row: 1 / span 3; height: min(60vh, 600px); }
-  #pause .mani__label { grid-column: 1; grid-row: 1; align-self: end; justify-self: end; margin: 0 0 var(--sp-3); }
-  #pause .mani__text { grid-column: 1; grid-row: 2; justify-self: end; max-width: 13em; margin: 0; text-align: right; font-size: clamp(30px, 2.7vw, 46px); line-height: 1.12; }
-  #pause .lead { grid-column: 3; grid-row: 2; margin: 0 !important; max-width: 16em; font-size: clamp(22px, 1.9vw, 30px); }
-  #pause .mani__proof { grid-column: 3; grid-row: 3; align-self: start; margin: var(--sp-3) 0 0; max-width: 34ch; }
+  /* rows centre the words on the arch whether or not a version has the guest's line (M has none, G has one) */
+  #pause .mani__in { display: grid; grid-template-columns: minmax(0, 1fr) min(27vw, 40vh, 400px) minmax(0, 1fr); grid-template-rows: 1fr auto auto auto 1fr; column-gap: var(--sp-6); align-items: center; text-align: left; }
+  #pause .mani__in::before { grid-column: 2; grid-row: 1 / -1; height: min(60vh, 600px); }
+  #pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; justify-self: end; margin: 0 0 var(--sp-3); }
+  #pause .mani__text { grid-column: 1; grid-row: 3; justify-self: end; max-width: 13em; margin: 0; text-align: right; font-size: clamp(30px, 2.7vw, 46px); line-height: 1.12; }
+  #pause .lead { grid-column: 3; grid-row: 3; margin: 0 !important; max-width: 16em; font-size: clamp(22px, 1.9vw, 30px); }
+  #pause .mani__proof { grid-column: 3; grid-row: 4; align-self: start; margin: var(--sp-3) 0 0; max-width: 34ch; }
 }
 @media (max-width: 1023px) {
   #pause .mani__in { display: flex; flex-direction: column; align-items: center; }
@@ -1787,6 +1788,8 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
   .cl__foot .foot__in > :nth-child(3) { grid-area: visit; }
   .cl__foot .foot__in > :nth-child(4) { grid-area: connect; }
 }
+/* on a phone the bar keeps clear of the review panel's round button in the lower left (it ran into it at 390) */
+@media (max-width: 1023px) { html[data-switch="b"] .wdoor { max-width: calc(100% - 128px); } }
 </style>
 </head>
 <body>
@@ -2152,7 +2155,7 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="2b505e27b9d1";</script>
+<script>window.OM_BUILD="efb960872f2f";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -2975,7 +2978,7 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
         var els = document.elementsFromPoint(x, y);
         for (var k = 0; k < els.length; k++) {
           var e = els[k];
-          if (b.contains(e) || e.closest('.wdoor, .hdr, .tw, [aria-hidden="true"]')) continue;
+          if (b.contains(e) || e.closest('.wdoor, .hdr, .tw, .tw-btn, [aria-hidden="true"]')) continue;
           if (e.tagName === 'SECTION' || e.tagName === 'MAIN' || e.tagName === 'BODY' || e.tagName === 'HTML') break;
           if (words(e) && getComputedStyle(e).opacity > .1) { hit = true; break; }
         }
@@ -3019,7 +3022,9 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     var ground = null;
     secs().forEach(function (s) {
       var r = s.getBoundingClientRect();
-      if (r.bottom > 2 && r.top < vh - 2 && r.height > vh + 2) tall = true;   // 2 px: a settled page can sit a pixel off
+      // the browser's snap stays off while a tall section is on screen OR within one window of it: coming back up from the
+      // slide after the menu, Safari snapped to the menu's top before the menu was on screen to turn it off (WebKit QA)
+      if (r.bottom > -vh * .95 && r.top < vh * 1.95 && r.height > vh + 2) tall = true;
       if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
     });
     if (ground) root.style.setProperty('--hdr-ground', getComputedStyle(ground).backgroundColor);
@@ -3068,6 +3073,9 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 })();
 /* round 4: voices after the dark menu wears the light ground (mgs.css .mn + .vo), so the header reads it as light */
 [].forEach.call(document.querySelectorAll('.mn + .vo'), function (s) { s.setAttribute('data-tone', 'light'); });
+/* round 4: the salon world's dark teases are dark again in M, G and S (mgs.css), so the header reads them as dark; 2.2
+   next marks them light (next.js), which ran first */
+[].forEach.call(document.querySelectorAll('main[data-world="salon"] .mani.dark'), function (s) { s.setAttribute('data-tone', 'dark'); });
 </script>
 </body>
 </html>

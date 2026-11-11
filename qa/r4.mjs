@@ -80,7 +80,7 @@ const barState = (p) => p.evaluate(() => {
     for (let i = 0; i <= 6; i++) for (let j = 0; j < 3; j++) {
       const x = r.left + 6 + (r.width - 12) * i / 6, y = r.top + 4 + (r.height - 8) * j / 2;
       for (const e of document.elementsFromPoint(x, y)) {
-        if (b.contains(e) || e.closest('.wdoor, .hdr')) continue;
+        if (b.contains(e) || e.closest('.wdoor, .hdr, .tw, .tw-btn')) continue;
         if (/^(SECTION|MAIN|BODY|HTML)$/.test(e.tagName)) break;
         const own = /^(BUTTON|INPUT|A)$/.test(e.tagName) || [...e.childNodes].some((c) => c.nodeType === 3 && c.nodeValue.trim());
         if (own && +getComputedStyle(e).opacity > .1) { under.push(e.tagName + ':' + e.textContent.trim().slice(0, 40)); break; }
