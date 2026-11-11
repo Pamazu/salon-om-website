@@ -167,10 +167,32 @@ async function snap(b, base) {
   for (const r of res) console.log('snap', r.v, r.id, r.w, r.step || r.note || r.error, '|', r.expect || '', '| top', r.top, 'bottomGap', r.bottomGap, 'nextTop', r.nextTop, 'snap', JSON.stringify(r.snap));
 }
 
+// G: the visit preview becoming the step rail (J's 4 Nov ask): stills at fixed points of the preview's leave, and whether the
+// animation is wired (the morph class is on the section, the numbers move, the rail shows by the end)
+async function morph(b, base) {
+  const res = [];
+  for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/g/`);
+    const [a, z] = await p.evaluate(() => [document.getElementById('visit').offsetTop, document.getElementById('arrive').offsetTop]);
+    const wired = await p.evaluate(() => document.getElementById('visit').classList.contains('pv--morph'));
+    const nextIsStep = await p.evaluate(() => document.getElementById('visit').nextElementSibling.id);
+    for (const q of [0, .2, .4, .56, .7, 1]) {
+      await jump(p, a + (z - a) * q); await wait(p, 700);
+      const st = await p.evaluate(() => { const n = document.querySelector('.pv__row b'), r = document.getElementById('rail'); return { numMoved: n ? n.style.transform !== '' : null, railOpacity: r ? +getComputedStyle(r).opacity : null }; });
+      await p.screenshot({ path: path.join(OUT, `morph-${w}-q${String(Math.round(q * 100)).padStart(3, '0')}.jpg`), type: 'jpeg', quality: 80 });
+      res.push({ w, q, wired, nextIsStep, ...st });
+    }
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, 'morph.json'), JSON.stringify(res, null, 1));
+  for (const r of res) console.log('morph', r.w, 'q', r.q, 'wired', r.wired, 'next', r.nextIsStep, 'numMoved', r.numMoved, 'railOpacity', r.railOpacity);
+}
+
 const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
 const b = await pw[BROWSER].launch();
 console.log(BROWSER, b.version());
 try {
+  if (ONLY.includes('morph')) await morph(b, base);
   if (ONLY.includes('snap')) await snap(b, base);
   if (ONLY.includes('shots')) await shots(b, base);
 } finally { await b.close(); srv.close(); }

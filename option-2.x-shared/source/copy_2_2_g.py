@@ -104,12 +104,12 @@ SALON = [
                  )),                                 # round 4: G.A.'s words move to Breathe (step 04), their proof
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)])),
-  # round 4 (task 2846db82; J 11 Nov: "having the services that down I'm unsure", the CEO MA's order): the menu comes 4th,
-  # once the visit preview has framed the value, then the five steps, team, voices, Why Aveda, OM, the second door, Begin
-  _with(services(), eyebrow='The menu', title=draft(G['menu_hook']), intro=M.MENU_LINE + ' ' + draft(G['menu_stack']),
-        answer=draft(G['menu_answer']), reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
 ] + [step(k, extra=G['benefits'][k], specs_more=[('A guest', f'“{PAUSE_QUOTE[0]}” {PAUSE_QUOTE[1]}')] if k == 3 else None)
      for k in range(5)] + [
+  # round 5 (task 2846db82, CEO MA 11 Nov): the menu comes right after the five steps, so the visit preview becomes the
+  # step rail again (J's 4 Nov ask, a feature never traded away); still far earlier than its old 13th place
+  _with(services(), eyebrow='The menu', title=draft(G['menu_hook']), intro=M.MENU_LINE + ' ' + draft(G['menu_stack']),
+        answer=draft(G['menu_answer']), reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
   _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
   (S.voices_row, dict(id='kind', title=M.VOICES_LINE, quotes=VOICE_QUOTES, reward=draft(G['voices_reward']),

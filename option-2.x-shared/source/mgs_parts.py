@@ -183,7 +183,8 @@ def iw_hero(short_cred=False):
 def iw_deeper(short=False):
     d = M.DEEPER
     paras = [d['paras'][0], d['paras'][2]] if short else d['paras']
-    return ('prose', dict(id='c-deeper', sound='air', eyebrow='Recognition', title=d['title'], lead=d['lead'], paras=paras, close=d['close']))
+    return (S.photo_prose, dict(id='c-deeper', sound='air', eyebrow='Recognition', title=d['title'], lead=d['lead'], paras=paras, close=d['close'],
+                                photo=('real-maggie-portrait-iw.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM', 'side', '50% 24%')))
 
 
 def iw_how(cta=False, short=False):
@@ -191,7 +192,8 @@ def iw_how(cta=False, short=False):
     d = dict(id='c-how', sound='air', eyebrow=h['eyebrow'], title=h['title'], paras=[] if short else h['paras'],
              list=h['practices'], small='' if short else h['cred_line'], close=h['close'])
     if cta: d['btn'] = btn(CALL, CALL_URL, arrow=True)
-    return (S.deep_prose, d)
+    d['photo'] = ('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light', 'band', '50% 40%')
+    return (S.photo_deep_prose, d)
 
 
 def iw_credentials(n=None):

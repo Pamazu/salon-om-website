@@ -226,3 +226,24 @@ def deep_prose(d, world):
     light (J, 19 Oct: only its film slides go dark), so they differ by ground and shape, never by going dark"""
     from build import prose
     return prose(d).replace('class="s s--auto prose"', 'class="s s--auto prose prose--deep"', 1)
+
+
+def photo_prose(d, world):
+    """A long-text section with a real photo of Maggie's salon beside or above its words (round 5, CEO MA 11 Nov: people
+    connect in more than one way, so no text-only wall). d['photo'] = (file, alt, 'side' | 'band', focus). 'side' sits the
+    photo under the heading and lead (the heading column stays put while the words scroll); 'band' lays it across the
+    section between the heading and the words."""
+    from build import prose
+    f, alt, kind, pos = d['photo']
+    fig = f'<figure class="pr__ph pr__ph--{kind} a-fade" style="--d:.5s"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy" style="object-position:{pos}"></figure>'
+    html = prose(d).replace('class="s s--auto prose"', 'class="s s--auto prose prose--photo"', 1)
+    if kind == 'side':
+        html = html.replace('</div>\n      <div class="pr__body">', fig + '</div>\n      <div class="pr__body">', 1)
+    else:
+        html = html.replace('      <div class="pr__body">', '      ' + fig + '\n      <div class="pr__body">', 1)
+    return html
+
+
+def photo_deep_prose(d, world):
+    """photo_prose on Inner Work's deeper sand (How we work together)"""
+    return photo_prose(d, world).replace('class="s s--auto prose prose--photo"', 'class="s s--auto prose prose--photo prose--deep"', 1)

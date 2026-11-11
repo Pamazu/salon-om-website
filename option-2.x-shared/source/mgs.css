@@ -605,3 +605,17 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 }
 /* on a phone the bar keeps clear of the review panel's round button in the lower left (it ran into it at 390) */
 @media (max-width: 1023px) { html[data-switch="b"] .wdoor { max-width: calc(100% - 128px); } }
+
+/* ---- round 5 (CEO MA 11 Nov): Inner Work's long-text sections carry a real photo, so they are not a text-only wall ---- */
+.pr__ph { margin: 0; overflow: hidden; border-radius: var(--r-photo); }
+.pr__ph img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pr__ph--side { margin-top: var(--sp-4); aspect-ratio: 4 / 5; max-height: min(52vh, 520px); max-width: 420px; }
+.pr__ph--band { aspect-ratio: 21 / 7; width: 100%; }
+@media (min-width: 1024px) { #c-how .pr__ph--band { grid-column: 1 / -1; } }
+@media (max-width: 1023px) {
+  .pr__ph--side { aspect-ratio: 4 / 3; max-width: none; max-height: none; }
+  .pr__ph--band { aspect-ratio: 16 / 9; margin: var(--sp-3) 0; }
+}
+/* Breathe's guest line: full ivory with a soft shadow, as the body line has, so it reads over the clock photo */
+.ch__specs dd { color: var(--ivory); text-shadow: 0 1px 18px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4); }
+.ch__specs dt { color: var(--ivory); opacity: .86; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
