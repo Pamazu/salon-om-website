@@ -18,8 +18,9 @@ from mgs_parts import *
 #            28 years) / the doors / the promise itself / Book your visit
 #  pause     "Take a breath. When did you last ...?" / none, by design (the story's turn; proof follows in the steps) /
 #            story, one open question / "You deserve this moment." / none, by design (it follows the opening's button)
+#  (round 5, Designer 1: the menu moved to right after the five steps; the lines below follow that order)
 #  preview   "Your visit, from the first sip to the last look, in five steps." / the five real steps / a list that
-#            becomes the rail / "The service you choose shapes the rest." / none, by design (the menu follows at once)
+#            becomes the rail / "You know what happens, and in what order, before you book." / none, by design (the steps follow)
 #  menu      "Every service, and every price, before you book." / the value stack ABOVE the prices, then six services
 #            with prices / the menu list / "Choose yours." + Tuesday to Thursday, by appointment / Book your visit
 #  steps     each name and word / Maggie's feature line (04 also G.A.'s words) / the rail, 01 to 05 / benefit + Feel /
@@ -33,7 +34,7 @@ from mgs_parts import *
 #  om        "All that was, is, and will be. OM." / her OM line "The first sound, the breath of everything." / story /
 #            "Your hair, your rest and you, cared for as one." / Book your visit
 #  door      "What could change for you?" / her two practices / story / her Connection Call line / its own two buttons
-#  begin     "Your moment awaits." / the visit stacked in her step lines / stacking / "Hair that feels like you, and
+#  begin     "Your moment awaits." / the visit stacked in her step lines + Maggie's two-week word (11 Nov) / stacking / "Hair that feels like you, and
 #            attention that is only on you." / Book your visit
 # Inner Work, the page: HOOK "Explore who you are Becoming." + ROT / PROOF her short credentials / RETAIN below /
 #   REWARD Begin's "You leave the call knowing your next step" / CTA Book a Connection Call.
@@ -56,7 +57,7 @@ G = dict(
   rot_salon='Hair that finally feels like you, in one visit, with Maggie’s full attention.',
   rot_iw='Uncover the beliefs that may be holding you back, without reliving the past. It starts with one Connection Call.',
   preview='Your visit, from the first sip to the last look, in five steps.',
-  preview_reward='The service you choose shapes the rest.',   # round 4: leads into the menu, which now follows the preview
+  preview_reward='You know what happens, and in what order, before you book.',   # round 5 order: the steps follow the preview again
   benefits=['You are heard before anything is done to your hair.', 'The week’s tension lets go.',
             'Planned around your hair and the upkeep you want.',     # round 3: the Aveda product claim cut (Aveda's own figures vary by line)
             'A moment to breathe, in the lounge by the fireplace.',  # round 4: her deck's "A moment to breathe" + the real lounge (photos 2, 5)
@@ -86,7 +87,7 @@ G = dict(
   path_hook='Four steps, and the first is a conversation.',
   path_answer='How many sessions you need is something you decide together, in your Connection Call.',
   path_reward='The first step is complimentary, and every step after it is your choice.',
-  iw_begin_text='In one complimentary call, Maggie learns what you are looking for, and together you see if she is the right fit. Investment is shared there too.',
+  iw_begin_text='In one complimentary call of about 30 to 45 minutes, never rushed, Maggie learns what you are looking for, and together you see if she is the right fit. Investment is shared there too.',
   iw_begin_reward='You leave the call knowing your next step, and whether Maggie is the one to walk it with you.',
 )
 PAUSE_QUOTE = M.QUOTES[2]                # G.A. "She truly makes your time with her your own.": round 4, Breathe's proof
@@ -120,7 +121,7 @@ SALON = [
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['OM.'], text=M.OM, proof_line=M.OM_LINE,   # round 4: her OM line in place of a fourth recap of the visit
                  reward=draft(G['om_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),
-  _with(begin(), text=draft(G['begin_stack']), reward=draft(G['begin_reward'])),
+  _with(begin(), text=draft(G['begin_stack']), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),   # Maggie, 11 Nov
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')]),
 ]
 

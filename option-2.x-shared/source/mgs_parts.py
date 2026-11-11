@@ -15,8 +15,23 @@ CALL = M.CTA_IW                          # Inner Work's one action
 BOOK_URL = 'https://maggiewoodward.glossgenius.com/book'
 CALL_URL = 'mailto:connect@maggiewoodward.com?subject=Connection%20Call'
 LEGEND = 'Words with a dotted underline are new, for Maggie to approve. Words in [square brackets] are still to come.'
-LEGEND_M = ('Every line of copy here is from Maggie’s approved decks. The salon’s address, hours and contact details are from its '
-            'public pages. Words in [square brackets] are still to come.')
+LEGEND_M = ('Every line of copy here is from Maggie’s approved decks, and the lines with a dotted underline from her answers of '
+            '11 Nov, for her to approve. The salon’s address, hours and contact details are from its public pages. Words in '
+            '[square brackets] are still to come.')
+# Maggie's answers of 11 Nov 2026 (voice message to J, transcribed in the brain: build-salon-om-website/record/
+# record-2026-11-11-maggie-answers-to-the-website-questions.md; task d7b789ee). Dotted for her yes, since none is in her decks.
+#  - the Connection Call: "typically 30 to 45 minutes", "I don't ever do a hard stop"
+#  - Inner Work: "in the salon privately when we are not open for business ... and it also can happen online ... you don't
+#    have to be a client of the salon to be an inner work client" (salon people are guests, Inner Work people clients: her rule)
+#  - adjustments: never advertised, said to every first-time guest at the end of the visit, in her words; never "guarantee"
+#    or "free". Shown in G and S only: M is her approved copy, and she has never put this in it
+#  - service lengths: not answered and not on her public booking page (no services listed), so left out, never asked again
+#  - reviews: her booking-service reviews, quoted with initials (the quotes already on the page); no Google rating
+A11 = dict(
+  call='About 30 to 45 minutes, never rushed.',
+  where='Sessions happen privately at Salon OM, outside salon hours, or online. You don’t have to be a salon guest to be an Inner Work client.',
+  adjust='What Maggie tells every new guest: “Please let me know if there are any challenges or concerns. I’m happy to get you in within the first two weeks.”',
+)
 
 # the study's [draft] lines (section 4, 6, 3b), word for word; Maggie's rule (no semicolons) applied to step 04
 D = dict(
@@ -155,7 +170,7 @@ def door(short=False):
         return ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b))
     b += call
     return ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='The second door', title=d['title'], text=d['paras'][0],
-                           more=d['paras'][1:], btn=b))
+                           more=[d['paras'][1] + ' ' + draft(A11['call'])] + d['paras'][2:], btn=b))
 
 
 def begin(summary=False):
@@ -204,7 +219,8 @@ def iw_credentials(n=None):
 
 def iw_path(cta=False):
     return (S.path_line, dict(id='c-path', sound='air', light=True, eyebrow='The path', title=ph(M.TO_COME['path_title']),
-                          steps=[(f'0{k + 1}', n, t) for k, (_, n, t) in enumerate(M.PATH)], after=M.PRICING,
+                          steps=[(f'0{k + 1}', n, t + (' ' + draft(A11['call']) if k == 0 else '')) for k, (_, n, t) in enumerate(M.PATH)],
+                          after=M.PRICING + ' ' + draft(A11['where']),
                           btn=btn(CALL, CALL_URL, arrow=True) if cta else ''))
 
 
@@ -218,9 +234,8 @@ def iw_begin():
 
 
 def iw_end(legend):
-    # round 4 (task 0fea0949): no Visit column on Inner Work. Her approved footer (connect) says all it needs; where sessions
-    # happen stays unsaid until Maggie says it herself
+    # Maggie, 11 Nov (task d7b789ee): Inner Work happens privately in the salon outside its hours, or online
     return ('end', dict(id='c-letters', sound='air', title='', tagline=M.FIRST['tagline'], no_letters=True, connect=M.FOOT_IW,
-                        visit=[],
+                        visit=['Privately at Salon OM, outside salon hours', 'Online, wherever you are'],
                         disclaimer=M.DISCLAIMER, legend=legend,
                         explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))

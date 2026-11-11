@@ -23,7 +23,7 @@ VISIT = (S.visit, dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
 PROOF = ('proof', dict(id='hosts', eyebrow='Meet the team', title=M.TEAM_LINE,
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
                        quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + draft(S_AVEDA)))
-SALON = [dict_with(salon_hero(proof=True, visit='visit'), rot=draft(S_ROT)), VISIT, PROOF, dict_with(services(), intro=M.MENU_LINE + ' ' + draft(S_STACK)), door(short=True), begin(summary=True), salon_end(LEGEND, visit='visit')]
+SALON = [dict_with(salon_hero(proof=True, visit='visit'), rot=draft(S_ROT)), VISIT, PROOF, dict_with(services(), intro=M.MENU_LINE + ' ' + draft(S_STACK)), door(short=True), dict_with(begin(summary=True), answer=draft(A11['adjust'])), salon_end(LEGEND, visit='visit')]
 COACHING = [iw_hero(short_cred=True), iw_deeper(short=True), iw_how(cta=False, short=True), CRED_S, iw_path(cta=True), iw_voices_placeholder(), iw_begin(), iw_end(LEGEND)]
 
 CFG = cfg('s', 'Short', SALON, COACHING,
