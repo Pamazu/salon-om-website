@@ -15,7 +15,8 @@ CALL = M.CTA_IW                          # Inner Work's one action
 BOOK_URL = 'https://maggiewoodward.glossgenius.com/book'
 CALL_URL = 'mailto:connect@maggiewoodward.com?subject=Connection%20Call'
 LEGEND = 'Words with a dotted underline are new, for Maggie to approve. Words in [square brackets] are still to come.'
-LEGEND_M = 'Every word here is from Maggie’s approved decks. Words in [square brackets] are still to come.'
+LEGEND_M = ('Every line of copy here is from Maggie’s approved decks. The salon’s address, hours and contact details are from its '
+            'public pages. Words in [square brackets] are still to come.')
 
 # the study's [draft] lines (section 4, 6, 3b), word for word; Maggie's rule (no semicolons) applied to step 04
 D = dict(
@@ -70,7 +71,7 @@ SERVICE_PHOTO = [
 # round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
 CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
 CRED_IMG = ('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer')
-FOOT_VISIT = 'Salon OM in person · Inner Work in person and online'
+FOOT_VISIT = 'Salon OM in person'   # round 4 (task 0fea0949, J "GO GO" 11 Nov): where Inner Work happens stays unsaid until Maggie says it
 TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the Aveda shelves at Salon OM'),
             ('real-katie.webp', 'Katie Paonessa at Salon OM'),
             ('real-chesney.webp', 'Chesney Missamore at Salon OM')]   # cut from 9-team-of-three.jpg by elimination (J, 11 Nov): Katie left, Maggie centre, Chesney right
@@ -215,8 +216,9 @@ def iw_begin():
 
 
 def iw_end(legend):
-    # where Inner Work sessions happen is not public: the town only, the rest is a question for Maggie (task df14fa0d)
+    # round 4 (task 0fea0949): no Visit column on Inner Work. Her approved footer (connect) says all it needs; where sessions
+    # happen stays unsaid until Maggie says it herself
     return ('end', dict(id='c-letters', sound='air', title='', tagline=M.FIRST['tagline'], no_letters=True, connect=M.FOOT_IW,
-                        visit=['Avila Beach, California', 'Inner Work in person and online'],
+                        visit=[],
                         disclaimer=M.DISCLAIMER, legend=legend,
                         explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))

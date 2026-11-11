@@ -10,17 +10,56 @@ answer, btn = the world's one action. Round 2 adds five fields, for Designer 1 t
   btn        the world's one action on sections that had none (OM, Team, the menu, Look a little deeper)"""
 from mgs_parts import *
 
+# ---- THE CYCLE MAP (round 4, task 0fea0949; J 4 Nov: the whole page is one Hook, Proof, Retain, Reward, CTA with nested
+# cycles; a CTA right after a payoff). One line per section, in Designer 1's round 4 order: HOOK / PROOF / RETAIN / REWARD / CTA.
+# Salon OM, the page: HOOK the opening and its ROT line / PROOF the proof line / RETAIN the sections below / REWARD Begin's
+#   "attention that is only on you" / CTA Book your visit.
+#  hero      Maggie's locked words + ROT "in one visit, with Maggie's full attention" / proof line (Aveda Concept Salon,
+#            28 years) / the doors / the promise itself / Book your visit
+#  pause     "Take a breath. When did you last ...?" / none, by design (the story's turn; proof follows in the steps) /
+#            story, one open question / "You deserve this moment." / none, by design (it follows the opening's button)
+#  preview   "Your visit, from the first sip to the last look, in five steps." / the five real steps / a list that
+#            becomes the rail / "The service you choose shapes the rest." / none, by design (the menu follows at once)
+#  menu      "Every service, and every price, before you book." / the value stack ABOVE the prices, then six services
+#            with prices / the menu list / "Choose yours." + Tuesday to Thursday, by appointment / Book your visit
+#  steps     each name and word / Maggie's feature line (04 also G.A.'s words) / the rail, 01 to 05 / benefit + Feel /
+#            none inside a step, by design (the menu's button came just before, Team's comes after)
+#  team      "The people who listen first." / Maggie's story (28 years, a place to be seen, heard and cared for, the
+#            team in black) + three cards / cards / Maggie: "I'm the backdrop ... your time, your space." / Book your visit
+#  voices    "Lighter, inside and out." / three guest quotes / quotes / "A great haircut, and a lighter spirit ..." /
+#            Book your visit
+#  aveda     "What is in your color?" / Maggie's line + four facts from aveda.com / the facts / "Care for your hair and
+#            care for the earth, in the same visit." / Book your visit
+#  om        "All that was, is, and will be. OM." / her OM line "The first sound, the breath of everything." / story /
+#            "Your hair, your rest and you, cared for as one." / Book your visit
+#  door      "What could change for you?" / her two practices / story / her Connection Call line / its own two buttons
+#  begin     "Your moment awaits." / the visit stacked in her step lines / stacking / "Hair that feels like you, and
+#            attention that is only on you." / Book your visit
+# Inner Work, the page: HOOK "Explore who you are Becoming." + ROT / PROOF her short credentials / RETAIN below /
+#   REWARD Begin's "You leave the call knowing your next step" / CTA Book a Connection Call.
+#  deeper    "Look a little deeper." + her lead / Hebb, in her text / story / "You get to choose again." / Book a Connection Call
+#  how       "Grounded in research. Space to Grow." / six practices / list / "The aim is to meet old patterns with more
+#            calm, and more choice." / Book a Connection Call
+#  cred      "Who will walk beside you?" / her credentials, exact / list / none, by design (the list is the payoff;
+#            round 3 cut the overclaim) / none, by design (the path follows with its button)
+#  path      "Four steps, and the first is a conversation." / her four steps + pricing line / steps / "The first step is
+#            complimentary, and every step after it is your choice." / Book a Connection Call
+#  voices    her placeholder, client words still being gathered / none yet / none yet / none yet / none, by design
+#  begin     "Change begins with you." / one complimentary call / summary / "You leave the call knowing your next step
+#            ..." / Book a Connection Call
+
 # the study's round 2 [draft] lines, word for word (section 3b); everything else comes from copy_2_2_maggie.py
 G = dict(
   # round 3 (CEO MA critique 10 Nov, section 5.3): the hook names the pain. J 10 Nov 08:56: less emphasis on time ("unhurried
   # time" can make a visit sound long), so the objection is answered with attention, in Maggie's phrase from her direction deck
-  rot_salon='Hair that finally feels like you, with Maggie’s full attention.',
+  # round 4 (CEO MA QA item 4): the T of ROT back. "in one visit" is speed, not length
+  rot_salon='Hair that finally feels like you, in one visit, with Maggie’s full attention.',
   rot_iw='Uncover the beliefs that may be holding you back, without reliving the past. It starts with one Connection Call.',
   preview='Your visit, from the first sip to the last look, in five steps.',
-  preview_reward='You know what happens, and in what order, before you book.',
+  preview_reward='The service you choose shapes the rest.',   # round 4: leads into the menu, which now follows the preview
   benefits=['You are heard before anything is done to your hair.', 'The week’s tension lets go.',
             'Planned around your hair and the upkeep you want.',     # round 3: the Aveda product claim cut (Aveda's own figures vary by line)
-            None,                                                     # round 3: the promise cut; Maggie's own line says it
+            'A moment to breathe, in the lounge by the fireplace.',  # round 4: her deck's "A moment to breathe" + the real lounge (photos 2, 5)
             None],                                                    # round 3: Shine is Maggie's line alone
   om_reward='Your hair, your rest and you, cared for as one.',
   aveda_hook='What is in your color?',
@@ -30,7 +69,13 @@ G = dict(
   menu_hook='Every service, and every price, before you book.',
   menu_answer='Not sure which to choose? Your visit begins with a real conversation, and your service is shaped with you there.',
   # round 3 (critique 5.1): the value stack beside the prices. Whether every hair visit includes all of it is Maggie's to confirm
-  menu_reward='Every hair visit includes your favorite drink, a real conversation, a scalp ritual with Stress-Fix oil and time shaped around you.',
+  menu_stack='Every hair visit includes your favorite drink, a real conversation, a scalp ritual with Stress-Fix oil and time shaped around you.',
+  # round 4: value before price (the stack sits ABOVE the prices) and one honest scarcity line, her booking page's days
+  menu_reward='Choose yours. Salon OM welcomes guests Tuesday to Thursday, by appointment.',
+  # round 4 (J 4 Nov, storytelling): Maggie's story in her own words, from her decks and the 19 Oct call ("at Aveda, we only
+  # wear black ... because the focus is the client"); her card's line stays hers, the two short lines around it are new
+  story_open='Maggie has spent 28 years in the chair.',
+  story_close='The team wears black, because the focus is always you.',
   # round 3: the stack in Maggie's own step lines, "lesson" cut (her words: "We teach you to recreate your style at home.")
   begin_stack='Comforting Tea and a real conversation. A scalp ritual with Stress-Fix oil. Cut, color, blonding or extensions, designed for you alone. We teach you to recreate your style at home.',
   begin_reward='Hair that feels like you, and attention that is only on you.',
@@ -44,7 +89,7 @@ G = dict(
   iw_begin_text='In one complimentary call, Maggie learns what you are looking for, and together you see if she is the right fit. Investment is shared there too.',
   iw_begin_reward='You leave the call knowing your next step, and whether Maggie is the one to walk it with you.',
 )
-PAUSE_QUOTE = M.QUOTES[2]                # G.A., moved from Voices into the pause as its proof (study 3b, salon 1)
+PAUSE_QUOTE = M.QUOTES[2]                # G.A. "She truly makes your time with her your own.": round 4, Breathe's proof
 VOICE_QUOTES = [q for q in M.QUOTES if q is not PAUSE_QUOTE]
 
 
@@ -56,21 +101,23 @@ def _with(sec, **kw):
 SALON = [
   _with(salon_hero(proof=True), rot=draft(G['rot_salon'])),
   ('tease', dict(id='pause', label='The pause', tone='dark', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s',
-                 proof_line=f'“{PAUSE_QUOTE[0]}” {PAUSE_QUOTE[1]}')),
+                 )),                                 # round 4: G.A.'s words move to Breathe (step 04), their proof
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)])),
   # round 4 (task 2846db82; J 11 Nov: "having the services that down I'm unsure", the CEO MA's order): the menu comes 4th,
   # once the visit preview has framed the value, then the five steps, team, voices, Why Aveda, OM, the second door, Begin
-  _with(services(), eyebrow='The menu', title=draft(G['menu_hook']), intro=M.MENU_LINE,
+  _with(services(), eyebrow='The menu', title=draft(G['menu_hook']), intro=M.MENU_LINE + ' ' + draft(G['menu_stack']),
         answer=draft(G['menu_answer']), reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
-] + [step(k, extra=G['benefits'][k]) for k in range(5)] + [
-  _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True)),
+] + [step(k, extra=G['benefits'][k], specs_more=[('A guest', f'“{PAUSE_QUOTE[0]}” {PAUSE_QUOTE[1]}')] if k == 3 else None)
+     for k in range(5)] + [
+  _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
+        intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
   (S.voices_row, dict(id='kind', title=M.VOICES_LINE, quotes=VOICE_QUOTES, reward=draft(G['voices_reward']),
                   btn=btn(BOOK, BOOK_URL, arrow=True))),
   ('facts', dict(id='aveda', light=True, eyebrow='Why Aveda', title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  facts=[(n, draft(t), *c) for n, t, *c in AVEDA_FACTS], src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
                  reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),
-  ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['OM.'], text=M.OM, proof_line=M.VISIT_LINE,
+  ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['OM.'], text=M.OM, proof_line=M.OM_LINE,   # round 4: her OM line in place of a fourth recap of the visit
                  reward=draft(G['om_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),
   _with(begin(), text=draft(G['begin_stack']), reward=draft(G['begin_reward'])),

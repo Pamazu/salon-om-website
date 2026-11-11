@@ -453,7 +453,7 @@ def end(d, world):
       <div class="foot__in">
         <div class="foot__brand a-up" style="--d:.6s">{svg('stacked')}<p>{d['tagline']}</p></div>
         <div class="a-up" style="--d:.7s"><h3 class="label">Explore</h3><ul>{expl}</ul></div>
-        <div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul>{visit}</ul></div>
+        {'' if ('visit' in d and not d['visit']) else '<div class="a-up" style="--d:.8s"><h3 class="label">Visit</h3><ul>' + visit + '</ul></div>'}
         <div class="a-up" style="--d:.9s"><h3 class="label">Connect</h3><ul>{conn}</ul></div>
       </div>{legal}
       <div class="foot__base"><span>© 2026 Salon OM · {d.get('foot_base', 'an Aveda concept salon')} · {d['draft']}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>

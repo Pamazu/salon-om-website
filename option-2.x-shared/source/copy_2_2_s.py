@@ -12,7 +12,8 @@ def dict_with(sec, **kw):
 # round 3 (task df14fa0d): one Aveda proof line (aveda.com, 100% vegan since 2021), the salon hook with its ROT line as G,
 # and on Inner Work her Credentials, cut to her first three items (whole items, never reworded), and her Voices placeholder
 S_AVEDA = 'Every Aveda formula is 100% vegan.'
-S_ROT = 'Hair that finally feels like you, with Maggie’s full attention.'   # as G (J 10 Nov 08:56: attention, not duration)
+S_ROT = 'Hair that finally feels like you, in one visit, with Maggie’s full attention.'   # as G (round 4: the T of ROT back)
+S_STACK = 'Every hair visit includes your favorite drink, a real conversation, a scalp ritual with Stress-Fix oil and time shaped around you.'
 CRED_S = iw_credentials(n=3)          # her first three credentials, on the same card as M and G (task a2e5a9d0)
 
 # round 4 (task 2846db82): the five steps with their real photos (mgs_sections.visit), the words unchanged
@@ -22,7 +23,7 @@ VISIT = (S.visit, dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
 PROOF = ('proof', dict(id='hosts', eyebrow='Meet the team', title=M.TEAM_LINE,
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
                        quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + draft(S_AVEDA)))
-SALON = [dict_with(salon_hero(proof=True, visit='visit'), rot=draft(S_ROT)), VISIT, PROOF, services(), door(short=True), begin(summary=True), salon_end(LEGEND, visit='visit')]
+SALON = [dict_with(salon_hero(proof=True, visit='visit'), rot=draft(S_ROT)), VISIT, PROOF, dict_with(services(), intro=M.MENU_LINE + ' ' + draft(S_STACK)), door(short=True), begin(summary=True), salon_end(LEGEND, visit='visit')]
 COACHING = [iw_hero(short_cred=True), iw_deeper(short=True), iw_how(cta=False, short=True), CRED_S, iw_path(cta=True), iw_voices_placeholder(), iw_begin(), iw_end(LEGEND)]
 
 CFG = cfg('s', 'Short', SALON, COACHING,
