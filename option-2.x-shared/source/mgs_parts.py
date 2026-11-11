@@ -190,7 +190,7 @@ def iw_how(cta=False, short=False):
     d = dict(id='c-how', sound='air', eyebrow=h['eyebrow'], title=h['title'], paras=[] if short else h['paras'],
              list=h['practices'], small='' if short else h['cred_line'], close=h['close'])
     if cta: d['btn'] = btn(CALL, CALL_URL, arrow=True)
-    return (S.dark_prose, d)
+    return (S.deep_prose, d)
 
 
 def iw_credentials(n=None):

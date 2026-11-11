@@ -49,6 +49,7 @@ const DESK = { viewport: { width: 1440, height: 900 } };
 const LAP = { viewport: { width: 1366, height: 768 } };
 const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: BROWSER !== 'firefox', hasTouch: true };
 const wait = (p, ms) => p.waitForTimeout(ms);
+const WAIT = +(process.env.WAIT || 5000);
 
 async function open(ctx, url) {
   const p = await ctx.newPage();
@@ -81,7 +82,8 @@ const barState = (p) => p.evaluate(() => {
       for (const e of document.elementsFromPoint(x, y)) {
         if (b.contains(e) || e.closest('.wdoor, .hdr')) continue;
         if (/^(SECTION|MAIN|BODY|HTML)$/.test(e.tagName)) break;
-        if (/^(P|H1|H2|H3|H4|LI|DT|DD|BLOCKQUOTE|FIGCAPTION|A|BUTTON|SMALL|B|EM|LABEL)$/.test(e.tagName) && e.textContent.trim()) { under.push(e.tagName + ':' + e.textContent.trim().slice(0, 40)); break; }
+        const own = /^(BUTTON|INPUT|A)$/.test(e.tagName) || [...e.childNodes].some((c) => c.nodeType === 3 && c.nodeValue.trim());
+        if (own && +getComputedStyle(e).opacity > .1) { under.push(e.tagName + ':' + e.textContent.trim().slice(0, 40)); break; }
       }
     }
   }
@@ -97,7 +99,7 @@ async function shots(b, base) {
     const ids = await p.evaluate((world) => [...document.querySelectorAll(`main[data-world="${world}"] > section.s`)].map((s) => s.id), world);
     for (const id of ids) {
       const g = await p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height, vh: innerHeight }; }, id);
-      await jump(p, g.top); await wait(p, 2400);
+      await jump(p, g.top); await wait(p, WAIT);      // a section's late lines arrive up to about 4.5 s after it does
       await p.screenshot({ path: path.join(OUT, `${v}-${world}-${id}-${w}.jpg`), type: 'jpeg', quality: 80 });
       log.push({ v, world, id, w, h: Math.round(g.h), ...(await barState(p)) });
       if (g.h > g.vh + 2) {

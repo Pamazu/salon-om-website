@@ -80,7 +80,8 @@
   var root = document.documentElement, bars = [].slice.call(document.querySelectorAll('.wdoor'));
   if (!bars.length || !('IntersectionObserver' in window)) return;
   var href = { salon: bars[0].getAttribute('href'), coaching: (bars[1] || bars[0]).getAttribute('href') }, seen = new Map(), under = false, t = 0;
-  var CONTENT = /^(P|H1|H2|H3|H4|LI|DT|DD|BLOCKQUOTE|FIGCAPTION|A|BUTTON|SMALL|B|EM|LABEL|INPUT)$/;
+  // content = any element that holds words of its own (a text node), or a control
+  function words(e) { if (/^(BUTTON|INPUT|A)$/.test(e.tagName)) return true; for (var c = e.firstChild; c; c = c.nextSibling) if (c.nodeType === 3 && c.nodeValue.trim()) return true; return false; }
   function world() { return root.getAttribute('data-world') || 'salon'; }
   function bar() { return world() === 'coaching' ? (bars[1] || bars[0]) : bars[0]; }
   function apply() {
@@ -98,13 +99,15 @@
           var e = els[k];
           if (b.contains(e) || e.closest('.wdoor, .hdr, .tw, [aria-hidden="true"]')) continue;
           if (e.tagName === 'SECTION' || e.tagName === 'MAIN' || e.tagName === 'BODY' || e.tagName === 'HTML') break;
-          if (CONTENT.test(e.tagName) && e.textContent.trim()) { hit = true; break; }
+          if (words(e) && getComputedStyle(e).opacity > .1) { hit = true; break; }
         }
       }
     }
     under = hit; apply();
   }
-  function later() { clearTimeout(t); t = setTimeout(check, 180); }
+  // checked at rest, and again as a section's late lines arrive (its reveals run up to about 4.5 s)
+  var t2 = 0, t3 = 0;
+  function later() { clearTimeout(t); clearTimeout(t2); clearTimeout(t3); t = setTimeout(check, 180); t2 = setTimeout(check, 1600); t3 = setTimeout(check, 4800); }
   var io = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0 });
   [].forEach.call(document.querySelectorAll('main[data-world] section .btn[href]'), function (el) {
     var w = el.closest('main').getAttribute('data-world');
@@ -135,7 +138,14 @@
     pending = false;
     var vh = innerHeight, y = scrollY, tall = false;
     if (Math.abs(y - lastY) > .5) { dir = y > lastY ? 1 : -1; lastY = y; }
-    secs().forEach(function (s) { var r = s.getBoundingClientRect(); if (r.bottom > 0 && r.top < vh && r.height > vh + 2) tall = true; });
+    var ground = null;
+    secs().forEach(function (s) {
+      var r = s.getBoundingClientRect();
+      if (r.bottom > 2 && r.top < vh - 2 && r.height > vh + 2) tall = true;   // 2 px: a settled page can sit a pixel off
+      if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
+    });
+    if (ground) root.style.setProperty('--hdr-ground', getComputedStyle(ground).backgroundColor);
+    root.classList.toggle('hdr-ground', !!ground);
     snap(!tall);
   }
   function settle() {

@@ -188,7 +188,7 @@ def path_line(d, world):
     answer and reward where the version has them, and its one button."""
     after = f'<p class="lnsec__after">{d["after"]}</p>' if d.get('after') else ''
     foot = (f'<div class="lnsec__foot a-up" style="--d:2.2s">{after}{cycle(d, 2.3)}{d.get("btn", "")}</div>') if (after or d.get('btn') or d.get('answer') or d.get('reward')) else ''
-    return f'''<section class="s s--auto lnsec lnsec--path lnsec--dark" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    return f'''<section class="s s--auto lnsec lnsec--path lnsec--deep" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
     <div class="lnsec__in s__leave">
       <div class="lnsec__head">
         <p class="eyebrow a-left" style="--d:.1s">{d['eyebrow']}</p>
@@ -221,8 +221,8 @@ def voices_row(d, world):
   </section>'''
 
 
-def dark_prose(d, world):
-    """How we work together on the dark ground (round 4), so Inner Work alternates dark and light: 2.2's long-text section
-    as it is, its tone set to dark so the header turns ivory over it"""
+def deep_prose(d, world):
+    """How we work together on Inner Work's deeper sand, its practices as cards (round 4). Inner Work's text sections stay
+    light (J, 19 Oct: only its film slides go dark), so they differ by ground and shape, never by going dark"""
     from build import prose
-    return prose(d).replace('class="s s--auto prose"', 'class="s s--auto prose prose--dark"', 1).replace('data-tone="light"', 'data-tone="dark"', 1)
+    return prose(d).replace('class="s s--auto prose"', 'class="s s--auto prose prose--deep"', 1)
