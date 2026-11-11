@@ -4,11 +4,12 @@
 // not writable (the PC's, 11 Nov), the browser goes into this run's own folder (./pw) instead.
 import { execSync } from 'node:child_process';
 import path from 'node:path';
-const [only, browser, vers, ids] = process.argv.slice(2);
+const [only, browser, vers, ids, wait] = process.argv.slice(2);
 if (only) process.env.ONLY = only;
 if (browser) process.env.BROWSER = browser;
 if (vers) process.env.VERS = vers;
 if (ids) process.env.IDS = ids;
+if (wait) process.env.WAIT = wait;
 const run = (cmd) => { try { execSync(cmd, { stdio: 'inherit' }); return true; } catch (e) { console.log('failed:', cmd, e.message.slice(0, 200)); return false; } };
 run(process.env.PW ? `npm i --no-audit --no-fund --silent playwright@${process.env.PW}` : 'npm i --no-audit --no-fund --silent');
 const install = `npx playwright install ${process.env.BROWSER || 'webkit'}`;
