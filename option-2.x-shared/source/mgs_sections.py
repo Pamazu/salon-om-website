@@ -72,7 +72,7 @@ def _foot(e, draft):
       <div class="foot__in">
         <div class="foot__brand">{svg('stacked')}<p>{e['tagline']}</p></div>
         <div><h3 class="label">Explore</h3><ul>{expl}</ul></div>
-        <div><h3 class="label">Visit</h3><ul>{visit}</ul></div>
+        {'' if ('visit' in e and not e['visit']) else '<div><h3 class="label">Visit</h3><ul>' + visit + '</ul></div>'}
         <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>
       </div>{legal}
       <div class="foot__base"><span>© 2026 Salon OM · an Aveda concept salon · {draft}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>

@@ -14,6 +14,7 @@ PAUSE = dict(text='Take a breath. When did you last give yourself time to be car
 
 # ---- OM · Oneness (SO p.4)
 OM = 'All that was, is, and will be. OM.'
+OM_LINE = 'The first sound, the breath of everything.'   # her direction deck, Oct 2026 ("OUR OM LINE"), reference/salon-om-copy-direction-2026-10.pdf
 
 # ---- the visit, in five steps (SO p.6): (rail name, step name, line, what happens, feel)
 VISIT_LINE = 'Welcome. Release. Transform. Breathe. Shine.'
