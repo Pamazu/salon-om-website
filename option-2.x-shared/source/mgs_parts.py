@@ -128,7 +128,7 @@ def team(note=False, sid='hosts'):
 def services(eyebrow='The menu', sid='services'):
     # one booking button under the menu: the booking page has no link per service, so six buttons would all go to one place
     tiles = [dict(img=(SERVICE_PHOTO[k] or (None, '', ''))[0], alt=(SERVICE_PHOTO[k] or (None, '', ''))[1], pos=(SERVICE_PHOTO[k] or (None, '', ''))[2],
-                  missing=f'Photo to come: a {svc} result from Salon OM', tag=trip, price=price, title=svc)
+                  missing=f'Photo to come: {svc} at Salon OM', tag=trip, price=price, title=svc)
              for k, (svc, trip, price) in enumerate(M.SERVICES)]
     return (S.menu, dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro='', tiles=tiles,
                            btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
