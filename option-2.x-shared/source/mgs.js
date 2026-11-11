@@ -113,6 +113,8 @@
     var w = el.closest('main').getAttribute('data-world');
     if (el.getAttribute('href') === href[w]) { seen.set(el, false); io.observe(el); }
   });
+  // and while the footer is on screen: the page has ended, its own Begin is just above
+  [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io.observe(el); });
   addEventListener('scroll', later, { passive: true }); addEventListener('resize', later);
   new MutationObserver(function () { setTimeout(check, 900); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
   setTimeout(check, 1200);

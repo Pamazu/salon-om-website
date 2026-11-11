@@ -96,7 +96,8 @@ async function shots(b, base) {
   for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of (v === 'g' ? [...sizes, ['1366', LAP]] : sizes)) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
     if (world === 'coaching') await toWorld(p, 'coaching');
-    const ids = await p.evaluate((world) => [...document.querySelectorAll(`main[data-world="${world}"] > section.s`)].map((s) => s.id), world);
+    const only = (process.env.IDS || '').split(',').filter(Boolean);      // IDS=begin,c-begin: just those sections
+    const ids = (await p.evaluate((world) => [...document.querySelectorAll(`main[data-world="${world}"] > section.s`)].map((s) => s.id), world)).filter((id) => !only.length || only.includes(id));
     for (const id of ids) {
       const g = await p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height, vh: innerHeight }; }, id);
       await jump(p, g.top); await wait(p, WAIT);      // a section's late lines arrive up to about 4.5 s after it does

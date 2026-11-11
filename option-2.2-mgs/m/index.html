@@ -1782,7 +1782,8 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 /* the footer band on a phone: the brand, then Explore and Connect side by side, then Visit across the full width, so the
    address and hours never squeeze into a thin column (round 4 QA at 390) */
 @media (max-width: 639px) {
-  .cl__foot .foot__in { grid-template-columns: 1fr 1fr; grid-template-areas: "brand brand" "explore connect" "visit visit"; }
+  .cl__foot .foot__in { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "brand brand" "explore connect" "visit visit"; }
+  .cl__foot .foot__in a { overflow-wrap: anywhere; }
   .cl__foot .foot__in > :nth-child(1) { grid-area: brand; }
   .cl__foot .foot__in > :nth-child(2) { grid-area: explore; }
   .cl__foot .foot__in > :nth-child(3) { grid-area: visit; }
@@ -2122,7 +2123,7 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="8b8c4d39b6e4";</script>
+<script>window.OM_BUILD="37b5a5f7f52b";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -2961,6 +2962,8 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     var w = el.closest('main').getAttribute('data-world');
     if (el.getAttribute('href') === href[w]) { seen.set(el, false); io.observe(el); }
   });
+  // and while the footer is on screen: the page has ended, its own Begin is just above
+  [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io.observe(el); });
   addEventListener('scroll', later, { passive: true }); addEventListener('resize', later);
   new MutationObserver(function () { setTimeout(check, 900); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
   setTimeout(check, 1200);

@@ -596,7 +596,8 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 /* the footer band on a phone: the brand, then Explore and Connect side by side, then Visit across the full width, so the
    address and hours never squeeze into a thin column (round 4 QA at 390) */
 @media (max-width: 639px) {
-  .cl__foot .foot__in { grid-template-columns: 1fr 1fr; grid-template-areas: "brand brand" "explore connect" "visit visit"; }
+  .cl__foot .foot__in { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "brand brand" "explore connect" "visit visit"; }
+  .cl__foot .foot__in a { overflow-wrap: anywhere; }
   .cl__foot .foot__in > :nth-child(1) { grid-area: brand; }
   .cl__foot .foot__in > :nth-child(2) { grid-area: explore; }
   .cl__foot .foot__in > :nth-child(3) { grid-area: visit; }
