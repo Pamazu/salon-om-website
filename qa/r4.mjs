@@ -118,17 +118,24 @@ const edges = (p, id) => p.evaluate((id) => {
   const s = document.getElementById(id), n = s.nextElementSibling, r = s.getBoundingClientRect();
   return { top: Math.round(r.top), bottomGap: Math.round(r.bottom - innerHeight), nextTop: n ? Math.round(n.getBoundingClientRect().top) : null, y: Math.round(scrollY), vh: innerHeight, snap: document.documentElement.style.scrollSnapType };
 }, id);
+// a slow scroll in small steps: the mouse wheel on a laptop size; on a phone size (mobile WebKit has no wheel) the same
+// steps as scroll positions, which fire the same scroll events a finger's scroll does
 async function wheel(p, dy, step = 60) {
-  const n = Math.max(1, Math.round(Math.abs(dy) / step));
-  for (let i = 0; i < n; i++) { await p.mouse.wheel(0, Math.sign(dy) * Math.abs(dy) / n); await wait(p, 40); }
+  const n = Math.max(1, Math.round(Math.abs(dy) / step)), mobile = p.viewportSize().width < 600;
+  for (let i = 0; i < n; i++) {
+    const d = Math.sign(dy) * Math.abs(dy) / n;
+    if (mobile) await p.evaluate((d) => scrollBy({ top: d, behavior: 'instant' }), d); else await p.mouse.wheel(0, d);
+    await wait(p, 40);
+  }
 }
 async function snap(b, base) {
   const res = [];
   const cases = [['g', 'salon', 'services'], ['m', 'salon', 'services'], ['g', 'coaching', 'c-how'], ['s', 'coaching', 'c-deeper']];
   for (const [v, world, id] of cases) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
+    try {
     if (world === 'coaching') await toWorld(p, 'coaching');
-    await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2);
+    if (opt.viewport.width >= 600) await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2);
     const g = await p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height, vh: innerHeight }; }, id);
     if (g.h <= g.vh + 2) { res.push({ v, world, id, w, note: 'not taller than the window here' }); await ctx.close(); continue; }
     const third = g.vh / 3, rec = async (step, expect) => { await wait(p, 1300); const e = await edges(p, id); res.push({ v, world, id, w, step, expect, ...e }); await p.screenshot({ path: path.join(OUT, `snap-${v}-${id}-${w}-${res.length}.jpg`), type: 'jpeg', quality: 70 }); };
@@ -140,10 +147,12 @@ async function snap(b, base) {
     await wheel(p, Math.round(third * 1.25)); await rec('d: on, more than a third of the window', 'nextTop 0 (next section in)');
     await wheel(p, -120); await rec('e: back up a little', 'nextTop 0 (stays)');
     await wheel(p, -Math.round(third * 1.25)); await rec('f: back up more than a third', 'bottomGap 0 (back to its end)');
+    } catch (e) { res.push({ v, world, id, w, error: e.message.slice(0, 200) }); }
+    fs.writeFileSync(path.join(OUT, 'snap.json'), JSON.stringify(res, null, 1));
     await ctx.close();
   }
   fs.writeFileSync(path.join(OUT, 'snap.json'), JSON.stringify(res, null, 1));
-  for (const r of res) console.log('snap', r.v, r.id, r.w, r.step || r.note, '|', r.expect || '', '| top', r.top, 'bottomGap', r.bottomGap, 'nextTop', r.nextTop, 'snap', JSON.stringify(r.snap));
+  for (const r of res) console.log('snap', r.v, r.id, r.w, r.step || r.note || r.error, '|', r.expect || '', '| top', r.top, 'bottomGap', r.bottomGap, 'nextTop', r.nextTop, 'snap', JSON.stringify(r.snap));
 }
 
 const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
