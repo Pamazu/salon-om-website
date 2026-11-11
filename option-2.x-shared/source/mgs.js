@@ -178,3 +178,5 @@
     addEventListener('resize', show); show();
   });
 })();
+/* round 4: voices after the dark menu wears the light ground (mgs.css .mn + .vo), so the header reads it as light */
+[].forEach.call(document.querySelectorAll('.mn + .vo'), function (s) { s.setAttribute('data-tone', 'light'); });

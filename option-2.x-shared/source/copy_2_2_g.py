@@ -55,7 +55,7 @@ def _with(sec, **kw):
 
 SALON = [
   _with(salon_hero(proof=True), rot=draft(G['rot_salon'])),
-  ('tease', dict(id='pause', label='The pause', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s',
+  ('tease', dict(id='pause', label='The pause', tone='dark', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s',
                  proof_line=f'“{PAUSE_QUOTE[0]}” {PAUSE_QUOTE[1]}')),
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)])),

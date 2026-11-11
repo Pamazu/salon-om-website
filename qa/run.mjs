@@ -5,7 +5,8 @@ const [only, browser, vers] = process.argv.slice(2);
 if (only) process.env.ONLY = only;
 if (browser) process.env.BROWSER = browser;
 if (vers) process.env.VERS = vers;
-for (const cmd of ['npm i --no-audit --no-fund --silent', `npx playwright install ${process.env.BROWSER || 'webkit'}`]) {
+// PW=<version> installs that Playwright instead of package.json's (a WebKit build that matches a newer macOS)
+for (const cmd of [process.env.PW ? `npm i --no-audit --no-fund --silent playwright@${process.env.PW}` : 'npm i --no-audit --no-fund --silent', `npx playwright install ${process.env.BROWSER || 'webkit'}`]) {
   try { execSync(cmd, { stdio: 'inherit' }); } catch (e) { console.log('failed:', cmd, e.message.slice(0, 200)); }
 }
 await import('./r4.mjs');

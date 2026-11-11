@@ -1742,6 +1742,26 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
   html[data-variant^="2.2-"] .ch__specs { display: flex; gap: var(--sp-5); flex: none; }
   html[data-variant^="2.2-"] .ch__title { margin-bottom: -.08em; }
 }
+/* dark and light alternate down every page (round 4 rhythm walk): G's pause on the dark ground (its preview next is light),
+   M's Why Aveda dark (its team next is light), and voices on a light ground wherever it follows the dark menu (M) */
+html[data-variant="2.2-g"] #pause { background: var(--umber); color: var(--ivory); }
+html[data-variant="2.2-g"] #pause .mani__label { color: var(--ivory-soft); }
+html[data-variant="2.2-g"] #pause .mani__text .acc { color: var(--forest-light); }
+html[data-variant="2.2-g"] #pause .lead { color: var(--ivory) !important; }
+html[data-variant="2.2-g"] #pause .mani__proof { color: var(--ivory-soft); }
+.mani.dark .btn:not(.btn--ghost) { --bg: var(--ivory); --fg: var(--ink); }
+.mani.dark .btn:not(.btn--ghost):hover { --bg: #fff; }
+.mani.dark#aveda .mani__text { color: var(--ivory); }
+.mn + .vo { background: var(--clay); color: var(--ink); }
+.mn + .vo .vo__head .label, .mn + .vo .vo__count, .mn + .vo .vo__card figcaption { color: var(--ink-soft); }
+.mn + .vo .vo__count b { color: var(--ink); }
+.mn + .vo .vo__card { background: color-mix(in srgb, var(--clay) 35%, #fff); box-shadow: 0 24px 70px rgba(23, 17, 13, .08); }
+.mn + .vo .vo__card figcaption b { color: var(--forest-deep); }
+.mn + .vo .vo__arr { background: rgba(23, 17, 13, .07); color: var(--ink); }
+.mn + .vo .vo__arr:hover { background: rgba(23, 17, 13, .14); }
+.mn + .vo .vo__foot .cy__reward { color: var(--forest-deep); }
+.mn + .vo .btn:not(.btn--ghost) { --bg: var(--forest); --fg: var(--ivory); }
+.mn + .vo .btn:not(.btn--ghost):hover { --bg: var(--forest-hover); }
 </style>
 </head>
 <body>
@@ -1868,7 +1888,7 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
     </div>
     <div class="s__shade"></div>
   </section>
-  <section class="s mani" id="aveda" data-tone="light" data-sound="bed" aria-label="Why Aveda">
+  <section class="s mani dark" id="aveda" data-tone="dark" data-sound="bed" aria-label="Why Aveda">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
       <p class="mani__label label a-left" style="--d:.1s">Why Aveda</p>
@@ -2074,7 +2094,7 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="20c6e1779e68";</script>
+<script>window.OM_BUILD="6b1be0750d6d";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -2978,6 +2998,8 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
     addEventListener('resize', show); show();
   });
 })();
+/* round 4: voices after the dark menu wears the light ground (mgs.css .mn + .vo), so the header reads it as light */
+[].forEach.call(document.querySelectorAll('.mn + .vo'), function (s) { s.setAttribute('data-tone', 'light'); });
 </script>
 </body>
 </html>

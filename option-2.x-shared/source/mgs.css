@@ -556,3 +556,23 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
   html[data-variant^="2.2-"] .ch__specs { display: flex; gap: var(--sp-5); flex: none; }
   html[data-variant^="2.2-"] .ch__title { margin-bottom: -.08em; }
 }
+/* dark and light alternate down every page (round 4 rhythm walk): G's pause on the dark ground (its preview next is light),
+   M's Why Aveda dark (its team next is light), and voices on a light ground wherever it follows the dark menu (M) */
+html[data-variant="2.2-g"] #pause { background: var(--umber); color: var(--ivory); }
+html[data-variant="2.2-g"] #pause .mani__label { color: var(--ivory-soft); }
+html[data-variant="2.2-g"] #pause .mani__text .acc { color: var(--forest-light); }
+html[data-variant="2.2-g"] #pause .lead { color: var(--ivory) !important; }
+html[data-variant="2.2-g"] #pause .mani__proof { color: var(--ivory-soft); }
+.mani.dark .btn:not(.btn--ghost) { --bg: var(--ivory); --fg: var(--ink); }
+.mani.dark .btn:not(.btn--ghost):hover { --bg: #fff; }
+.mani.dark#aveda .mani__text { color: var(--ivory); }
+.mn + .vo { background: var(--clay); color: var(--ink); }
+.mn + .vo .vo__head .label, .mn + .vo .vo__count, .mn + .vo .vo__card figcaption { color: var(--ink-soft); }
+.mn + .vo .vo__count b { color: var(--ink); }
+.mn + .vo .vo__card { background: color-mix(in srgb, var(--clay) 35%, #fff); box-shadow: 0 24px 70px rgba(23, 17, 13, .08); }
+.mn + .vo .vo__card figcaption b { color: var(--forest-deep); }
+.mn + .vo .vo__arr { background: rgba(23, 17, 13, .07); color: var(--ink); }
+.mn + .vo .vo__arr:hover { background: rgba(23, 17, 13, .14); }
+.mn + .vo .vo__foot .cy__reward { color: var(--forest-deep); }
+.mn + .vo .btn:not(.btn--ghost) { --bg: var(--forest); --fg: var(--ivory); }
+.mn + .vo .btn:not(.btn--ghost):hover { --bg: var(--forest-hover); }

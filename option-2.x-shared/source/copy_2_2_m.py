@@ -11,7 +11,7 @@ SALON = [
   ('tease', dict(id='pause', label='The pause', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s')),
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['OM.'], text=M.OM)),
 ] + [step(k, cta=(k == 4)) for k in range(5)] + [
-  ('tease', dict(id='aveda', label='Why Aveda', accents=['earth.'], text=M.AVEDA, btn=btn(BOOK, BOOK_URL, arrow=True))),   # forest: the strong button on light clay
+  ('tease', dict(id='aveda', label='Why Aveda', dark=True, accents=['earth.'], text=M.AVEDA, btn=btn(BOOK, BOOK_URL, arrow=True))),   # forest: the strong button on light clay
   team(note=False),
   services(eyebrow='Team and menu'),
   voices(cta=True),
