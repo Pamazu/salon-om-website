@@ -57,7 +57,8 @@ CLOSE_IMG = {'begin': ('real-styling-chair.webp', '50% 62%'), 'c-begin': ('real-
 CRED_IMG = ('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer')
 FOOT_VISIT = 'Salon OM in person · Inner Work in person and online'
 TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the Aveda shelves at Salon OM'),
-            ('real-katie.webp', 'Katie Paonessa at Salon OM'), (None, '')]
+            ('real-katie.webp', 'Katie Paonessa at Salon OM'),
+            ('real-chesney.webp', 'Chesney Missamore at Salon OM')]   # cut from 9-team-of-three.jpg by elimination (J, 11 Nov): Katie left, Maggie centre, Chesney right
 
 
 def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
