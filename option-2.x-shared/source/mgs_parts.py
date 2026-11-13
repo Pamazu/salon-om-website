@@ -12,12 +12,12 @@ BOOK = 'Book your visit'                 # the salon's one action, the same word
 CALL = M.CTA_IW                          # Inner Work's one action
 # where each action really goes (task 0ab956d4): the salon books online through GlossGenius (study Q2); Inner Work has
 # no booking page yet, so a Connection Call starts with an email to the address Maggie gave for it (her deck, 2 Nov)
-BOOK_URL = 'https://maggiewoodward.glossgenius.com/book'
+# her 11 Nov document books by call or email from Begin ('Call the salon', 'Email us'), so every 'Book your visit' leads there
+BOOK_URL = '#begin'
 CALL_URL = 'mailto:connect@maggiewoodward.com?subject=Connection%20Call'
 LEGEND = 'Words with a dotted underline are new, for Maggie to approve. Words in [square brackets] are still to come.'
-LEGEND_M = ('Every line of copy here is from Maggie’s approved decks, and the lines with a dotted underline from her answers of '
-            '11 Nov, for her to approve. The salon’s address, hours and contact details are from its public pages. Words in '
-            '[square brackets] are still to come.')
+LEGEND_M = ('Every line of copy here is Maggie’s own: her website copy of 11 Nov and her Inner Work deck. Lines with a dotted '
+            'underline are from her answers of 11 Nov, for her to approve. Words in [square brackets] are still to come.')
 # Maggie's answers of 11 Nov 2026 (voice message to J, transcribed in the brain: build-salon-om-website/record/
 # record-2026-11-11-maggie-answers-to-the-website-questions.md; task d7b789ee). Dotted for her yes, since none is in her decks.
 #  - the Connection Call: "typically 30 to 45 minutes", "I don't ever do a hard stop"
@@ -35,7 +35,7 @@ A11 = dict(
 
 # the study's [draft] lines (section 4, 6, 3b), word for word; Maggie's rule (no semicolons) applied to step 04
 D = dict(
-  proof='An Aveda Concept Salon in Avila Beach. Maggie has listened in the chair for 28 years.',
+  proof='Maggie has listened in the chair for 28 years.',   # round 5: her opening now says Aveda Concept Salon and Avila Beach
   preview='Your visit, in five steps.',
   benefits=['You are heard before anything is done to your hair.', 'The week’s tension lets go.',
             'Hair that suits you, from plant-based Aveda color.', 'Nothing is rushed. The time is yours.',
@@ -47,16 +47,13 @@ D = dict(
 # first beauty company to manufacture with 100% wind power at its primary facility, 2007 (aveda.com/carbon-neutrality-green-initiatives);
 # Certified B Corporation, 2023 (aveda.com/b-corp-certification); founded 1978 by Horst Rechelbacher (aveda.com/horst-rechelbacher-aveda-history).
 # A year never counts up (third field off).
-AVEDA_FACTS = [('100%', 'vegan formulas, since 2021', True), ('1st', 'beauty company to manufacture with 100% wind power, at its primary facility (2007)'),
-               ('B Corp', 'Certified B Corporation since 2023'), ('1978', 'the year Aveda began, with botanical products kind to people and the earth')]
+AVEDA_FACTS = [(n, t, True) if n == '100%' else (n, t) for n, t in M.AVEDA_FACTS]   # hers, 11 Nov; only 100% counts up
 # the salon's public details, 10 Nov 2026 (task df14fa0d): address and hours from Maggie's own booking page
 # (maggiewoodward.glossgenius.com/about), phone from salonom.com, email from maggiewoodward.glossgenius.com/services,
 # Instagram @salonomavilabeach (both). salonom.com: "Open by appointment only".
-SALON_INFO = dict(address='56 Landing Passage, Avila Beach, CA 93424',
-                  hours='Tuesday and Wednesday, 10 am to 4:30 pm. Thursday, 12:30 to 5 pm. By appointment.',
-                  phone='<a href="tel:+18056271550">805 627 1550</a>',
-                  email='<a href="mailto:contact@salonomavilabeach.com">contact@salonomavilabeach.com</a>',
-                  instagram='<a href="https://www.instagram.com/salonomavilabeach/" target="_blank" rel="noopener">Instagram @salonomavilabeach</a>')
+SALON_INFO = dict(address=M.FOOTER['address'], hours=M.FOOTER['hours'], hours_note=M.FOOTER['hours_note'],   # her 11 Nov footer
+                  phone=f'<a href="tel:+18056271550">{M.FOOTER["phone"]}</a>',
+                  email=f'<a href="mailto:{M.FOOTER["email"]}">{M.FOOTER["email"]}</a>')
 TEAM_NOTE = 'I’m the backdrop. It’s not about me, it’s about you. This is your time, your space.'
 
 # one real photo per step (study section 6: a picture now, the film of that moment later), over its element film
@@ -121,18 +118,20 @@ def _close(slides):
 
 def salon_hero(proof=False, visit='arrive'):
     f = M.FIRST
-    line = f['pair'] + ' ' + M.OPENING + ((' ' + draft(D['proof'])) if proof else '')
+    o = M.SALON_OPEN   # her salon opening screen (11 Nov); `open` and `aveda` let the design give it its own screen
+    line = f['pair'] + ' ' + o['title'] + ' ' + ' '.join(o['lines']) + ((' ' + draft(D['proof'])) if proof else '')
     ctas = (btn(BOOK, BOOK_URL, 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching')) if proof else \
            (btn(f['doors'][0], '#pause', 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching'))
     return ('hero_mark', dict(id='top', film='hero', next='pause' if not proof else visit, hook=f['tagline'],
-                              eyebrow=f['name'], line=line, ctas=ctas, note=f['close']))
+                              eyebrow=f['name'], line=line, ctas=ctas, note=f['close'], aveda=M.FIRST_AVEDA,
+                              open=dict(o, btns=btn(o['btns'][0], BOOK_URL, 'light', arrow=True) + btn(o['btns'][1], '#pause', 'ghost'))))
 
 
 def step(k, extra=None, cta=False, specs_more=None):
     rail, name, line, what, feel = M.STEPS[k]
     body = what + ((' ' + draft(extra)) if extra else '')
     d = dict(id=STEP_ID[k], chapter=k, sound=STEP_FILM[k], film=STEP_FILM[k], acc=STEP_FILM[k], num=f'0{k + 1}', of='/ 05',
-             name=rail, sub='', title=line, body=body, specs=[('Feel', feel)] + (specs_more or []),
+             name=rail, sub=name.split(' · ')[-1], title=line, body=body, specs=M.STEP_DETAILS[k] + (specs_more or []),
              film_top=dict(poster='img/' + STEP_IMG[k]))
     if cta: d['btn'] = btn(BOOK, BOOK_URL, 'light', arrow=True)
     return ('ch', d)
@@ -147,22 +146,23 @@ def team(note=False, sid='hosts'):
     return ('team', d)
 
 
-def services(eyebrow='The menu', sid='services'):
+def services(eyebrow=M.MENU_EYEBROW, sid='services'):
     # one booking button under the menu: the booking page has no link per service, so six buttons would all go to one place
     tiles = [dict(img=(SERVICE_PHOTO[k] or (None, '', ''))[0], alt=(SERVICE_PHOTO[k] or (None, '', ''))[1], pos=(SERVICE_PHOTO[k] or (None, '', ''))[2],
                   missing=f'Photo to come: {svc} at Salon OM', tag=trip, price=price, title=svc)
              for k, (svc, trip, price) in enumerate(M.SERVICES)]
-    return (S.menu, dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro='', tiles=tiles,
+    return (S.menu, dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro=M.MENU_INTRO, tiles=tiles,
+                           note=M.MENU_NOTE, beneath=M.MENU_BENEATH,
                            btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
 
 
-def voices(cta=False, n=4):
-    d = dict(id='kind', title=M.VOICES_LINE, quotes=M.QUOTES[:n])
+def voices(cta=False, n=None):
+    d = dict(id='kind', eyebrow=M.VOICES_EYEBROW, title=M.VOICES_LINE, quotes=M.QUOTES if n is None else M.QUOTES[:n])
     if cta: d['btn'] = btn(BOOK, BOOK_URL, arrow=True)          # forest: Voices sits on light clay in the salon world
     return (S.voices_row, d)
 
 
-def door(short=False):
+def door(short=False, exact=False):
     d = M.DOOR
     b = btn(d['btns'][0], '#coaching', 'light', arrow=True, world='coaching')
     call = btn(d['btns'][1], CALL_URL, 'ghost')
@@ -170,18 +170,25 @@ def door(short=False):
         return ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b))
     b += call
     return ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='The second door', title=d['title'], text=d['paras'][0],
-                           more=[d['paras'][1] + ' ' + draft(A11['call'])] + d['paras'][2:], btn=b))
+                           more=([d['paras'][1]] if exact else [d['paras'][1] + ' ' + draft(A11['call'])]) + d['paras'][2:], btn=b))
 
 
 def begin(summary=False):
-    return ('cta', dict(id='begin', film='hero', cls='cta--long', label='Begin', title=M.BEGIN,
-                        text=draft(D['begin']) if summary else '', btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
+    # her 11 Nov Begin, the same in M, G and S: her text, "Begin." as the last word, her two buttons (summary kept for callers)
+    calls = btn(M.BEGIN_BTNS[0][0], M.BEGIN_BTNS[0][1], 'light', arrow=True) + btn(M.BEGIN_BTNS[1][0], M.BEGIN_BTNS[1][1], 'ghost')
+    return ('cta', dict(id='begin', film='hero', cls='cta--long', label='Begin', title=M.BEGIN, text=M.BEGIN_TEXT,
+                        last=M.BEGIN_LAST, btn=calls))
+
+
+IW_BLOCK = M.FOOTER['iw'][:2] + [f'<a href="mailto:{M.FOOTER["iw"][2]}">{M.FOOTER["iw"][2]}</a>']
 
 
 def salon_end(legend, visit='arrive', explore=None):
-    return ('end', dict(id='letters', title='', tagline=M.OPENING, no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
-                        connect=[f'<a href="{BOOK_URL}" target="_blank" rel="noopener">Book online</a>', SALON_INFO['phone'], SALON_INFO['email'], SALON_INFO['instagram']],
-                        visit=[SALON_INFO['address'], SALON_INFO['hours']],
+    # her 11 Nov footer, on every page: brand, salon details, contact, the Inner Work block, disclaimer, her copyright
+    return ('end', dict(id='letters', title='', tagline=M.FOOTER['tagline'], no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
+                        brand_lines=[M.FOOTER['salon']], iw_block=IW_BLOCK, copyright=M.FOOTER['copyright'],
+                        connect=[SALON_INFO['phone'], SALON_INFO['email']],
+                        visit=[SALON_INFO['address'], SALON_INFO['hours'], SALON_INFO['hours_note']],
                         explore=explore or [('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
 
 
@@ -233,9 +240,15 @@ def iw_begin():
                         text='', btn=btn(CALL, CALL_URL, 'light', arrow=True)))
 
 
-def iw_end(legend):
-    # Maggie, 11 Nov (task d7b789ee): Inner Work happens privately in the salon outside its hours, or online
-    return ('end', dict(id='c-letters', sound='air', title='', tagline=M.FIRST['tagline'], no_letters=True, connect=M.FOOT_IW,
-                        visit=['Privately at Salon OM, outside salon hours', 'Online, wherever you are'],
+def iw_end(legend, exact=False):
+    # exact (M): her 11 Nov footer as written, the same on every page. G and S: Inner Work's own column with where it
+    # happens (Maggie, 11 Nov, task d7b789ee: privately in the salon outside its hours, or online)
+    if exact:
+        where = dict(visit=[SALON_INFO['address'], SALON_INFO['hours'], SALON_INFO['hours_note']],
+                     connect=[SALON_INFO['phone'], SALON_INFO['email']], iw_block=IW_BLOCK)
+    else:
+        where = dict(visit=['Privately at Salon OM, outside salon hours', 'Online, wherever you are'], connect=M.FOOT_IW)
+    return ('end', dict(id='c-letters', sound='air', title='', tagline=M.FIRST['tagline'], no_letters=True, **where,
+                        brand_lines=[M.FOOTER['salon']], copyright=M.FOOTER['copyright'],
                         disclaimer=M.DISCLAIMER, legend=legend,
                         explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))
