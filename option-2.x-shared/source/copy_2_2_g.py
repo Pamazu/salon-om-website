@@ -120,7 +120,7 @@ SALON = [
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                  btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),
-  _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),   # her Begin text and buttons; her two-week word (11 Nov)
+  _with(begin(online=True), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),   # her Begin text and buttons; her two-week word (11 Nov)
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')]),
 ]
 

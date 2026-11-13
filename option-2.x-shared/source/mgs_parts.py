@@ -14,6 +14,7 @@ CALL = M.CTA_IW                          # Inner Work's one action
 # no booking page yet, so a Connection Call starts with an email to the address Maggie gave for it (her deck, 2 Nov)
 # her 11 Nov document books by call or email from Begin ('Call the salon', 'Email us'), so every 'Book your visit' leads there
 BOOK_URL = '#begin'
+BOOK_ONLINE_URL = 'https://maggiewoodward.glossgenius.com/book'   # her booking page: in G and S only, a second way beside call and email
 CALL_URL = 'mailto:connect@maggiewoodward.com?subject=Connection%20Call'
 LEGEND = 'Words with a dotted underline are new, for Maggie to approve. Words in [square brackets] are still to come.'
 LEGEND_M = ('Every line of copy here is Maggie’s own: her website copy of 11 Nov and her Inner Work deck. Lines with a dotted '
@@ -173,9 +174,12 @@ def door(short=False, exact=False):
                            more=([d['paras'][1]] if exact else [d['paras'][1] + ' ' + draft(A11['call'])]) + d['paras'][2:], btn=b))
 
 
-def begin(summary=False):
-    # her 11 Nov Begin, the same in M, G and S: her text, "Begin." as the last word, her two buttons (summary kept for callers)
+def begin(summary=False, online=False):
+    # her 11 Nov Begin: her text, "Begin." as the last word, her two buttons (summary kept for callers). online (G, S; CEO MA
+    # review of c446e8ba): 'Book online' to her booking page as a third button, dotted for her approval. M stays call and email
     calls = btn(M.BEGIN_BTNS[0][0], M.BEGIN_BTNS[0][1], 'light', arrow=True) + btn(M.BEGIN_BTNS[1][0], M.BEGIN_BTNS[1][1], 'ghost')
+    if online:
+        calls += btn('Book online', BOOK_ONLINE_URL, 'ghost').replace('>Book online<', '>' + draft('Book online') + '<')   # btn() escapes its label
     return ('cta', dict(id='begin', film='hero', cls='cta--long', label='Begin', title=M.BEGIN, text=M.BEGIN_TEXT,
                         last=M.BEGIN_LAST, btn=calls))
 
