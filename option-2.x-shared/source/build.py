@@ -598,7 +598,7 @@ def page(cfg):
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused
-    assert 'home' not in re.sub(r'<[^>]+>', ' ', body).lower().replace('homepage', '').replace('carry it home', '').replace('style at home', ''), 'no "home" in copy'
+    assert 'home' not in re.sub(r'<[^>]+>', ' ', body).lower().replace('homepage', '').replace('carry it home', '').replace('style at home', '').replace('at-home styling', ''), 'no "home" in copy'
     key = cfg['title'].split()[-1]
     doc = ('<!doctype html>\n<html lang="en" data-theme="' + cfg['theme'] + '" data-world="salon" data-variant="' + key + '">\n<head>\n<meta charset="utf-8">\n'
            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + title +

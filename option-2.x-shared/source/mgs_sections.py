@@ -46,7 +46,10 @@ def menu(d, world):
         </li>''')
     panel = ''.join(_photo(t, k) for k, t in enumerate(d['tiles']))
     intro = f'<p class="mn__intro a-up" style="--d:.4s">{d["intro"]}</p>' if d.get('intro') else ''
-    after = cycle(d, 1.0) + (f'<div class="om__btn a-up" style="--d:1.1s">{d["btn"]}</div>' if d.get('btn') else '')
+    note = f'<p class="mn__note a-up" style="--d:.95s">{d["note"]}</p>' if d.get('note') else ''
+    bq = d.get('beneath')
+    beneath = (f'<blockquote class="mn__beneath a-up" style="--d:1s">“{bq[0]}”<cite>{bq[1]}, {bq[2]}</cite></blockquote>') if bq else ''
+    after = note + beneath + cycle(d, 1.0) + (f'<div class="om__btn a-up" style="--d:1.1s">{d["btn"]}</div>' if d.get('btn') else '')
     return f'''<section class="s s--auto offers-menu mn" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" data-menu aria-labelledby="{d['id']}-t">
     <div class="mn__in s__leave">
       <div class="mn__head">
@@ -70,12 +73,12 @@ def _foot(e, draft):
     legal = ''.join(f'<p class="foot__legal">{t}</p>' for t in [e.get('disclaimer'), e.get('legend')] if t)
     return f'''<footer class="foot cl__foot" id="{e['id']}">
       <div class="foot__in">
-        <div class="foot__brand">{svg('stacked')}<p>{e['tagline']}</p></div>
+        <div class="foot__brand">{svg('stacked')}<p>{e['tagline']}</p>{''.join(f'<p>{b}</p>' for b in e.get('brand_lines', []))}</div>
         <div><h3 class="label">Explore</h3><ul>{expl}</ul></div>
         {'' if ('visit' in e and not e['visit']) else '<div><h3 class="label">Visit</h3><ul>' + visit + '</ul></div>'}
-        <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>
+        <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>{('<div><h3 class="label">' + e['iw_block'][0] + '</h3><ul>' + ''.join(f'<li>{x}</li>' for x in e['iw_block'][1:]) + '</ul></div>') if e.get('iw_block') else ''}
       </div>{legal}
-      <div class="foot__base"><span>© 2026 Salon OM · an Aveda concept salon · {draft}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
+      <div class="foot__base"><span>{e.get('copyright', '© 2026 Salon OM · an Aveda concept salon')} · {draft}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
     </footer>'''
 
 
@@ -91,7 +94,7 @@ def close(d, world):
       <div class="cl__words">
         <p class="label a-up" style="--d:.2s">{c['label']}</p>
         <h2 id="{c['id']}-t"><span class="mask"><span class="mask__in" style="--d:.35s">{c['title']}</span></span></h2>
-        {text}{cycle(c, .85)}
+        {text}{cycle(c, .85)}{(f'<p class="cl__last a-up" style="--d:.95s">' + c['last'] + '</p>') if c.get('last') else ''}
         <div class="cl__btn a-up" style="--d:1s">{c['btn']}</div>
       </div>
       <figure class="cl__ph" aria-hidden="true"><img src="img/{img}" alt="" decoding="async" loading="lazy" style="object-position:{pos}"></figure>
@@ -210,7 +213,7 @@ def voices_row(d, world):
     return f'''<section class="s s--auto vo" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
     <div class="vo__in s__leave">
       <div class="vo__head">
-        <p class="label a-left" style="--d:.1s">Kind words</p>
+        <p class="label a-left" style="--d:.1s">{d.get('eyebrow', 'Kind words')}</p>
         <h2 class="vo__t" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.25s">{d['title']}</span></span></h2>
         <div class="vo__nav a-fade" style="--d:.6s"><button class="vo__arr" type="button" data-dir="-1" aria-label="Previous words">←</button><span class="vo__count" aria-live="polite"><b>1</b> / {n}</span><button class="vo__arr" type="button" data-dir="1" aria-label="Next words">→</button></div>
       </div>
