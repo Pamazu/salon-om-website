@@ -159,8 +159,11 @@ def services(eyebrow=M.MENU_EYEBROW, sid='services'):
 
 def voices(cta=False, n=None):
     d = dict(id='kind', eyebrow=M.VOICES_EYEBROW, title=M.VOICES_LINE, quotes=M.QUOTES if n is None else M.QUOTES[:n])
-    if cta: d['btn'] = btn(BOOK, BOOK_URL, arrow=True)          # forest: Voices sits on light clay in the salon world
-    return (S.voices_row, d)
+    if cta: d['btn'] = btn(BOOK, BOOK_URL, arrow=True)
+    # round 5 (J 13 Nov: "the layout was better in the previous iteration, the center testimonial, the nice animation ...
+    # not color I like this background color"): round 3's centred voices slide and its motion, on round 4's forest ground
+    # (mgs.css, salon world). S.voices_row (round 4's sideways row) is no longer used.
+    return ('voices', d)
 
 
 def door(short=False, exact=False):

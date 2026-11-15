@@ -1813,6 +1813,17 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
 .lnsec.pv--morph .ln__name, .lnsec.pv--morph .ln__t, .lnsec.pv--morph .ln__dot { opacity: calc(1 - var(--pf, 0) * 1.8); }
 .lnsec.pv--morph .ln__name, .lnsec.pv--morph .ln__t { transform: translate3d(calc(var(--pf, 0) * 3vw), 0, 0); }
 .lnsec.pv--morph .ln__svg, .lnsec.pv--morph .ln__stops::before { opacity: calc(1 - var(--pf, 0) * 1.8); }
+
+/* round 5 (task 2846db82, J 13 Nov): round 3's centred voices and their motion, on round 4's forest ground (salon world) */
+main[data-world="salon"] .voices { background: #14231A; color: var(--ivory); }
+main[data-world="salon"] .voices__aura { opacity: .22; }
+main[data-world="salon"] .voices__mark { color: var(--forest-light); }
+main[data-world="salon"] .voices .voices__t { color: var(--ivory-soft); }
+main[data-world="salon"] .voices figcaption { color: var(--ivory-soft); }
+main[data-world="salon"] .voices figcaption b { color: var(--forest-light); }
+main[data-world="salon"] .voices .cy__reward { color: var(--ivory); }
+main[data-world="salon"] .voices .btn:not(.btn--ghost) { --bg: var(--ivory); --fg: var(--ink); }
+main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
 </style>
 </head>
 <body>
@@ -2072,7 +2083,7 @@ html.hdr-ground .hdr { background-color: var(--hdr-ground); -webkit-backdrop-fil
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="4ff7e2f7d9c2";</script>
+<script>window.OM_BUILD="2a1986f94a2f";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
