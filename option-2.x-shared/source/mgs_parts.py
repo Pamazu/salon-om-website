@@ -82,7 +82,11 @@ SERVICE_PHOTO = [
   None,     # Color Correction: its backdrop (15) was refused three times by the safety system (Test Lab), still to make
   ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
   ('om-menu-extensions.webp', 'A generated guest with long, full hair beside Maggie Woodward, in a photo of Salon OM', '22% 40%'),
-  ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows beside the skincare display at Salon OM', '6% 40%'),
+  # round 5 (task 2846db82): Finishing Touches was a pasted cut-out (a hard edge under the sweater, no shadow, front light
+  # against the window); now the salon's photo 8 with the guest standing at the glo display, three-quarter profile, brows
+  # shown, a tube in her hands, lit from the window like the room (Qwen-Image-Edit 2511, FT5 seed 4, whole frame; the display
+  # and its products checked against photo 8, none invented)
+  ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows holding a glo tube at the skincare display at Salon OM', '33% 32%'),
 ]
 # Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
 # round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
