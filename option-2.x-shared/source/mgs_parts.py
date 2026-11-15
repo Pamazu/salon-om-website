@@ -70,10 +70,14 @@ STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
 # the guest's zone pasted back by region_edit, Test Lab EXP-salonom-menu-guest-1), never captioned as a real result.
 # (file, alt, focus point for the panel's crop); None keeps the [photo to come] frame
 SERVICE_PHOTO = [
-  # round 4 (task 2846db82, J 11 Nov: "She's sat in a pretty weird way ... give more variety to the angles"): Signature Color is
-  # a new view of the real styling stations made from Maggie's photo 11, the guest seated in a styling chair; Blonding is
-  # her photo 12 with the guest reclined at the basin, neck at the bowl, only the guest's zone pasted back (0 px outside)
-  ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour in a styling chair, in a view of Salon OM made from its photos', '42% 52%'),
+  # round 5 (task 2846db82, J 13 Nov: "She's turning her head a bit too much. Those chairs can turn a little bit ... Nothing in
+  # the location is getting invented"): Signature Color is Maggie's photo 4, the styling chair by the window (no other menu
+  # picture uses that corner; daylight shows colour true), the guest seated on the seat, back to the chair, boots on the
+  # footrest, her body turned with the chair and her head only a little more. Qwen-Image-Edit 2511 on the Mac Studio (SC5
+  # seed 3) re-rendered the whole frame at the photo's own camera; every object checked against photo 4, none invented, not
+  # pixel-exact (a paste left seams: Qwen moves the room a little). Round 4's view of photo 11 changed the real room.
+  # Blonding is her photo 12 with the guest reclined at the basin, neck at the bowl, only the guest's zone pasted back
+  ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour in the styling chair by the window at Salon OM', '62% 45%'),
   ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair reclining at a shampoo basin, in a photo of Salon OM', '45% 58%'),
   None,     # Color Correction: its backdrop (15) was refused three times by the safety system (Test Lab), still to make
   ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
