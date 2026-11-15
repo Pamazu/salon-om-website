@@ -1824,6 +1824,11 @@ main[data-world="salon"] .voices figcaption b { color: var(--forest-light); }
 main[data-world="salon"] .voices .cy__reward { color: var(--ivory); }
 main[data-world="salon"] .voices .btn:not(.btn--ghost) { --bg: var(--ivory); --fg: var(--ink); }
 main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
+/* round 5: G's early proof (mgs_sections.early_proof), ivory, its two voices larger, no rule above them */
+.proof--early { background: var(--ivory); }
+.proof--early .pf__qs { border-top: 0; padding-top: 0; margin-top: var(--sp-5); }
+.proof--early .pf__q blockquote { font-size: clamp(28px, 2.8vw, 46px); line-height: 1.16; }
+.voices .q.is-long blockquote { max-width: 30ch; font-size: clamp(26px, 3.1vw, 52px); line-height: 1.14; }
 </style>
 </head>
 <body>
@@ -1873,6 +1878,16 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
       <p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:3.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
+    </div>
+    <div class="s__shade"></div>
+  </section>
+  <section class="s proof proof--early" id="early" data-tone="light" data-sound="bed" aria-labelledby="early-t">
+    <div class="pf__in s__leave">
+      <p class="eyebrow a-left" style="--d:.15s">Kind words</p>
+      <h2 class="mid" id="early-t"><span class="mask"><span class="mask__in" style="--d:.3s">Lighter, inside and out.</span></span></h2>
+      
+      <div class="pf__qs"><figure class="pf__q a-up" style="--d:1.00s"><blockquote>“She has many years of experience and is amazing with color. I would not go to anyone else.”</blockquote><figcaption>N.W. · guest of Maggie</figcaption></figure><figure class="pf__q a-up" style="--d:1.14s"><blockquote>“Seeing you is magic for my mind, body, and soul.”</blockquote><figcaption>L.T. · guest of Maggie</figcaption></figure></div>
+      <p class="pf__line a-up" style="--d:1.4s"><b>An Aveda Concept Salon</b>Beauty that is kind to you and to the earth.</p>
     </div>
     <div class="s__shade"></div>
   </section>
@@ -2016,15 +2031,11 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
     </div>
     <div class="s__shade"></div>
   </section>
-  <section class="s s--auto vo" id="kind" data-tone="dark" data-sound="bed" aria-labelledby="kind-t">
-    <div class="vo__in s__leave">
-      <div class="vo__head">
-        <p class="label a-left" style="--d:.1s">Words from our guests</p>
-        <h2 class="vo__t" id="kind-t"><span class="mask"><span class="mask__in" style="--d:.25s">Lighter, inside and out.</span></span></h2>
-        <div class="vo__nav a-fade" style="--d:.6s"><button class="vo__arr" type="button" data-dir="-1" aria-label="Previous words">←</button><span class="vo__count" aria-live="polite"><b>1</b> / 8</span><button class="vo__arr" type="button" data-dir="1" aria-label="Next words">→</button></div>
-      </div>
-      <div class="vo__row a-up" style="--d:.45s" tabindex="0" aria-label="Kind words from guests"><figure class="vo__card" data-i="0"><blockquote>“Always brings joy to my day. Friendly and expert cosmetologists.”</blockquote><figcaption><b>T.C.</b> guest of Salon OM</figcaption></figure><figure class="vo__card" data-i="1"><blockquote>“Seeing you is magic for my mind, body, and soul.”</blockquote><figcaption><b>L.T.</b> guest of Maggie</figcaption></figure><figure class="vo__card" data-i="2"><blockquote>“I come away feeling lighter in spirit and sporting a great haircut.”</blockquote><figcaption><b>C.M.</b> guest of Maggie</figcaption></figure><figure class="vo__card" data-i="3"><blockquote>“I leave feeling beautiful on the inside and out.”</blockquote><figcaption><b>A.G.</b> guest of Maggie</figcaption></figure><figure class="vo__card" data-i="4"><blockquote>“Maggie is a great listener and skilled with unique hair and what I needed and wanted. Best cut and color I have had in decades.”</blockquote><figcaption><b>S.</b> guest of Maggie</figcaption></figure><figure class="vo__card" data-i="5"><blockquote>“There is nobody like Maggie. She listens, she loves and is as passionate at helping you look and feel the way that makes you your best.”</blockquote><figcaption><b>G.A.</b> guest of Maggie</figcaption></figure><figure class="vo__card" data-i="6"><blockquote>“Maggie is a gifted artist and a complete joy to spend time with.”</blockquote><figcaption><b>K.S.</b> guest of Maggie</figcaption></figure><figure class="vo__card" data-i="7"><blockquote>“She has many years of experience and is amazing with color. I would not go to anyone else.”</blockquote><figcaption><b>N.W.</b> guest of Maggie</figcaption></figure></div>
-      <div class="vo__foot"><p class="cy__reward a-up" style="--d:0.95s"><span class="draft">A great haircut, and a lighter spirit. Both are part of the visit.</span></p><div class="vo__btn a-up" style="--d:1s"><a class="btn" href="#begin">Book your visit <span class="arr" aria-hidden="true">→</span></a></div></div>
+  <section class="s voices" id="kind" data-tone="dark" data-sound="bed" aria-label="Kind words">
+    <div class="voices__aura" aria-hidden="true"></div>
+    <div class="s__leave">
+      <p class="voices__t label a-fade" style="--d:.1s">Words from our guests</p><span class="voices__mark a-fade" style="--d:.1s" aria-hidden="true">“</span>
+      <div class="qs a-up" style="--d:.4s" data-quotes><figure class="q"><blockquote>Always brings joy to my day. Friendly and expert cosmetologists.</blockquote><figcaption><b>T.C.</b>guest of Salon OM</figcaption></figure><figure class="q"><blockquote>I come away feeling lighter in spirit and sporting a great haircut.</blockquote><figcaption><b>C.M.</b>guest of Maggie</figcaption></figure><figure class="q"><blockquote>I leave feeling beautiful on the inside and out.</blockquote><figcaption><b>A.G.</b>guest of Maggie</figcaption></figure><figure class="q"><blockquote>Maggie is a great listener and skilled with unique hair and what I needed and wanted. Best cut and color I have had in decades.</blockquote><figcaption><b>S.</b>guest of Maggie</figcaption></figure><figure class="q"><blockquote>There is nobody like Maggie. She listens, she loves and is as passionate at helping you look and feel the way that makes you your best.</blockquote><figcaption><b>G.A.</b>guest of Maggie</figcaption></figure><figure class="q"><blockquote>Maggie is a gifted artist and a complete joy to spend time with.</blockquote><figcaption><b>K.S.</b>guest of Maggie</figcaption></figure></div><p class="cy__reward a-up" style="--d:0.90s"><span class="draft">A great haircut, and a lighter spirit. Both are part of the visit.</span></p><div class="voices__btn a-up" style="--d:.9s"><a class="btn" href="#begin">Book your visit <span class="arr" aria-hidden="true">→</span></a></div>
     </div>
     <div class="s__shade"></div>
   </section>
@@ -2190,7 +2201,7 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="3f97bdde776b";</script>
+<script>window.OM_BUILD="d6b14fcdd233";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -3113,6 +3124,11 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
 /* round 4: the salon world's dark teases are dark again in M, G and S (mgs.css), so the header reads them as dark; 2.2
    next marks them light (next.js), which ran first */
 [].forEach.call(document.querySelectorAll('main[data-world="salon"] .mani.dark'), function (s) { s.setAttribute('data-tone', 'dark'); });
+/* round 5 (task 2846db82): the voices slide is round 3's centred one again, on the forest ground (mgs.css), so the header
+   reads it as dark (next.js marked it light for 2.2's clay); a long quote is set smaller so the quotes' shared box, sized
+   by the longest, does not leave a short quote floating far below the quote mark */
+[].forEach.call(document.querySelectorAll('main[data-world="salon"] .voices'), function (s) { s.setAttribute('data-tone', 'dark'); });
+[].forEach.call(document.querySelectorAll('.voices .q blockquote'), function (b) { if (b.textContent.trim().length > 90) b.parentNode.classList.add('is-long'); });
 </script>
 </body>
 </html>

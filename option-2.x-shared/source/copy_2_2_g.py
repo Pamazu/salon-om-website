@@ -101,6 +101,10 @@ SALON = [
   _with(salon_hero(proof=True), rot=draft(G['rot_salon'])),
   ('tease', dict(id='pause', label='The pause', tone='dark', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s',
                  )),                                 # round 4: G.A.'s words move to Breathe (step 04), their proof
+  # round 5 (J 13 Nov; CEO MA: Hook, then Proof early): two guests' words and the Aveda line, all from her copy; the
+  # voices slide below keeps the other six, so no quote shows twice
+  (S.early_proof, dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[7], M.QUOTES[1]],
+                       line_k=M.FIRST_AVEDA, line=M.AVEDA)),
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)])),
 ] + [step(k, extra=G['benefits'][k]) for k in range(5)] + [
@@ -112,7 +116,7 @@ SALON = [
         reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
   _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
-  (S.voices_row, dict(id='kind', eyebrow=M.VOICES_EYEBROW, title=M.VOICES_LINE, quotes=M.QUOTES, reward=draft(G['voices_reward']),
+  ('voices', dict(id='kind', title=M.VOICES_EYEBROW, quotes=[q for i, q in enumerate(M.QUOTES) if i not in (1, 7)], reward=draft(G['voices_reward']),
                   btn=btn(BOOK, BOOK_URL, arrow=True))),
   ('facts', dict(id='aveda', light=True, eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE, facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',

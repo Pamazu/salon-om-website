@@ -197,3 +197,8 @@
 /* round 4: the salon world's dark teases are dark again in M, G and S (mgs.css), so the header reads them as dark; 2.2
    next marks them light (next.js), which ran first */
 [].forEach.call(document.querySelectorAll('main[data-world="salon"] .mani.dark'), function (s) { s.setAttribute('data-tone', 'dark'); });
+/* round 5 (task 2846db82): the voices slide is round 3's centred one again, on the forest ground (mgs.css), so the header
+   reads it as dark (next.js marked it light for 2.2's clay); a long quote is set smaller so the quotes' shared box, sized
+   by the longest, does not leave a short quote floating far below the quote mark */
+[].forEach.call(document.querySelectorAll('main[data-world="salon"] .voices'), function (s) { s.setAttribute('data-tone', 'dark'); });
+[].forEach.call(document.querySelectorAll('.voices .q blockquote'), function (b) { if (b.textContent.trim().length > 90) b.parentNode.classList.add('is-long'); });
