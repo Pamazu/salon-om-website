@@ -71,7 +71,7 @@ STEP_ID = ['arrive', 'unwind', 'renew', 'unhurried', 'home']
 # (file, alt, focus point for the panel's crop); None keeps the [photo to come] frame
 SERVICE_PHOTO = [
   # round 5 (task 2846db82, J 13 Nov: "She's turning her head a bit too much. Those chairs can turn a little bit ... Nothing in
-  # the location is getting invented"): Signature Color is Maggie's photo 4, the styling chair by the window (no other menu
+  # the location is getting invented"): Signature Color is the salon's photo 4, the styling chair by the window (no other menu
   # picture uses that corner; daylight shows colour true), the guest seated on the seat, back to the chair, boots on the
   # footrest, her body turned with the chair and her head only a little more. Qwen-Image-Edit 2511 on the Mac Studio (SC5
   # seed 3) re-rendered the whole frame at the photo's own camera; every object checked against photo 4, none invented, not
