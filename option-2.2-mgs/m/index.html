@@ -1834,6 +1834,13 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
 .voices .q.is-long blockquote { max-width: 30ch; font-size: clamp(26px, 3.1vw, 52px); line-height: 1.14; }
 .proof--early .pf__q { display: flex; flex-direction: column; }
 .proof--early .pf__q figcaption { margin-top: auto; padding-top: 12px; }
+/* round 5 (task 2846db82, J 13 Nov: "in each of the unwind, renew ... sections ... the nature being a video, I don't know why
+   those don't move ... each with a different sound"): each step arrives on its real photo of the salon (J 10 Nov: each step's
+   own picture), then the photo dissolves and the step's element film takes the whole slide, moving, with its sound. Before,
+   the photo masked the top 60% and the scrim the rest, so the film read as a still. */
+.ch--stack .ch__top { transition: opacity 1.8s var(--io-soft); }
+.ch--stack.is-active .ch__top { opacity: 0; transition-delay: 2.8s; }
+@media (prefers-reduced-motion: reduce) { .ch--stack.is-active .ch__top { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -2168,7 +2175,7 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="de8876cb7cd9";</script>
+<script>window.OM_BUILD="5321c5f67701";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
