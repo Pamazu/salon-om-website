@@ -1611,8 +1611,11 @@ html[data-shot] .vs__ph img { transform: none !important; }
 /* the line: steps as stops on one drawn wave (Heyday). One block for G's visit preview and Inner Work's path */
 .ln { position: relative; --lh: clamp(120px, 17vh, 190px); }
 .ln__svg { position: absolute; left: 0; top: 0; width: 100%; height: var(--lh); overflow: visible; }
-.ln__path { fill: none; stroke: var(--forest-deep); stroke-width: 1.5px; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2.6s var(--io) .45s; }
-.is-active .ln__path { stroke-dashoffset: 0; }
+/* round 5: the line draws in by a clip, not by pathLength dashes: with a non-scaling stroke in a stretched svg, WebKit
+   measures the dash on screen, so the 'whole' dash ended near step 04 and never reached 05 (J 13 Nov) */
+.ln__path { fill: none; stroke: var(--forest-deep); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.ln__svg { clip-path: inset(-12px 100% -12px 0); transition: clip-path 2.6s var(--io) .45s; }
+.is-active .ln__svg { clip-path: inset(-12px 0 -12px 0); }
 .ln__stops { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
 .ln__stop { position: relative; padding: calc(var(--lh) * var(--y)) var(--sp-2) 0; text-align: center; }
 .ln__dot { position: absolute; left: 50%; top: calc(var(--lh) * var(--y)); width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; border-radius: 50%; background: var(--forest-deep);
@@ -1630,9 +1633,9 @@ html[data-shot] .vs__ph img { transform: none !important; }
 .lnsec__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-5); }
 .lnsec__foot .cy__answer, .lnsec__foot .cy__reward { margin: 0; flex-basis: 100%; }
 .lnsec__after { margin: 0; flex-basis: 100%; max-width: 60ch; color: var(--ink-soft); }
-html[data-shot] .ln__path { stroke-dashoffset: 0 !important; transition: none !important; }
+html[data-shot] .ln__svg { clip-path: none !important; transition: none !important; }
 html[data-shot] .ln__dot { transform: none !important; transition: none !important; }
-@media (prefers-reduced-motion: reduce) { .ln__path { stroke-dashoffset: 0; transition: none; } .ln__dot { transform: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ln__svg { clip-path: none; transition: none; } .ln__dot { transform: none; transition: none; } }
 @media (max-width: 1023px) {
   /* on a phone the line runs down the left and the stops follow it */
   .ln__svg { display: none; }
@@ -1829,6 +1832,8 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
 .proof--early .pf__qs { border-top: 0; padding-top: 0; margin-top: var(--sp-5); }
 .proof--early .pf__q blockquote { font-size: clamp(28px, 2.8vw, 46px); line-height: 1.16; }
 .voices .q.is-long blockquote { max-width: 30ch; font-size: clamp(26px, 3.1vw, 52px); line-height: 1.14; }
+.proof--early .pf__q { display: flex; flex-direction: column; }
+.proof--early .pf__q figcaption { margin-top: auto; padding-top: 12px; }
 </style>
 </head>
 <body>
@@ -2088,7 +2093,7 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="b1f2a3bd4494";</script>
+<script>window.OM_BUILD="e74b743d6aed";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
