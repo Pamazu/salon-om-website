@@ -18,7 +18,7 @@ def _photo(t, k):
     """the row's photo: a real photo of that service's result, or a quiet frame saying it is still to come"""
     on = ' is-on' if k == 0 else ''
     if t.get('img'):
-        pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''
+        pos = f' style="--pos:{t["pos"]}"' if t.get('pos') else ''
         return f'<img class="mn__img{on}" src="img/{t["img"]}" alt="{E(t["alt"])}" decoding="async" loading="lazy" data-i="{k}"{pos}>'
     return f'<div class="mn__img mn__none{on}" data-i="{k}"><p class="ph-copy">[{t["missing"]}]</p></div>'
 
@@ -26,7 +26,7 @@ def _photo(t, k):
 def _row_photo(t):
     """the same photo in the row itself, shown on a phone only (round 4: the picture sits with its row there)"""
     if t.get('img'):
-        pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''
+        pos = f' style="--pos:{t["pos"]}"' if t.get('pos') else ''
         return f'<figure class="mn__rph" aria-hidden="true"><img src="img/{t["img"]}" alt="" decoding="async" loading="lazy"{pos}></figure>'
     return f'<figure class="mn__rph" aria-hidden="true"><div class="mn__none"><p class="ph-copy">[{t["missing"]}]</p></div></figure>'
 
@@ -97,7 +97,7 @@ def close(d, world):
         {text}{cycle(c, .85)}{(f'<p class="cl__last a-up" style="--d:.95s">' + c['last'] + '</p>') if c.get('last') else ''}
         <div class="cl__btn a-up" style="--d:1s">{c['btn']}</div>
       </div>
-      <figure class="cl__ph" aria-hidden="true"><img src="img/{img}" alt="" decoding="async" loading="lazy" style="object-position:{pos}"></figure>
+      <figure class="cl__ph" aria-hidden="true"><img src="img/{img}" alt="" decoding="async" loading="lazy" style="--pos:{pos}"></figure>
     </div>
     {_foot(e, d['draft'])}
   </section>'''
@@ -238,7 +238,7 @@ def photo_prose(d, world):
     section between the heading and the words."""
     from build import prose
     f, alt, kind, pos = d['photo']
-    fig = f'<figure class="pr__ph pr__ph--{kind} a-fade" style="--d:.5s"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy" style="object-position:{pos}"></figure>'
+    fig = f'<figure class="pr__ph pr__ph--{kind} a-fade" style="--d:.5s"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy" style="--pos:{pos}"></figure>'
     html = prose(d).replace('class="s s--auto prose"', 'class="s s--auto prose prose--photo"', 1)
     if kind == 'side':
         html = html.replace('</div>\n      <div class="pr__body">', fig + '</div>\n      <div class="pr__body">', 1)

@@ -79,7 +79,10 @@ SERVICE_PHOTO = [
   # Blonding is her photo 12 with the guest reclined at the basin, neck at the bowl, only the guest's zone pasted back
   ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour in the styling chair by the window at Salon OM', '62% 45%'),
   ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair reclining at a shampoo basin, in a photo of Salon OM', '45% 58%'),
-  None,     # Color Correction: its backdrop (15) was refused three times by the safety system (Test Lab), still to make
+  # Color Correction (round 5, task 2846db82): the salon's photo 15, the guest in the doorway beside the Aveda canvas, facing
+  # the camera with body and head together, her hair an even, glossy warm brown from root to end; Qwen-Image-Edit 2511 (CC3
+  # seed 8), whole frame, canvas, switches, counter and lights checked against photo 15 (the color bar sits behind her)
+  ('om-menu-color-correction.webp', 'A generated guest with even, glossy warm brown hair in the doorway beside the Aveda canvas at Salon OM', '22% 42%'),
   ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
   ('om-menu-extensions.webp', 'A generated guest with long, full hair beside Maggie Woodward, in a photo of Salon OM', '22% 40%'),
   # round 5 (task 2846db82): Finishing Touches was a pasted cut-out (a hard edge under the sweater, no shadow, front light

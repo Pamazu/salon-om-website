@@ -655,3 +655,7 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
 .ch--stack .ch__top { transition: opacity 1.8s var(--io-soft); }
 .ch--stack.is-active .ch__top { opacity: 0; transition-delay: 2.8s; }
 @media (prefers-reduced-motion: reduce) { .ch--stack.is-active .ch__top { opacity: 1; } }
+/* round 5 (task 2846db82): each M/G/S picture's focus point is a variable, because the tweak layer (tweaks.js, shared with
+   2.2) clears an image's inline object-position on load when no tweak is saved, so every focus point was centred and the
+   menu panel cut the generated guests out of Cut and Style, Extensions and Finishing Touches; a saved tweak still wins */
+.mn__img, .mn__rph img, .cl__ph img, .pr__ph img { object-position: var(--pos, 50% 50%); }
