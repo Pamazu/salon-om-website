@@ -2987,15 +2987,34 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
     }
     if (b === null) return;                         // the window sits inside one section: the reader is reading, leave it
     var third = vh / 3, by = dir > 0 ? ((vh - b) >= third ? b : b - vh) : (b >= third ? b - vh : b);
-    scrollBy({ top: by, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    pull(by);
   }
+  /* round 5 (J 13 Nov: "I don't get any sense of gravity or pull like I do when scrolling between the other slides ... take
+     inspiration from how the Apple Watch does it"): the settle is a short pull, fast then soft (ease-out, 420 to 640 ms by
+     distance), like the slides' own snap, not the browser's slow smooth scroll; any wheel, touch or key stops it */
+  var anim = 0, animating = false;
+  function stop() { if (anim) cancelAnimationFrame(anim); anim = 0; animating = false; }
+  function pull(by) {
+    stop();
+    if (Math.abs(by) < 1) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { scrollBy(0, by); return; }
+    var y0 = scrollY, t0 = performance.now(), dur = Math.min(640, 420 + Math.abs(by) * .25);
+    animating = true;
+    (function step(now) {
+      var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 4);
+      scrollTo(0, y0 + by * e);
+      if (k < 1 && animating) anim = requestAnimationFrame(step); else stop();
+    })(t0);
+  }
+  ['wheel', 'keydown', 'mousedown'].forEach(function (ev) { addEventListener(ev, stop, { passive: true }); });
   function onScroll() {
     if (!pending) { pending = true; requestAnimationFrame(look); }
-    clearTimeout(t); t = setTimeout(settle, 200);
+    if (animating) return;
+    clearTimeout(t); t = setTimeout(settle, 140);
   }
   addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('touchstart', function () { touching = true; clearTimeout(t); }, { passive: true });
-  addEventListener('touchend', function () { touching = false; clearTimeout(t); t = setTimeout(settle, 260); }, { passive: true });
+  addEventListener('touchstart', function () { touching = true; stop(); clearTimeout(t); }, { passive: true });
+  addEventListener('touchend', function () { touching = false; clearTimeout(t); t = setTimeout(settle, 220); }, { passive: true });
   addEventListener('resize', onScroll);
   look();
 })();
