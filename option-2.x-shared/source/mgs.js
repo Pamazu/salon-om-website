@@ -115,6 +115,10 @@
   });
   // and while the footer is on screen: the page has ended, its own Begin is just above
   [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io.observe(el); });
+  // and once the closing screen fills the lower part of the window: it is where the bar leads, so the bar has nothing
+  // more to offer there (round 5 QA, task 2846db82: S on a phone showed it on its own closing screen, beside the last line)
+  var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -40% 0px' });
+  ['begin', 'c-begin'].forEach(function (id) { var s = document.getElementById(id); if (s) { seen.set(s, false); io2.observe(s); } });
   addEventListener('scroll', later, { passive: true }); addEventListener('resize', later);
   new MutationObserver(function () { setTimeout(check, 900); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
   setTimeout(check, 1200);

@@ -1845,6 +1845,22 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
    2.2) clears an image's inline object-position on load when no tweak is saved, so every focus point was centred and the
    menu panel cut the generated guests out of Cut and Style, Extensions and Finishing Touches; a saved tweak still wins */
 .mn__img, .mn__rph img, .cl__ph img, .pr__ph img { object-position: var(--pos, 50% 50%); }
+/* round 5 QA (task 2846db82): the hosts letter (M, G) with the owner's approved words and both hosts is taller than a
+   laptop window (about 930 px of words at 1440 wide), and the words, centred in a one-window section, ran up under the
+   header at 1440 x 900 and 1366 x 768 (Playwright WebKit). On a laptop the section grows with its words, like the menu;
+   the calm snap already takes any section taller than the window. The phone keeps its one-window layout */
+@media (min-width: 1024px) {
+  html[data-variant^="2.2-"] .team-letter { height: auto; min-height: 100vh; min-height: 100svh; grid-template-rows: auto; }
+}
+/* round 5 QA (task 2846db82): Inner Work's opening over the bright curtains film read at about 3.2 : 1 for its line under
+   the title on a phone (Playwright WebKit, 390 wide), under the 4.5 : 1 a line of body text needs. The line takes the full
+   ivory with a soft shadow, and the scrim's centre is a little deeper; the film and its layout are unchanged */
+html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__words p.sub { color: var(--ivory); text-shadow: 0 1px 14px rgba(10, 7, 5, .55); }
+html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { background: radial-gradient(ellipse 72% 50% at 50% 44%, rgba(10, 7, 5, .52), rgba(10, 7, 5, .14) 74%), linear-gradient(to top, rgba(10, 7, 5, .8), rgba(10, 7, 5, 0) 40%), linear-gradient(to bottom, rgba(10, 7, 5, .5), rgba(10, 7, 5, 0) 24%); }
+/* round 5 QA (task 2846db82): on the closing screen the line above the buttons (the owner's two-week word, G and S) took
+   the light sections' soft ink, about 2.6 : 1 on the dark ground; it takes the closing screen's own soft text colour,
+   which each world's theme sets (light on the salon's umber, dark on Inner Work's clay) */
+.cl .cy__answer { color: var(--ivory-soft); }
 </style>
 </head>
 <body>
@@ -2217,7 +2233,7 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="ec8fb57793a0";</script>
+<script>window.OM_BUILD="775b19acc4e6";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -3058,6 +3074,10 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
   });
   // and while the footer is on screen: the page has ended, its own Begin is just above
   [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io.observe(el); });
+  // and once the closing screen fills the lower part of the window: it is where the bar leads, so the bar has nothing
+  // more to offer there (round 5 QA, task 2846db82: S on a phone showed it on its own closing screen, beside the last line)
+  var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -40% 0px' });
+  ['begin', 'c-begin'].forEach(function (id) { var s = document.getElementById(id); if (s) { seen.set(s, false); io2.observe(s); } });
   addEventListener('scroll', later, { passive: true }); addEventListener('resize', later);
   new MutationObserver(function () { setTimeout(check, 900); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
   setTimeout(check, 1200);
