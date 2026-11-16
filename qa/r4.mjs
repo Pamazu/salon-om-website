@@ -111,7 +111,7 @@ async function shots(b, base) {
     }
     await ctx.close();
   }
-  fs.writeFileSync(path.join(OUT, 'bar.json'), JSON.stringify(log, null, 1));
+  fs.writeFileSync(path.join(OUT, VERS.length < 3 ? `bar-${VERS.join('')}.json` : 'bar.json'), JSON.stringify(log, null, 1));   // a run per version keeps its own
   const bad = log.filter((l) => l.bar === 'shown' && l.under && l.under.length);
   console.log('shots', log.length, '| bar shown over text:', bad.length, bad.map((l) => `${l.v}-${l.world}-${l.id}-${l.w}`).join(' '));
 }
@@ -188,11 +188,71 @@ async function morph(b, base) {
   for (const r of res) console.log('morph', r.w, 'q', r.q, 'wired', r.wired, 'next', r.nextIsStep, 'numMoved', r.numMoved, 'railOpacity', r.railOpacity);
 }
 
+// round 5 motion (J 13 Nov: "The line is not even animated and it ends like a step 4" / "the nature being a video, I don't
+// know why those don't move"). line: G's visit preview and Inner Work's path, the line's clip during and after its draw, and
+// where its drawn end sits against the last stop. films: each step slide, the photo on top dissolving and the element film
+// under it actually advancing (currentTime moves; an error code 4 = this browser cannot decode the file).
+async function line(b, base) {
+  const res = [];
+  for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) for (const [v, world, id] of [['g', 'salon', 'visit'], ['g', 'coaching', 'c-path'], ['m', 'coaching', 'c-path']]) {
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
+    try {
+      if (world === 'coaching') await toWorld(p, 'coaching');
+      const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
+      await jump(p, top);
+      for (const t of [600, 1800, 4000]) {
+        await wait(p, t === 600 ? 600 : t === 1800 ? 1200 : 2200);
+        const st = await p.evaluate((id) => {
+          const s = document.getElementById(id), svg = s.querySelector('.ln__svg'), nums = [...s.querySelectorAll('.ln__n')];
+          if (!svg) return { svg: false };
+          const r = svg.getBoundingClientRect(), cp = getComputedStyle(svg).clipPath, m = /inset\(([-\d.]+)px ([-\d.]+)(?:px|%) /.exec(cp);
+          const last = nums.length ? nums[nums.length - 1].getBoundingClientRect() : null;
+          return { active: s.classList.contains('is-active'), clip: cp, clipRight: m ? m[2] : null, stops: nums.length,
+            svgL: Math.round(r.left), svgR: Math.round(r.right), svgT: Math.round(r.top), svgB: Math.round(r.bottom),
+            lastStopCx: last ? Math.round(last.left + last.width / 2) : null, lastStopCy: last ? Math.round(last.top + last.height / 2) : null };
+        }, id);
+        await p.screenshot({ path: path.join(OUT, `line-${v}-${id}-${w}-t${t}.jpg`), type: 'jpeg', quality: 80 });
+        res.push({ v, world, id, w, t, ...st });
+      }
+    } catch (e) { res.push({ v, world, id, w, error: e.message.slice(0, 200) }); }
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, 'line.json'), JSON.stringify(res, null, 1));
+  for (const r of res) console.log('line', r.v, r.id, r.w, 't', r.t, r.error || `active ${r.active} clip ${r.clip} stops ${r.stops} svg x ${r.svgL}-${r.svgR} y ${r.svgT}-${r.svgB} last stop ${r.lastStopCx},${r.lastStopCy}`);
+}
+async function films(b, base) {
+  const res = [];
+  for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/g/`);
+    try {
+      const ids = await p.evaluate(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')].filter((s) => s.querySelector('.ch--stack, .ch__top') && s.querySelector('video')).map((s) => s.id));
+      for (const id of ids) {
+        const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
+        await jump(p, top);
+        const at = async (label) => p.evaluate(([id, label]) => {
+          const s = document.getElementById(id), v = s.querySelector('video'), top = s.querySelector('.ch__top');
+          return { label, active: s.classList.contains('is-active'), src: v ? (v.currentSrc || v.getAttribute('src') || v.dataset.src || '').split('/').pop() : null,
+            t: v ? +v.currentTime.toFixed(2) : null, paused: v ? v.paused : null, ready: v ? v.readyState : null, err: v && v.error ? v.error.code : null,
+            mp4: v ? v.canPlayType('video/mp4; codecs="avc1.42E01E"') : null, photoOpacity: top ? +(+getComputedStyle(top).opacity).toFixed(2) : null };
+        }, [id, label]);
+        await wait(p, 1500); const a = await at('1.5s'); await p.screenshot({ path: path.join(OUT, `film-${id}-${w}-a.jpg`), type: 'jpeg', quality: 75 });
+        await wait(p, 4500); const z = await at('6s'); await p.screenshot({ path: path.join(OUT, `film-${id}-${w}-b.jpg`), type: 'jpeg', quality: 75 });
+        res.push({ id, w, a, z, moving: z.t != null && a.t != null && z.t > a.t + .5 });
+      }
+    } catch (e) { res.push({ w, error: e.message.slice(0, 200) }); }
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, 'films.json'), JSON.stringify(res, null, 1));
+  for (const r of res) console.log('film', r.id, r.w, r.error || `moving ${r.moving} | 1.5s t ${r.a.t} photo ${r.a.photoOpacity} | 6s t ${r.z.t} paused ${r.z.paused} ready ${r.z.ready} err ${r.z.err} photo ${r.z.photoOpacity} src ${r.z.src} mp4 '${r.z.mp4}'`);
+}
+
 const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
 const b = await pw[BROWSER].launch();
 console.log(BROWSER, b.version());
 try {
   if (ONLY.includes('morph')) await morph(b, base);
+  if (ONLY.includes('line')) await line(b, base);
+  if (ONLY.includes('films')) await films(b, base);
   if (ONLY.includes('snap')) await snap(b, base);
   if (ONLY.includes('shots')) await shots(b, base);
 } finally { await b.close(); srv.close(); }
