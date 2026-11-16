@@ -142,7 +142,10 @@ async function wheel(p, dy, step = 60) {
 }
 async function snap(b, base) {
   const res = [];
-  const cases = [['g', 'salon', 'services'], ['m', 'salon', 'services'], ['g', 'coaching', 'c-how'], ['s', 'coaching', 'c-deeper']];
+  // round 5 QA: the hosts letter (M, G) grows with its words on a laptop, so it is a tall section there too; IDS narrows the cases
+  const ids = (process.env.IDS || '').split(',').filter(Boolean);
+  const cases = [['g', 'salon', 'services'], ['m', 'salon', 'services'], ['g', 'coaching', 'c-how'], ['s', 'coaching', 'c-deeper'],
+    ['g', 'salon', 'hosts'], ['m', 'salon', 'hosts']].filter(([v, , id]) => VERS.includes(v) && (!ids.length || ids.includes(id)));
   for (const [v, world, id] of cases) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
     try {
