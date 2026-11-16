@@ -9,7 +9,7 @@
 //          page, the visitor's first gesture; per step: the context running and its clock advancing, the step's own track
 //          (sound/<element>.mp3, the section's data-sound) glided up to full and its source started.
 //   snap: r4.mjs snap()'s six steps through WebDriver wheel actions (reported as such if Safari has no wheel input).
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,7 +23,18 @@ const PORT = 4444 + Math.floor(Math.random() * 500);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const res = { where: WHERE, started: new Date().toISOString(), versions: {}, notes: [] };
 const save = () => fs.writeFileSync(path.join(OUT, 'safari.json'), JSON.stringify(res, null, 1));
-let sid = null, drv = null;
+let sid = null, drv = null, sim = null;
+// sim: an iPhone simulator booted headless with simctl (no Simulator window), shut down at the end if this run booted it
+function bootSim() {
+  const all = JSON.parse(execFileSync('xcrun', ['simctl', 'list', 'devices', 'available', '-j']).toString()).devices;
+  const phones = Object.entries(all).filter(([rt]) => /iOS/.test(rt)).flatMap(([, d]) => d).filter((d) => /^iPhone/.test(d.name));
+  const dev = phones.find((d) => d.name === 'iPhone 17') || phones[0];
+  if (!dev) throw new Error('no iPhone simulator available');
+  const mine = dev.state !== 'Booted';
+  if (mine) execFileSync('xcrun', ['simctl', 'boot', dev.udid]);
+  execFileSync('xcrun', ['simctl', 'bootstatus', dev.udid, '-b']);
+  return { name: dev.name, udid: dev.udid, mine };
+}
 
 async function wd(method, p, body) {
   const r = await fetch(`http://127.0.0.1:${PORT}${p}`, { method, headers: { 'content-type': 'application/json; charset=utf-8' },
@@ -44,8 +55,9 @@ async function start() {
   let up = false;
   for (let i = 0; i < 60 && !up; i++) { try { up = (await fetch(`http://127.0.0.1:${PORT}/status`)).ok; } catch (e) { await sleep(250); } }
   if (!up) throw new Error('safaridriver did not answer on its port');
+  if (WHERE === 'sim') { sim = bootSim(); res.device = { name: sim.name, udid: sim.udid, bootedHere: sim.mine }; console.log('simulator', JSON.stringify(res.device)); }
   const caps = WHERE === 'sim'
-    ? { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceType': 'iPhone' }
+    ? { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': sim.udid }
     : { browserName: 'safari' };
   const v = await wd('POST', '/session', { capabilities: { alwaysMatch: caps } });
   sid = v.sessionId;
@@ -212,5 +224,6 @@ try {
 } finally {
   try { if (sid) await wd('DELETE', S('')); } catch (e) {}
   if (drv) drv.kill();
+  if (sim && sim.mine) { try { execFileSync('xcrun', ['simctl', 'shutdown', sim.udid]); } catch (e) { res.notes.push('simctl shutdown: ' + e.message); } }
   res.ended = new Date().toISOString(); save();
 }
