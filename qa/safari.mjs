@@ -52,9 +52,10 @@ async function shot(name) {
 async function start() {
   if (WHERE === 'mac' && !process.env.SDELEGATE_SCREEN_FRAME) throw new Error('no own screen (SDELEGATE_SCREEN_FRAME unset): run through sDelegate with --needs macos,own-screen');
   drv = spawn('/usr/bin/safaridriver', ['-p', String(PORT)], { stdio: ['ignore', 'inherit', 'inherit'] });
-  let up = false;
-  for (let i = 0; i < 60 && !up; i++) { try { up = (await fetch(`http://127.0.0.1:${PORT}/status`)).ok; } catch (e) { await sleep(250); } }
-  if (!up) throw new Error('safaridriver did not answer on its port');
+  let up = false, gone = null;
+  drv.on('exit', (code, sig) => { gone = `safaridriver exited (code ${code}, signal ${sig})`; });
+  for (let i = 0; i < 60 && !up && !gone; i++) { try { up = (await fetch(`http://127.0.0.1:${PORT}/status`)).ok; } catch (e) {} if (!up) await sleep(250); }
+  if (!up) throw new Error(gone || 'safaridriver did not answer on its port in 15 s');
   if (WHERE === 'sim') { sim = bootSim(); res.device = { name: sim.name, udid: sim.udid, bootedHere: sim.mine }; console.log('simulator', JSON.stringify(res.device)); }
   const caps = WHERE === 'sim'
     ? { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': sim.udid }
