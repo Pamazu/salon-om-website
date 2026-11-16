@@ -10,6 +10,9 @@ if (browser) process.env.BROWSER = browser;
 if (vers) process.env.VERS = vers;
 if (ids) process.env.IDS = ids;
 if (wait) process.env.WAIT = wait;
+// safari (task 2846db82): real Safari through safaridriver needs no package and no Playwright browser: safari.mjs reads its
+// own arguments (node run.mjs safari <mac|sim> [m,g] [films,sound,snap])
+if (only === 'safari') { await import('./safari.mjs'); process.exit(0); }
 const run = (cmd) => { try { execSync(cmd, { stdio: 'inherit' }); return true; } catch (e) { console.log('failed:', cmd, e.message.slice(0, 200)); return false; } };
 run(process.env.PW ? `npm i --no-audit --no-fund --silent playwright@${process.env.PW}` : 'npm i --no-audit --no-fund --silent');
 const install = `npx playwright install ${process.env.BROWSER || 'webkit'}`;
