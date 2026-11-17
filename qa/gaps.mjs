@@ -134,11 +134,12 @@ const JUDGED = [
   { id: 'c-deeper', below: 'p.pr__close', gap: 40, why: 'the closing line set apart from the paragraphs, on the 40 px step' },
   { id: 'c-how', below: 'dl.pr__list', gap: 80, why: 'the words end, then the practices as cards: a break between groups' },
   { id: 'hosts', below: 'div.tl__with', gap: 46, why: 'the founder, then the two hosts with her: a break between groups' },
-  { id: 'kind', below: 'span.voices__mark', gap: 49, why: 'the quote mark is a large glyph in a tall, mostly empty box; the eye sees about 20 px' },
+  // one quote section, two places: G's "Lighter, inside and out." (early) takes kind's layout (task 6e4ee413)
+  { id: ['kind', 'early'], below: 'span.voices__mark', gap: 49, why: 'the quote mark is a large glyph in a tall, mostly empty box; the eye sees about 20 px' },
   { id: 'services', below: 'div.mn__after', gap: 0, why: 'the price list ends on its rule and its own padding: the boxes touch, the eye sees about 24 px' },
   { id: 'pause', below: 'p.lead', gap: 390, near: 30, why: 'the gap holds the arched photo, drawn by ::before, which the walk cannot measure' },
 ];
-const judged = (id, g) => JUDGED.find((j) => j.id === id && g.below.startsWith(j.below) && Math.abs(g.gap - j.gap) <= (j.near || 8));
+const judged = (id, g) => JUDGED.find((j) => [].concat(j.id).includes(id) && g.below.startsWith(j.below) && Math.abs(g.gap - j.gap) <= (j.near || 8));
 const log = [];
 try {
   // pass 1: every gap of every section, both worlds
