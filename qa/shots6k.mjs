@@ -36,5 +36,20 @@ try {
     await wait(p, 1800);
     await p.locator('#services .mn__ph').first().screenshot({ path: path.join(OUT, `menu-${i + 1}.jpg`), type: 'jpeg', quality: 90, timeout: 120000 });
   }
+  // every other real photo in its own slot, as drawn, in each world: pic-<section>.jpg
+  const { toWorld } = await import('./lib.mjs');
+  for (const [world, ids] of [['salon', ['hosts', 'begin', 'deeper']], ['coaching', ['c-how', 'c-deeper', 'c-cred', 'c-begin']]]) {
+    if (world === 'coaching') await toWorld(p, 'coaching');
+    for (const id of ids) {
+      const im = p.locator(`#${id} img[src^="img/real-"], #${id} img[src="img/meadow.webp"]`).first();
+      if (!(await im.count())) continue;
+      await im.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await wait(p, 2500);
+      const box = await im.boundingBox();
+      if (!box || box.width < 50) continue;
+      const clip = { x: Math.max(0, box.x), y: Math.max(0, box.y), width: Math.min(box.width, 3230 - Math.max(0, box.x)), height: Math.min(box.height, 1319 - Math.max(0, box.y)) };
+      await p.screenshot({ path: path.join(OUT, `pic-${id}.jpg`), type: 'jpeg', quality: 92, clip, timeout: 120000 });
+    }
+  }
   console.log(url, '->', OUT);
 } finally { await browser.close(); srv?.close(); }
