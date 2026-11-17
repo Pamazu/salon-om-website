@@ -18,7 +18,8 @@ const b = await pw[BROWSER].launch(BROWSER === 'webkit' && process.env.WEBKIT ? 
 console.log(BROWSER, b.version());
 const res = { browser: BROWSER, started: new Date().toISOString(), runs: [] };
 const frame = (sel) => `(() => { const v = document.querySelector(${JSON.stringify(sel)}); if (!v) return null; const f = v.closest('.ch__top, .s__zoom'), img = f && f.querySelector('img');
-  return { held: !!(f && f.classList.contains('is-held')), tf: img ? getComputedStyle(img).transform : null, paused: v.paused, on: v.classList.contains('is-on'), t: Math.round(v.currentTime * 100) / 100 }; })()`;
+  const top = f && f.querySelector(':scope > .ch__top > img');
+  return { held: !!(f && f.classList.contains('is-held')), tf: img ? getComputedStyle(img).transform : null, topTf: top ? getComputedStyle(top).transform : null, paused: v.paused, on: v.classList.contains('is-on'), t: Math.round(v.currentTime * 100) / 100 }; })()`;
 for (const v of VERS) for (const [w, opt] of SIZES) {
   const ctx = await b.newContext(opt);
   await ctx.addInitScript(() => {
@@ -33,7 +34,7 @@ for (const v of VERS) for (const [w, opt] of SIZES) {
   await page.goto(`http://127.0.0.1:${port}/${v}/`, { waitUntil: 'load' });
   // the hero at the top, then each step film as a person arrives at it (instant scroll, no gesture)
   const targets = [{ id: 'top', sel: '#top video' }].concat(await page.evaluate(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')]
-    .filter((s) => s.querySelector('.ch__top video')).map((s) => ({ id: s.id, sel: `#${s.id} .ch__top video` }))));
+    .filter((s) => s.querySelector('.ch__top') && s.querySelector('.s__zoom > video')).map((s) => ({ id: s.id, sel: `#${s.id} .s__zoom > video` }))));
   for (const t of targets) {
     if (t.id !== 'top') await page.evaluate((id) => { const r = document.documentElement; r.style.scrollBehavior = 'auto'; r.style.scrollSnapType = 'none';
       scrollTo(0, document.getElementById(id).getBoundingClientRect().top + scrollY); requestAnimationFrame(() => { r.style.scrollSnapType = ''; r.style.scrollBehavior = ''; }); }, t.id);
@@ -41,7 +42,7 @@ for (const v of VERS) for (const [w, opt] of SIZES) {
     await page.screenshot({ path: path.join(OUT, `${v}-${w}-${t.id}-1.5s.png`) });
     await page.waitForTimeout(4500); const z = await page.evaluate(frame(t.sel));
     await page.screenshot({ path: path.join(OUT, `${v}-${w}-${t.id}-6s.png`) });
-    const ok = !!(a && z && z.held && a.tf && z.tf && a.tf !== z.tf && z.paused);
+    const ok = !!(a && z && z.held && a.tf && z.tf && a.tf !== z.tf && z.paused && (z.topTf === null || z.topTf === z.tf));
     run.films.push({ id: t.id, ok, a, z });
     console.log('held', v, w, t.id, ok ? 'pass' : 'FAIL', `held ${z && z.held} drift ${a && a.tf} -> ${z && z.tf} paused ${z && z.paused}`);
   }

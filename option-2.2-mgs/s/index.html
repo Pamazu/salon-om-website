@@ -1950,8 +1950,9 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: aut
    counts; measured on J's MacBook) keeps its photo drifting slowly, from the photo exactly as shown (no jump), always
    running so no section snaps back as it leaves; a tap later starts the film, which fades in over the drift (mgs.js) */
 @keyframes held-drift { from { transform: scale(1); } to { transform: scale(1.07) translate3d(-1.2%, -.8%, 0); } }
-html[data-variant^="2.2-"] .is-held img { animation: held-drift 18s var(--io-soft) infinite alternate; }
-html[data-shot] .is-held img { animation: none; }
+/* the film's poster and, on a step, the real photo laid over it move as one stack (same box, same transform) */
+html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
+html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none; }
 </style>
 </head>
 <body>
@@ -2211,7 +2212,7 @@ html[data-shot] .is-held img { animation: none; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="a415967e590b";</script>
+<script>window.OM_BUILD="6ae4cc92b422";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
