@@ -25,7 +25,7 @@ MASTERS = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictu
 # key: (1280 photo, clean copy, original, SeedVR2 4x of the clean copy, threshold, KEEP boxes, ADD boxes), boxes in 1280 px as
 # x0,y0,x1,y1; ADD covers clutter the clean copy removed that differs too softly for the threshold
 PHOTOS = {
-    '10': ('10-color-bar.jpg', '10-color-bar-clean.png', '10-color-bar-5B3A1078.jpg', 'sr/10c.png', 55, [], [(690, 640, 990, 790)]),   # pump bottle, glass, cups
+    '10': ('10-color-bar.jpg', '10-color-bar-clean.png', '10-color-bar-5B3A1078.jpg', 'sr/10c.png', 55, [], [(0, 270, 110, 854), (110, 345, 335, 470), (110, 470, 430, 854), (690, 640, 990, 790)]),   # the mop's strip at the left edge; the counter's left end below the hanging tubes as one block (the re-render moved the heater and faucet: a tight mask left a ghost of them; a block reaching the rack put the re-render's garbled labels on real boxes, 17 Nov); pump bottle, glass, cups
     '11': ('11-styling-stations.jpg', '11-styling-stations-clean.png', '11-styling-stations-5B3A1083.jpg', 'sr/11c.png', 55, [], [(50, 735, 250, 1240)]),   # the cart's legs over the black mat
     '6': ('6-shampoo-basins.jpg', '6-shampoo-basins-clean.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6c.png', 55, [], []),
 }
@@ -55,7 +55,7 @@ def mask(key):
     m = np.isin(lab, 1 + np.nonzero(area >= 150)[0])          # small specks are the re-render's noise, not clutter
     m = ndimage.binary_closing(m, iterations=4)
     m = ndimage.binary_fill_holes(m)
-    m = ndimage.binary_dilation(m, iterations=5)
+    m = ndimage.binary_dilation(m, iterations=9)          # margin: the re-render shifts edges a little (a 5 px margin left ghosts)
     for x0, y0, x1, y1 in add:
         m[y0:y1, x0:x1] = True
     for x0, y0, x1, y1 in keep:
@@ -76,6 +76,16 @@ def master(key, m):
     _, _, o, sr, _, _, _ = PHOTOS[key]
     O = Image.open(ORIG + o).convert('RGB')
     S = np.asarray(Image.open(MASTERS + sr).convert('RGB').resize(O.size, Image.LANCZOS), dtype=np.float32)
+    # the upscaler invents texture on flat surfaces (streaks on a plain painted wall, 17 Nov): its detail is kept only where
+    # the clean copy itself has structure (an object's edges); elsewhere the patch is the clean copy smoothly enlarged
+    L = np.asarray(Image.open(PH + PHOTOS[key][1]).convert('RGB').resize(O.size, Image.LANCZOS), dtype=np.float32)
+    g = Image.open(PH + PHOTOS[key][1]).convert('L')
+    g = np.asarray(g, dtype=np.float32)
+    edge = np.hypot(ndimage.sobel(g, 0), ndimage.sobel(g, 1))
+    edge = ndimage.gaussian_filter(np.clip((edge - 20) / 60, 0, 1), 1.5)
+    edge = np.asarray(Image.fromarray((edge * 255).astype(np.uint8)).resize(O.size, Image.BILINEAR), dtype=np.float32)[..., None] / 255
+    S = L + (S - L) * edge
+    del L
     O = np.asarray(O, dtype=np.float32)
     M = np.asarray(Image.fromarray((m * 255).astype(np.uint8)).resize((O.shape[1], O.shape[0]), Image.BILINEAR), dtype=np.float32) / 255
     hard = M > .5
