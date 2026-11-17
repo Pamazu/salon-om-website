@@ -7,6 +7,8 @@
 //     or under half of it;
 //   - words or a picture more than 1.6x the largest other gap of its stack and 24 px over it (a gap beyond the stack's own
 //     spacing levels), or 4 px or less where the stack's gaps are 20 px or more.
+//   - a button straight under another button (a group) only when they sit under 8 px apart;
+//   - anything cut off: words, a button or a picture past the edge of a section that hides what overflows it.
 // Writes qa/out-gaps-<browser>/gaps.json (every gap measured and every flag) and, for each flagged section and width, a
 // picture of each flagged gap, the window centred on it and the gap marked in red: <v>-<world>-<id>-<w>-<n>.jpg.
 // node run.mjs gaps [webkit|chromium] [m,g,s]     SIZES=1440,390 or IDS=sec1,sec2 narrow it
@@ -52,7 +54,9 @@ const measure = (args) => {
       if (c.closest('[aria-hidden="true"], svg, .wdoor') || !/^(block|flex|grid|list-item|flow-root)$/.test(getComputedStyle(c).display)) continue;
       if ([...c.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim())) continue;   // mixed inline words: not a stack
       const kids = [];
-      for (const k of c.children) {
+      // a child set display: contents has no box: its own children stand in the stack in its place
+      const flat = (e) => [...e.children].flatMap((k) => (getComputedStyle(k).display === 'contents' ? flat(k) : [k]));
+      for (const k of flat(c)) {
         if (k.matches('script, style, template') || /^(absolute|fixed)$/.test(getComputedStyle(k).position)) continue;   // a decorative glyph (aria-hidden) is still seen
         const r = k.getBoundingClientRect();
         if (r.width < 2 || r.height < 2 || !vis(k) || !holds(k)) continue;
@@ -81,11 +85,33 @@ const measure = (args) => {
         if (B.t < A.b - 1) continue;      // overlapping (a stacked slideshow)
         gaps.push({ A, B, gap: Math.round(B.t - A.b) });
       }
-      for (const g of gaps) stacks.push({ in: label(c).replace(/ ".*$/, ''), n: gaps.length, kind: g.B.kind, gap: g.gap,
+      for (const g of gaps) stacks.push({ in: label(c).replace(/ ".*$/, ''), n: gaps.length, kind: g.B.kind, after: g.A.kind, gap: g.gap,
         above: label(g.A.k), below: label(g.B.k), y: Math.round(g.A.b - sr.top), x: Math.round(Math.max(g.A.l, g.B.l) - sr.left),
         w: Math.round(Math.min(g.A.r, g.B.r) - Math.max(g.A.l, g.B.l)), sib: gaps.filter((o) => o !== g && o.B.kind !== 'button').map((o) => o.gap) });
     }
-    res.push({ id: s.id, top: Math.round(sr.top + scrollY), h: Math.round(sr.height), gaps: stacks });
+    // cut off: a section that hides what overflows it (a slide one window tall) must still hold all its words, buttons and
+    // pictures; J's "What is in your color?" (G #aveda, 17 Nov: "too cramped or tight") hid its four facts under the
+    // window's edge, which no gap shows. Each element holding words of its own, a button or a picture is seen as far as
+    // every clipping box around it lets it show; what of it lies past the section's top or bottom is lost to the eye.
+    // A layer set absolute or fixed (a photo behind, a slide stacked on another) and a row that scrolls are left out.
+    const cut = [];
+    if (/hidden|clip/.test(getComputedStyle(s).overflowY)) {
+      for (const e of s.querySelectorAll('*')) {
+        if (e.closest('[aria-hidden="true"], svg, .wdoor') || (e.parentElement && e.parentElement.closest('.btn'))) continue;
+        if (!(e.matches('img, video, .btn') || [...e.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim())) || !vis(e)) continue;
+        let r = e.getBoundingClientRect(), skip = false;
+        let t = r.top, b = r.bottom;
+        for (let x = e; x && x !== s; x = x.parentElement) {
+          const cs = getComputedStyle(x);
+          if (/^(absolute|fixed)$/.test(cs.position) || (x !== e && /auto|scroll/.test(cs.overflowX + cs.overflowY))) { skip = true; break; }
+          if (x !== e && /hidden|clip/.test(cs.overflowY)) { const xr = x.getBoundingClientRect(); t = Math.max(t, xr.top); b = Math.min(b, xr.bottom); }
+        }
+        if (skip || r.width < 2 || b - t < 2) continue;
+        const out = Math.round(Math.max(b - sr.bottom, sr.top - t));
+        if (out > 4) cut.push({ out, edge: b > sr.bottom ? 'bottom' : 'top', label: label(e), x: Math.round(r.left - sr.left), w: Math.round(r.width) });
+      }
+    }
+    res.push({ id: s.id, top: Math.round(sr.top + scrollY), h: Math.round(sr.height), gaps: stacks, cut });
   }
   return res;
 };
@@ -101,6 +127,18 @@ const page = async (v, world, opt) => {
   await wait(p, 600);
   return { ctx, p };
 };
+// judged by eye (task cf6eeff6, 17 Nov, on the round's pictures): a gap the check flags that the design means, or that
+// the check cannot see as the eye does. Kept only while the gap stays within 8 px of the value judged; any other value
+// flags as before. Printed apart, so a round's flags are only what is new.
+const JUDGED = [
+  { id: 'c-deeper', below: 'p.pr__close', gap: 40, why: 'the closing line set apart from the paragraphs, on the 40 px step' },
+  { id: 'c-how', below: 'dl.pr__list', gap: 80, why: 'the words end, then the practices as cards: a break between groups' },
+  { id: 'hosts', below: 'div.tl__with', gap: 46, why: 'the founder, then the two hosts with her: a break between groups' },
+  { id: 'kind', below: 'span.voices__mark', gap: 49, why: 'the quote mark is a large glyph in a tall, mostly empty box; the eye sees about 20 px' },
+  { id: 'services', below: 'div.mn__after', gap: 0, why: 'the price list ends on its rule and its own padding: the boxes touch, the eye sees about 24 px' },
+  { id: 'pause', below: 'p.lead', gap: 390, near: 30, why: 'the gap holds the arched photo, drawn by ::before, which the walk cannot measure' },
+];
+const judged = (id, g) => JUDGED.find((j) => j.id === id && g.below.startsWith(j.below) && Math.abs(g.gap - j.gap) <= (j.near || 8));
 const log = [];
 try {
   // pass 1: every gap of every section, both worlds
@@ -113,12 +151,16 @@ try {
     }
     // a button is compared with this page's usual button gap, both worlds together (the spacing system gives a button
     // more room than a line of words); words and pictures with the largest other gap of their own stack
-    const ref = med(both.flatMap((x) => x.gaps.filter((g) => g.kind === 'button').map((g) => g.gap)));
+    // a button straight under another button is a group (the hero's pair sits 12 px apart): it is left out of the usual
+    // gap, and flagged only when the two touch
+    const ref = med(both.flatMap((x) => x.gaps.filter((g) => g.kind === 'button' && g.after !== 'button').map((g) => g.gap)));
     for (const sec of both) {
       sec.buttonRef = ref; sec.flags = [];
       for (const g of sec.gaps) {
         let why = null;
-        if (g.kind === 'button') {
+        if (g.kind === 'button' && g.after === 'button') {
+          if (g.gap < 8) why = `crowded: a button ${g.gap} px under another button, a group of buttons sits 12 px apart`;
+        } else if (g.kind === 'button') {
           if (ref && g.gap > 1.35 * ref && g.gap - ref >= 14) why = `wide: a button ${g.gap} px under ${g.above.split(' ')[0]}, this page's buttons sit ${ref} px under`;
           else if (ref && g.gap < .5 * ref && ref - g.gap >= 14) why = `crowded: a button ${g.gap} px under ${g.above.split(' ')[0]}, this page's buttons sit ${ref} px under`;
         } else if (g.sib.length) {
@@ -126,7 +168,17 @@ try {
           if (top >= 8 && g.gap > 1.6 * top && g.gap - top >= 24) why = `wide: ${g.gap} px, the stack's other gaps at most ${top} px`;
           else if (g.gap <= 4 && m >= 20) why = `crowded: ${g.gap} px against ${m} px in the same stack`;
         }
-        if (why) sec.flags.push({ why, ...g });
+        const j = why && judged(sec.id, g);
+        if (j) (sec.judged = sec.judged || []).push({ why, judged: j.why, ...g });
+        else if (why) sec.flags.push({ why, ...g });
+      }
+      // one flag per section and edge for what is cut off, naming the element lost furthest; its picture marks that edge
+      for (const edge of ['bottom', 'top']) {
+        const c = sec.cut.filter((x) => x.edge === edge);
+        if (!c.length) continue;
+        const worst = c.reduce((x, y) => (y.out > x.out ? y : x));
+        sec.flags.push({ why: `cut off: ${c.length} element(s) past the section's ${edge} edge, out of sight, up to ${worst.out} px`, kind: 'cut',
+          gap: 2, above: worst.label, below: `(the section's ${edge} edge)`, y: edge === 'bottom' ? sec.h - 2 : 0, x: 0, w: opt.viewport.width });
       }
       log.push(sec);
     }
@@ -155,5 +207,6 @@ try {
 } finally { await b.close(); srv.close(); }
 fs.writeFileSync(path.join(OUT, ONLY_W.length || ONLY_ID.length || VERS.length < 3 ? `gaps-${VERS.join('')}${ONLY_W.join('_')}${ONLY_ID.join('_')}.json` : 'gaps.json'), JSON.stringify(log, null, 1));
 const flagged = log.filter((s) => s.flags.length);
-console.log('gaps: sections measured', log.length, '| flagged', flagged.length, '| flags', flagged.reduce((n, s) => n + s.flags.length, 0));
+console.log('gaps: sections measured', log.length, '| flagged', flagged.length, '| flags', flagged.reduce((n, s) => n + s.flags.length, 0),
+  '| judged by eye (gaps.mjs JUDGED)', log.reduce((n, s) => n + (s.judged || []).length, 0));
 for (const s of flagged) for (const f of s.flags) console.log(`  ${s.v}-${s.world}-${s.id}-${s.w}: ${f.why} | above ${f.above} | below ${f.below}`);

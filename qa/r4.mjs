@@ -14,7 +14,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
-import { serve as serveRepo, wait, open, toWorld, jump } from './lib.mjs';
+import { serve as serveRepo, wait, open, toWorld, jump, SIZES } from './lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BROWSER = process.env.BROWSER || 'webkit';
@@ -52,7 +52,9 @@ const barState = (p) => p.evaluate(() => {
 async function shots(b, base) {
   const log = [];
   const sizes = [['1440', DESK], ['390', PHONE]];
-  for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of (v === 'g' ? [...sizes, ['1366', LAP]] : sizes)) {
+  const only_w = (process.env.SIZES || '').split(',').filter(Boolean);    // SIZES=768,1024: those widths instead (lib's sizes)
+  for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of (only_w.length ? SIZES(BROWSER).filter(([x]) => only_w.includes(x))
+    : v === 'g' ? [...sizes, ['1366', LAP]] : sizes)) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
     if (world === 'coaching') await toWorld(p, 'coaching');
     const only = (process.env.IDS || '').split(',').filter(Boolean);      // IDS=begin,c-begin: just those sections
