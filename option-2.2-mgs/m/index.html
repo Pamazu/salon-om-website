@@ -1269,6 +1269,19 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 /* the note under the hero's doors wraps at the buttons' width instead of widening their column: the grid sized the middle
    column to buttons + note on one line, which starved the lower-left line at 1024 to 1440 */
 @media (min-width: 1024px) { .hero__foot .hero__note { contain: inline-size; } }
+/* the opening's eyebrow ("Salon OM · An Aveda Concept Salon", copy QA task 5a4704a9) sits with her name, just above it.
+   From 1024 up it heads the lower-left words, a row above her name, and the words, the doors and Scroll keep their three
+   places on the row below: as a fourth item in the three-column row it took the left place and pushed her words under the
+   mark. Below 1024 it keeps some air under the heading, which G's and S's longer opening pressed against it
+   (visual check, 17 Nov, task 2846db82) */
+.hero__foot > .eyebrow { margin: 0; }
+@media (max-width: 1023px) { .hero__foot > .eyebrow { margin-top: 14px; } }
+@media (min-width: 1024px) {
+  .hero__foot > .eyebrow { grid-column: 1; grid-row: 1; }
+  .hero__foot > .eyebrow ~ .hero__line { grid-column: 1; grid-row: 2; }
+  .hero__foot > .eyebrow ~ .hero__cta { grid-column: 2; grid-row: 2; }
+  .hero__foot > .eyebrow ~ .hero__cue { grid-column: 3; grid-row: 2; }
+}
 /* below 1024 the opening is one column: the mark or the words sit centred in the room the lower block leaves, so a longer
    lower block (G's proof and ROT lines, S's credentials) never runs into them (task 0ab956d4) */
 @media (max-width: 1023px) {
@@ -2195,7 +2208,7 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="0167beadd1ed";</script>
+<script>window.OM_BUILD="dec5b59ff04f";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
