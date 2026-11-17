@@ -1717,15 +1717,38 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
   .vo__foot .btn { width: 100%; }
 }
 
-/* the pause (M, G): Maggie's empty styling chair by the window in a tall arch between the question and its answer */
+/* the pause (M, G), task 8e22db42 (J 17 Nov: "The pause section lacks creativity"): one guided breath around the empty
+   styling chair by the window. The arch rises in, the question writes itself, then the arch breathes: a 10 s cycle (4 s in,
+   6 s out, after Apple's Mindfulness Breathe), the window light swelling behind it on the in-breath and an arch-shaped ripple
+   leaving it on the out-breath, while "You deserve this moment." arrives on the first exhale. Reduced motion: still. */
 #pause .mani__ring { display: none; }
-#pause .mani__in::before { content: ""; display: block; border-radius: 999px 999px var(--r-photo) var(--r-photo); background: url(img/real-styling-chair.webp) 50% 58% / cover no-repeat;
-  clip-path: inset(100% 0 0 0 round 999px 999px var(--r-photo) var(--r-photo)); transition: clip-path 1.8s var(--io-strong) .2s; }
-#pause.is-active .mani__in::before, html[data-shot] #pause .mani__in::before { clip-path: inset(0 0 0 0 round 999px 999px var(--r-photo) var(--r-photo)); }
+#pause { --br-in: cubic-bezier(.45, 0, .55, 1); --br-shape: 999px 999px var(--r-photo) var(--r-photo); --br-glow: rgba(255, 250, 240, .95); --br-line: rgba(42, 30, 22, .26); overflow: hidden; }
+html[data-variant="2.2-g"] #pause { --br-glow: rgba(255, 206, 150, .34); --br-line: rgba(143, 203, 164, .5); }
+#pause .br { position: relative; display: block; }
+#pause .br__arch { position: relative; z-index: 2; height: 100%; border-radius: var(--br-shape); overflow: hidden; transform: translateZ(0);
+  clip-path: inset(100% 0 0 0 round var(--br-shape)); transition: clip-path 1.8s var(--io-strong) .2s; }
+#pause .br__arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; display: block; transform: scale(1.0); filter: brightness(.9) saturate(.92); }
+#pause .br__halo { position: absolute; z-index: 0; inset: -26% -62%; border-radius: 50%; background: radial-gradient(closest-side, var(--br-glow), transparent 78%);
+  opacity: 0; transform: scale(.7); transition: opacity 2s var(--io-strong) 1s; }
+#pause .br__ring { position: absolute; z-index: 1; inset: 0; border-radius: var(--br-shape); border: 1px solid var(--br-line); opacity: 0; pointer-events: none; }
+#pause.is-active .br__arch, html[data-shot] #pause .br__arch { clip-path: inset(0 0 0 0 round var(--br-shape)); }
+html[data-shot] #pause .br__halo { opacity: .8; transform: scale(.9); }
+@media (prefers-reduced-motion: no-preference) {
+  /* the breath starts once the arch has risen (2 s) and runs while the slide is on screen */
+  #pause.is-active .br__arch img { animation: br-photo 10s var(--br-in) 2s infinite; }
+  #pause.is-active .br__halo { opacity: 1; animation: br-halo 10s var(--br-in) 2s infinite; }
+  #pause.is-active .br__ring { animation: br-ring 10s linear 2s infinite; }
+  #pause.is-active .br__ring + .br__ring { animation-delay: 3.2s; }
+  html[data-shot] #pause .br__arch img, html[data-shot] #pause .br__halo, html[data-shot] #pause .br__ring { animation: none; }
+}
+@keyframes br-photo { 0%, 100% { transform: scale(1); filter: brightness(.9) saturate(.92); } 40% { transform: scale(1.06); filter: brightness(1.06) saturate(1.02); } }
+@keyframes br-halo { 0%, 100% { transform: scale(.72); opacity: .45; } 40% { transform: scale(1.04); opacity: 1; } }
+/* each out-breath sends one arch-shaped ripple out from the window, easing out as it fades */
+@keyframes br-ring { 0%, 40% { opacity: 0; transform: scale(1); } 42% { opacity: .9; transform: scale(1); animation-timing-function: cubic-bezier(.2, .55, .3, 1); } 100% { opacity: 0; transform: scale(1.6, 1.36); } }
 @media (min-width: 1024px) {
   /* rows centre the words on the arch whether or not a version has the guest's line (M has none, G has one) */
   #pause .mani__in { display: grid; grid-template-columns: minmax(0, 1fr) min(27vw, 40vh, 400px) minmax(0, 1fr); grid-template-rows: 1fr auto auto auto 1fr; column-gap: var(--sp-6); align-items: center; text-align: left; }
-  #pause .mani__in::before { grid-column: 2; grid-row: 1 / -1; height: min(60vh, 600px); }
+  #pause .br { grid-column: 2; grid-row: 1 / -1; height: min(60vh, 600px); }
   #pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; justify-self: end; margin: 0 0 var(--sp-3); }
   #pause .mani__text { grid-column: 1; grid-row: 3; justify-self: end; max-width: 13em; margin: 0; text-align: right; font-size: clamp(30px, 2.7vw, 46px); line-height: 1.12; }
   #pause .lead { grid-column: 3; grid-row: 3; margin: 0 !important; max-width: 16em; font-size: clamp(22px, 1.9vw, 30px); }
@@ -1733,10 +1756,13 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
 }
 @media (max-width: 1023px) {
   #pause .mani__in { display: flex; flex-direction: column; align-items: center; }
-  #pause .mani__in::before { order: 3; width: min(52vw, 230px); aspect-ratio: 2 / 3; margin: var(--sp-3) 0 var(--sp-1); }
+  #pause .br { order: 3; width: min(52vw, 230px); aspect-ratio: 2 / 3; margin: var(--sp-4) 0 var(--sp-3); }
   #pause .mani__label { order: 1; } #pause .mani__text { order: 2; } #pause .lead { order: 4; } #pause .mani__proof { order: 5; }
   #pause .mani__text { font-size: 30px; line-height: 1.15; }
+  /* the phone's ripple stays between the question and its answer */
+  #pause.is-active .br__ring { animation-name: br-ring-s; }
 }
+@keyframes br-ring-s { 0%, 40% { opacity: 0; transform: scale(1); } 42% { opacity: .9; transform: scale(1); animation-timing-function: cubic-bezier(.2, .55, .3, 1); } 100% { opacity: 0; transform: scale(1.34, 1.14); } }
 
 /* G's Why Aveda: the real Aveda mission canvas on Salon OM's wall across the left half (M shows the Aveda shelves), the
    words and facts on the right (Aman) */
@@ -1972,7 +1998,7 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: aut
   <section class="s mani" id="pause" data-tone="light" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <div class="br" aria-hidden="true"><i class="br__halo"></i><i class="br__ring"></i><i class="br__ring"></i><div class="br__arch"><img src="img/real-styling-chair.webp" alt="" decoding="async"></div></div><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:3.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
@@ -2288,7 +2314,7 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: aut
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="7fe18060557a";</script>
+<script>window.OM_BUILD="eeec62b6f519";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

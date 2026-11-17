@@ -119,10 +119,13 @@ def tease(d):
         extra = (f'<div class="pz" aria-hidden="true"><img src="img/{lk["photo"]}" alt="" decoding="async" loading="lazy"></div>'
                  f'<figure class="pf" aria-hidden="true"><img src="img/{lk["frame"]}" alt="" decoding="async" loading="lazy"></figure>')
     attrs = (' data-look="0" data-pause' + (' data-parked' if d.get('parked') else '')) if lk else ''
+    # M/G pause (task 8e22db42): one guided breath around the empty chair; 2.2-2.4 never set it, so their pages stay byte-identical
+    br = (f'<div class="br" aria-hidden="true"><i class="br__halo"></i><i class="br__ring"></i><i class="br__ring"></i>'
+          f'<div class="br__arch"><img src="img/{d["breath"]}" alt="" decoding="async"></div></div>') if d.get('breath') else ''
     return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}>
     {extra}{ring}
     <div class="s__leave mani__in">
-      <p class="mani__label label a-left" style="--d:.1s">{d['label']}</p>
+      {br}<p class="mani__label label a-left" style="--d:.1s">{d['label']}</p>
       <p class="mani__text" data-write="letters" data-accents="{'|'.join(d.get('accents',[]))}">{d['text']}</p>
       {after}{('<p class="mani__proof a-up" style="--d:' + d.get('proof_at', '3.8s') + '">' + d['proof_line'] + '</p>') if d.get('proof_line') else ''}{cycle(d, 1.4)}{('<div class="mani__btn a-up" style="--d:' + d.get('btn_at', '1.6s') + '">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>

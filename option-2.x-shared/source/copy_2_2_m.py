@@ -11,7 +11,7 @@ from mgs_parts import *
 
 SALON = [
   salon_hero(proof=False),
-  ('tease', dict(id='pause', label='The pause', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s')),
+  ('tease', dict(id='pause', label='The pause', accents=['moment.'], breath='real-styling-chair.webp', text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s')),
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM)),   # her quiet version
   # task 59b17d9c (J 17 Nov): her visit opens with the same preview as G, so its five stops can fly into the step rail;
   # every word is hers: her visit line, then each step's name and its own heading ("01 · Arrive · The welcome")
