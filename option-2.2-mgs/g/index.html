@@ -1343,6 +1343,7 @@ main[data-world="coaching"] .hero .hero__line { color: var(--ivory); text-shadow
 .pf__q figcaption { margin-top: 12px; color: var(--ink-soft); font: 500 11.5px/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .pf__line { margin-top: clamp(22px, 4vh, 40px); color: var(--ink-soft); }
 .pf__line b { margin-right: 14px; color: var(--ink); font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; }
+.pf__line b:empty { display: none; }   /* G's early proof closes on its reward with no kicker (copy round 6): the line keeps the quotes' edge */
 
 /* the six services: name, triplet and price visible at once (the triplet sits where 2.2 showed a duration) */
 .offers-menu .om__row { padding: clamp(10px, 1.6vh, 18px) 0; }
@@ -1651,7 +1652,8 @@ html[data-shot] .vs__ph img { transform: none !important; }
 .ln__words { padding-top: var(--sp-3); }
 .ln__n { display: block; font: italic 300 var(--t-lead)/1 var(--serif); color: var(--forest-deep); }
 .ln__name { margin: var(--sp-1) 0 0; font: 300 var(--t-h3)/1.05 var(--serif); }
-.ln__t { margin: var(--sp-1) auto 0; max-width: 24ch; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+/* balance (copy round 6, G's stops are short sentences): a stop that wraps splits evenly, never one word left alone */
+.ln__t { margin: var(--sp-1) auto 0; max-width: 24ch; font-size: 15px; line-height: 1.5; color: var(--ink-soft); text-wrap: balance; }
 .lnsec { background: var(--clay); color: var(--ink); display: grid; align-items: center; padding: calc(var(--top) + var(--sp-4)) 0 var(--base); }
 .lnsec__in { width: 100%; max-width: 1680px; margin: 0 auto; padding: 0 var(--gutter); display: grid; gap: var(--sp-5); }
 .lnsec__head { max-width: 62ch; }
@@ -2260,7 +2262,7 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="458dcc6a02a2";</script>
+<script>window.OM_BUILD="2775a02ca503";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
