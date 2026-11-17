@@ -5,10 +5,13 @@
 //           <v>-<world>-<id>-<w>.jpg, plus <...>-end.jpg at the bottom of a section taller than the window.
 //           bar.json: per shot, whether the floating "Book your visit · Begin" bar shows and whether text sits under it.
 //   snap    the calm snapping around tall sections, measured after each move: snap.json and snap-*.jpg stills.
-//   ONLY=shots|snap (default both), VERS=m,g,s
+//   visit   a person's walk down the salon world, this commit's pages against VISIT_BEFORE's: visit.json (task b36dde1f)
+//   ONLY=shots|snap (default both), VERS=m,g,s; WEBKIT=<launcher> (sDelegate's WebKit asset) instead of Playwright's own
 //   npm i && npx playwright install webkit && node r4.mjs
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
 import { serve as serveRepo, wait, open, toWorld, jump } from './lib.mjs';
@@ -205,10 +208,100 @@ async function films(b, base) {
   for (const r of res) console.log('film', r.id, r.w, r.error || `moving ${r.moving} | 1.5s t ${r.a.t} photo ${r.a.photoOpacity} | 6s t ${r.z.t} paused ${r.z.paused} ready ${r.z.ready} err ${r.z.err} photo ${r.z.photoOpacity} src ${r.z.src} mp4 '${r.z.mp4}'`);
 }
 
+// visit (task b36dde1f): safari.mjs's person's walk, here in WebKit and for two builds served side by side: this commit's
+// pages (after) and VISIT_BEFORE's (before: its option-2.2-mgs/<v>/index.html read from git; the shared assets are the
+// same files). A jump asks a film to play in the frame it is attached; a person reaches a step seconds after its film was
+// attached two screens before, so the walk pauses DWELL ms on every section (VISIT_DWELL: a quick scroller, a reader).
+// The films come at FILM_BPS bytes a second (default 1.5 MB/s, a phone's network): on loopback a whole download is
+// instant, and the engine's 4.5 s swap to one would never meet a film already asked to play. play() is wrapped read-only
+// before any page script runs (each call and how its promise ended); blob: in currentSrc = the film was swapped.
+const DWELLS = (process.env.VISIT_DWELL || '2300,6000').split(',').map(Number);
+const FILM_BPS = +(process.env.FILM_BPS || 1500000);
+function slowFilms(root) {
+  return (u, req, res) => {
+    const m = u.match(/^\/[mgs]\/(media\/[^/]+\.mp4)$/);
+    if (!m) return false;
+    const file = path.join(root, 'option-2.2', 'site', m[1]);
+    let st; try { st = fs.statSync(file); } catch (e) { res.writeHead(404); res.end(); return true; }
+    const r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || ''), a = r && r[1] ? +r[1] : 0, z = r && r[2] ? Math.min(+r[2], st.size - 1) : st.size - 1;
+    res.writeHead(r ? 206 : 200, { 'Content-Type': 'video/mp4', 'Content-Length': z - a + 1, 'Accept-Ranges': 'bytes', ...(r ? { 'Content-Range': `bytes ${a}-${z}/${st.size}` } : {}) });
+    const fd = fs.openSync(file, 'r'), chunk = Math.max(1024, Math.round(FILM_BPS / 10));
+    let pos = a, done = false;
+    const end = () => { if (!done) { done = true; fs.closeSync(fd); } };
+    res.on('close', end);
+    const tick = () => {
+      if (done) return;
+      if (pos > z) { res.end(); return end(); }
+      const n = Math.min(chunk, z - pos + 1), buf = Buffer.alloc(n);
+      fs.readSync(fd, buf, 0, n, pos); pos += n; res.write(buf); setTimeout(tick, 100);
+    };
+    tick();
+    return true;
+  };
+}
+function beforeRoot(sha) {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'mgs-before-'));
+  for (const v of VERS) {
+    fs.mkdirSync(path.join(d, 'option-2.2-mgs', v), { recursive: true });
+    fs.writeFileSync(path.join(d, 'option-2.2-mgs', v, 'index.html'), execFileSync('git', ['-C', REPO, 'show', `${sha}:option-2.2-mgs/${v}/index.html`]));
+  }
+  fs.mkdirSync(path.join(d, 'option-2.2'));
+  fs.symlinkSync(path.join(REPO, 'option-2.2', 'site'), path.join(d, 'option-2.2', 'site'));
+  return d;
+}
+const PLAYLOG = () => {
+  const fv = window.__fv = { plays: [] }, p0 = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function () {
+    const rec = { src: (this.currentSrc || this.getAttribute('src') || this.getAttribute('data-src') || '').split('/').pop().slice(0, 24), at: Math.round(performance.now()), out: 'pending' };
+    fv.plays.push(rec); const pr = p0.apply(this, arguments);
+    if (pr && pr.then) pr.then(() => { rec.out = 'ok'; }, (e) => { rec.out = (e && e.name) || 'rejected'; });
+    return pr;
+  };
+};
+const filmAt = (p, id) => p.evaluate((id) => {
+  const s = document.getElementById(id), v = s.querySelector('video'), top = s.querySelector('.ch__top');
+  return { t: v ? Math.round(v.currentTime * 100) / 100 : null, paused: v ? v.paused : null, ready: v ? v.readyState : null,
+    err: v && v.error ? v.error.code : null, blob: v ? /^blob:/.test(v.currentSrc || '') : null, on: v ? v.classList.contains('is-on') : null,
+    photo: top ? Math.round(+getComputedStyle(top).opacity * 100) / 100 : null, active: s.classList.contains('is-active') };
+}, id);
+async function walk(b, base, v, opt, dwell) {
+  const ctx = await b.newContext(opt);
+  await ctx.addInitScript(PLAYLOG);
+  const p = await open(ctx, `${base}/${v}/`), steps = [];
+  try {
+    await wait(p, 1000);
+    const secs = await p.evaluate(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')]
+      .map((s, i) => ({ i, id: s.id || null, step: !!(s.querySelector('.ch__top') && s.querySelector('video')) })));
+    for (const s of secs) {
+      await jump(p, await p.evaluate((i) => document.querySelectorAll('main[data-world="salon"] > section.s')[i].getBoundingClientRect().top + scrollY, s.i));
+      if (!s.step) { await wait(p, dwell); continue; }
+      await wait(p, 1500); const a = await filmAt(p, s.id); await wait(p, 4500); const z = await filmAt(p, s.id);
+      steps.push({ id: s.id, moving: z.t != null && a.t != null && z.t > a.t + 0.5 && !z.paused && z.err == null, a, z });
+    }
+    return { dwell, steps, plays: await p.evaluate(() => window.__fv.plays) };
+  } catch (e) { return { dwell, steps, error: e.message.slice(0, 200) }; } finally { await ctx.close(); }
+}
+async function visit(b) {
+  const builds = [['after', REPO]];
+  if (process.env.VISIT_BEFORE) builds.unshift(['before', beforeRoot(process.env.VISIT_BEFORE)]);
+  const res = { filmBps: FILM_BPS, before: process.env.VISIT_BEFORE || null, builds: {} };
+  for (const [name, root] of builds) {
+    const srv = await serveRepo(root, slowFilms(root)), base = `http://127.0.0.1:${srv.address().port}`, r = res.builds[name] = {};
+    for (const v of VERS) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) for (const d of DWELLS) {
+      const k = `${v}-${w}-${d}`, x = r[k] = await walk(b, base, v, opt, d);
+      fs.writeFileSync(path.join(OUT, 'visit.json'), JSON.stringify(res, null, 1));
+      console.log('visit', name, k, x.error || `${x.steps.filter((s) => s.moving).length}/${x.steps.length} moving`,
+        x.steps.map((s) => `${s.id} ${s.moving ? 'moving' : 'STILL'} t ${s.a.t}->${s.z.t} paused ${s.z.paused} ready ${s.z.ready} blob ${s.a.blob}->${s.z.blob}`).join(' | '));
+    }
+    srv.close();
+  }
+}
+
 const srv = await serve(), base = `http://127.0.0.1:${srv.address().port}`;
-const b = await pw[BROWSER].launch();
+const b = await pw[BROWSER].launch(BROWSER === 'webkit' && process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
 console.log(BROWSER, b.version());
 try {
+  if (ONLY.includes('visit')) await visit(b);
   if (ONLY.includes('morph')) await morph(b, base);
   if (ONLY.includes('line')) await line(b, base);
   if (ONLY.includes('films')) await films(b, base);
