@@ -21,11 +21,24 @@ CRED_S = iw_credentials(n=3)          # her first three credentials, on the same
 VISIT = (S.visit, dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
                        steps=[(f'0{k + 1}', s[0], f'{s[2]}. ' + s[3].split('. ')[0].rstrip('.') + '.', STEP_IMG[k], STEP_ALT[k]) for k, s in enumerate(M.STEPS)],
                        btn=btn(BOOK, BOOK_URL, 'light', arrow=True)))
-PROOF = ('proof', dict(id='hosts', eyebrow='Meet the team', title=M.TEAM_LINE,
+# round 6 (task b9a04e51): S's hooks where it had only a label or a [placeholder], each as G's line (dotted): the team
+# opens on a claim, not three names; Inner Work's opening gets its ROT line, the path its heading, Begin its heading
+# (her own first-screen close) and its reward. The opening line is cut to three as in G. No 'Book online' (her booking
+# page lists no services) and no Inner Work block in the salon footer (J 4 Nov: the other world only at the top and in
+# its own section)
+S_HERO_LINE = M.SALON_OPEN['title'] + ' An Avila Beach salon. ' + draft(D['proof'])
+S_TEAM_HOOK = 'The people who listen first.'    # as G
+S_ROT_IW = 'Uncover the beliefs that may be holding you back, without reliving the past. It starts with one Connection Call.'   # as G
+S_PATH_HOOK = 'Four steps, and the first is a conversation.'   # as G
+S_IW_REWARD = 'You leave the call knowing your next step, and whether Maggie is the one to walk it with you.'   # as G
+PROOF = ('proof', dict(id='hosts', eyebrow=M.TEAM_LINE, title=draft(S_TEAM_HOOK),
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
                        quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA))
-SALON = [dict_with(salon_hero(proof=True, visit='visit'), rot=draft(S_ROT)), VISIT, PROOF, services(), door(short=True), dict_with(begin(summary=True, online=True), answer=draft(A11['adjust'])), salon_end(LEGEND, visit='visit')]
-COACHING = [iw_hero(short_cred=True), iw_deeper(short=True), iw_how(cta=False, short=True), CRED_S, iw_path(cta=True), iw_voices_placeholder(), iw_begin(), iw_end(LEGEND)]
+SALON = [dict_with(salon_hero(proof=True, visit='visit', line=S_HERO_LINE), rot=draft(S_ROT)), VISIT, PROOF, services(), door(short=True),
+         dict_with(begin(summary=True), answer=draft(A11['adjust'])), salon_end(LEGEND, visit='visit', iw=False)]
+COACHING = [dict_with(iw_hero(short_cred=True), rot=draft(S_ROT_IW)), iw_deeper(short=True), iw_how(cta=False, short=True), CRED_S,
+            dict_with(iw_path(cta=True), title=draft(S_PATH_HOOK)), iw_voices_placeholder(),
+            dict_with(iw_begin(), title=M.FIRST['close'], reward=draft(S_IW_REWARD)), iw_end(LEGEND)]
 
 CFG = cfg('s', 'Short', SALON, COACHING,
   [('01', 'The visit', 'visit'), ('02', 'The team', 'hosts'), ('03', 'The menu', 'services'), ('04', 'Begin', 'begin')],

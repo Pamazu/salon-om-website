@@ -19,6 +19,11 @@ from mgs_parts import *
 #  pause     "Take a breath. When did you last ...?" / none, by design (the story's turn; proof follows in the steps) /
 #            story, one open question / "You deserve this moment." / none, by design (it follows the opening's button)
 #  (round 5, Designer 1: the menu moved to right after the five steps; the lines below follow that order)
+#  (round 6, task b9a04e51, each part judged against real conversion pages: the hero's line cut to three so the ROT is
+#   read; early proof = "Lighter, inside and out." / C.M. and A.G. / two quotes / "A great haircut, and a lighter
+#   spirit ..." / none, by design; the preview's stops name what happens; menu reward "Choose yours, knowing the price
+#   first."; voices reward "Skilled hands, and someone who listens ..."; Begin's one action in its two ways, call and
+#   email; How we work together and the path each close on one reward)
 #  preview   "Your visit, from the first sip to the last look, in five steps." / the five real steps / a list that
 #            becomes the rail / "You know what happens, and in what order, before you book." / none, by design (the steps follow)
 #  menu      "Every service, and every price, before you book." / her consultation line + the value stack ABOVE the prices,
@@ -65,16 +70,25 @@ G = dict(
   aveda_hook='What is in your color?',
   aveda_reward='Care for your hair and care for the earth, in the same visit.',
   team_hook='The people who listen first.',
-  voices_reward='A great haircut, and a lighter spirit. Both are part of the visit.',
+  # round 6 (task b9a04e51): "Lighter, inside and out." is made of C.M.'s and A.G.'s words, so those two quotes prove it
+  # early, and this reward moves there with them; Voices keeps the six about her skill and her listening, and pays that off
+  early_reward='A great haircut, and a lighter spirit. Both are part of the visit.',
+  voices_reward='Skilled hands, and someone who listens. Guests come back for both.',
+  # round 6: the preview's reward says "You know what happens", so each stop names what happens there, from her own
+  # step details (What happens, Included), not only the step's one word
+  visit_rows=['Tea, and a real conversation.', 'A scalp and shoulder ritual.', 'Your service, designed for you alone.',
+              'Time shaped around you.', 'How to recreate your style at home.'],
   menu_hook='Every service, and every price, before you book.',
   menu_answer='Not sure which to choose? Your visit begins with a real conversation, and your service is shaped with you there.',
   # round 3 (critique 5.1): the value stack beside the prices. Whether every hair visit includes all of it is Maggie's to confirm
   menu_stack='Every visit includes your drink and snack of choice, a scalp and shoulder ritual and at-home styling tips.',   # her step details, stacked
   # round 4: value before price (the stack sits ABOVE the prices) and one honest scarcity line, her booking page's days
-  menu_reward='Choose yours. Salon OM welcomes guests by appointment, Monday to Friday.',   # round 5: her hours (11 Nov footer)
+  # round 6 (task b9a04e51): the reward pays off the hook's "every price, before you book"; her days stay as the honest close
+  menu_reward='Choose yours, knowing the price first. Salon OM welcomes guests by appointment, Monday to Friday.',   # round 5: her hours (11 Nov footer)
   # round 4 (J 4 Nov, storytelling): Maggie's story in her own words, from her decks and the 19 Oct call ("at Aveda, we only
   # wear black ... because the focus is the client"); her card's line stays hers, the two short lines around it are new
-  story_open='Maggie has spent 28 years in the chair.',
+  # round 6: a short proof stamp, so her name does not open two sentences in a row ("Maggie has ... Maggie created ...")
+  story_open='28 years in the chair.',
   story_close='The team wears black, because the focus is always you.',
   # round 3: the stack in Maggie's own step lines, "lesson" cut (her words: "We teach you to recreate your style at home.")
   begin_stack='Comforting Tea and a real conversation. A scalp ritual with Stress-Fix oil. Cut, color, blonding or extensions, designed for you alone. We teach you to recreate your style at home.',
@@ -82,9 +96,12 @@ G = dict(
   cred_hook='Who will walk beside you?',
   # round 3: the reworded disclaimer and "trained in each method she uses" cut (compliance words exactly or not at all;
   # neuroscience is study, EMDR education only). Her exact disclaimer stays in the footer.
-  how_reward='The aim is to meet old patterns with more calm, and more choice.',   # round 3 (critique 5.7): the outcome, in her gentle register
+  # round 6 (task b9a04e51): How we work together closes on her own line only ("Knowing yourself is where Becoming
+  # begins.", a callback to the opening). Round 3's second reward under it ("... more calm, and more choice.") is cut: two
+  # payoffs in a row, and "choice" repeats the rung just before it ("You get to choose again.")
   path_hook='Four steps, and the first is a conversation.',
-  path_answer='How many sessions you need is something you decide together, in your Connection Call.',
+  # round 6: round 3's path answer ("How many sessions you need is something you decide together, in your Connection
+  # Call.") is cut: her pricing line right above it already says it ("together we'll find the path that fits you")
   path_reward='The first step is complimentary, and every step after it is your choice.',
   iw_begin_text='In one complimentary call of about 30 to 45 minutes, never rushed, Maggie learns what you are looking for, and together you see if she is the right fit. Investment is shared there too.',
   iw_begin_reward='You leave the call knowing your next step, and whether Maggie is the one to walk it with you.',
@@ -97,16 +114,25 @@ def _with(sec, **kw):
     return (kind, dict(d, **kw))
 
 
+# round 6 (task b9a04e51): the opening's line under her name keeps her promise, her place and the proof, so the ROT hook
+# is read after three short lines instead of six. Cut here (kept on M): "One Source. Two Practices." (the salon page's
+# first words pointed at the other world; its button already does), "Leave held, seen and beautifully cared for." (a
+# reward before any proof; the page pays it off at Begin) and "where artistry is mastered and time is yours" (the ROT
+# line under it says the time part better)
+HERO_LINE = M.SALON_OPEN['title'] + ' An Avila Beach salon. ' + draft(D['proof'])
+
 SALON = [
-  _with(salon_hero(proof=True), rot=draft(G['rot_salon'])),
+  _with(salon_hero(proof=True, line=HERO_LINE), rot=draft(G['rot_salon'])),
   ('tease', dict(id='pause', label='The pause', tone='dark', accents=['moment.'], text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='3.4s',
                  )),                                 # round 4: G.A.'s words move to Breathe (step 04), their proof
   # round 5 (J 13 Nov; CEO MA: Hook, then Proof early): two guests' words and the Aveda line, all from her copy; the
   # voices slide below keeps the other six, so no quote shows twice
-  (S.early_proof, dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[7], M.QUOTES[1]],
-                       line_k=M.FIRST_AVEDA, line=M.AVEDA)),
+  # round 6 (task b9a04e51): C.M. and A.G., whose words the heading is made of, and the section's own reward in the
+  # closing line (the Aveda line it carried stays in the opening's eyebrow and in Why Aveda)
+  (S.early_proof, dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[2], M.QUOTES[3]],
+                       line_k='', line=draft(G['early_reward']))),
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
-                   rows=[(f'0{k + 1}', s[0], s[2] + '.') for k, s in enumerate(M.STEPS)])),
+                   rows=[(f'0{k + 1}', s[0], draft(G['visit_rows'][k])) for k, s in enumerate(M.STEPS)])),
 ] + [step(k, extra=G['benefits'][k]) for k in range(5)] + [
   # round 5 (task 2846db82, CEO MA 11 Nov): the menu comes right after the five steps, so the visit preview becomes the
   # step rail again (J's 4 Nov ask, a feature never traded away); still far earlier than its old 13th place
@@ -116,7 +142,7 @@ SALON = [
         reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
   _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
-  ('voices', dict(id='kind', title=M.VOICES_EYEBROW, quotes=[q for i, q in enumerate(M.QUOTES) if i not in (1, 7)], reward=draft(G['voices_reward']),
+  ('voices', dict(id='kind', title=M.VOICES_EYEBROW, quotes=[q for i, q in enumerate(M.QUOTES) if i not in (2, 3)], reward=draft(G['voices_reward']),
                   btn=btn(BOOK, BOOK_URL, arrow=True))),
   ('facts', dict(id='aveda', light=True, eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE, facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
@@ -124,16 +150,18 @@ SALON = [
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                  btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),
-  _with(begin(online=True), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),   # her Begin text and buttons; her two-week word (11 Nov)
-  salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')]),
+  # her Begin text and her two buttons (call, email: the one action's two ways); her two-week word (11 Nov). Round 6
+  # (task b9a04e51): no 'Book online' (her booking page lists no services) and no Inner Work block in the footer
+  _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),
+  salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 
 COACHING = [
   _with(iw_hero(short_cred=True), rot=draft(G['rot_iw'])),
   _with(iw_deeper(), btn=btn(CALL, CALL_URL, arrow=True)),
-  _with(iw_how(cta=True), reward=draft(G['how_reward'])),
+  iw_how(cta=True),                                  # round 6: her own closing line is the one reward
   _with(iw_credentials(), title=draft(G['cred_hook']), lead='Maggie Woodward'),
-  _with(iw_path(cta=True), title=draft(G['path_hook']), answer=draft(G['path_answer']), reward=draft(G['path_reward'])),
+  _with(iw_path(cta=True), title=draft(G['path_hook']), reward=draft(G['path_reward'])),
   iw_voices_placeholder(),                           # round 3: her section 5, client words still being gathered
   _with(iw_begin(), title=M.FIRST['close'], text=draft(G['iw_begin_text']), reward=draft(G['iw_begin_reward'])),
   iw_end(LEGEND),

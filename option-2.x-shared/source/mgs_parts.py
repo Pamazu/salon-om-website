@@ -128,12 +128,15 @@ def _close(slides):
     return out
 
 
-def salon_hero(proof=False, visit='arrive'):
+def salon_hero(proof=False, visit='arrive', line=None):
+    """line (G, S; task b9a04e51): the version's own short line under the name, so its ROT hook is read in the first
+    seconds instead of after five of her sentences; M keeps her full opening words."""
     f = M.FIRST
     o = M.SALON_OPEN   # her salon opening screen (11 Nov); `open` and `aveda` let the design give it its own screen
-    line = f['pair'] + ' ' + o['title'] + ' ' + ' '.join(o['lines']) + ((' ' + draft(D['proof'])) if proof else '')
-    ctas = (btn(BOOK, BOOK_URL, 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching')) if proof else \
-           (btn(f['doors'][0], '#pause', 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching'))
+    line = line or (f['pair'] + ' ' + o['title'] + ' ' + ' '.join(o['lines']) + ((' ' + draft(D['proof'])) if proof else ''))
+    # one action per world from the first screen (J 4 Nov; task b9a04e51): M's first button is her own opening screen's
+    # "Book your visit" (her 11 Nov copy), not the "Salon OM" door, which only scrolled into the page it was already on
+    ctas = btn(BOOK if proof else o['btns'][0], BOOK_URL, 'light', arrow=True) + btn(f['doors'][1], '#coaching', 'ghost', world='coaching')
     return ('hero_mark', dict(id='top', film='hero', next='pause' if not proof else visit, hook=f['tagline'],
                               eyebrow=f['name'], line=line, ctas=ctas, note=f['close'], aveda=M.FIRST_AVEDA,
                               open=dict(o, btns=btn(o['btns'][0], BOOK_URL, 'light', arrow=True) + btn(o['btns'][1], '#pause', 'ghost'))))
@@ -190,7 +193,9 @@ def door(short=False, exact=False):
 
 def begin(summary=False, online=False):
     # her 11 Nov Begin: her text, "Begin." as the last word, her two buttons (summary kept for callers). online (G, S; CEO MA
-    # review of c446e8ba): 'Book online' to her booking page as a third button, dotted for her approval. M stays call and email
+    # review of c446e8ba): 'Book online' to her booking page as a third button, dotted for her approval. M stays call and email.
+    # Since task b9a04e51 no version passes online=True: her booking page shows "No services available" (checked 17 Nov
+    # 2026), so the button led nowhere, and a third button split the one action at the moment it is taken
     calls = btn(M.BEGIN_BTNS[0][0], M.BEGIN_BTNS[0][1], 'light', arrow=True) + btn(M.BEGIN_BTNS[1][0], M.BEGIN_BTNS[1][1], 'ghost')
     if online:
         calls += btn('Book online', BOOK_ONLINE_URL, 'ghost').replace('>Book online<', '>' + draft('Book online') + '<')   # btn() escapes its label
@@ -201,10 +206,12 @@ def begin(summary=False, online=False):
 IW_BLOCK = M.FOOTER['iw'][:2] + [f'<a href="mailto:{M.FOOTER["iw"][2]}">{M.FOOTER["iw"][2]}</a>']
 
 
-def salon_end(legend, visit='arrive', explore=None):
-    # her 11 Nov footer, on every page: brand, salon details, contact, the Inner Work block, disclaimer, her copyright
+def salon_end(legend, visit='arrive', explore=None, iw=True):
+    # her 11 Nov footer, on every page: brand, salon details, contact, the Inner Work block, disclaimer, her copyright.
+    # iw=False (G, S; task b9a04e51): no Inner Work block in the salon footer. J 4 Nov: the other world only "at the top
+    # and in the section that is specific for that"; the bottom link goes to this world's own action (Begin)
     return ('end', dict(id='letters', title='', name=M.FOOTER['name'], tagline=M.FOOTER['tagline'], no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
-                        brand_lines=[M.FOOTER['salon']], iw_block=IW_BLOCK, copyright=M.FOOTER['copyright'],
+                        brand_lines=[M.FOOTER['salon']], iw_block=IW_BLOCK if iw else None, copyright=M.FOOTER['copyright'],
                         connect=[SALON_INFO['phone'], SALON_INFO['email']],
                         visit=[SALON_INFO['address'], SALON_INFO['hours'], SALON_INFO['hours_note']],
                         explore=explore or [('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
