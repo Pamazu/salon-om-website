@@ -1,0 +1,6 @@
+# The photographer's full-size originals stay on the Mac Studio's disk, never in git (381 MB+ without LFS
+# would stay in this repo's history; the source is the photographer's shoot folder, linked on task c7892a3c).
+# Only this file and README.md are tracked here.
+*
+!.gitignore
+!README.md
