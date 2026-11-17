@@ -7,11 +7,11 @@
 //   snap    the calm snapping around tall sections, measured after each move: snap.json and snap-*.jpg stills.
 //   ONLY=shots|snap (default both), VERS=m,g,s
 //   npm i && npx playwright install webkit && node r4.mjs
-import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
+import { serve as serveRepo, wait, open, toWorld, jump } from './lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BROWSER = process.env.BROWSER || 'webkit';
@@ -19,57 +19,13 @@ const OUT = path.join(REPO, 'qa', `out-${BROWSER}`);
 const ONLY = process.env.ONLY || 'shots,snap';
 const VERS = (process.env.VERS || 'm,g,s').split(',');
 fs.mkdirSync(OUT, { recursive: true });
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml',
-  '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg',
-  '.woff2': 'font/woff2', '.json': 'application/json' };
-
-function serve() {
-  return new Promise((done) => {
-    const srv = http.createServer((req, res) => {
-      const u = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-      const m = u.match(/^\/([mgs])\/(.*)$/);
-      if (!m) { res.writeHead(404); return res.end(); }
-      const file = !m[2] || m[2] === 'index.html' ? path.join(REPO, 'option-2.2-mgs', m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
-      fs.stat(file, (err, st) => {
-        if (err || !st.isFile()) { res.writeHead(404); return res.end(); }
-        const type = TYPES[path.extname(file)] || 'application/octet-stream', r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
-        if (r) {
-          const a = r[1] ? +r[1] : 0, b = r[2] ? Math.min(+r[2], st.size - 1) : st.size - 1;
-          res.writeHead(206, { 'Content-Type': type, 'Content-Length': b - a + 1, 'Content-Range': `bytes ${a}-${b}/${st.size}`, 'Accept-Ranges': 'bytes' });
-          return fs.createReadStream(file, { start: a, end: b }).pipe(res);
-        }
-        res.writeHead(200, { 'Content-Type': type, 'Content-Length': st.size, 'Accept-Ranges': 'bytes' });
-        fs.createReadStream(file).pipe(res);
-      });
-    }).listen(0, '127.0.0.1', () => done(srv));
-  });
-}
+const serve = () => serveRepo(REPO);
 
 const DESK = { viewport: { width: 1440, height: 900 } };
 const LAP = { viewport: { width: 1366, height: 768 } };
 const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: BROWSER !== 'firefox', hasTouch: true };
-const wait = (p, ms) => p.waitForTimeout(ms);
 const WAIT = +(process.env.WAIT || 5000);
 
-async function open(ctx, url) {
-  const p = await ctx.newPage();
-  await p.addInitScript(() => { try { localStorage.setItem('om-sound', 'off'); } catch (e) {} });
-  await p.goto(url, { waitUntil: 'load' });
-  await wait(p, 1500);
-  return p;
-}
-async function toWorld(p, w) {
-  await p.evaluate((w) => document.querySelector(`.worlds [data-to-world="${w}"]`).click(), w);
-  await wait(p, 2800);
-}
-// jump straight to a scroll position (no smooth scroll, the page's snap paused for the jump and restored after)
-async function jump(p, y) {
-  await p.evaluate((y) => {
-    const r = document.documentElement, b = r.style.scrollBehavior, s = r.style.scrollSnapType;
-    r.style.scrollBehavior = 'auto'; r.style.scrollSnapType = 'none'; scrollTo(0, y);
-    requestAnimationFrame(() => { r.style.scrollSnapType = s; r.style.scrollBehavior = b; });
-  }, y);
-}
 const barState = (p) => p.evaluate(() => {
   const w = document.documentElement.getAttribute('data-world') || 'salon', bars = [...document.querySelectorAll('.wdoor')];
   const b = w === 'coaching' ? (bars[1] || bars[0]) : bars[0];

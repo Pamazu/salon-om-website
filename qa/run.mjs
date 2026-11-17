@@ -1,5 +1,5 @@
 // Runs r4.mjs the same way on any sDelegate machine (the PC runs PowerShell, the Mac Studio bash): installs the
-// packages and Playwright's browser if missing, then the checks.  node run.mjs [shots|snap|shots,snap] [webkit|chromium] [m,g,s]
+// packages and Playwright's browser if missing, then the checks.  node run.mjs [shots|snap|shots,snap|gaps] [webkit|chromium] [m,g,s]
 // PW=<version> installs that Playwright instead of package.json's. If the machine's shared browser folder is locked or
 // not writable (the PC's, 11 Nov), the browser goes into this run's own folder (./pw) instead.
 import { execSync } from 'node:child_process';
@@ -17,4 +17,5 @@ const run = (cmd) => { try { execSync(cmd, { stdio: 'inherit' }); return true; }
 run(process.env.PW ? `npm i --no-audit --no-fund --silent playwright@${process.env.PW}` : 'npm i --no-audit --no-fund --silent');
 const install = `npx playwright install ${process.env.BROWSER || 'webkit'}`;
 if (!run(install)) { process.env.PLAYWRIGHT_BROWSERS_PATH = path.resolve('pw'); console.log('browsers in', process.env.PLAYWRIGHT_BROWSERS_PATH); run(install); }
-await import('./r4.mjs');
+// gaps (task cf6eeff6): every section's spacing measured and the gaps off its rhythm flagged (gaps.mjs); the rest is r4.mjs
+await import(only === 'gaps' ? './gaps.mjs' : './r4.mjs');
