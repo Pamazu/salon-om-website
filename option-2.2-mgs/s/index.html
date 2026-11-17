@@ -2878,7 +2878,9 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
    rail's ivory, with the site's in-out ease; each label shows as it lands, then settles, and the line unthreads towards
    the rail behind them. Scrolling back up flies them back in the same order and the line draws itself again.
    Played in time, not scrubbed, so a slide's short snap never rushes it; turning round mid-flight sends each stop back
-   from where it is. Replaces round 5's numbers-only morph (its CSS still targeted the old list, so the names and the
+   from where it is. The moment the preview starts to leave, all five lift off where the reader saw them and stay there
+   while the page slides away beneath them, already turning to the rail's ivory, so a later stop never starts from
+   wherever the slide has carried it (QA 17 Nov: in Safari stops 03 to 05 left from the top edge, grey on the photo). Replaces round 5's numbers-only morph (its CSS still targeted the old list, so the names and the
    line stayed behind). Off in ?shot and with reduced motion, where the rail simply fades in with the steps. */
 (function () {
   var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;
@@ -2889,6 +2891,7 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
   sec.classList.add('pv--morph');
 
   var DUR = 1200, GAP = 150, LAND = .8, EASE = 'cubic-bezier(.65, 0, .35, 1)';   // the site's --io
+  var TONE = .35;   // a traveller has taken its new tone a third of the way, as the page under it has changed by then
   var svg = sec.querySelector('.ln__svg'), layer = document.createElement('div');
   layer.className = 'vfly'; layer.setAttribute('aria-hidden', 'true'); document.body.appendChild(layer);
   function traveller(cls, text) { var c = document.createElement('span'); c.className = cls; c.textContent = text; layer.appendChild(c); return c; }
@@ -2900,7 +2903,7 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
   var lt = links.map(function () { return 0; });   // each label's show-then-settle timer
 
   function rgb(s) { var m = s.match(/[\d.]+/g) || [0, 0, 0]; return [+m[0], +m[1], +m[2], m[3] == null ? 1 : +m[3]]; }
-  function mix(a, b, t) { return 'rgba(' + [0, 1, 2].map(function (i) { return Math.round(a[i] + (b[i] - a[i]) * t); }).join(',') + ',' + (a[3] + (b[3] - a[3]) * t).toFixed(3) + ')'; }
+  function mix(a, b, t, ta) { if (ta == null) ta = t; return 'rgba(' + [0, 1, 2].map(function (i) { return Math.round(a[i] + (b[i] - a[i]) * t); }).join(',') + ',' + (a[3] + (b[3] - a[3]) * ta).toFixed(3) + ')'; }
   function box(el) {          // the words' own box, not the block's full column
     var r = document.createRange(); r.selectNodeContents(el); var b = r.getBoundingClientRect();
     return b.width ? b : el.getBoundingClientRect();
@@ -2914,8 +2917,20 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
     o.tm.forEach(clearTimeout); o.an = []; o.tm = [];
   }
 
+  function pin(o, k) {        // lift off where the reader saw it and wait there for its turn, taking the rail's tone
+    o.fly = true;
+    var rc = rgb(getComputedStyle(links[k]).color), tone = 'rgba(' + rc[0] + ',' + rc[1] + ',' + rc[2] + ',1)';   // the rail's ivory, at full strength in the air
+    [[o.cn, o.n], [o.cm, o.nm]].forEach(function (p) {
+      var c = p[0], src = p[1]; dress(c, src);
+      var h = c.offsetHeight, sb = box(src), ink = getComputedStyle(src).color;
+      c.style.transform = 'translate3d(' + sb.left.toFixed(1) + 'px,' + (sb.top + (sb.height - h) / 2).toFixed(1) + 'px,0) scale(1)';
+      c.style.color = ink; c.style.opacity = '1'; c.style.visibility = 'visible'; c._pin = true;
+      o.an.push(c.animate([{ color: ink }, { color: tone }], { duration: DUR * TONE, easing: EASE, fill: 'forwards' }));
+    });
+  }
+
   function travel(c, src, dst, align, dir, f, dy, cRail) {
-    var on = o_on(c);
+    var on = o_on(c), full = !on || c._pin; c._pin = false;
     if (!on) dress(c, src);
     var w = c.offsetWidth, h = c.offsetHeight, sb = box(src), db = box(dst), s1 = db.height / h;
     var rx = align === 'c' ? db.left + db.width / 2 - w * s1 / 2 : align === 'r' ? db.right - w * s1 : db.left - 10 - w * s1;
@@ -2931,16 +2946,16 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
       var t = i / 12, u = 1 - t;
       var x = u * u * a.x + 2 * u * t * cx + t * t * z.x, y = u * u * a.y + 2 * u * t * cy + t * t * z.y, s = a.s + (z.s - a.s) * t;
       var op = dir === 'out' ? (t < f ? o0 : o0 * (1 - (t - f) / (1 - f))) : (t < f ? o0 + (1 - o0) * t / f : 1);
-      ks.push({ offset: t, transform: 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')', color: mix(c0, c1, t), opacity: op.toFixed(3) });
+      ks.push({ offset: t, transform: 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')', color: mix(c0, c1, Math.min(1, t / TONE), dir === 'out' ? Math.max(0, (t - .7) / .3) : Math.min(1, t / TONE)), opacity: op.toFixed(3) });   // dims to the rail's quiet tone only as it lands
     }
     c.style.visibility = 'visible';
-    return c.animate(ks, { duration: on ? DUR * .8 : DUR, easing: EASE, fill: 'forwards' });
+    return c.animate(ks, { duration: full ? DUR : DUR * .8, easing: EASE, fill: 'forwards' });
   }
   function o_on(c) { return c.style.visibility === 'visible'; }
 
   function settle(o, k, where) {
     halt(o); o.fly = false; o.at = where;
-    o.cn.style.visibility = o.cm.style.visibility = 'hidden';
+    o.cn.style.visibility = o.cm.style.visibility = 'hidden'; o.cn._pin = o.cm._pin = false;
     o.li.classList.toggle('is-flown', where === 'rail');
     links[k].classList.toggle('is-landed', where === 'rail');
     if (where === 'line') { clearTimeout(lt[k]); links[k].classList.remove('is-land'); }
@@ -2950,13 +2965,13 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
     } else rail.classList.remove('rail--fly');   // all on the rail: the engine keeps it on through the five steps
   }
   function launch(o, k, dir) {
-    o.fly = true;
+    halt(o); o.fly = true;    // a pinned traveller keeps the tone it has reached
     var lk = links[k], b = lk.querySelector('b'), sp = lk.querySelector('span'), lab = sp && sp.offsetWidth > 0;
     var dy = dir === 'in' ? -sec.getBoundingClientRect().top : 0;   // flying back: where the stop rests once the slide settles
     var cRail = rgb(getComputedStyle(lk).color);
     if (dir === 'in') { clearTimeout(lt[k]); lk.classList.remove('is-landed', 'is-land'); }
     o.an = [travel(o.cn, o.n, b, 'c', dir, dir === 'out' ? .85 : .15, dy, cRail),
-            travel(o.cm, o.nm, lab ? sp : b, lab ? 'r' : 'l', dir, .5, dy, cRail)];
+            travel(o.cm, o.nm, lab ? sp : b, lab ? 'r' : 'l', dir, lab ? .6 : .35, dy, cRail)];   // no label (the phone): the name gives way before it meets its number
     if (dir === 'out') o.tm.push(setTimeout(function () {
       lk.classList.add('is-landed', 'is-land'); clearTimeout(lt[k]);
       lt[k] = setTimeout(function () { lk.classList.remove('is-land'); }, 1100);   // its label shows as it lands, then settles
@@ -2968,6 +2983,7 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
     // not yet lifted off (still waiting its turn): it simply stays where it is
     if (!fl && was !== 'line' && was !== 'rail') { settle(o, k, dir === 'in' ? 'line' : 'rail'); return; }
     o.at = dir;
+    if (dir === 'out' && !fl) pin(o, k);   // pinned travellers count as flying: turning round sends them back to the line from there
     if (dir === 'out') o.li.classList.add('is-flown');
     o.tm.push(setTimeout(function () { launch(o, k, dir); }, fl ? 0 : delay));
   }
