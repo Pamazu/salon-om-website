@@ -367,10 +367,29 @@
   // a refused start (Safari will not start a muted film in a window it judges unseen, e.g. another desktop or a hidden
   // Stage Manager set, nor any film on an iPhone in Low Power Mode until a tap) leaves the film's photo drifting slowly
   // instead of standing still (mgs.css is-held); a tap, click or key still starts it
-  function refused(v) { var f = v.closest('.ch__top, .s__zoom'); if (f) f.classList.add('is-held'); }
+  function refused(v) { var f = v.closest('.ch__top, .s__zoom'); if (f) f.classList.add('is-held'); if (!refusing) { refusing = true; films.forEach(function (x) { if (x._mine) asImage(x); }); } asImage(v); }
+  /* task b36dde1f (J 17 Nov: "When you go into that section and scroll, the video is static and doesn't move at all. When
+     the image at the top disappears, a few seconds later the video starts reproducing"): measured in J's own Safari (Low
+     Power Mode on, even on power): until the person's first click or key Safari refuses every <video>, but the same film
+     laid in as <img src="film.mp4"> moves by itself (57 % of its pixels changed between two frames, the <video> 0 %). So
+     once a film is refused, each film (this one at once, the others as they are attached two screens ahead) is laid into
+     its frame under the <video> as that moving image, fading in over the photo, and moves alongside it from the moment its
+     step is on screen; a later click or key still starts the <video> itself, which fades in over it. The hero, which slows
+     to a stillness, keeps its drifting photo. Browsers that cannot show a film as an image (Chromium) never refuse it. */
+  var refusing = false;
+  function asImage(v) {
+    if (v._img || calm || v.hasAttribute('data-stop')) return;
+    var im = document.createElement('img'); im.className = 'film-img'; im.alt = ''; im.setAttribute('aria-hidden', 'true');
+    im.addEventListener('load', function () { im.classList.add('is-on'); });
+    // over the <video> (a refused start still fires "playing" then "pause", which shows the <video>'s still first frame)
+    // and under the photo; it steps aside once the <video> truly plays, its clock moving after a click or key
+    v.addEventListener('timeupdate', function () { if (!v.paused && v.currentTime > 0.2) im.classList.remove('is-on'); });
+    im.src = v.getAttribute('data-src'); v.parentNode.insertBefore(im, v.nextSibling); v._img = im;
+  }
   function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
   function attach(v) {
     if (v._mine || calm) return; v._mine = true;
+    if (refusing) asImage(v);
     var url = v.getAttribute('data-src');
     v.addEventListener('playing', function () { v.classList.add('is-on'); });
     v.addEventListener('canplay', function () { go(v); });

@@ -1,7 +1,8 @@
 // Task b36dde1f: Low Power Mode, simulated as Safari does it on J's MacBook (measured 17 Nov): every film's play() is refused
 // (NotAllowedError) until the person clicks or presses a key; scrolling never counts. For M, G and S at 1440 x 900 and
 // 390 x 844: the hero's frame and every step film's frame are marked is-held and their photo drifts (its transform moves
-// between 1.5 s and 6 s after arriving, no jump at the start), and a key press then starts the film (playing, is-on).
+// between 1.5 s and 6 s after arriving, no jump at the start), each step film is laid in as its moving image (<img> of the
+// film, which Safari plays in Low Power Mode: task b36dde1f), and a key press then starts the film (playing, is-on).
 //   node run.mjs held [chromium|webkit] [m,g,s]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +20,7 @@ console.log(BROWSER, b.version());
 const res = { browser: BROWSER, started: new Date().toISOString(), runs: [] };
 const frame = (sel) => `(() => { const v = document.querySelector(${JSON.stringify(sel)}); if (!v) return null; const f = v.closest('.ch__top, .s__zoom'), img = f && f.querySelector('img');
   const top = f && f.querySelector(':scope > .ch__top > img');
-  return { held: !!(f && f.classList.contains('is-held')), tf: img ? getComputedStyle(img).transform : null, topTf: top ? getComputedStyle(top).transform : null, paused: v.paused, on: v.classList.contains('is-on'), t: Math.round(v.currentTime * 100) / 100 }; })()`;
+  const im = f && f.querySelector('.film-img'); return { stop: v.hasAttribute('data-stop'), img: im ? im.getAttribute('src') === v.getAttribute('data-src') : false, held: !!(f && f.classList.contains('is-held')), tf: img ? getComputedStyle(img).transform : null, topTf: top ? getComputedStyle(top).transform : null, paused: v.paused, on: v.classList.contains('is-on'), t: Math.round(v.currentTime * 100) / 100 }; })()`;
 for (const v of VERS) for (const [w, opt] of SIZES) {
   const ctx = await b.newContext(opt);
   await ctx.addInitScript(() => {
@@ -42,9 +43,11 @@ for (const v of VERS) for (const [w, opt] of SIZES) {
     await page.screenshot({ path: path.join(OUT, `${v}-${w}-${t.id}-1.5s.png`) });
     await page.waitForTimeout(4500); const z = await page.evaluate(frame(t.sel));
     await page.screenshot({ path: path.join(OUT, `${v}-${w}-${t.id}-6s.png`) });
-    const ok = !!(a && z && z.held && a.tf && z.tf && a.tf !== z.tf && z.paused && (z.topTf === null || z.topTf === z.tf));
+    // a refused film is laid in as its moving image (mgs.js asImage; Safari plays it, Chromium cannot show it); a film that
+    // slows to a stillness (data-stop) keeps only its drifting photo
+    const ok = !!(a && z && z.held && a.tf && z.tf && a.tf !== z.tf && z.paused && (z.topTf === null || z.topTf === z.tf) && z.img === !z.stop);
     run.films.push({ id: t.id, ok, a, z });
-    console.log('held', v, w, t.id, ok ? 'pass' : 'FAIL', `held ${z && z.held} drift ${a && a.tf} -> ${z && z.tf} paused ${z && z.paused}`);
+    console.log('held', v, w, t.id, ok ? 'pass' : 'FAIL', `held ${z && z.held} image ${z && z.img} drift ${a && a.tf} -> ${z && z.tf} paused ${z && z.paused}`);
   }
   // the person presses a key: the film on screen starts and fades in
   const last = targets[targets.length - 1];

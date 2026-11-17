@@ -770,6 +770,11 @@ html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none
 /* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
    block to html[data-motion="calm"]; it sits after the drift so it wins) */
 @media (prefers-reduced-motion: reduce) { :is(.is-held > img, .is-held > .ch__top > img) { animation: none; } }
+/* task b36dde1f: a film Safari refuses is laid in as a moving image (mgs.js asImage: <img src="film.mp4">, which Safari plays
+   by itself in Low Power Mode), over its <video> (whose refused start still shows a still frame) and under the photo; it fades in once it shows a frame and
+   steps aside once the <video> truly plays */
+html[data-variant^="2.2-"] .film-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s var(--io-soft); }
+html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
 /* "Guest made with AI" (task 1c6ed2aa; StoryLegal, 17 Nov 2026): the words sit in a corner of the picture they label,
    always visible, as text on the page, never a hover or tap icon. A small forest pill so they read on any photo
    (ivory on forest at .8, AA at this size over white). One block (mgs_sections.ai_mark) for every generated picture or
