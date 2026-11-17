@@ -7,6 +7,15 @@
 <meta name="description" content="Where Beauty and Inner Work Belong. Salon OM, an Aveda Concept Salon, and Inner Work with Maggie, both with Maggie Woodward.">
 <meta name="theme-color" content="#15100C">
 <link rel="icon" type="image/svg+xml" href="brand/salon-om-om-small-forest.svg">
+<script>(function () {
+  var d = document.documentElement, h = location.hostname, mm = window.matchMedia && window.matchMedia.bind(window);
+  var review = /(^|\.)(web\.app|firebaseapp\.com)$/.test(h) || h === 'localhost' || /^127\./.test(h) || h === '';
+  var asks = !!(mm && mm('(prefers-reduced-motion: reduce)').matches);
+  d.setAttribute('data-motion', asks && !review ? 'calm' : 'full');
+  if (asks && review) window.matchMedia = function (q) {
+    return mm(/prefers-reduced-motion:\s*reduce/.test(q) ? 'not all' : /prefers-reduced-motion:\s*no-preference/.test(q) ? 'all' : q);
+  };
+})();</script>
 <style>
 /* Salon OM, Option 2: "OM is everything."  v2
    A full-screen slideshow: every section fills the viewport and the page snaps from one to the next
@@ -363,10 +372,9 @@ p { margin: 0; }
   .ch__title { font-size: clamp(72px, 13vw, 200px); }
 }
 /* ---------- reduced motion: the same choreography, gentler ---------- */
-@media (prefers-reduced-motion: reduce) {
-  :root { --m-film: 1.06; --m-slide: 14px; --m-blur: 4px; --m-par: .25; }
-  html { scroll-behavior: auto; }
-}
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] {--m-film: 1.06; --m-slide: 14px; --m-blur: 4px; --m-par: .25;}
+html[data-motion="calm"] {scroll-behavior: auto;}
 
 
 /* ======================================================================
@@ -1566,11 +1574,10 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 html[data-shot] .mn__ph, html[data-shot] .cr__ph { clip-path: none !important; }
 html[data-shot] .cl__ph { clip-path: none !important; }
 html[data-shot] .cl__ph img { transform: none !important; }
-@media (prefers-reduced-motion: reduce) {
-  .mn__ph, .cr__ph { clip-path: none; transition: opacity .6s var(--io); }
-  .cl__ph { clip-path: none; }
-  .cl__ph img { transform: none !important; }
-}
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] .mn__ph, html[data-motion="calm"] .cr__ph {clip-path: none; transition: opacity .6s var(--io);}
+html[data-motion="calm"] .cl__ph {clip-path: none;}
+html[data-motion="calm"] .cl__ph img {transform: none !important;}
 
 /* ==== round 4 (task 2846db82, J 11 Nov and the CEO MA's Safari QA) =============================================== */
 /* the closing screen: the photo's column had no width of its own (only aspect-ratio x height), so Safari sized it from the
@@ -1633,7 +1640,9 @@ html[data-switch="b"].wdoor-on.wdoor-hold .wdoor { opacity: 0; pointer-events: n
 }
 html[data-shot] .vs__ph { clip-path: none !important; }
 html[data-shot] .vs__ph img { transform: none !important; }
-@media (prefers-reduced-motion: reduce) { .vs__ph { clip-path: none; } .vs__ph img { transform: none; } }
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] .vs__ph {clip-path: none;}
+html[data-motion="calm"] .vs__ph img {transform: none;}
 
 /* ---- round 4 light sections (reference page salon-om-mgs-refs r5): each its own ground and shape -------------------- */
 /* the line: steps as stops on one drawn wave (Heyday). One block for G's visit preview and Inner Work's path */
@@ -1664,7 +1673,9 @@ html[data-shot] .vs__ph img { transform: none !important; }
 .lnsec__after { margin: 0; flex-basis: 100%; max-width: 60ch; color: var(--ink-soft); }
 html[data-shot] .ln__svg { clip-path: none !important; transition: none !important; }
 html[data-shot] .ln__dot { transform: none !important; transition: none !important; }
-@media (prefers-reduced-motion: reduce) { .ln__svg { clip-path: none; transition: none; } .ln__dot { transform: none; transition: none; } }
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] .ln__svg {clip-path: none; transition: none;}
+html[data-motion="calm"] .ln__dot {transform: none; transition: none;}
 @media (max-width: 1023px) {
   /* on a phone the line runs down the left and the stops follow it */
   .ln__svg { display: none; }
@@ -1733,14 +1744,12 @@ html[data-variant="2.2-g"] #pause { --br-glow: rgba(255, 206, 150, .34); --br-li
 #pause .br__ring { position: absolute; z-index: 1; inset: 0; border-radius: var(--br-shape); border: 1px solid var(--br-line); opacity: 0; pointer-events: none; }
 #pause.is-active .br__arch, html[data-shot] #pause .br__arch { clip-path: inset(0 0 0 0 round var(--br-shape)); }
 html[data-shot] #pause .br__halo { opacity: .8; transform: scale(.9); }
-@media (prefers-reduced-motion: no-preference) {
-  /* the breath starts once the arch has risen (2 s) and runs while the slide is on screen */
-  #pause.is-active .br__arch img { animation: br-photo 10s var(--br-in) 2s infinite; }
-  #pause.is-active .br__halo { opacity: 1; animation: br-halo 10s var(--br-in) 2s infinite; }
-  #pause.is-active .br__ring { animation: br-ring 10s linear 2s infinite; }
-  #pause.is-active .br__ring + .br__ring { animation-delay: 3.2s; }
-  html[data-shot] #pause .br__arch img, html[data-shot] #pause .br__halo, html[data-shot] #pause .br__ring { animation: none; }
-}
+/* motion switch (was prefers-reduced-motion: no-preference) */
+html:not([data-motion="calm"]) #pause.is-active .br__arch img {animation: br-photo 10s var(--br-in) 2s infinite;}
+html:not([data-motion="calm"]) #pause.is-active .br__halo {opacity: 1; animation: br-halo 10s var(--br-in) 2s infinite;}
+html:not([data-motion="calm"]) #pause.is-active .br__ring {animation: br-ring 10s linear 2s infinite;}
+html:not([data-motion="calm"]) #pause.is-active .br__ring + .br__ring {animation-delay: 3.2s;}
+html:not([data-motion="calm"])[data-shot] #pause .br__arch img, html:not([data-motion="calm"])[data-shot] #pause .br__halo, html:not([data-motion="calm"])[data-shot] #pause .br__ring {animation: none;}
 @keyframes br-photo { 0%, 100% { transform: scale(1); filter: brightness(.9) saturate(.92); } 40% { transform: scale(1.06); filter: brightness(1.06) saturate(1.02); } }
 @keyframes br-halo { 0%, 100% { transform: scale(.72); opacity: .45; } 40% { transform: scale(1.04); opacity: 1; } }
 /* each out-breath sends one arch-shaped ripple out from the window, easing out as it fades */
@@ -1889,7 +1898,8 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
    the photo masked the top 60% and the scrim the rest, so the film read as a still. */
 .ch--stack .ch__top { transition: opacity 1.8s var(--io-soft); }
 .ch--stack.is-active .ch__top { opacity: 0; transition-delay: 2.8s; }
-@media (prefers-reduced-motion: reduce) { .ch--stack.is-active .ch__top { opacity: 1; } }
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] .ch--stack.is-active .ch__top {opacity: 1;}
 /* round 5 (task 2846db82): each M/G/S picture's focus point is a variable, because the tweak layer (tweaks.js, shared with
    2.2) clears an image's inline object-position on load when no tweak is saved, so every focus point was centred and the
    menu panel cut the generated guests out of Cut and Style, Extensions and Finishing Touches; a saved tweak still wins */
@@ -1953,6 +1963,10 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: aut
 /* the film's poster and, on a step, the real photo laid over it move as one stack (same box, same transform) */
 html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
 html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none; }
+/* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
+   block to html[data-motion="calm"]; it sits after the drift so it wins) */
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img) {animation: none;}
 </style>
 </head>
 <body>
@@ -2323,7 +2337,7 @@ html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="cd41e1d99c5b";</script>
+<script>window.OM_BUILD="0eb34982a570";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -3377,15 +3391,17 @@ html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none
    again after any swap, once it can play, and on every tap (a phone in Low Power Mode plays films only from a tap). */
 (function () {
   var films = [].slice.call(document.querySelectorAll('video[data-src]')), toggle = document.getElementById('films-toggle'), cache = {};
+  // the one motion switch (mgs_parts.MOTION_HEAD): on the launched site a device asking for Reduce Motion gets the photos, no films
+  var calm = document.documentElement.getAttribute('data-motion') === 'calm';
   if (!films.length || !('IntersectionObserver' in window)) return;
   function held() { return toggle && toggle.getAttribute('aria-pressed') === 'true'; }
   // the engine sets _want (on screen) and _stopped (the hero that slows to stillness); this only asks again
   // a refused start (Safari in Low Power Mode refuses every film until a tap, click or key; scrolling never counts,
   // measured on J's MacBook 17 Nov) leaves the film's photo drifting slowly instead of standing still (mgs.css is-held)
   function refused(v) { var f = v.closest('.ch__top, .s__zoom'); if (f) f.classList.add('is-held'); }
-  function go(v) { if (!v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
+  function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
   function attach(v) {
-    if (v._mine) return; v._mine = true;
+    if (v._mine || calm) return; v._mine = true;
     var url = v.getAttribute('data-src');
     v.addEventListener('playing', function () { v.classList.add('is-on'); });
     v.addEventListener('canplay', function () { go(v); });

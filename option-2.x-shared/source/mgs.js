@@ -328,15 +328,17 @@
    again after any swap, once it can play, and on every tap (a phone in Low Power Mode plays films only from a tap). */
 (function () {
   var films = [].slice.call(document.querySelectorAll('video[data-src]')), toggle = document.getElementById('films-toggle'), cache = {};
+  // the one motion switch (mgs_parts.MOTION_HEAD): on the launched site a device asking for Reduce Motion gets the photos, no films
+  var calm = document.documentElement.getAttribute('data-motion') === 'calm';
   if (!films.length || !('IntersectionObserver' in window)) return;
   function held() { return toggle && toggle.getAttribute('aria-pressed') === 'true'; }
   // the engine sets _want (on screen) and _stopped (the hero that slows to stillness); this only asks again
   // a refused start (Safari in Low Power Mode refuses every film until a tap, click or key; scrolling never counts,
   // measured on J's MacBook 17 Nov) leaves the film's photo drifting slowly instead of standing still (mgs.css is-held)
   function refused(v) { var f = v.closest('.ch__top, .s__zoom'); if (f) f.classList.add('is-held'); }
-  function go(v) { if (!v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
+  function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
   function attach(v) {
-    if (v._mine) return; v._mine = true;
+    if (v._mine || calm) return; v._mine = true;
     var url = v.getAttribute('data-src');
     v.addEventListener('playing', function () { v.classList.add('is-on'); });
     v.addEventListener('canplay', function () { go(v); });

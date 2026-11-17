@@ -598,6 +598,7 @@ def page(cfg):
 ''' + (f'<script>\n{open(V + "mgs.js").read()}</script>\n' if '-' in vkey else '')
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     for f in css_files(vkey): css += '\n' + open(V + f).read()
+    if '-' in vkey: import mgs_parts as MP; css = MP.motion_css(css)      # M/G/S: one motion switch (task b36dde1f)
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused
@@ -607,7 +608,7 @@ def page(cfg):
            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + title +
            f'<meta name="description" content="{E(cfg["desc"])}">\n<meta name="theme-color" content="#15100C">\n'
            '<link rel="icon" type="image/svg+xml" href="brand/salon-om-om-small-forest.svg">\n'
-           '<style>\n' + css + '</style>\n</head>\n<body>\n' + body + '</body>\n</html>\n')
+           + (MP.MOTION_HEAD if '-' in vkey else '') + '<style>\n' + css + '</style>\n</head>\n<body>\n' + body + '</body>\n</html>\n')
     # the artifact page has no <html> of its own: set the theme from script before paint
     art = art.replace('<script>\n', f'<script>document.documentElement.setAttribute("data-theme","{cfg["theme"]}");document.documentElement.setAttribute("data-world","salon");document.documentElement.setAttribute("data-variant","{key}");</script>\n<script>\n', 1)
     return art, doc

@@ -278,3 +278,56 @@ def iw_end(legend, exact=False):
                         brand_lines=[M.FOOTER['salon']], copyright=M.FOOTER['copyright'],
                         disclaimer=M.DISCLAIMER, legend=legend,
                         explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))
+
+
+# ---- one motion switch (task b36dde1f; CEO MA 17 Nov, under J's direction) ----------------------------------------------
+# The review hosts (*.web.app, *.firebaseapp.com, loopback, a file) play full motion whatever the device asks; the launched
+# site honours Reduce Motion ("calm": fades instead of movement). Every gated motion reads this one switch: the page's CSS
+# through html[data-motion] (motion_css rewrites every prefers-reduced-motion block at build), its scripts through
+# matchMedia, which on a review host answers the reduced-motion questions as "no preference". M/G/S only.
+MOTION_HEAD = '''<script>(function () {
+  var d = document.documentElement, h = location.hostname, mm = window.matchMedia && window.matchMedia.bind(window);
+  var review = /(^|\\.)(web\\.app|firebaseapp\\.com)$/.test(h) || h === 'localhost' || /^127\\./.test(h) || h === '';
+  var asks = !!(mm && mm('(prefers-reduced-motion: reduce)').matches);
+  d.setAttribute('data-motion', asks && !review ? 'calm' : 'full');
+  if (asks && review) window.matchMedia = function (q) {
+    return mm(/prefers-reduced-motion:\\s*reduce/.test(q) ? 'not all' : /prefers-reduced-motion:\\s*no-preference/.test(q) ? 'all' : q);
+  };
+})();</script>
+'''
+
+
+def _split_selectors(sel):
+    out, depth, cur = [], 0, ''
+    for ch in sel:
+        depth += (ch == '(') - (ch == ')')
+        if ch == ',' and depth == 0: out.append(cur.strip()); cur = ''
+        else: cur += ch
+    return out + ([cur.strip()] if cur.strip() else [])
+
+
+def motion_css(css):
+    """Every @media (prefers-reduced-motion: reduce|no-preference) block becomes rules under html[data-motion]."""
+    import re
+    mq, out, i = re.compile(r'@media \(prefers-reduced-motion: (reduce|no-preference)\)\s*\{'), [], 0
+    while True:
+        m = mq.search(css, i)
+        if not m: out.append(css[i:]); break
+        out.append(css[i:m.start()])
+        j, depth = m.end(), 1
+        while depth: depth += (css[j] == '{') - (css[j] == '}'); j += 1
+        body = re.sub(r'/\*.*?\*/', '', css[m.end():j - 1], flags=re.S)
+        assert '@' not in body, 'motion_css: an at-rule inside a reduced-motion block'
+        cond = '[data-motion="calm"]' if m.group(1) == 'reduce' else ':not([data-motion="calm"])'
+        rules = []
+        for sel, decl in re.findall(r'([^{}]+)\{([^{}]*)\}', body):
+            sels = []
+            for s in _split_selectors(sel):
+                if s.startswith(':root'): s = 'html' + cond + s[5:]
+                elif re.match(r'html(?![\w-])', s): s = 'html' + cond + s[4:]
+                else: s = 'html' + cond + ' ' + s
+                sels.append(s)
+            rules.append(', '.join(sels) + ' {' + decl.strip() + '}')
+        out.append(f'/* motion switch (was prefers-reduced-motion: {m.group(1)}) */\n' + '\n'.join(rules))
+        i = j
+    return ''.join(out)

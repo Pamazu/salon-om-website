@@ -767,3 +767,6 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: aut
 /* the film's poster and, on a step, the real photo laid over it move as one stack (same box, same transform) */
 html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
 html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none; }
+/* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
+   block to html[data-motion="calm"]; it sits after the drift so it wins) */
+@media (prefers-reduced-motion: reduce) { :is(.is-held > img, .is-held > .ch__top > img) { animation: none; } }
