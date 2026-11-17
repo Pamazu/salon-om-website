@@ -393,6 +393,22 @@
   }, { rootMargin: '0px 0px 200% 0px' });
   of.forEach(function (vs, s) { io.observe(s); });
   ['touchend', 'click', 'keydown'].forEach(function (ev) { addEventListener(ev, function () { films.forEach(go); }, { passive: true }); });
+  /* task b36dde1f (J 17 Nov: "When you go into that section and scroll, the video is static ... a few seconds later the
+     video starts"): a person's tap, click or key unlocks EVERY film, not only the one on screen. Safari in Low Power Mode
+     refuses a muted film's play() (NotAllowedError, every 1.5 s retry, measured in J's own Safari 17 Nov) until that very
+     film was asked to play inside a gesture, film by film; so the next step's film stood still, its photo drifting, until
+     his next click or key. Inside the gesture each film not yet seen playing is asked to play, and one not on screen is
+     paused at once: it then starts by itself, alongside its photo, as soon as its step comes on screen. */
+  function unlock() {
+    if (calm || held()) return;
+    films.forEach(function (v) {
+      if (v._played || v._stopped) return;
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      if (!v._want) v.pause();
+    });
+  }
+  films.forEach(function (v) { v.addEventListener('playing', function () { v._played = true; }); });
+  ['pointerdown', 'touchend', 'click', 'keydown'].forEach(function (ev) { addEventListener(ev, unlock, { capture: true, passive: true }); });
   // a wanted film that is still paused a moment after it came into view (a refused play, a stalled start) is asked again
   setInterval(function () { if (!document.hidden) films.forEach(go); }, 1500);
 })();

@@ -2,6 +2,8 @@
 // (NotAllowedError) until the person clicks or presses a key; scrolling never counts. For M, G and S at 1440 x 900 and
 // 390 x 844: the hero's frame and every step film's frame are marked is-held and their photo drifts (its transform moves
 // between 1.5 s and 6 s after arriving, no jump at the start), and a key press then starts the film (playing, is-on).
+// Safari unlocks film by film (a film plays once it was itself asked to play inside a gesture), so after that one key a
+// step that was not on screen plays by itself 1.5 s after it comes in (`next`; J 17 Nov, the step film static on entry).
 //   node run.mjs held [chromium|webkit] [m,g,s]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,10 +25,12 @@ const frame = (sel) => `(() => { const v = document.querySelector(${JSON.stringi
 for (const v of VERS) for (const [w, opt] of SIZES) {
   const ctx = await b.newContext(opt);
   await ctx.addInitScript(() => {
-    const p0 = HTMLMediaElement.prototype.play; let unlocked = false;
-    for (const ev of ['click', 'keydown', 'touchend']) addEventListener(ev, () => { unlocked = true; }, true);
+    // film by film, as Safari does: a film plays only once it was itself asked to play inside a tap, click or key
+    const p0 = HTMLMediaElement.prototype.play; let gesture = false;
+    for (const ev of ['pointerdown', 'click', 'keydown', 'touchend']) addEventListener(ev, () => { gesture = true; setTimeout(() => { gesture = false; }, 0); }, true);
     HTMLMediaElement.prototype.play = function () {
-      if (!unlocked) return Promise.reject(new DOMException('refused: Low Power Mode, simulated', 'NotAllowedError'));
+      if (gesture) this.__unlocked = true;
+      if (!this.__unlocked) return Promise.reject(new DOMException('refused: Low Power Mode, simulated', 'NotAllowedError'));
       return p0.apply(this, arguments);
     };
   });
@@ -53,9 +57,17 @@ for (const v of VERS) for (const [w, opt] of SIZES) {
   run.key = { id: last.id, ok: !!(k && !k.paused && k.t > 0.3 && k.on), k };
   console.log('key', v, w, last.id, run.key.ok ? 'pass' : 'FAIL', `paused ${k && k.paused} t ${k && k.t} on ${k && k.on}`);
   await page.screenshot({ path: path.join(OUT, `${v}-${w}-${last.id}-after-key.png`) });
+  // J 17 Nov: after that one key, a step not on screen when it was pressed plays by itself as it comes in, alongside its photo
+  const next = targets[1];
+  if (next) {
+  await page.evaluate((id) => { const r = document.documentElement; r.style.scrollBehavior = 'auto'; scrollTo(0, document.getElementById(id).getBoundingClientRect().top + scrollY); r.style.scrollBehavior = ''; }, next.id);
+  await page.waitForTimeout(1500); const n = await page.evaluate(frame(next.sel));
+  run.next = { id: next.id, ok: !!(n && !n.paused && n.t > 0.3), n };
+  console.log('next', v, w, next.id, run.next.ok ? 'pass' : 'FAIL', `paused ${n && n.paused} t ${n && n.t} on ${n && n.on}`);
+  }   // S has no step films: nothing to check after the key
   res.runs.push(run); fs.writeFileSync(path.join(OUT, 'held.json'), JSON.stringify(res, null, 1));
   await ctx.close();
 }
 await b.close(); srv.close();
-const all = res.runs.flatMap((r) => r.films.map((f) => f.ok).concat([r.key.ok]));
+const all = res.runs.flatMap((r) => r.films.map((f) => f.ok).concat([r.key.ok], r.next ? [r.next.ok] : []));
 console.log(`held: ${all.filter(Boolean).length}/${all.length} pass`);
