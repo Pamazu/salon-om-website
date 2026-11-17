@@ -129,8 +129,11 @@ SALON = [
   # voices slide below keeps the other six, so no quote shows twice
   # round 6 (task b9a04e51): C.M. and A.G., whose words the heading is made of, and the section's own reward in the
   # closing line (the Aveda line it carried stays in the opening's eyebrow and in Why Aveda)
-  (S.early_proof, dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[2], M.QUOTES[3]],
-                       line_k='', line=draft(G['early_reward']))),
+  # task 6e4ee413 (J 17 Nov: "The lighter inside and out can be replaced by the section words from our guests, is the one
+  # I like in terms of layout and animation"): the same words on the voices block, as M's voices lays out its eyebrow and
+  # heading: the forest ground, one centred quote at a time with its ink-in, the reward line under it
+  ('voices', dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[2], M.QUOTES[3]],
+                  reward=draft(G['early_reward']))),
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], draft(G['visit_rows'][k])) for k, s in enumerate(M.STEPS)])),
 ] + [step(k, extra=G['benefits'][k]) for k in range(5)] + [

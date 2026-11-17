@@ -251,9 +251,4 @@ def photo_deep_prose(d, world):
     """photo_prose on Inner Work's deeper sand (How we work together)"""
     return photo_prose(d, world).replace('class="s s--auto prose prose--photo"', 'class="s s--auto prose prose--photo prose--deep"', 1)
 
-def early_proof(d, world):
-    """G's short proof right after the hook (round 5, J 13 Nov and the CEO MA's cycle: Hook, then Proof early): two guest
-    voices and the Aveda line, the engine's proof block without team cards (G meets the team later), on ivory so it does
-    not repeat the clay of the visit preview that follows."""
-    from build import proof
-    return proof(dict(d, people=[])).replace('class="s proof"', 'class="s proof proof--early"', 1).replace('<div class="pf__team"></div>', '', 1)
+# early_proof (G's ivory two-quote proof, round 5) was retired by task 6e4ee413: G's early proof is the voices block now
