@@ -26,7 +26,7 @@ MASTERS = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictu
 # x0,y0,x1,y1; ADD covers clutter the clean copy removed that differs too softly for the threshold
 PHOTOS = {
     '10': ('10-color-bar.jpg', '10-color-bar-clean.png', '10-color-bar-5B3A1078.jpg', 'sr/10c.png', 55, [], [(690, 640, 990, 790)]),   # pump bottle, glass, cups
-    '11': ('11-styling-stations.jpg', '11-styling-stations-clean.png', '11-styling-stations-5B3A1083.jpg', 'sr/11c.png', 55, [], []),
+    '11': ('11-styling-stations.jpg', '11-styling-stations-clean.png', '11-styling-stations-5B3A1083.jpg', 'sr/11c.png', 55, [], [(50, 735, 250, 1240)]),   # the cart's legs over the black mat
     '6': ('6-shampoo-basins.jpg', '6-shampoo-basins-clean.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6c.png', 55, [], []),
 }
 OUT = {'10': '10-color-bar-clean.jpg', '11': '11-styling-stations-clean.jpg', '6': '6-shampoo-basins-clean.jpg'}
