@@ -156,6 +156,37 @@
     sync();
   });
 })();
+/* task 0e3c8e1c: a menu row opens when the mouse moves onto it, never when the page moves under a still mouse (a wheel
+   scroll, the settle's pull, a snap). engine.js opens a row on the browser's pointerenter and lets the menu drift again on
+   pointerleave, and browsers send both when the list slides under a pointer that has not moved. Here the browser's own
+   mouse enter/leave on a row stop at the menu, and the same two events are sent to engine.js only for the mouse's own
+   moves. engine.js is unchanged (2.2-2.4 share it); touch, click and keys never pass through here. */
+(function () {
+  var menus = [].slice.call(document.querySelectorAll('.mn'));
+  if (!menus.length || !window.PointerEvent) return;
+  var x = null, y = null, at = null, own = false;
+  function send(row, type) { own = true; try { row.dispatchEvent(new PointerEvent(type, { pointerType: 'mouse', clientX: x, clientY: y })); } finally { own = false; } }
+  menus.forEach(function (s) {
+    ['pointerenter', 'pointerleave'].forEach(function (type) {
+      s.addEventListener(type, function (e) {
+        if (!own && e.pointerType === 'mouse' && e.target.classList && e.target.classList.contains('mn__row')) e.stopImmediatePropagation();
+      }, true);
+    });
+  });
+  addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'mouse' || (e.clientX === x && e.clientY === y)) return;   // same spot: the page moved, not the mouse
+    x = e.clientX; y = e.clientY;
+    var row = e.target.closest ? e.target.closest('.mn .mn__row') : null;
+    if (row === at) return;
+    if (at) send(at, 'pointerleave');
+    at = row;
+    if (row) send(row, 'pointerenter');
+  }, { capture: true, passive: true });
+  // the mouse leaves the window: the row it was on lets go, as before
+  document.documentElement.addEventListener('pointerleave', function (e) {
+    if (e.pointerType === 'mouse' && at) { send(at, 'pointerleave'); at = null; x = y = null; }
+  });
+})();
 /* review captures only (task a2e5a9d0): ?shot&at=<section id> opens the page at that section, in its own world, so a
    screenshot service that cannot scroll or keep a #hash can still shoot every section. Never in a visitor's link. */
 (function () {
