@@ -239,7 +239,9 @@ function slowFilms(root) {
     return true;
   };
 }
+// VISIT_BEFORE: a checkout of the earlier build (sDelegate --mirror), or a commit of this repo's history
 function beforeRoot(sha) {
+  if (fs.existsSync(path.join(sha, 'option-2.2-mgs'))) return sha;
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'mgs-before-'));
   for (const v of VERS) {
     fs.mkdirSync(path.join(d, 'option-2.2-mgs', v), { recursive: true });
