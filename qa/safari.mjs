@@ -157,6 +157,7 @@ async function version(v) {
   const ids = await exec(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')].filter((s) => s.querySelector('.ch--stack, .ch__top') && s.querySelector('video')).map((s) => s.id));
   // the visit walks first, from fresh loads, before the jumps below have asked every film to play
   if (WHAT.includes('visit')) for (const d of DWELLS) { r['visit' + d] = await visit(v, d); save(); }
+  if (WHAT.includes('entry')) { r.entry = await entry(v); save(); }
   r.steps = [];
   if (WHAT.includes('sound')) {
     r.instrument = await exec(instrument);
@@ -224,6 +225,40 @@ async function visit(v, dwell) {
   }
   const plays = await exec(() => window.__fv.plays);
   return { dwell, steps, plays };
+}
+
+// entry (task b36dde1f, J 17 Nov: "When you go into that section and scroll, the video is static ... a few seconds later the
+// video starts"; approved-features row 16): entry.mjs's check in real Safari. From a fresh load, each step is reached by a
+// wheel swipe from just above it (Safari's own snap finishes it), and every 50 ms the page logs the step's visible height,
+// the film's clock, paused, readiness, the frames Safari actually decoded (an interrupted film keeps paused false but decodes
+// none), is-on, is-held and the photo's opacity. Pass: the clock and the decoded frames both advance within 1.5 s of the
+// step's first visible pixel while the photo is still fully on screen. ENTRY_CSS=<css> adds a style first (to find a cause).
+async function entry(v) {
+  await wd('POST', S('/url'), { url: siteOf(v) });
+  await sleep(2500);
+  if (process.env.ENTRY_CSS) await exec((c) => { const s = document.createElement('style'); s.textContent = c; document.head.appendChild(s); }, process.env.ENTRY_CSS);
+  const ids = await exec(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')].filter((s) => s.querySelector('.ch__top') && s.querySelector('.s__zoom > video')).map((s) => s.id));
+  const steps = [];
+  for (const id of ids) {
+    await jump(await topOf(id) - (await exec(() => innerHeight)) - 200); await sleep(1200);
+    await exec((id) => { const s = document.getElementById(id), v = s.querySelector('.s__zoom > video'), top = s.querySelector('.ch__top'), z = s.querySelector('.s__zoom');
+      const log = window.__entry = [], t0 = performance.now(); clearInterval(window.__entryTimer);
+      window.__entryTimer = setInterval(() => { const r = s.getBoundingClientRect(), vh = innerHeight, q = v.getVideoPlaybackQuality && v.getVideoPlaybackQuality();
+        log.push({ t: Math.round(performance.now() - t0), top: Math.round(r.top), vis: Math.max(0, Math.round(Math.min(r.bottom, vh) - Math.max(r.top, 0))),
+          ct: Math.round(v.currentTime * 1000) / 1000, paused: v.paused, rs: v.readyState, fr: v.webkitDecodedFrameCount != null ? v.webkitDecodedFrameCount : q ? q.totalVideoFrames : null,
+          on: v.classList.contains('is-on'), held: !!(z && z.classList.contains('is-held')), photo: top ? +getComputedStyle(top).opacity : null, active: s.classList.contains('is-active') }); }, 50); }, id);
+    try { await wheel(Math.round((await exec(() => innerHeight)) / 3), 30); } catch (e) { res.notes.push('entry wheel: ' + e.message); await jump(await topOf(id)); }
+    await sleep(4500);
+    const log = await exec(() => { clearInterval(window.__entryTimer); return window.__entry; });
+    const enter = log.find((s) => s.vis > 0), c0 = enter ? enter.ct : 0, f0 = enter ? enter.fr : 0;
+    const move = enter && log.find((s) => s.t >= enter.t && s.ct - c0 >= 0.1 && !s.paused && (s.fr == null || s.fr - f0 >= 3));
+    const delay = enter && move ? move.t - enter.t : null, ok = delay !== null && delay <= 1500 && (move.photo == null || move.photo >= 0.95);
+    await shot(`${v}-entry-${id}.png`);
+    steps.push({ id, ok, delay, enter, move, log });
+    const last = log[log.length - 1] || {};
+    console.log('entry', v, id, ok ? 'pass' : 'FAIL', `film moving ${delay === null ? 'never' : delay + ' ms'} after the step came on screen, photo ${move ? move.photo : '-'}; at the end t ${last.ct} frames ${last.fr} paused ${last.paused} rs ${last.rs} held ${last.held} top ${last.top}`);
+  }
+  return { css: process.env.ENTRY_CSS || null, steps };
 }
 
 // r4.mjs snap(): the same six steps on the tall sections of this version (1440 x 900), through WebDriver wheel actions

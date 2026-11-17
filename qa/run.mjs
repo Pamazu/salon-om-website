@@ -20,4 +20,4 @@ const install = `npx playwright install ${process.env.BROWSER || 'webkit'}`;
 if ((process.env.BROWSER || 'webkit') === 'webkit' && process.env.WEBKIT) console.log('webkit from the asset', process.env.WEBKIT);
 else if (!run(install)) { process.env.PLAYWRIGHT_BROWSERS_PATH = path.resolve('pw'); console.log('browsers in', process.env.PLAYWRIGHT_BROWSERS_PATH); run(install); }
 // gaps (task cf6eeff6): every section's spacing measured and the gaps off its rhythm flagged (gaps.mjs); the rest is r4.mjs
-await import(only === 'gaps' ? './gaps.mjs' : only === 'held' ? './held.mjs' : only === 'motion' ? './motion.mjs' : './r4.mjs');   // held (task b36dde1f): Low Power Mode, simulated
+await import(only === 'gaps' ? './gaps.mjs' : only === 'held' ? './held.mjs' : only === 'motion' ? './motion.mjs' : only === 'entry' ? './entry.mjs' : './r4.mjs');   // held (task b36dde1f): Low Power Mode, simulated

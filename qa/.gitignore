@@ -2,3 +2,6 @@ node_modules/
 out/
 out-safari-*/
 out-gaps-*/
+out-entry-*/
+out-held-*/
+out-motion/
