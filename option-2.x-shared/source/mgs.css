@@ -43,13 +43,23 @@
 .pv__row b { font: italic 300 clamp(26px, 2.2vw, 36px)/1 var(--serif); color: var(--forest-deep); }
 .pv__name { font: 300 clamp(28px, 2.6vw, 46px)/1 var(--serif); }
 .pv__line { font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
-/* the preview becomes the step rail (mgs.js, task 0ab956d4): the list holds still, each number travels to its own number
-   on the rail while the words and lines fade (--pf, the travel 0..1); the rows draw over the next slide as they go */
-.preview.pv--morph { overflow: visible; z-index: 2; }
-.preview.pv--morph .pv__list { transform: none; opacity: 1; }
-.preview.pv--morph .pv__row { border-color: rgba(23, 17, 13, calc(.14 * (1 - var(--pf, 0)))); }
-.preview.pv--morph .pv__name, .preview.pv--morph .pv__line { opacity: calc(1 - var(--pf, 0) * 1.8); transform: translate3d(calc(var(--pf, 0) * 3vw), 0, 0); }
-.preview.pv--morph .pv__row b { justify-self: start; will-change: transform; }
+/* the visit preview hands its five stops to the step rail (mgs.js, task 59b17d9c): each stop lifts off the line one after
+   another and flies, as two travellers (its number and its name), to its own number and label on the rail; the line
+   unthreads towards the rail behind them and draws again when they fly home. The stop's own words hide while it is away. */
+.vfly { position: fixed; inset: 0; z-index: 41; pointer-events: none; overflow: hidden; }
+.vfly__n, .vfly__name { position: absolute; left: 0; top: 0; margin: 0; white-space: nowrap; transform-origin: 0 0; visibility: hidden; will-change: transform, opacity; }
+.ln__stop.is-flown .ln__words { opacity: 1; filter: none; transform: none; transition: none; }
+.ln__stop.is-flown .ln__n, .ln__stop.is-flown .ln__name { visibility: hidden; }
+.pv--morph .ln__t { transition: opacity .6s var(--io) .15s; }
+.ln__stop.is-flown .ln__t { opacity: 0; transition: opacity .4s var(--io); }
+.ln__stop.is-flown .ln__dot { transform: scale(0); transition: transform .45s var(--io); }
+.lnsec.vfly-away .ln__svg { clip-path: inset(-12px 0 -12px 100%); transition: clip-path 1.5s var(--io) .1s; }
+.lnsec.vfly-away .ln__stops::before { transform-origin: 50% 100%; transform: scaleY(0); transition: transform 1.4s var(--io) .1s; }
+.rail.rail--fly { opacity: 1; visibility: visible; transition: none; }
+.rail.rail--fly a { opacity: 0; transition: opacity .45s var(--io), color var(--t-ui) var(--io); }
+.rail.rail--fly a.is-landed { opacity: 1; }
+.rail a.is-land { color: var(--ivory); }
+.rail a.is-land span { opacity: 1; transform: none; }
 /* the one action under a section that had none (M's Why Aveda; the menu, in place of a button per service) */
 .mani__btn, .om__btn { margin-top: clamp(20px, 3.4vh, 34px); }
 /* G round 2 (tasks 9456424d, 0ab956d4): each section's cycle is visible. The ROT line under Maggie's opening; a proof
@@ -157,10 +167,10 @@ main[data-world="coaching"] .hero .hero__line { color: var(--ivory); text-shadow
 .foot__legal { margin: 18px 0 0; max-width: 90ch; font-size: 12.5px; line-height: 1.55; color: var(--ivory-faint); }
 
 @media (max-width: 1023px) {
-  /* G: the rail the preview becomes shows on phone too, numbers only, as a quiet progress mark through the five steps */
-  html[data-variant="2.2-g"] .rail { display: grid; right: 12px; gap: 0; pointer-events: none; }
-  html[data-variant="2.2-g"] .rail a { padding: 5px 0; }
-  html[data-variant="2.2-g"] .rail a span { display: none; }
+  /* G and M: the rail the preview becomes shows on phone too, numbers only, as a quiet progress mark through the five steps */
+  html[data-variant="2.2-g"] .rail, html[data-variant="2.2-m"] .rail { display: grid; right: 12px; gap: 0; pointer-events: none; }
+  html[data-variant="2.2-g"] .rail a, html[data-variant="2.2-m"] .rail a { padding: 5px 0; }
+  html[data-variant="2.2-g"] .rail a span, html[data-variant="2.2-m"] .rail a span { display: none; }
   .offers-menu { grid-template-rows: auto minmax(0, 1fr) auto auto; }
   .offers-menu .om__ph { grid-row: 2; }
   .offers-menu .om__btn { grid-row: 4; }

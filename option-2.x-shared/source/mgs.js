@@ -1,55 +1,133 @@
-/* M/G/S only (task 0ab956d4). G's five-step preview becomes the step rail: as the preview leaves, each row's number
-   travels to its own number on the rail (01 to 05) while its words fade, and the rail takes over as they land.
-   Scrubbed by the scroll (the same leave value as every slide's --q), so it plays backwards on the way up.
-   Off in ?shot review mode and with reduced motion, where the list keeps 2.2's plain leave. */
+/* M/G/S only (task 59b17d9c; J 17 Nov: "a nice beautiful animation that's creative that eases in and out each steps or
+   list items of the visit into the right side pagination/stepper of the next sections"). The visit preview hands its
+   five stops to the step rail. As the preview leaves, the stops lift off the line one after another (01 to 05): each
+   number flies on a soft arc to its own number on the rail and each name to the rail's label, shrinking and taking the
+   rail's ivory, with the site's in-out ease; each label shows as it lands, then settles, and the line unthreads towards
+   the rail behind them. Scrolling back up flies them back in the same order and the line draws itself again.
+   Played in time, not scrubbed, so a slide's short snap never rushes it; turning round mid-flight sends each stop back
+   from where it is. Replaces round 5's numbers-only morph (its CSS still targeted the old list, so the names and the
+   line stayed behind). Off in ?shot and with reduced motion, where the rail simply fades in with the steps. */
 (function () {
-  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;   // round 4: the preview is the line block
-  if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // round 4: only where step 01 follows the preview (G now has the menu between them, so its rail simply arrives with the steps)
-  var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;
-  var nums = [].slice.call(sec.querySelectorAll('.ln__n')), marks = [].slice.call(rail.querySelectorAll('a b'));
-  if (!nums.length || marks.length < nums.length) return;
+  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;
+  if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches || !document.body.animate) return;
+  var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;   // only where step 01 follows the preview
+  var stops = [].slice.call(sec.querySelectorAll('.ln__stop')), links = [].slice.call(rail.querySelectorAll('a'));
+  if (!stops.length || links.length < stops.length) return;
   sec.classList.add('pv--morph');
 
-  // in units of the preview's leave (0..1): the numbers land once step 01's film is behind the rail (its middle fifth)
-  var TRAVEL = .58, STAGGER = .02, HAND = .56, HAND_LEN = .12, HOLD = .8;
-  var held = false, cFrom = null, cTo = null;
-  function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-  function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }   // in-out, as the site's --io
+  var DUR = 1200, GAP = 150, LAND = .8, EASE = 'cubic-bezier(.65, 0, .35, 1)';   // the site's --io
+  var svg = sec.querySelector('.ln__svg'), layer = document.createElement('div');
+  layer.className = 'vfly'; layer.setAttribute('aria-hidden', 'true'); document.body.appendChild(layer);
+  function traveller(cls, text) { var c = document.createElement('span'); c.className = cls; c.textContent = text; layer.appendChild(c); return c; }
+  // each stop is 'line' (resting on it), 'out' (flying to the rail), 'rail' or 'in' (flying home)
+  var st = stops.map(function (li) {
+    var n = li.querySelector('.ln__n'), nm = li.querySelector('.ln__name');
+    return { li: li, n: n, nm: nm, cn: traveller('vfly__n', n.textContent), cm: traveller('vfly__name', nm.textContent), at: 'line', fly: false, an: [], tm: [] };
+  });
+  var lt = links.map(function () { return 0; });   // each label's show-then-settle timer
+
   function rgb(s) { var m = s.match(/[\d.]+/g) || [0, 0, 0]; return [+m[0], +m[1], +m[2], m[3] == null ? 1 : +m[3]]; }
   function mix(a, b, t) { return 'rgba(' + [0, 1, 2].map(function (i) { return Math.round(a[i] + (b[i] - a[i]) * t); }).join(',') + ',' + (a[3] + (b[3] - a[3]) * t).toFixed(3) + ')'; }
-  function at(el) {          // an element's place inside the preview, before any transform
-    var x = 0, y = 0;
-    for (var e = el; e && e !== sec; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; }
-    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2, h: el.offsetHeight };
+  function box(el) {          // the words' own box, not the block's full column
+    var r = document.createRange(); r.selectNodeContents(el); var b = r.getBoundingClientRect();
+    return b.width ? b : el.getBoundingClientRect();
   }
-  function release() {
-    if (!held) return; held = false;
-    rail.style.transition = rail.style.opacity = rail.style.visibility = '';
+  function dress(c, src) {    // a traveller takes its stop's type before it is measured
+    var s = getComputedStyle(src);
+    ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing'].forEach(function (p) { c.style[p] = s[p]; });
   }
-  function frame() {
-    var r = sec.getBoundingClientRect(), vh = innerHeight;
-    if (r.height && r.top <= 1 && r.bottom > 0) {
-      var q = clamp(-r.top / vh);
-      if (!cFrom) { cFrom = rgb(getComputedStyle(nums[0]).color); cTo = rgb(getComputedStyle(marks[0]).color); }
-      sec.style.setProperty('--pf', clamp(q / TRAVEL).toFixed(4));
-      var h = clamp((q - HAND) / HAND_LEN);
-      for (var k = 0; k < nums.length; k++) {
-        var n = nums[k], a = at(n), m = marks[k].getBoundingClientRect();
-        var e = ease(clamp((q - k * STAGGER) / TRAVEL)), s = 1 + (m.height / a.h - 1) * e;
-        var dx = (m.left + m.width / 2 - (r.left + a.x)) * e, dy = (m.top + m.height / 2 - (r.top + a.y)) * e;
-        n.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
-        // each number takes the colour of what is behind it: forest over the clay preview, the rail's ivory over the film
-        n.style.color = mix(cFrom, cTo, clamp((r.top + a.y + dy - r.bottom + 14) / 28));
-        n.style.opacity = (1 - h).toFixed(3);
-      }
-      if (q > 0 && q < HOLD) {         // the rail appears exactly as the numbers land, then the engine keeps it on
-        held = true; rail.style.transition = 'none'; rail.style.opacity = h.toFixed(3); rail.style.visibility = h > 0 ? 'visible' : 'hidden';
-      } else release();
-    } else release();
+  function halt(o) {          // freeze each traveller where it is, so a reversal starts from there
+    o.an.forEach(function (a) { try { a.commitStyles(); } catch (e) {} a.cancel(); });
+    o.tm.forEach(clearTimeout); o.an = []; o.tm = [];
+  }
+
+  function travel(c, src, dst, align, dir, f, dy, cRail) {
+    var on = o_on(c);
+    if (!on) dress(c, src);
+    var w = c.offsetWidth, h = c.offsetHeight, sb = box(src), db = box(dst), s1 = db.height / h;
+    var rx = align === 'c' ? db.left + db.width / 2 - w * s1 / 2 : align === 'r' ? db.right - w * s1 : db.left - 10 - w * s1;
+    var railAt = { x: rx, y: db.top + db.height / 2 - h * s1 / 2, s: s1 };
+    var lineAt = { x: sb.left, y: sb.top + dy + (sb.height - h) / 2, s: 1 };
+    var cur = c.getBoundingClientRect(), cs = getComputedStyle(c);
+    var a = on ? { x: cur.left, y: cur.top, s: cur.height / h } : dir === 'out' ? lineAt : railAt, z = dir === 'out' ? railAt : lineAt;
+    var cHome = rgb(getComputedStyle(src).color), c0 = on ? rgb(cs.color) : dir === 'out' ? cHome : cRail, c1 = dir === 'out' ? cRail : cHome;
+    var o0 = on ? +cs.opacity : dir === 'out' ? 1 : 0;
+    // a soft arc: lifted above the straight line by a twelfth of the distance travelled, bending late towards its end
+    var cx = a.x + (z.x - a.x) * .78, cy = Math.min(a.y, z.y) - Math.hypot(z.x - a.x, z.y - a.y) * .08, ks = [];
+    for (var i = 0; i <= 12; i++) {
+      var t = i / 12, u = 1 - t;
+      var x = u * u * a.x + 2 * u * t * cx + t * t * z.x, y = u * u * a.y + 2 * u * t * cy + t * t * z.y, s = a.s + (z.s - a.s) * t;
+      var op = dir === 'out' ? (t < f ? o0 : o0 * (1 - (t - f) / (1 - f))) : (t < f ? o0 + (1 - o0) * t / f : 1);
+      ks.push({ offset: t, transform: 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')', color: mix(c0, c1, t), opacity: op.toFixed(3) });
+    }
+    c.style.visibility = 'visible';
+    return c.animate(ks, { duration: on ? DUR * .8 : DUR, easing: EASE, fill: 'forwards' });
+  }
+  function o_on(c) { return c.style.visibility === 'visible'; }
+
+  function settle(o, k, where) {
+    halt(o); o.fly = false; o.at = where;
+    o.cn.style.visibility = o.cm.style.visibility = 'hidden';
+    o.li.classList.toggle('is-flown', where === 'rail');
+    links[k].classList.toggle('is-landed', where === 'rail');
+    if (where === 'line') { clearTimeout(lt[k]); links[k].classList.remove('is-land'); }
+    if (!st.every(function (x) { return x.at === where; })) return;
+    if (where === 'line') {   // all back: the rail goes quiet at once (the engine hides it before step 01)
+      rail.style.transition = 'none'; rail.classList.remove('rail--fly'); void rail.offsetWidth; rail.style.transition = '';
+    } else rail.classList.remove('rail--fly');   // all on the rail: the engine keeps it on through the five steps
+  }
+  function launch(o, k, dir) {
+    o.fly = true;
+    var lk = links[k], b = lk.querySelector('b'), sp = lk.querySelector('span'), lab = sp && sp.offsetWidth > 0;
+    var dy = dir === 'in' ? -sec.getBoundingClientRect().top : 0;   // flying back: where the stop rests once the slide settles
+    var cRail = rgb(getComputedStyle(lk).color);
+    if (dir === 'in') { clearTimeout(lt[k]); lk.classList.remove('is-landed', 'is-land'); }
+    o.an = [travel(o.cn, o.n, b, 'c', dir, dir === 'out' ? .85 : .15, dy, cRail),
+            travel(o.cm, o.nm, lab ? sp : b, lab ? 'r' : 'l', dir, .5, dy, cRail)];
+    if (dir === 'out') o.tm.push(setTimeout(function () {
+      lk.classList.add('is-landed', 'is-land'); clearTimeout(lt[k]);
+      lt[k] = setTimeout(function () { lk.classList.remove('is-land'); }, 1100);   // its label shows as it lands, then settles
+    }, (o.an[0].effect.getTiming().duration) * LAND));
+    o.an[0].onfinish = function () { settle(o, k, dir === 'out' ? 'rail' : 'line'); };
+  }
+  function go(o, k, dir, delay) {
+    var was = o.at, fl = o.fly; halt(o);
+    // not yet lifted off (still waiting its turn): it simply stays where it is
+    if (!fl && was !== 'line' && was !== 'rail') { settle(o, k, dir === 'in' ? 'line' : 'rail'); return; }
+    o.at = dir;
+    if (dir === 'out') o.li.classList.add('is-flown');
+    o.tm.push(setTimeout(function () { launch(o, k, dir); }, fl ? 0 : delay));
+  }
+  function redraw() {         // the line draws itself in again from the left, as on arrival
+    if (!sec.classList.contains('vfly-away')) return;
+    if (svg) { svg.style.transition = 'none'; svg.style.clipPath = 'inset(-12px 100% -12px 0)'; }
+    sec.classList.remove('vfly-away');
+    if (svg) { void svg.getBoundingClientRect(); svg.style.transition = svg.style.clipPath = ''; }
+  }
+  function send(dir) {
+    if (dir === 'out') sec.classList.add('vfly-away'); else redraw();
+    rail.classList.add('rail--fly');
+    var j = 0;
+    st.forEach(function (o, k) {
+      if (dir === 'out' ? (o.at === 'line' || o.at === 'in') : (o.at === 'rail' || o.at === 'out')) go(o, k, dir, j++ * GAP);
+    });
+  }
+  function jump(where) {      // the preview was passed in one jump (a link, a key): no flight, just the end state
+    if (where === 'rail') sec.classList.add('vfly-away'); else redraw();
+    st.forEach(function (o, k) { settle(o, k, where); });
+  }
+
+  var lastY = scrollY;
+  (function frame() {
+    var y = scrollY, d = y > lastY + .5 ? 1 : y < lastY - .5 ? -1 : 0; lastY = y;
+    if (d) {
+      var r = sec.getBoundingClientRect(), vh = innerHeight, railOn = links[0].getBoundingClientRect().width > 0;
+      var anyOnLine = st.some(function (o) { return o.at === 'line' || o.at === 'in'; }), anyAway = st.some(function (o) { return o.at === 'rail' || o.at === 'out'; });
+      if (d > 0 && anyOnLine && r.height && r.top < -vh * .06) { if (r.bottom <= 0 || !railOn) jump('rail'); else send('out'); }
+      else if (d < 0 && anyAway && r.top > -vh * .85) { if (r.top >= vh || !railOn) jump('line'); else send('in'); }
+    }
     requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
+  })();
 })();
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
