@@ -14,12 +14,21 @@ def _prices(s):
     return out
 
 
+def ai_mark(text):
+    """the words that say a picture or film was made with AI, as text on the page in a corner of it, always visible (no
+    hover, tap or icon): StoryLegal's ruling of 17 Nov 2026 (msg 7d0dc68d, task 1c6ed2aa). One block for every generated
+    picture or film on these pages; its parent is the positioned frame of the picture or film it labels (mgs.css .ai-mark)"""
+    return f'<p class="ai-mark">{E(text)}</p>'
+
+
 def _photo(t, k):
-    """the row's photo: a real photo of that service's result, or a quiet frame saying it is still to come"""
+    """the row's photo: a real photo of that service's result, or a quiet frame saying it is still to come.
+    A generated picture (t['ai']) carries is-ai, which shows the panel's one AI mark while it is the open photo"""
     on = ' is-on' if k == 0 else ''
     if t.get('img'):
         pos = f' style="--pos:{t["pos"]}"' if t.get('pos') else ''
-        return f'<img class="mn__img{on}" src="img/{t["img"]}" alt="{E(t["alt"])}" decoding="async" loading="lazy" data-i="{k}"{pos}>'
+        ai = ' is-ai' if t.get('ai') else ''
+        return f'<img class="mn__img{on}{ai}" src="img/{t["img"]}" alt="{E(t["alt"])}" decoding="async" loading="lazy" data-i="{k}"{pos}>'
     return f'<div class="mn__img mn__none{on}" data-i="{k}"><p class="ph-copy">[{t["missing"]}]</p></div>'
 
 
@@ -27,7 +36,8 @@ def _row_photo(t):
     """the same photo in the row itself, shown on a phone only (round 4: the picture sits with its row there)"""
     if t.get('img'):
         pos = f' style="--pos:{t["pos"]}"' if t.get('pos') else ''
-        return f'<figure class="mn__rph" aria-hidden="true"><img src="img/{t["img"]}" alt="" decoding="async" loading="lazy"{pos}></figure>'
+        mark = ai_mark(t['ai']) if t.get('ai') else ''
+        return f'<figure class="mn__rph" aria-hidden="true"><img src="img/{t["img"]}" alt="" decoding="async" loading="lazy"{pos}>{mark}</figure>'
     return f'<figure class="mn__rph" aria-hidden="true"><div class="mn__none"><p class="ph-copy">[{t["missing"]}]</p></div></figure>'
 
 
@@ -44,7 +54,10 @@ def menu(d, world):
           <div class="mn__name"><h3>{t['title']}</h3><p class="mn__trip">{t['tag']}</p></div>
           <ul class="mn__prices">{lines}</ul>
         </li>''')
-    panel = ''.join(_photo(t, k) for k, t in enumerate(d['tiles']))
+    # the panel's AI mark comes after its pictures, outside engine.js's 'img' list and mgs.js's '[data-i]' list, and shows
+    # while a generated picture is the open one (mgs.css: .mn__ph > .is-ai.is-on ~ .ai-mark)
+    ai = next((t['ai'] for t in d['tiles'] if t.get('ai') and t.get('img')), None)
+    panel = ''.join(_photo(t, k) for k, t in enumerate(d['tiles'])) + (ai_mark(ai) if ai else '')
     intro = f'<p class="mn__intro a-up" style="--d:.4s">{d["intro"]}</p>' if d.get('intro') else ''
     note = f'<p class="mn__note a-up" style="--d:.95s">{d["note"]}</p>' if d.get('note') else ''
     bq = d.get('beneath')

@@ -91,6 +91,10 @@ SERVICE_PHOTO = [
   # and its products checked against photo 8, none invented)
   ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows holding a glo tube at the skincare display at Salon OM', '33% 32%'),
 ]
+# every menu picture is a real salon photo with one generated guest, so each says so in its corner, as text on the page
+# (StoryLegal, 17 Nov 2026, msg 7d0dc68d: "\"Guest made with AI\" in a corner of the picture ... as text on the page";
+# not a footer line, a hover or tap icon, or a mark only in the file; task 1c6ed2aa)
+AI_GUEST = 'Guest made with AI'
 # Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
 # round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
 CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
@@ -164,6 +168,7 @@ def team(note=False, sid='hosts'):
 def services(eyebrow=M.MENU_EYEBROW, sid='services'):
     # one booking button under the menu: the booking page has no link per service, so six buttons would all go to one place
     tiles = [dict(img=(SERVICE_PHOTO[k] or (None, '', ''))[0], alt=(SERVICE_PHOTO[k] or (None, '', ''))[1], pos=(SERVICE_PHOTO[k] or (None, '', ''))[2],
+                  ai=AI_GUEST if SERVICE_PHOTO[k] else None,
                   missing=f'Photo to come: {svc} at Salon OM', tag=trip, price=price, title=svc)
              for k, (svc, trip, price) in enumerate(M.SERVICES)]
     return (S.menu, dict(id=sid, layout='menu', eyebrow=eyebrow, title=M.MENU_LINE, intro=M.MENU_INTRO, tiles=tiles,

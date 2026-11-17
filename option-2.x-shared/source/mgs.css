@@ -770,3 +770,11 @@ html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none
 /* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
    block to html[data-motion="calm"]; it sits after the drift so it wins) */
 @media (prefers-reduced-motion: reduce) { :is(.is-held > img, .is-held > .ch__top > img) { animation: none; } }
+/* "Guest made with AI" (task 1c6ed2aa; StoryLegal, 17 Nov 2026): the words sit in a corner of the picture they label,
+   always visible, as text on the page, never a hover or tap icon. A small forest pill so they read on any photo
+   (ivory on forest at .8, AA at this size over white). One block (mgs_sections.ai_mark) for every generated picture or
+   film; its parent is the positioned frame it labels. The menu panel shows its one mark while the open photo is generated */
+.ai-mark { position: absolute; left: 12px; bottom: 12px; z-index: 2; margin: 0; padding: 6px 11px; border-radius: 999px;
+  background: rgba(20, 35, 26, .8); color: var(--ivory); font: 500 11.5px/1.2 var(--sans); letter-spacing: .05em; pointer-events: none; }
+.mn__ph .ai-mark { left: 16px; bottom: 16px; opacity: 0; transition: opacity 1.2s var(--io); }
+.mn__ph > .is-ai.is-on ~ .ai-mark { opacity: 1; }
