@@ -1,0 +1,10 @@
+{
+ "stand_in": "plain-box",
+ "sha256": "fc1ddb2e7a8a25dd3688b258b176815d4fadd03c84023261eeb643d51ed1028d",
+ "file": "salon-om-rooted-previz-v14A-boxes-5s-512x288.mp4",
+ "source": "scaled to 512x288 for the H3 job (as StoryForge's v13n copy); from salon-om-rooted-previz-v14A-boxes-5s.mp4 (a1703d6e19f6...)",
+ "marked_by": "j@Js-Mac-Studio",
+ "at": "2026-11-17T14:56:35Z",
+ "rule": "J 17 Nov 2026 (ask 332b1711): the reference video holds a plain box for the subject, never a 3D model, rig or grey figure of it (\"A real 3D of a subject makes movement look unnatural and robotic\")",
+ "parent_sha256": "a1703d6e19f6faa900d193ffd3ded9aeb06ca63fa7c8e0df8ecf436ba957261e"
+}
