@@ -1756,8 +1756,9 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph
 @media (min-width: 1024px) {
   /* the words on the content column's left edge, the picture to the screen's right edge */
   #pause .mani__in { max-width: none; padding-right: 0; padding-left: max(var(--gutter), calc((100% - 1560px) / 2 + var(--gutter)));
-    display: grid; grid-template-columns: minmax(0, 1fr) min(56vw, 99vh); grid-template-rows: 1fr auto auto auto 1fr; column-gap: clamp(40px, 4.5vw, 110px); align-items: center; }
-  #pause .br { grid-column: 2; grid-row: 2 / 5; }
+    display: grid; grid-template-columns: minmax(0, 1fr) min(56vw, 99vh); grid-template-rows: 1fr auto auto 1fr auto; column-gap: clamp(40px, 4.5vw, 110px); align-items: center; }
+  /* the words centre on the picture; the caption hangs under it */
+  #pause .br { grid-column: 2; grid-row: 1 / 5; }
   #pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; margin: 0 0 var(--sp-4); }
   #pause .mani__text { grid-column: 1; grid-row: 3; }
   #pause .lead { grid-column: 2; grid-row: 5; align-self: start; margin: var(--sp-3) 0 0 !important; font-size: clamp(20px, 1.6vw, 28px); }
@@ -1766,7 +1767,7 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph
   #pause .mani__in { display: flex; flex-direction: column; align-items: flex-start; }
   #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; font-size: 21px; } #pause .br { order: 3; } #pause .lead { order: 4; }
   /* the picture runs to both edges of the phone */
-  #pause .br { width: calc(100% + 2 * var(--gutter)); margin: var(--sp-5) calc(-1 * var(--gutter)) 0; }
+  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); align-self: center; }
   #pause .br__ph { border-radius: 0; }
   #pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
 }
@@ -2309,7 +2310,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="4602842e7b31";</script>
+<script>window.OM_BUILD="fdfc5cec591a";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
