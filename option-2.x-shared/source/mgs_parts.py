@@ -109,6 +109,8 @@ SERVICE_PHOTO = [
 # not a footer line, a hover or tap icon, or a mark only in the file; task 1c6ed2aa)
 AI_GUEST = 'Guest made with AI'
 AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her photos (CEO MA, 18 Nov; StoryLegal asked for its words)
+# the pause (task 2b1d1187): her photo 17, the basin room seen through a doorway, with one generated guest at the basin below the poster
+PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway'
 
 
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:

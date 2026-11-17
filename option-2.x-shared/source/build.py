@@ -130,9 +130,11 @@ def tease(d):
         extra = (f'<div class="pz" aria-hidden="true"><img src="img/{lk["photo"]}" alt="" decoding="async" loading="lazy"></div>'
                  f'<figure class="pf" aria-hidden="true"><img src="img/{lk["frame"]}" alt="" decoding="async" loading="lazy"></figure>')
     attrs = (' data-look="0" data-pause' + (' data-parked' if d.get('parked') else '')) if lk else ''
-    # M/G pause (task 8e22db42): one guided breath around the empty chair; 2.2-2.4 never set it, so their pages stay byte-identical
-    br = (f'<div class="br" aria-hidden="true"><i class="br__halo"></i><i class="br__ring"></i><i class="br__ring"></i>'
-          f'<div class="br__arch"><img src="img/{d["breath"]}" alt="" decoding="async"></div></div>') if d.get('breath') else ''
+    # M/G pause (task 2b1d1187, J 17 Nov: "remove those green lines ... Remove the glow ... the layout is still boring"): one
+    # guest at the basin, seen through the doorway of her photo 17, large and running off the right edge, with the AI label
+    # (mgs_sections.ai_mark, passed in); 2.2-2.4 never set `breath`, so their pages stay byte-identical
+    br = (f'<figure class="br"><div class="br__ph"><img src="img/{d["breath"]}" alt="{E(d.get("breath_alt", ""))}" decoding="async"></div>'
+          f'{d.get("breath_mark", "")}</figure>') if d.get('breath') else ''
     return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}>
     {extra}{ring}
     <div class="s__leave mani__in">
