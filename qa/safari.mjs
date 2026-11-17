@@ -34,6 +34,9 @@ function bootSim() {
   const mine = dev.state !== 'Booted';
   if (mine) execFileSync('xcrun', ['simctl', 'boot', dev.udid]);
   execFileSync('xcrun', ['simctl', 'bootstatus', dev.udid, '-b']);
+  // a headless boot starts no Safari, and safaridriver then finds no session host (17 Nov: "Could not find any session
+  // hosts"); Safari is opened inside the simulator first (simulators allow remote automation since iOS 14)
+  execFileSync('xcrun', ['simctl', 'launch', dev.udid, 'com.apple.mobilesafari']);
   return { name: dev.name, udid: dev.udid, mine };
 }
 
@@ -61,7 +64,11 @@ async function start() {
   const caps = WHERE === 'sim'
     ? { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': sim.udid }
     : { browserName: 'safari' };
-  const v = await wd('POST', '/session', { capabilities: { alwaysMatch: caps } });
+  let v = null;
+  for (let i = 0; !v; i++) {
+    try { v = await wd('POST', '/session', { capabilities: { alwaysMatch: caps } }); }
+    catch (e) { if (WHERE !== 'sim' || i >= 5 || !/session hosts/.test(e.message)) throw e; res.notes.push(`session try ${i + 1}: ${e.message}`); await sleep(3000); }
+  }
   sid = v.sessionId;
   res.browser = { name: v.capabilities.browserName, version: v.capabilities.browserVersion, platform: v.capabilities.platformName,
     device: v.capabilities['safari:deviceName'] || null };
