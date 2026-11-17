@@ -7,7 +7,9 @@
 # Entry (task b36dde1f, J 17 Nov 11:50 Z: the step film static while he scrolls in, starting seconds after the photo
 # leaves): FRAMES=0.3,0.8,1.4,2.2,3.5,6 takes frames early after each stop; URL=<page> walks another copy (a variant served
 # from this Mac's 127.0.0.1, a review host, with one change switched off); TAG names the run's folder. The end read
-# names each film's section, so its played seconds against the time its step was on screen give the start delay.
+# names each film's section, so its played seconds against the time its step was on screen give the start delay. A variant
+# page may carry its own logger in its HTML (window.__fv.ev: start calls, their outcome, playing, steps in and out), read once
+# at the end with the rest: page script typed in by AppleScript would count as the person's gesture, the page's own does not.
 import json, os, subprocess, sys, time
 PK = '/opt/homebrew/bin/peekaboo'
 V = sys.argv[1] if len(sys.argv) > 1 else 'm'
@@ -53,7 +55,9 @@ def cap(name):
 try:
     for k in range(STOPS):
         if k > 0:
-            rc, o = sh(PK, 'scroll', '--window-id', wid, '--direction', 'down', '--amount', TICKS, '--foreground')
+            # peekaboo 4.2 refuses a window id whose focus identity changed since it was listed; the walk's window is
+            # Safari's front window (made and activated above), so it is targeted by the app
+            rc, o = sh(PK, 'scroll', '--app', 'Safari', '--direction', 'down', '--amount', TICKS, '--foreground')
             if rc != 0: log(f'scroll {k} rc {rc}: {o[-200:]}'); break
         t0 = time.time(); got = []
         for i, f in enumerate(FRAMES):
@@ -64,7 +68,7 @@ try:
     # after the walk: one read of every film (it cannot change what already happened)
     js = ("JSON.stringify({y:Math.round(scrollY),h:document.documentElement.scrollHeight,vh:innerHeight,films:[...document.querySelectorAll('video')].map(v=>{const r=v.getBoundingClientRect();"
           "return {sec:(v.closest('section')||{}).id||null,src:(v.currentSrc||v.getAttribute('data-src')||'').split('/').pop(),held:!!v.closest('.is-held'),t:Math.round(v.currentTime*100)/100,paused:v.paused,ready:v.readyState,on:v.classList.contains('is-on'),"
-          "played:[...Array(v.played.length).keys()].map(i=>[Math.round(v.played.start(i)*10)/10,Math.round(v.played.end(i)*10)/10]),top:Math.round(r.top+scrollY)}})})")
+          "played:[...Array(v.played.length).keys()].map(i=>[Math.round(v.played.start(i)*10)/10,Math.round(v.played.end(i)*10)/10]),top:Math.round(r.top+scrollY)}}),log:window.__fv&&window.__fv.ev||null})")
     out = osa(f'Application("Safari").doJavaScript({json.dumps(js)}, {{in: Application("Safari").windows.byId({sid}).currentTab}})', 'JavaScript')
     try: res['after'] = json.loads(out)
     except Exception: res['after'] = out[:2000]
