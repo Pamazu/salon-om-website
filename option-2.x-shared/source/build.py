@@ -599,6 +599,7 @@ def page(cfg):
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     for f in css_files(vkey): css += '\n' + open(V + f).read()
     if '-' in vkey: import mgs_parts as MP; css = MP.motion_css(css)      # M/G/S: one motion switch (task b36dde1f)
+    if '-' in vkey: body = MP.srcset(body, vkey.split('-')[1])          # M/G/S: each picture at the size the screen needs (task b1dd24c9)
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused

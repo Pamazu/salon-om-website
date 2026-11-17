@@ -346,3 +346,29 @@ def motion_css(css):
         out.append(f'/* motion switch (was prefers-reduced-motion: {m.group(1)}) */\n' + '\n'.join(rules))
         i = j
     return ''.join(out)
+
+def srcset(body, v):
+    """Every picture on M, G and S at the size the screen needs (task b1dd24c9, approved features row 18): an <img> whose file
+    has exports in img/hd/ (export_photos.py, listed in photo_exports.json) gets srcset with each width and sizes from the
+    widest the page draws it (photo_sizes.json, measured by qa/sharpness.mjs --manifest at 390, 1440 and 3230, 5 % over
+    for the slow zoom). src stays the 1280 file, the fallback. Only M, G and S call this; 2.2-2.4 never do."""
+    import json, math, re
+    here = os.path.dirname(os.path.abspath(__file__)) + '/'
+    if not os.path.exists(here + 'photo_exports.json'):
+        return body
+    ex, sz = json.load(open(here + 'photo_exports.json')), json.load(open(here + 'photo_sizes.json')).get(v, {})
+
+    def vw(e, k, w):
+        return math.ceil(e[k] / w * 105) if e.get(k) else None
+
+    def one(m):
+        tag, name = m.group(0), m.group(1)
+        if name not in ex or name not in sz or ' srcset=' in tag:
+            return tag
+        e, stem = sz[name], name[:-5]
+        sizes = ', '.join(x for x in (f'(max-width: 700px) {vw(e, "w390", 390)}vw' if e.get('w390') else '',
+                                      f'(max-width: 2000px) {vw(e, "w1440", 1440)}vw' if e.get('w1440') else '',
+                                      f'{vw(e, "w3230", 3230)}vw') if x)
+        set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
+        return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
+    return re.sub(r'<img [^>]*?src="img/([^"/]+\.webp)"[^>]*>', one, body)

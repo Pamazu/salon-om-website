@@ -415,3 +415,15 @@
   // a wanted film that is still paused a moment after it came into view (a refused play, a stalled start) is asked again
   setInterval(function () { if (!document.hidden) films.forEach(go); }, 1500);
 })();
+/* Each picture at the size the screen needs (task b1dd24c9): build.py gives M/G/S pictures a srcset, which a browser
+   prefers to src. The tweak panel (tweaks.js, shared with 2.2) swaps a picture by setting its src, so while a picture
+   shows a tweaked file its srcset is set aside, and it comes back with "Use the original". */
+(function () {
+  function sync(im) {
+    var custom = im.hasAttribute('data-orig') && im.getAttribute('src') !== im.getAttribute('data-orig');
+    if (custom && im.hasAttribute('srcset')) { im.setAttribute('data-hd-srcset', im.getAttribute('srcset')); im.removeAttribute('srcset'); }
+    else if (!custom && im.hasAttribute('data-hd-srcset')) { im.setAttribute('srcset', im.getAttribute('data-hd-srcset')); im.removeAttribute('data-hd-srcset'); }
+  }
+  var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
+  document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
+})();
