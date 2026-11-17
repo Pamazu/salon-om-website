@@ -103,7 +103,7 @@ TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the A
 
 def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
     return {
-      'title': f'Salon OM Option 2.2-{letter}', 'theme': 'dawn', 'draft': f'Option 2.2 · {name}',
+      'title': f'Salon OM · An Aveda Concept Salon · Option 2.2-{letter}', 'theme': 'dawn', 'draft': f'Option 2.2 · {name}',
       'desc': 'Where Beauty and Inner Work Belong. Salon OM, an Aveda Concept Salon, and Inner Work with Maggie, both with Maggie Woodward.',
       'book_salon': 'begin', 'book_coaching': 'c-begin', 'book_salon_href': BOOK_URL, 'book_coaching_href': CALL_URL,
       'worlds': {'salon': 'Salon OM', 'coaching': 'Inner Work with Maggie'},
@@ -153,7 +153,7 @@ def team(note=False, sid='hosts'):
     m = dict(M.TEAM[0], img=TEAM_IMG[0][0], alt=TEAM_IMG[0][1])
     people = [m] + [dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in (1, 2)]
     d = dict(id=sid, layout='letter', ph_tag=False, eyebrow='Meet the team', title=M.TEAM_LINE,
-             intro=M.TEAM[0]['desc'], people=people, with_label='With')
+             intro=M.TEAM[0]['desc'], people=people, with_label='With', lead=True)   # her card's name and role (11 Nov)
     if note: d.update(note=draft(TEAM_NOTE), sign='Maggie')
     return ('team', d)
 
@@ -203,7 +203,7 @@ IW_BLOCK = M.FOOTER['iw'][:2] + [f'<a href="mailto:{M.FOOTER["iw"][2]}">{M.FOOTE
 
 def salon_end(legend, visit='arrive', explore=None):
     # her 11 Nov footer, on every page: brand, salon details, contact, the Inner Work block, disclaimer, her copyright
-    return ('end', dict(id='letters', title='', tagline=M.FOOTER['tagline'], no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
+    return ('end', dict(id='letters', title='', name=M.FOOTER['name'], tagline=M.FOOTER['tagline'], no_letters=True, disclaimer=M.DISCLAIMER, legend=legend,
                         brand_lines=[M.FOOTER['salon']], iw_block=IW_BLOCK, copyright=M.FOOTER['copyright'],
                         connect=[SALON_INFO['phone'], SALON_INFO['email']],
                         visit=[SALON_INFO['address'], SALON_INFO['hours'], SALON_INFO['hours_note']],
@@ -266,7 +266,8 @@ def iw_end(legend, exact=False):
                      connect=[SALON_INFO['phone'], SALON_INFO['email']], iw_block=IW_BLOCK)
     else:
         where = dict(visit=['Privately at Salon OM, outside salon hours', 'Online, wherever you are'], connect=M.FOOT_IW)
-    return ('end', dict(id='c-letters', sound='air', title='', tagline=M.FIRST['tagline'], no_letters=True, **where,
+    return ('end', dict(id='c-letters', sound='air', title='', name=M.FOOTER['name'], no_letters=True, **where,
+                        tagline=M.FOOTER['tagline'] if exact else M.FIRST['tagline'],   # M: her footer on every page
                         brand_lines=[M.FOOTER['salon']], copyright=M.FOOTER['copyright'],
                         disclaimer=M.DISCLAIMER, legend=legend,
                         explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))

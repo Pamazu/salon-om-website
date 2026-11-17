@@ -57,7 +57,7 @@ def hero_mark(d):
     <div class="s__leave hero__lv">
       <h1 class="hero__mark"><span class="sr">Salon OM</span>{HERO_SVG}<span class="hero__hook intro" style="--d:2.3s">{d['hook']}</span></h1>
       <div class="hero__foot">
-        <p class="hero__line intro" style="--d:2.6s"><b>{d['eyebrow']}</b>{d['line']}{('<span class="hero__rot">' + d['rot'] + '</span>') if d.get('rot') else '<br>'}{SOUND_CTA}</p>
+        {('<p class="eyebrow intro" style="--d:2.5s">' + d['open']['eyebrow'] + '</p>') if d.get('open', {}).get('eyebrow') else ''}<p class="hero__line intro" style="--d:2.6s"><b>{d['eyebrow']}</b>{d['line']}{('<span class="hero__rot">' + d['rot'] + '</span>') if d.get('rot') else '<br>'}{SOUND_CTA}</p>
         <div class="hero__cta intro" style="--d:2.8s">{_cta_note(d)}</div>
         <a class="hero__cue label intro" style="--d:3s" href="#{d['next']}"><i aria-hidden="true"></i>Scroll</a>
       </div>
@@ -265,7 +265,7 @@ def team_letter(d):
     return f'''<section class="s team-letter{' tl--wide' if d.get('ph_wide') else ''}" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     <figure class="tl__ph"><img src="img/{m['img']}" alt="{E(m['alt'])}" decoding="async">{tag}</figure>
     <div class="tl__copy s__leave">
-      {head(d, 'tl', 'tl__intro', .35)}
+      {head(d, 'tl', 'tl__intro', .35)}{(f'<div class="tl__lead a-up" style="--d:.95s"><h3>{m["name"]}</h3><p class="tl__role tx">{m["role"]}</p></div>') if d.get('lead') else ''}
       {f'<blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“{d["note"]}”</span><cite class="tx">{d["sign"]}</cite></blockquote>' if d.get('note') else ''}
       {withs}{('<div class="tl__btn a-up" style="--d:1.5s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
@@ -376,7 +376,7 @@ def voices(d):
     return f'''<section class="s voices" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-label="Kind words">
     <div class="voices__aura" aria-hidden="true"></div>
     <div class="s__leave">
-      {('<p class="voices__t label a-fade" style="--d:.1s">' + d['title'] + '</p>') if d.get('title') else ''}<span class="voices__mark a-fade" style="--d:.1s" aria-hidden="true">“</span>
+      {('<p class="eyebrow a-fade" style="--d:.05s">' + d['eyebrow'] + '</p>') if d.get('eyebrow') else ''}{('<p class="voices__t label a-fade" style="--d:.1s">' + d['title'] + '</p>') if d.get('title') else ''}<span class="voices__mark a-fade" style="--d:.1s" aria-hidden="true">“</span>
       <div class="qs a-up" style="--d:.4s" data-quotes>{qs}</div>{cycle(d, .8)}{('<div class="voices__btn a-up" style="--d:.9s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
     <div class="s__shade"></div>

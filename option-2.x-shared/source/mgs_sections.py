@@ -73,7 +73,7 @@ def _foot(e, draft):
     legal = ''.join(f'<p class="foot__legal">{t}</p>' for t in [e.get('disclaimer'), e.get('legend')] if t)
     return f'''<footer class="foot cl__foot" id="{e['id']}">
       <div class="foot__in">
-        <div class="foot__brand">{svg('stacked')}<p>{e['tagline']}</p>{''.join(f'<p>{b}</p>' for b in e.get('brand_lines', []))}</div>
+        <div class="foot__brand">{svg('stacked')}{('<p>' + e['name'] + '</p>') if e.get('name') else ''}<p>{e['tagline']}</p>{''.join(f'<p>{b}</p>' for b in e.get('brand_lines', []))}</div>
         <div><h3 class="label">Explore</h3><ul>{expl}</ul></div>
         {'' if ('visit' in e and not e['visit']) else '<div><h3 class="label">Visit</h3><ul>' + visit + '</ul></div>'}
         <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>{('<div><h3 class="label">' + e['iw_block'][0] + '</h3><ul>' + ''.join(f'<li>{x}</li>' for x in e['iw_block'][1:]) + '</ul></div>') if e.get('iw_block') else ''}
