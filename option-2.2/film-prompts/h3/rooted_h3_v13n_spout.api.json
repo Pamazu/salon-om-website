@@ -1,0 +1,179 @@
+{
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "minimax_h3_ref2va_pruned_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "2": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_32b_minimax_h3_bf16.safetensors",
+   "type": "minimax",
+   "device": "default"
+  }
+ },
+ "3": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+  }
+ },
+ "4": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+  }
+ },
+ "10": {
+  "class_type": "MiniMaxH3ReferenceToVideo",
+  "inputs": {
+   "clip": [
+    "2",
+    0
+   ],
+   "vae": [
+    "3",
+    0
+   ],
+   "audio_vae": [
+    "4",
+    0
+   ],
+   "prompt": "16:9 horizontal, photoreal, cinematic, one continuous 5-second shot, no cuts.\nDON'T ADD SUBTITLES\n<Picture 1> is the real Salon OM shampoo area: two black basins against the back wall, each with a short, low chrome spout on the back rim of the bowl, dark brown leather backwash chairs, glass shelves and wire baskets of slim bottles, a colour poster of a woman's face among green leaves, a small wood drawer unit and a cream wall, in warm light. The room is exactly <Picture 1>, everything in the same places.\n<Video 1> is a plain grey 3D set with stand-in figures: the camera movement, where the two women are and which way they face come from <Video 1>; the room's look comes only from <Picture 1> and the women's look only from the words below, never the grey set, the figures or the colours of <Video 1>. The teal shape in <Video 1> only marks her body, which wears the black smock.\nThe woman: an adult woman of normal proportions lies face up in the backwash chair nearest the left wall, her head resting on the rim of that chair's black basin at the back wall, her long blond hair falling back into the bowl, her body running out along the chair toward the room, her bare feet on the round ottoman at its end. She wears a black salon smock and a chocolate-brown towel around her neck and shoulders. Her face is in profile looking up, eyes closed; she lies still, deeply relaxed, breathing slowly.\nThe stylist: an adult woman dressed all in black, standing at the right of the woman's head between the two basins, leaning over her. Her face stays above the top of the frame; her hands, forearms and torso are in view. Her movements are slow, gentle and natural.\nThe water: a bright, clearly visible stream of warm water, silvery where it catches the light, pours from the fixed low chrome spout on the back rim of her bowl onto the back of her head, runs through her hair into the bowl and pools there around her hair, plainly visible in every frame. The hand sprayer rests in its holder on the rim; the stylist's hands hold only her hair.\nLook: cinematic and calm, soft warm studio light from above and slightly behind, the water a bright silver ribbon, gentle highlights on her hair, shallow depth of field: her face, her hair and the water in crisp focus, the room behind in a soft, warm blur, the bottles' small labels soft and out of focus. A rooted, grounded, peaceful mood.\n0:00–0:05 Camera: a close view from the left-wall side at the woman's head height, a wide 30 mm view looking across her face in profile; a slow push-in that drifts very slightly to the left, as in <Video 1>, one smooth move with a soft start and a soft stop. Action: from the very first frame the stream already pours from the spout onto the back of her head, splashing softly into her hair; one of the stylist's hands cradles the back of her head, the other guides the water through her hair in long, slow strokes from the hairline back toward the ends; at 2.5 s her hair drifts in the bowl; in the last frame the view is a little closer and the water still flows.\nIn frame the whole time: her face and blond hair in the black bowl centre-left, the low spout just left of her head, her neck and shoulder running right toward the camera, the stylist's black-clad body at the right with her arms reaching down to the woman's head, the dark wood of the drawer unit a soft edge at the far left; behind them, soft: slim red, pink and green bottles on the lower glass shelf, the plain cream wall under that shelf and the poster. Nothing tall rises behind her head.\nSound: soft room tone and the gentle sound of water flowing into the basin, the only sound.",
+   "width": 864,
+   "height": 480,
+   "length": 124,
+   "ref_image_size": "match",
+   "ref_images.ref_image_0": [
+    "20",
+    0
+   ]
+  }
+ },
+ "11": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 42
+  }
+ },
+ "12": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "res_multistep"
+  }
+ },
+ "13": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "scheduler": "simple",
+   "steps": 12,
+   "denoise": 1
+  }
+ },
+ "14": {
+  "class_type": "BasicGuider",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "conditioning": [
+    "10",
+    0
+   ]
+  }
+ },
+ "15": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "11",
+    0
+   ],
+   "guider": [
+    "14",
+    0
+   ],
+   "sampler": [
+    "12",
+    0
+   ],
+   "sigmas": [
+    "13",
+    0
+   ],
+   "latent_image": [
+    "10",
+    1
+   ]
+  }
+ },
+ "16": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "15",
+    0
+   ],
+   "vae": [
+    "3",
+    0
+   ]
+  }
+ },
+ "17": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "15",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "18": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "images": [
+    "16",
+    0
+   ],
+   "audio": [
+    "17",
+    0
+   ],
+   "fps": 24,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none"
+  }
+ },
+ "19": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "video": [
+    "18",
+    0
+   ],
+   "filename_prefix": "storyforge/rooted_h3_sr25",
+   "format": "auto",
+   "format.codec": "auto",
+   "codec": "auto"
+  }
+ },
+ "20": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "6-shampoo-basins-edit-notext.png"
+  }
+ }
+}
