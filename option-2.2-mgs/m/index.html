@@ -1229,13 +1229,23 @@ html[data-world="coaching"][data-theme="dawn"] .hdr.is-film .worlds button[aria-
 .pv__row b { font: italic 300 clamp(26px, 2.2vw, 36px)/1 var(--serif); color: var(--forest-deep); }
 .pv__name { font: 300 clamp(28px, 2.6vw, 46px)/1 var(--serif); }
 .pv__line { font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
-/* the preview becomes the step rail (mgs.js, task 0ab956d4): the list holds still, each number travels to its own number
-   on the rail while the words and lines fade (--pf, the travel 0..1); the rows draw over the next slide as they go */
-.preview.pv--morph { overflow: visible; z-index: 2; }
-.preview.pv--morph .pv__list { transform: none; opacity: 1; }
-.preview.pv--morph .pv__row { border-color: rgba(23, 17, 13, calc(.14 * (1 - var(--pf, 0)))); }
-.preview.pv--morph .pv__name, .preview.pv--morph .pv__line { opacity: calc(1 - var(--pf, 0) * 1.8); transform: translate3d(calc(var(--pf, 0) * 3vw), 0, 0); }
-.preview.pv--morph .pv__row b { justify-self: start; will-change: transform; }
+/* the visit preview hands its five stops to the step rail (mgs.js, task 59b17d9c): each stop lifts off the line one after
+   another and flies, as two travellers (its number and its name), to its own number and label on the rail; the line
+   unthreads towards the rail behind them and draws again when they fly home. The stop's own words hide while it is away. */
+.vfly { position: fixed; inset: 0; z-index: 41; pointer-events: none; overflow: hidden; }
+.vfly__n, .vfly__name { position: absolute; left: 0; top: 0; margin: 0; white-space: nowrap; transform-origin: 0 0; visibility: hidden; will-change: transform, opacity; }
+.ln__stop.is-flown .ln__words { opacity: 1; filter: none; transform: none; transition: none; }
+.ln__stop.is-flown .ln__n, .ln__stop.is-flown .ln__name { visibility: hidden; }
+.pv--morph .ln__t { transition: opacity .6s var(--io) .15s; }
+.ln__stop.is-flown .ln__t { opacity: 0; transition: opacity .4s var(--io); }
+.ln__stop.is-flown .ln__dot { transform: scale(0); transition: transform .45s var(--io); }
+.lnsec.vfly-away .ln__svg { clip-path: inset(-12px 0 -12px 100%); transition: clip-path 1.5s var(--io) .1s; }
+.lnsec.vfly-away .ln__stops::before { transform-origin: 50% 100%; transform: scaleY(0); transition: transform 1.4s var(--io) .1s; }
+.rail.rail--fly { opacity: 1; visibility: visible; transition: none; }
+.rail.rail--fly a { opacity: 0; transition: opacity .45s var(--io), color var(--t-ui) var(--io); }
+.rail.rail--fly a.is-landed { opacity: 1; }
+.rail a.is-land { color: var(--ivory); }
+.rail a.is-land span { opacity: 1; transform: none; }
 /* the one action under a section that had none (M's Why Aveda; the menu, in place of a button per service) */
 .mani__btn, .om__btn { margin-top: clamp(20px, 3.4vh, 34px); }
 /* G round 2 (tasks 9456424d, 0ab956d4): each section's cycle is visible. The ROT line under Maggie's opening; a proof
@@ -1333,6 +1343,7 @@ main[data-world="coaching"] .hero .hero__line { color: var(--ivory); text-shadow
 .pf__q figcaption { margin-top: 12px; color: var(--ink-soft); font: 500 11.5px/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .pf__line { margin-top: clamp(22px, 4vh, 40px); color: var(--ink-soft); }
 .pf__line b { margin-right: 14px; color: var(--ink); font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; }
+.pf__line b:empty { display: none; }   /* G's early proof closes on its reward with no kicker (copy round 6): the line keeps the quotes' edge */
 
 /* the six services: name, triplet and price visible at once (the triplet sits where 2.2 showed a duration) */
 .offers-menu .om__row { padding: clamp(10px, 1.6vh, 18px) 0; }
@@ -1343,10 +1354,10 @@ main[data-world="coaching"] .hero .hero__line { color: var(--ivory); text-shadow
 .foot__legal { margin: 18px 0 0; max-width: 90ch; font-size: 12.5px; line-height: 1.55; color: var(--ivory-faint); }
 
 @media (max-width: 1023px) {
-  /* G: the rail the preview becomes shows on phone too, numbers only, as a quiet progress mark through the five steps */
-  html[data-variant="2.2-g"] .rail { display: grid; right: 12px; gap: 0; pointer-events: none; }
-  html[data-variant="2.2-g"] .rail a { padding: 5px 0; }
-  html[data-variant="2.2-g"] .rail a span { display: none; }
+  /* G and M: the rail the preview becomes shows on phone too, numbers only, as a quiet progress mark through the five steps */
+  html[data-variant="2.2-g"] .rail, html[data-variant="2.2-m"] .rail { display: grid; right: 12px; gap: 0; pointer-events: none; }
+  html[data-variant="2.2-g"] .rail a, html[data-variant="2.2-m"] .rail a { padding: 5px 0; }
+  html[data-variant="2.2-g"] .rail a span, html[data-variant="2.2-m"] .rail a span { display: none; }
   .offers-menu { grid-template-rows: auto minmax(0, 1fr) auto auto; }
   .offers-menu .om__ph { grid-row: 2; }
   .offers-menu .om__btn { grid-row: 4; }
@@ -1641,7 +1652,8 @@ html[data-shot] .vs__ph img { transform: none !important; }
 .ln__words { padding-top: var(--sp-3); }
 .ln__n { display: block; font: italic 300 var(--t-lead)/1 var(--serif); color: var(--forest-deep); }
 .ln__name { margin: var(--sp-1) 0 0; font: 300 var(--t-h3)/1.05 var(--serif); }
-.ln__t { margin: var(--sp-1) auto 0; max-width: 24ch; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+/* balance (copy round 6, G's stops are short sentences): a stop that wraps splits evenly, never one word left alone */
+.ln__t { margin: var(--sp-1) auto 0; max-width: 24ch; font-size: 15px; line-height: 1.5; color: var(--ink-soft); text-wrap: balance; }
 .lnsec { background: var(--clay); color: var(--ink); display: grid; align-items: center; padding: calc(var(--top) + var(--sp-4)) 0 var(--base); }
 .lnsec__in { width: 100%; max-width: 1680px; margin: 0 auto; padding: 0 var(--gutter); display: grid; gap: var(--sp-5); }
 .lnsec__head { max-width: 62ch; }
@@ -1911,8 +1923,9 @@ html[data-variant="2.2-g"] #aveda .facts__btn { order: 2; margin-top: var(--sp-4
 @media (max-width: 1023px) { html[data-variant="2.2-g"] #aveda :is(.facts__grid, .cy__reward) { margin-top: var(--sp-4); } }   /* the phone's step between groups */
 /* a section never hides its own words (the gap walk's cut-off check): the Aveda facts (M's on a phone hid four facts, G's
    at every width), the team letter at 768 (G's button half under the edge; the phone's one window stays where it fits)
-   and S's visit on a laptop (its first and last step cut) grow with their words; where the words fit, nothing moves */
-html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs) { height: auto; min-height: 100vh; min-height: 100svh; }
+   and S's visit on a laptop (its first and last step cut) grow with their words; where the words fit, nothing moves.
+   G's "Words from our guests" too, since copy round 6's reward line (its button 22 px under the edge at 1366 x 768) */
+html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: auto; min-height: 100vh; min-height: 100svh; }
 </style>
 </head>
 <body>
@@ -1950,7 +1963,7 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs) { height: auto; min-he
       <h1 class="hero__mark"><span class="sr">Salon OM</span><svg viewBox="-49.9 -244.5 1611.3 931.4" aria-hidden="true" focusable="false"><path class="mk-salon" d="M850.9 -136.3Q844.4 -136.3 839.1 -138.6Q833.9 -140.9 830.1 -145Q826.4 -149 824.4 -154.3Q822.3 -159.6 822.3 -165.5Q822.3 -172.8 825.2 -178.3Q828 -183.8 832.7 -187.4Q837.4 -191.1 842.9 -192.8Q848.5 -194.6 854 -194.6Q860.7 -194.6 865.9 -192.3Q871.2 -189.9 874.9 -185.8Q878.6 -181.8 880.5 -176.7Q882.5 -171.5 882.5 -166.1Q882.5 -159.8 879.9 -154.4Q877.4 -149 873.1 -145Q868.7 -140.9 863 -138.6Q857.3 -136.3 850.9 -136.3ZM854 -138.3Q859.7 -138.3 864.3 -141.2Q869 -144.2 871.6 -149.8Q874.3 -155.4 874.3 -163.6Q874.3 -172 871.3 -178.5Q868.4 -185 863.1 -188.8Q857.7 -192.5 850.3 -192.5Q840.9 -192.5 835.7 -186.1Q830.5 -179.7 830.5 -168.6Q830.5 -162.2 832.2 -156.7Q833.9 -151.2 837 -147Q840.2 -142.9 844.5 -140.6Q848.8 -138.3 854 -138.3ZM662.5 -138.5Q663 -138.5 663 -138Q663 -137.4 662.5 -137.4Q659.9 -137.4 657.2 -137.6Q654.4 -137.8 651.8 -137.8Q649 -137.8 646.8 -137.6Q644.7 -137.4 642.1 -137.4Q641.8 -137.4 641.8 -138Q641.8 -138.5 642.1 -138.5Q646.5 -138.5 647.5 -139.9Q648.5 -141.3 646.5 -145.4L639.1 -160.9H617.5L612.5 -149.3Q610.2 -143.8 612.2 -141.1Q614.3 -138.5 620 -138.5Q620.4 -138.5 620.4 -138Q620.4 -137.4 620 -137.4Q617.3 -137.4 615 -137.6Q612.8 -137.8 609.4 -137.8Q606 -137.8 604 -137.6Q602 -137.4 599.1 -137.4Q598.7 -137.4 598.7 -138Q598.7 -138.5 599.1 -138.5Q601.5 -138.5 603.3 -139.4Q605.1 -140.4 606.8 -142.9Q608.5 -145.4 610.4 -150.1L629.6 -194.3Q629.7 -194.6 630.2 -194.6Q630.8 -194.6 630.9 -194.3L652.5 -149.7Q654.6 -145.3 656.2 -142.9Q657.8 -140.4 659.3 -139.4Q660.8 -138.5 662.5 -138.5ZM951.3 -147.7V-188.6Q949.5 -190.4 948 -191.3Q945.7 -192.6 943.5 -192.6Q943.3 -192.6 943.3 -193.1Q943.3 -193.7 943.5 -193.7Q945.2 -193.7 946.9 -193.6Q948.6 -193.5 950 -193.5Q952.2 -193.5 954 -193.6Q955.8 -193.7 956.7 -193.7Q957.9 -193.7 958.4 -192.6Q958.9 -191.6 961 -189L994.6 -148.5V-183.3Q994.6 -188 992.9 -190.3Q991.2 -192.6 987.6 -192.6Q987.4 -192.6 987.4 -193.1Q987.4 -193.7 987.6 -193.7Q989.4 -193.7 991.4 -193.5Q993.4 -193.4 995.7 -193.4Q998 -193.4 1000.2 -193.5Q1002.3 -193.7 1004.2 -193.7Q1004.4 -193.7 1004.4 -193.1Q1004.4 -192.6 1004.2 -192.6Q1000.4 -192.6 998.6 -190.3Q996.8 -188 996.8 -183.3V-136.2Q996.8 -136.1 996.4 -136Q996 -136 995.8 -136.1L953.6 -186.1V-147.7Q953.6 -143 955.3 -140.7Q957 -138.5 960.7 -138.5Q960.9 -138.5 960.9 -138Q960.9 -137.4 960.7 -137.4Q958.8 -137.4 956.9 -137.5Q955 -137.6 952.5 -137.6Q950.2 -137.6 948 -137.5Q945.7 -137.4 943.7 -137.4Q943.5 -137.4 943.5 -138Q943.5 -138.5 943.7 -138.5Q947.7 -138.5 949.5 -140.7Q951.3 -143 951.3 -147.7ZM514.7 -183.6Q514.7 -180 516.5 -177.4Q518.3 -174.8 521.2 -172.7Q524.1 -170.7 527.3 -168.7Q530.6 -166.8 533.7 -164.5Q536.8 -162.2 538.9 -159.2Q540.9 -156.2 540.9 -151.9Q540.9 -147.5 538.6 -144Q536.3 -140.5 532.1 -138.4Q527.9 -136.3 522.1 -136.3Q519.7 -136.3 517.4 -136.7Q515 -137.1 512.8 -137.9Q510.6 -138.6 508.8 -139.7Q508.5 -139.9 508.3 -140.3Q508 -140.6 508 -141.4L507.1 -154.2V-154.6Q507.3 -154.7 507.6 -154.8Q508 -154.8 508.1 -154.4Q508.9 -151.6 510.3 -148.8Q511.6 -145.9 513.5 -143.5Q515.4 -141.1 518.1 -139.6Q520.7 -138 524.2 -138Q526.7 -138 529 -138.9Q531.3 -139.8 532.7 -142Q534.1 -144.1 534.1 -147.9Q534.1 -152.2 532.2 -155.1Q530.4 -158.1 527.4 -160.3Q524.4 -162.4 521.1 -164.4Q517.9 -166.4 515 -168.6Q512.1 -170.7 510.3 -173.5Q508.5 -176.4 508.5 -180.4Q508.5 -185.3 511.1 -188.4Q513.6 -191.6 517.6 -193.1Q521.6 -194.6 525.9 -194.6Q528.6 -194.6 531.5 -194.1Q534.4 -193.6 536.7 -192.6Q537.6 -192.2 537.8 -191.8Q538.1 -191.4 538.1 -191L538.5 -179.7Q538.5 -179.4 538.1 -179.3Q537.6 -179.3 537.5 -179.6Q537.2 -181.1 536.3 -183.4Q535.4 -185.7 533.9 -187.9Q532.3 -190.1 530 -191.6Q527.6 -193.1 524.1 -193.1Q521 -193.1 518.9 -191.8Q516.9 -190.5 515.8 -188.4Q514.7 -186.3 514.7 -183.6ZM733.6 -186.3V-145.1Q733.6 -142.7 734.1 -141.5Q734.6 -140.3 736 -139.9Q737.4 -139.5 740.2 -139.5H747.8Q753.7 -139.5 757.4 -142.9Q761.1 -146.3 762.2 -152V-152.1Q762.3 -152.3 762.8 -152.3Q763.2 -152.2 763.2 -151.9Q763 -149.3 762.7 -145.6Q762.4 -141.9 762.4 -138.8Q762.4 -137.4 761.1 -137.4H719.1Q719 -137.4 719 -138Q719 -138.5 719.1 -138.5Q722.3 -138.5 723.9 -138.9Q725.4 -139.4 726 -140.7Q726.5 -142.1 726.5 -144.7V-186.4Q726.5 -189 726 -190.3Q725.4 -191.6 723.9 -192.1Q722.3 -192.6 719.1 -192.6Q719 -192.6 719 -193.1Q719 -193.7 719.1 -193.7Q721.3 -193.7 724.1 -193.5Q727 -193.4 730 -193.4Q733.3 -193.4 736 -193.5Q738.8 -193.7 740.9 -193.7Q741.1 -193.7 741.1 -193.1Q741.1 -192.6 740.9 -192.6Q737.8 -192.6 736.2 -192.1Q734.7 -191.6 734.2 -190.2Q733.6 -188.9 733.6 -186.3ZM638.2 -162.9 627.7 -184.6 618.4 -162.9Z"/><path class="mk-om" pathLength="1" d="M304.4 637Q235.3 637 179.1 611.5Q122.9 586 83.1 541Q43.2 496 21.6 437.5Q0 379 0 313Q0 232 30.3 171Q60.5 110 110.4 69.5Q160.4 29 219.9 9Q279.5 -11 338 -11Q409.1 -11 465.3 15.5Q521.5 42 560.8 87Q600.2 132 620.9 189Q641.5 246 641.5 306Q641.5 376 614.6 436Q587.7 496 541.2 541Q494.6 586 433.6 611.5Q372.6 637 304.4 637ZM339 617Q406.2 617 461 584.5Q515.7 552 547.9 488.5Q580.1 425 580.1 334Q580.1 239 545 166.5Q510 94 446.6 52.5Q383.2 11 297.7 11Q186.3 11 123.9 83Q61.5 155 61.5 279Q61.5 349 81.2 410.5Q100.8 472 137.8 518.5Q174.8 565 225.7 591Q276.6 617 339 617ZM821.5 521 831.5 47Q800.5 12 750.5 12Q748.5 12 748.5 6Q748.5 0 750.5 0Q765.5 0 782.5 1Q799.5 2 810.5 2Q824.5 2 836.5 1Q848.5 0 854.5 0Q868.5 0 876.5 9Q884.5 18 900.5 52L1125.5 538L1349.5 25Q1354.5 14 1363 7Q1371.5 0 1379.5 0Q1384.5 0 1394.5 1Q1404.5 2 1417.5 2Q1443.5 2 1459.5 1Q1475.5 0 1493.5 0Q1495.5 0 1495.5 6Q1495.5 12 1493.5 12Q1444.5 12 1421.5 24.5Q1398.5 37 1399.5 79L1418.5 544Q1419.5 573 1426 588Q1432.5 603 1451.5 608Q1470.5 613 1508.5 613Q1511.5 613 1511.5 619Q1511.5 625 1508.5 625Q1484.5 625 1455 624Q1425.5 623 1392.5 623Q1361.5 623 1335.5 624Q1309.5 625 1288.5 625Q1286.5 625 1286.5 619Q1286.5 613 1288.5 613Q1338.5 613 1353 600Q1367.5 587 1365.5 544L1348.5 79L1114.5 618Q1113.5 622 1106.5 622Q1099.5 622 1097.5 618L853.5 83Q852.5 82 852.5 81L844.5 521Q843.5 572 861 592.5Q878.5 613 928.5 613Q930.5 613 930.5 619Q930.5 625 928.5 625Q906.5 625 883 624Q859.5 623 831.5 623Q807.5 623 785.5 624Q763.5 625 743.5 625Q741.5 625 741.5 619Q741.5 613 743.5 613Q785.5 613 803 592.5Q820.5 572 821.5 521Z"/></svg><span class="hero__hook intro" style="--d:2.3s">Where Beauty and Inner Work Belong</span></h1>
       <div class="hero__foot">
         <p class="eyebrow intro" style="--d:2.5s">Salon OM · An Aveda Concept Salon</p><p class="hero__line intro" style="--d:2.6s"><b>Maggie Woodward</b>One Source. Two Practices. Beauty from the inside out. Leave held, seen and beautifully cared for. An Avila Beach salon where artistry is mastered and time is yours.<br><button class="sound-cta sound-btn is-sound" type="button" aria-pressed="true"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span class="sound-label">Sound on</span></button></p>
-        <div class="hero__cta intro" style="--d:2.8s"><a class="btn btn--light" href="#pause">Salon OM <span class="arr" aria-hidden="true">→</span></a><a class="btn btn--ghost" href="#coaching" data-to-world="coaching">Inner Work with Maggie</a><p class="hero__note">Change begins with you.</p></div>
+        <div class="hero__cta intro" style="--d:2.8s"><a class="btn btn--light" href="#begin">Book your visit <span class="arr" aria-hidden="true">→</span></a><a class="btn btn--ghost" href="#coaching" data-to-world="coaching">Inner Work with Maggie</a><p class="hero__note">Change begins with you.</p></div>
         <a class="hero__cue label intro" style="--d:3s" href="#pause"><i aria-hidden="true"></i>Scroll</a>
       </div>
     </div>
@@ -1971,6 +1984,34 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs) { height: auto; min-he
       <p class="mani__label label a-left" style="--d:.1s">OM · Oneness</p>
       <p class="mani__text" data-write="letters" data-accents="kindness.">A sacred sound and a gift for all, whatever your path or belief. Like a pebble in a pond, its ripples reach outward, lifting the spirit of all. Simply by being here, you are part of the kindness.</p>
       
+    </div>
+    <div class="s__shade"></div>
+  </section>
+  <section class="s lnsec" id="visit" data-tone="light" data-sound="bed" aria-labelledby="visit-t">
+    <div class="lnsec__in">
+      <div class="lnsec__head s__leave">
+        <p class="eyebrow a-left" style="--d:.15s">The visit</p>
+        <h2 class="mid" id="visit-t"><span class="mask"><span class="mask__in" style="--d:.3s">Welcome. Release. Transform. Breathe. Shine.</span></span></h2>
+      </div>
+      <div class="ln" style="--n:5">
+      <svg class="ln__svg" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path class="ln__path" d="M0,18 L100.0,18 C200.0,18 200.0,46 300.0,46 C400.0,46 400.0,18 500.0,18 C600.0,18 600.0,46 700.0,46 C800.0,46 800.0,18 900.0,18 L1000,18" pathLength="1"/></svg>
+      <ol class="ln__stops"><li class="ln__stop" style="--y:0.18;--k:0">
+          <i class="ln__dot" aria-hidden="true"></i>
+          <div class="ln__words a-up" style="--d:0.90s"><b class="ln__n">01</b><h3 class="ln__name">Arrive</h3><p class="ln__t">The welcome.</p></div>
+        </li><li class="ln__stop" style="--y:0.46;--k:1">
+          <i class="ln__dot" aria-hidden="true"></i>
+          <div class="ln__words a-up" style="--d:1.22s"><b class="ln__n">02</b><h3 class="ln__name">Unwind</h3><p class="ln__t">The ritual.</p></div>
+        </li><li class="ln__stop" style="--y:0.18;--k:2">
+          <i class="ln__dot" aria-hidden="true"></i>
+          <div class="ln__words a-up" style="--d:1.54s"><b class="ln__n">03</b><h3 class="ln__name">Renew</h3><p class="ln__t">Your service.</p></div>
+        </li><li class="ln__stop" style="--y:0.46;--k:3">
+          <i class="ln__dot" aria-hidden="true"></i>
+          <div class="ln__words a-up" style="--d:1.86s"><b class="ln__n">04</b><h3 class="ln__name">Unhurried</h3><p class="ln__t">Your time.</p></div>
+        </li><li class="ln__stop" style="--y:0.18;--k:4">
+          <i class="ln__dot" aria-hidden="true"></i>
+          <div class="ln__words a-up" style="--d:2.18s"><b class="ln__n">05</b><h3 class="ln__name">Carry it home</h3><p class="ln__t">The finish.</p></div>
+        </li></ol>
+    </div>
     </div>
     <div class="s__shade"></div>
   </section>
@@ -2247,7 +2288,7 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs) { height: auto; min-he
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="070fb1e4828a";</script>
+<script>window.OM_BUILD="7fe18060557a";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -2971,58 +3012,152 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs) { height: auto; min-he
 })();
 </script>
 <script>
-/* M/G/S only (task 0ab956d4). G's five-step preview becomes the step rail: as the preview leaves, each row's number
-   travels to its own number on the rail (01 to 05) while its words fade, and the rail takes over as they land.
-   Scrubbed by the scroll (the same leave value as every slide's --q), so it plays backwards on the way up.
-   Off in ?shot review mode and with reduced motion, where the list keeps 2.2's plain leave. */
+/* M/G/S only (task 59b17d9c; J 17 Nov: "a nice beautiful animation that's creative that eases in and out each steps or
+   list items of the visit into the right side pagination/stepper of the next sections"). The visit preview hands its
+   five stops to the step rail. As the preview leaves, the stops lift off the line one after another (01 to 05): each
+   number flies on a soft arc to its own number on the rail and each name to the rail's label, shrinking and taking the
+   rail's ivory, with the site's in-out ease; each label shows as it lands, then settles, and the line unthreads towards
+   the rail behind them. Scrolling back up flies them back in the same order and the line draws itself again.
+   Played in time, not scrubbed, so a slide's short snap never rushes it; turning round mid-flight sends each stop back
+   from where it is. The moment the preview starts to leave, all five lift off where the reader saw them and stay there
+   while the page slides away beneath them, already turning to the rail's ivory, so a later stop never starts from
+   wherever the slide has carried it (QA 17 Nov: in Safari stops 03 to 05 left from the top edge, grey on the photo). Replaces round 5's numbers-only morph (its CSS still targeted the old list, so the names and the
+   line stayed behind). Off in ?shot and with reduced motion, where the rail simply fades in with the steps. */
 (function () {
-  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;   // round 4: the preview is the line block
-  if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // round 4: only where step 01 follows the preview (G now has the menu between them, so its rail simply arrives with the steps)
-  var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;
-  var nums = [].slice.call(sec.querySelectorAll('.ln__n')), marks = [].slice.call(rail.querySelectorAll('a b'));
-  if (!nums.length || marks.length < nums.length) return;
+  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;
+  if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches || !document.body.animate) return;
+  var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;   // only where step 01 follows the preview
+  var stops = [].slice.call(sec.querySelectorAll('.ln__stop')), links = [].slice.call(rail.querySelectorAll('a'));
+  if (!stops.length || links.length < stops.length) return;
   sec.classList.add('pv--morph');
 
-  // in units of the preview's leave (0..1): the numbers land once step 01's film is behind the rail (its middle fifth)
-  var TRAVEL = .58, STAGGER = .02, HAND = .56, HAND_LEN = .12, HOLD = .8;
-  var held = false, cFrom = null, cTo = null;
-  function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-  function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }   // in-out, as the site's --io
+  var DUR = 1200, GAP = 150, LAND = .8, EASE = 'cubic-bezier(.65, 0, .35, 1)';   // the site's --io
+  var TONE = .35;   // a traveller has taken its new tone a third of the way, as the page under it has changed by then
+  var svg = sec.querySelector('.ln__svg'), layer = document.createElement('div');
+  layer.className = 'vfly'; layer.setAttribute('aria-hidden', 'true'); document.body.appendChild(layer);
+  function traveller(cls, text) { var c = document.createElement('span'); c.className = cls; c.textContent = text; layer.appendChild(c); return c; }
+  // each stop is 'line' (resting on it), 'out' (flying to the rail), 'rail' or 'in' (flying home)
+  var st = stops.map(function (li) {
+    var n = li.querySelector('.ln__n'), nm = li.querySelector('.ln__name');
+    return { li: li, n: n, nm: nm, cn: traveller('vfly__n', n.textContent), cm: traveller('vfly__name', nm.textContent), at: 'line', fly: false, an: [], tm: [] };
+  });
+  var lt = links.map(function () { return 0; });   // each label's show-then-settle timer
+
   function rgb(s) { var m = s.match(/[\d.]+/g) || [0, 0, 0]; return [+m[0], +m[1], +m[2], m[3] == null ? 1 : +m[3]]; }
-  function mix(a, b, t) { return 'rgba(' + [0, 1, 2].map(function (i) { return Math.round(a[i] + (b[i] - a[i]) * t); }).join(',') + ',' + (a[3] + (b[3] - a[3]) * t).toFixed(3) + ')'; }
-  function at(el) {          // an element's place inside the preview, before any transform
-    var x = 0, y = 0;
-    for (var e = el; e && e !== sec; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; }
-    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2, h: el.offsetHeight };
+  function mix(a, b, t, ta) { if (ta == null) ta = t; return 'rgba(' + [0, 1, 2].map(function (i) { return Math.round(a[i] + (b[i] - a[i]) * t); }).join(',') + ',' + (a[3] + (b[3] - a[3]) * ta).toFixed(3) + ')'; }
+  function box(el) {          // the words' own box, not the block's full column
+    var r = document.createRange(); r.selectNodeContents(el); var b = r.getBoundingClientRect();
+    return b.width ? b : el.getBoundingClientRect();
   }
-  function release() {
-    if (!held) return; held = false;
-    rail.style.transition = rail.style.opacity = rail.style.visibility = '';
+  function dress(c, src) {    // a traveller takes its stop's type before it is measured
+    var s = getComputedStyle(src);
+    ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing'].forEach(function (p) { c.style[p] = s[p]; });
   }
-  function frame() {
-    var r = sec.getBoundingClientRect(), vh = innerHeight;
-    if (r.height && r.top <= 1 && r.bottom > 0) {
-      var q = clamp(-r.top / vh);
-      if (!cFrom) { cFrom = rgb(getComputedStyle(nums[0]).color); cTo = rgb(getComputedStyle(marks[0]).color); }
-      sec.style.setProperty('--pf', clamp(q / TRAVEL).toFixed(4));
-      var h = clamp((q - HAND) / HAND_LEN);
-      for (var k = 0; k < nums.length; k++) {
-        var n = nums[k], a = at(n), m = marks[k].getBoundingClientRect();
-        var e = ease(clamp((q - k * STAGGER) / TRAVEL)), s = 1 + (m.height / a.h - 1) * e;
-        var dx = (m.left + m.width / 2 - (r.left + a.x)) * e, dy = (m.top + m.height / 2 - (r.top + a.y)) * e;
-        n.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
-        // each number takes the colour of what is behind it: forest over the clay preview, the rail's ivory over the film
-        n.style.color = mix(cFrom, cTo, clamp((r.top + a.y + dy - r.bottom + 14) / 28));
-        n.style.opacity = (1 - h).toFixed(3);
-      }
-      if (q > 0 && q < HOLD) {         // the rail appears exactly as the numbers land, then the engine keeps it on
-        held = true; rail.style.transition = 'none'; rail.style.opacity = h.toFixed(3); rail.style.visibility = h > 0 ? 'visible' : 'hidden';
-      } else release();
-    } else release();
+  function halt(o) {          // freeze each traveller where it is, so a reversal starts from there
+    o.an.forEach(function (a) { try { a.commitStyles(); } catch (e) {} a.cancel(); });
+    o.tm.forEach(clearTimeout); o.an = []; o.tm = [];
+  }
+
+  function pin(o, k) {        // lift off where the reader saw it and wait there for its turn, taking the rail's tone
+    o.fly = true;
+    var rc = rgb(getComputedStyle(links[k]).color), tone = 'rgba(' + rc[0] + ',' + rc[1] + ',' + rc[2] + ',1)';   // the rail's ivory, at full strength in the air
+    [[o.cn, o.n], [o.cm, o.nm]].forEach(function (p) {
+      var c = p[0], src = p[1]; dress(c, src);
+      var h = c.offsetHeight, sb = box(src), ink = getComputedStyle(src).color;
+      c.style.transform = 'translate3d(' + sb.left.toFixed(1) + 'px,' + (sb.top + (sb.height - h) / 2).toFixed(1) + 'px,0) scale(1)';
+      c.style.color = ink; c.style.opacity = '1'; c.style.visibility = 'visible'; c._pin = true;
+      o.an.push(c.animate([{ color: ink }, { color: tone }], { duration: DUR * TONE, easing: EASE, fill: 'forwards' }));
+    });
+  }
+
+  function travel(c, src, dst, align, dir, f, dy, cRail) {
+    var on = o_on(c), full = !on || c._pin; c._pin = false;
+    if (!on) dress(c, src);
+    var w = c.offsetWidth, h = c.offsetHeight, sb = box(src), db = box(dst), s1 = db.height / h;
+    var rx = align === 'c' ? db.left + db.width / 2 - w * s1 / 2 : align === 'r' ? db.right - w * s1 : db.left - 10 - w * s1;
+    var railAt = { x: rx, y: db.top + db.height / 2 - h * s1 / 2, s: s1 };
+    var lineAt = { x: sb.left, y: sb.top + dy + (sb.height - h) / 2, s: 1 };
+    var cur = c.getBoundingClientRect(), cs = getComputedStyle(c);
+    var a = on ? { x: cur.left, y: cur.top, s: cur.height / h } : dir === 'out' ? lineAt : railAt, z = dir === 'out' ? railAt : lineAt;
+    var cHome = rgb(getComputedStyle(src).color), c0 = on ? rgb(cs.color) : dir === 'out' ? cHome : cRail, c1 = dir === 'out' ? cRail : cHome;
+    var o0 = on ? +cs.opacity : dir === 'out' ? 1 : 0;
+    // a soft arc: lifted above the straight line by a twelfth of the distance travelled, bending late towards its end
+    var cx = a.x + (z.x - a.x) * .78, cy = Math.min(a.y, z.y) - Math.hypot(z.x - a.x, z.y - a.y) * .08, ks = [];
+    for (var i = 0; i <= 12; i++) {
+      var t = i / 12, u = 1 - t;
+      var x = u * u * a.x + 2 * u * t * cx + t * t * z.x, y = u * u * a.y + 2 * u * t * cy + t * t * z.y, s = a.s + (z.s - a.s) * t;
+      var op = dir === 'out' ? (t < f ? o0 : o0 * (1 - (t - f) / (1 - f))) : (t < f ? o0 + (1 - o0) * t / f : 1);
+      ks.push({ offset: t, transform: 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')', color: mix(c0, c1, Math.min(1, t / TONE), dir === 'out' ? Math.max(0, (t - .7) / .3) : Math.min(1, t / TONE)), opacity: op.toFixed(3) });   // dims to the rail's quiet tone only as it lands
+    }
+    c.style.visibility = 'visible';
+    return c.animate(ks, { duration: full ? DUR : DUR * .8, easing: EASE, fill: 'forwards' });
+  }
+  function o_on(c) { return c.style.visibility === 'visible'; }
+
+  function settle(o, k, where) {
+    halt(o); o.fly = false; o.at = where;
+    o.cn.style.visibility = o.cm.style.visibility = 'hidden'; o.cn._pin = o.cm._pin = false;
+    o.li.classList.toggle('is-flown', where === 'rail');
+    links[k].classList.toggle('is-landed', where === 'rail');
+    if (where === 'line') { clearTimeout(lt[k]); links[k].classList.remove('is-land'); }
+    if (!st.every(function (x) { return x.at === where; })) return;
+    if (where === 'line') {   // all back: the rail goes quiet at once (the engine hides it before step 01)
+      rail.style.transition = 'none'; rail.classList.remove('rail--fly'); void rail.offsetWidth; rail.style.transition = '';
+    } else rail.classList.remove('rail--fly');   // all on the rail: the engine keeps it on through the five steps
+  }
+  function launch(o, k, dir) {
+    halt(o); o.fly = true;    // a pinned traveller keeps the tone it has reached
+    var lk = links[k], b = lk.querySelector('b'), sp = lk.querySelector('span'), lab = sp && sp.offsetWidth > 0;
+    var dy = dir === 'in' ? -sec.getBoundingClientRect().top : 0;   // flying back: where the stop rests once the slide settles
+    var cRail = rgb(getComputedStyle(lk).color);
+    if (dir === 'in') { clearTimeout(lt[k]); lk.classList.remove('is-landed', 'is-land'); }
+    o.an = [travel(o.cn, o.n, b, 'c', dir, dir === 'out' ? .85 : .15, dy, cRail),
+            travel(o.cm, o.nm, lab ? sp : b, lab ? 'r' : 'l', dir, lab ? .6 : .35, dy, cRail)];   // no label (the phone): the name gives way before it meets its number
+    if (dir === 'out') o.tm.push(setTimeout(function () {
+      lk.classList.add('is-landed', 'is-land'); clearTimeout(lt[k]);
+      lt[k] = setTimeout(function () { lk.classList.remove('is-land'); }, 1100);   // its label shows as it lands, then settles
+    }, (o.an[0].effect.getTiming().duration) * LAND));
+    o.an[0].onfinish = function () { settle(o, k, dir === 'out' ? 'rail' : 'line'); };
+  }
+  function go(o, k, dir, delay) {
+    var was = o.at, fl = o.fly; halt(o);
+    // not yet lifted off (still waiting its turn): it simply stays where it is
+    if (!fl && was !== 'line' && was !== 'rail') { settle(o, k, dir === 'in' ? 'line' : 'rail'); return; }
+    o.at = dir;
+    if (dir === 'out' && !fl) pin(o, k);   // pinned travellers count as flying: turning round sends them back to the line from there
+    if (dir === 'out') o.li.classList.add('is-flown');
+    o.tm.push(setTimeout(function () { launch(o, k, dir); }, fl ? 0 : delay));
+  }
+  function redraw() {         // the line draws itself in again from the left, as on arrival
+    if (!sec.classList.contains('vfly-away')) return;
+    if (svg) { svg.style.transition = 'none'; svg.style.clipPath = 'inset(-12px 100% -12px 0)'; }
+    sec.classList.remove('vfly-away');
+    if (svg) { void svg.getBoundingClientRect(); svg.style.transition = svg.style.clipPath = ''; }
+  }
+  function send(dir) {
+    if (dir === 'out') sec.classList.add('vfly-away'); else redraw();
+    rail.classList.add('rail--fly');
+    var j = 0;
+    st.forEach(function (o, k) {
+      if (dir === 'out' ? (o.at === 'line' || o.at === 'in') : (o.at === 'rail' || o.at === 'out')) go(o, k, dir, j++ * GAP);
+    });
+  }
+  function jump(where) {      // the preview was passed in one jump (a link, a key): no flight, just the end state
+    if (where === 'rail') sec.classList.add('vfly-away'); else redraw();
+    st.forEach(function (o, k) { settle(o, k, where); });
+  }
+
+  var lastY = scrollY;
+  (function frame() {
+    var y = scrollY, d = y > lastY + .5 ? 1 : y < lastY - .5 ? -1 : 0; lastY = y;
+    if (d) {
+      var r = sec.getBoundingClientRect(), vh = innerHeight, railOn = links[0].getBoundingClientRect().width > 0;
+      var anyOnLine = st.some(function (o) { return o.at === 'line' || o.at === 'in'; }), anyAway = st.some(function (o) { return o.at === 'rail' || o.at === 'out'; });
+      if (d > 0 && anyOnLine && r.height && r.top < -vh * .06) { if (r.bottom <= 0 || !railOn) jump('rail'); else send('out'); }
+      else if (d < 0 && anyAway && r.top > -vh * .85) { if (r.top >= vh || !railOn) jump('line'); else send('in'); }
+    }
     requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
+  })();
 })();
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
