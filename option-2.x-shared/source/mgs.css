@@ -692,3 +692,38 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
    the light sections' soft ink, about 2.6 : 1 on the dark ground; it takes the closing screen's own soft text colour,
    which each world's theme sets (light on the salon's umber, dark on Inner Work's clay) */
 .cl .cy__answer { color: var(--ivory-soft); }
+
+/* gaps and spacing walk (task cf6eeff6, J 17 Nov: "please QA gaps and spacing"; `node run.mjs gaps` in qa/) */
+/* a group of buttons, side by side or stacked: the hero pair's 12 px between them (the closing screen's three and the
+   bridge's two touched when they stacked on a phone) */
+main :where(.s div:has(> .btn + .btn)) { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.bridge :where(div:has(> .btn + .btn)) { justify-content: center; }
+/* Inner Work's path: its button 40 px under the words, like every button on the page (it sat 16 px under on a phone);
+   the lines above it keep their 16 px between them */
+.lnsec__foot { row-gap: var(--sp-4); }
+.lnsec__foot > p + p:is(.cy__answer, .cy__reward) { margin-top: calc(var(--sp-2) - var(--sp-4)); }
+/* a reward line under a closing line (G's How we work together): 16 px under it, like the paragraphs (the two touched),
+   and the button 40 px under it (it was 56) */
+.pr__body > .cy__reward { margin: var(--sp-2) 0 0; }
+/* G's "What is in your color?" (J, 17 Nov: "seems too cramped or tight"): her long quote and the four facts no longer
+   squeeze into one window, which hid the facts under its edge: the section grows with its words, clears the header,
+   gives the quote its leading, and puts the facts before the reward line and the button, so it ends on its call to
+   action like every cycle of G */
+html[data-variant="2.2-g"] #aveda.facts { height: auto; min-height: 100vh; min-height: 100svh; padding-top: calc(var(--top) + var(--sp-4)); padding-bottom: var(--base); }
+html[data-variant="2.2-g"] #aveda .facts__in { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+html[data-variant="2.2-g"] #aveda .facts__in > div { display: contents; }
+html[data-variant="2.2-g"] #aveda .eyebrow { margin: 0 0 var(--sp-3); }
+html[data-variant="2.2-g"] #aveda .mid { margin: 0 0 var(--sp-3); }
+html[data-variant="2.2-g"] #aveda .facts__in > div > p:not(.cy__reward, .eyebrow) { margin: 0; }
+html[data-variant="2.2-g"] #aveda blockquote { margin: var(--sp-4) 0 0; line-height: 1.28; }
+html[data-variant="2.2-g"] #aveda blockquote cite { margin-top: var(--sp-2); }
+html[data-variant="2.2-g"] #aveda .facts__grid { order: 1; width: 100%; margin-top: var(--sp-5); }
+html[data-variant="2.2-g"] #aveda small.src { order: 1; margin-top: var(--sp-3); }
+html[data-variant="2.2-g"] #aveda .cy__reward { order: 2; margin: var(--sp-5) 0 0; }
+html[data-variant="2.2-g"] #aveda .facts__btn { order: 2; margin-top: var(--sp-4); }
+@media (min-width: 1024px) { html[data-variant="2.2-g"] #aveda.facts { padding-top: calc(var(--top) + var(--sp-5)); } }
+@media (max-width: 1023px) { html[data-variant="2.2-g"] #aveda :is(.facts__grid, .cy__reward) { margin-top: var(--sp-4); } }   /* the phone's step between groups */
+/* a section never hides its own words (the gap walk's cut-off check): the Aveda facts (M's on a phone hid four facts, G's
+   at every width), the team letter at 768 (G's button half under the edge; the phone's one window stays where it fits)
+   and S's visit on a laptop (its first and last step cut) grow with their words; where the words fit, nothing moves */
+html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs) { height: auto; min-height: 100vh; min-height: 100svh; }
