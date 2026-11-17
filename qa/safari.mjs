@@ -215,7 +215,9 @@ async function visit(v, dwell) {
   for (const s of secs) {
     await jump(await exec((i) => document.querySelectorAll('main[data-world="salon"] > section.s')[i].getBoundingClientRect().top + scrollY, s.i));
     if (!s.step) { await sleep(dwell); continue; }
-    await sleep(1500); const a = await filmAt(s.id); await sleep(4500); const z = await filmAt(s.id);
+    // two frames per step film, 1.5 s and 6 s after arriving: the evidence that it moves, beside the clock
+    await sleep(1500); const a = await filmAt(s.id); await shot(`${v}-visit${dwell}-${s.id}-1.5s.png`);
+    await sleep(4500); const z = await filmAt(s.id); await shot(`${v}-visit${dwell}-${s.id}-6s.png`);
     const moving = z.t != null && a.t != null && z.t > a.t + 0.5 && !z.paused && z.err == null;
     steps.push({ id: s.id, moving, a, z });
     console.log('visit', v, dwell, s.id, 'film', moving, `t ${a.t}->${z.t} paused ${z.paused} ready ${z.ready} blob ${a.blob}->${z.blob} on ${z.on} photo ${z.photo}`);
