@@ -1,5 +1,5 @@
 // Real Safari through safaridriver (task 2846db82, CEO MA 16 Nov): what Playwright's WebKit cannot show, on the live pages.
-//   node run.mjs safari <mac|sim> [m,g] [films,sound,snap]
+//   node run.mjs safari <mac|sim> [m,g] [films,sound,snap,visit]   (visit: a person's walk, VISIT_DWELL=2300,6000 ms)
 //   mac: Safari on macOS, its window at 1440 x 900 on the job's own screen (sDelegate --needs macos,own-screen gives
 //        SDELEGATE_SCREEN_FRAME; without one this refuses to open a window). sim: iOS Simulator Safari at iPhone size.
 // No packages: WebDriver over HTTP with Node's own fetch. Reuses r4.mjs's step ids, film timing (photo on at 1.5 s, the film
@@ -13,11 +13,12 @@ import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import http from 'node:http';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const [, WHERE = 'mac', VERS_ARG = 'm,g', WHAT = 'films,sound,snap'] = process.argv.slice(2);
 const VERS = VERS_ARG.split(',');
-const OUT = path.join(HERE, `out-safari-${WHERE}`);
+const OUT = path.join(HERE, `out-safari-${WHERE}${process.env.SITE === 'local' ? '-local' : ''}`);
 fs.mkdirSync(OUT, { recursive: true });
 const PORT = 4444 + Math.floor(Math.random() * 500);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -137,15 +138,18 @@ const filmAt = (id) => exec((id) => {
   const s = document.getElementById(id), v = s.querySelector('video'), top = s.querySelector('.ch__top');
   return { t: v ? Math.round(v.currentTime * 100) / 100 : null, paused: v ? v.paused : null, ready: v ? v.readyState : null,
     err: v && v.error ? v.error.code : null, src: v ? (v.currentSrc || '').split('/').pop() : null,
+    blob: v ? /^blob:/.test(v.currentSrc || '') : null, on: v ? v.classList.contains('is-on') : null,
     photo: top ? Math.round(+getComputedStyle(top).opacity * 100) / 100 : null, sound: s.getAttribute('data-sound'), active: s.classList.contains('is-active') };
 }, id);
 
 async function version(v) {
   const r = res.versions[v] = {};
-  await wd('POST', S('/url'), { url: `https://salon-om-2-2-${v}.web.app/` });
+  await wd('POST', S('/url'), { url: siteOf(v) });
   await sleep(2500);
   r.build = await exec(() => ({ url: location.href, fixes7efa6f0: document.documentElement.outerHTML.indexOf('io2.observe') > 0, soundPref: localStorage.getItem('om-sound') }));
   const ids = await exec(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')].filter((s) => s.querySelector('.ch--stack, .ch__top') && s.querySelector('video')).map((s) => s.id));
+  // the visit walks first, from fresh loads, before the jumps below have asked every film to play
+  if (WHAT.includes('visit')) for (const d of DWELLS) { r['visit' + d] = await visit(v, d); save(); }
   r.steps = [];
   if (WHAT.includes('sound')) {
     r.instrument = await exec(instrument);
@@ -156,7 +160,7 @@ async function version(v) {
     r.afterClick = await soundAt(0);
     delete r.afterClick.glides; delete r.afterClick.starts;
   }
-  for (const id of ids) {
+  for (const id of (WHAT.includes('films') ? ids : [])) {
     await jump(await topOf(id));
     const t0 = (await exec(() => performance.now()));
     await sleep(1500); const a = await filmAt(id);
@@ -175,6 +179,42 @@ async function version(v) {
   }
   if (WHAT.includes('snap') && WHERE === 'mac') r.snap = await snap(v);
   save();
+}
+
+// visit (task b36dde1f): a person's walk, not a jump. 'films' jumps straight to each step, so its film is attached and
+// asked to play in the same frame; a person reaches a step seconds after its film was attached (two screens before).
+// From a fresh load: every salon section in order, a pause of DWELL ms on each (VISIT_DWELL, a list: a quick scroller
+// and a reader), each step film read 1.5 s and 6 s after arrival. A read-only wrapper on play() records each call and
+// how its promise ended; currentSrc says whether the film was swapped to a whole download (blob:).
+const DWELLS = (process.env.VISIT_DWELL || '2300,6000').split(',').map(Number);
+const playLog = () => exec(() => {
+  if (!window.__fv) {
+    const fv = window.__fv = { plays: [] }, p0 = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function () {
+      const rec = { src: (this.currentSrc || this.src || '').split('/').pop().slice(0, 24), at: Math.round(performance.now()), out: 'pending' };
+      fv.plays.push(rec); const pr = p0.apply(this, arguments);
+      if (pr && pr.then) pr.then(() => { rec.out = 'ok'; }, (e) => { rec.out = (e && e.name) || 'rejected'; });
+      return pr;
+    };
+  }
+  return window.__fv.plays.length;
+});
+async function visit(v, dwell) {
+  await wd('POST', S('/url'), { url: siteOf(v) });
+  await sleep(2500); await playLog();
+  const secs = await exec(() => [...document.querySelectorAll('main[data-world="salon"] > section.s')]
+    .map((s, i) => ({ i, id: s.id || null, step: !!(s.querySelector('.ch__top') && s.querySelector('video')) })));
+  const steps = [];
+  for (const s of secs) {
+    await jump(await exec((i) => document.querySelectorAll('main[data-world="salon"] > section.s')[i].getBoundingClientRect().top + scrollY, s.i));
+    if (!s.step) { await sleep(dwell); continue; }
+    await sleep(1500); const a = await filmAt(s.id); await sleep(4500); const z = await filmAt(s.id);
+    const moving = z.t != null && a.t != null && z.t > a.t + 0.5 && !z.paused && z.err == null;
+    steps.push({ id: s.id, moving, a, z });
+    console.log('visit', v, dwell, s.id, 'film', moving, `t ${a.t}->${z.t} paused ${z.paused} ready ${z.ready} blob ${a.blob}->${z.blob} on ${z.on} photo ${z.photo}`);
+  }
+  const plays = await exec(() => window.__fv.plays);
+  return { dwell, steps, plays };
 }
 
 // r4.mjs snap(): the same six steps on the tall sections of this version (1440 x 900), through WebDriver wheel actions
@@ -217,7 +257,30 @@ async function snap(v) {
   return out;
 }
 
+// SITE=local (task b36dde1f): this checkout's built pages instead of the live ones, staged as deploy-mgs.sh stages them
+// (option-2.2/site's films, photos, fonts and sound + option-2.2-mgs/<v>/index.html) and served with byte ranges (206) like
+// the live host, so a fix is proven in real Safari before it is deployed. Default: the live sites.
+let siteOf = (v) => `https://salon-om-2-2-${v}.web.app/`;
+async function local() {
+  const REPO = path.resolve(HERE, '..'), T = { '.html': 'text/html; charset=utf-8', '.mp4': 'video/mp4', '.webp': 'image/webp', '.jpg': 'image/jpeg',
+    '.png': 'image/png', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css' };
+  const srv = http.createServer((q, r) => {
+    const [, v, ...rest] = decodeURIComponent(q.url.split('?')[0]).split('/'), rel = rest.join('/');
+    const f = path.resolve(rel === '' || rel === 'index.html' ? path.join(REPO, 'option-2.2-mgs', v, 'index.html') : path.join(REPO, 'option-2.2', 'site', rel));
+    if (!f.startsWith(REPO + path.sep) || !fs.existsSync(f) || !fs.statSync(f).isFile()) { r.writeHead(404); return r.end(); }
+    const size = fs.statSync(f).size, m = /^bytes=(\d*)-(\d*)$/.exec(q.headers.range || ''), h = { 'content-type': T[path.extname(f)] || 'application/octet-stream', 'accept-ranges': 'bytes' };
+    if (!m) { r.writeHead(200, { ...h, 'content-length': size }); return fs.createReadStream(f).pipe(r); }
+    const a = m[1] === '' ? Math.max(0, size - +m[2]) : +m[1], z = m[1] !== '' && m[2] !== '' ? Math.min(+m[2], size - 1) : size - 1;
+    if (a > z || a >= size) { r.writeHead(416, { 'content-range': `bytes */${size}` }); return r.end(); }
+    r.writeHead(206, { ...h, 'content-range': `bytes ${a}-${z}/${size}`, 'content-length': z - a + 1 }); fs.createReadStream(f, { start: a, end: z }).pipe(r);
+  });
+  await new Promise((ok) => srv.listen(0, '127.0.0.1', ok));
+  const port = srv.address().port; siteOf = (v) => `http://127.0.0.1:${port}/${v}/`; srv.unref();
+  res.site = `local: this checkout, served at 127.0.0.1:${port} with byte ranges`;
+}
+
 try {
+  if (process.env.SITE === 'local') await local();
   await start(); save();
   for (const v of VERS) { try { await version(v); } catch (e) { res.versions[v] = { ...(res.versions[v] || {}), error: e.message }; console.log(v, 'error', e.message); save(); } }
 } catch (e) {
