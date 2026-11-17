@@ -333,8 +333,9 @@
   if (!films.length || !('IntersectionObserver' in window)) return;
   function held() { return toggle && toggle.getAttribute('aria-pressed') === 'true'; }
   // the engine sets _want (on screen) and _stopped (the hero that slows to stillness); this only asks again
-  // a refused start (Safari in Low Power Mode refuses every film until a tap, click or key; scrolling never counts,
-  // measured on J's MacBook 17 Nov) leaves the film's photo drifting slowly instead of standing still (mgs.css is-held)
+  // a refused start (Safari will not start a muted film in a window it judges unseen, e.g. another desktop or a hidden
+  // Stage Manager set, nor any film on an iPhone in Low Power Mode until a tap) leaves the film's photo drifting slowly
+  // instead of standing still (mgs.css is-held); a tap, click or key still starts it
   function refused(v) { var f = v.closest('.ch__top, .s__zoom'); if (f) f.classList.add('is-held'); }
   function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
   function attach(v) {

@@ -1956,8 +1956,8 @@ html[data-variant="2.2-g"] #aveda .facts__btn { order: 2; margin-top: var(--sp-4
    and S's visit on a laptop (its first and last step cut) grow with their words; where the words fit, nothing moves.
    G's "Words from our guests" too, since copy round 6's reward line (its button 22 px under the edge at 1366 x 768) */
 html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: auto; min-height: 100vh; min-height: 100svh; }
-/* task b36dde1f: a film Safari refused to start (Low Power Mode starts films only from a tap, click or key; scrolling never
-   counts; measured on J's MacBook) keeps its photo drifting slowly, from the photo exactly as shown (no jump), always
+/* task b36dde1f: a film Safari refused to start (an iPhone in Low Power Mode starts films only from a tap; Safari starts no
+   muted film in a window it judges unseen) keeps its photo drifting slowly, from the photo exactly as shown (no jump), always
    running so no section snaps back as it leaves; a tap later starts the film, which fades in over the drift (mgs.js) */
 @keyframes held-drift { from { transform: scale(1); } to { transform: scale(1.07) translate3d(-1.2%, -.8%, 0); } }
 /* the film's poster and, on a step, the real photo laid over it move as one stack (same box, same transform) */
@@ -2329,7 +2329,7 @@ html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img) {animati
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="21ac42944baf";</script>
+<script>window.OM_BUILD="1af451a54ea9";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -3388,8 +3388,9 @@ html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img) {animati
   if (!films.length || !('IntersectionObserver' in window)) return;
   function held() { return toggle && toggle.getAttribute('aria-pressed') === 'true'; }
   // the engine sets _want (on screen) and _stopped (the hero that slows to stillness); this only asks again
-  // a refused start (Safari in Low Power Mode refuses every film until a tap, click or key; scrolling never counts,
-  // measured on J's MacBook 17 Nov) leaves the film's photo drifting slowly instead of standing still (mgs.css is-held)
+  // a refused start (Safari will not start a muted film in a window it judges unseen, e.g. another desktop or a hidden
+  // Stage Manager set, nor any film on an iPhone in Low Power Mode until a tap) leaves the film's photo drifting slowly
+  // instead of standing still (mgs.css is-held); a tap, click or key still starts it
   function refused(v) { var f = v.closest('.ch__top, .s__zoom'); if (f) f.classList.add('is-held'); }
   function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
   function attach(v) {

@@ -11,5 +11,8 @@ drive the person's own Safari on their Mac, run from a StoryMind shell terminal 
   Use it for timing questions only, never as proof that films start by themselves.
 - `lpm-film-test.html`: a `<video>` asked to play beside the same film in `<img src=…mp4>`, with a CSS control.
 
-Found with them on J's MacBook (Safari 27.0): Low Power Mode is on (pmset powermode 1, battery and power adapter) and
-Safari refuses every film's play() (NotAllowedError) until a click, tap or key; scrolling never counts.
+Found with them on J's MacBook (Safari 27.0, Low Power Mode and Reduce Motion on, Stage Manager): a window that lands off
+the stage (another desktop, a hidden Stage Manager set) is judged unseen and Safari refuses its films' play()
+(NotAllowedError); a visible window plays them by itself, Low Power Mode or not (17 Nov 10:47, hero 0 -> 12.7 s). Reduce
+Motion turned off the visit fly-in and the pause breath until the motion switch (b5e8463). Check where the window is
+(its frames) before reading a refusal as the site's fault.
