@@ -83,7 +83,12 @@ SERVICE_PHOTO = [
   # the camera with body and head together, her hair an even, glossy warm brown from root to end; Qwen-Image-Edit 2511 (CC3
   # seed 8), whole frame, canvas, switches, counter and lights checked against photo 15 (the color bar sits behind her)
   ('om-menu-color-correction.webp', 'A generated guest with even, glossy warm brown hair in the doorway beside the Aveda canvas at Salon OM', '22% 42%'),
-  ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
+  # Cut and Style (task 1c6ed2aa, StoryLegal 17 Nov 2026: no real team member beside a generated guest until her own written
+  # yes): the salon's photo 11, the styling stations, no team member; the guest seated back in the styling chair, shoes on
+  # its footrest, a sleek chin-length bob. Qwen-Image-Edit 2511 on the Mac Studio (CS6 seed 8), then only the guest pasted
+  # back on the real photo by her own person outline: 0 px changed outside her, the real poster and chair kept. The
+  # visit's styling step shows the same room empty; here the crop centres on the guest
+  ('om-menu-cut-and-style.webp', 'A generated guest with a sleek, freshly cut bob in a styling chair, in a photo of Salon OM', '44% 50%'),
   # Luxury Extensions (task 1c6ed2aa, StoryLegal 17 Nov 2026: no real team member beside a generated guest until her own
   # written yes): the salon's photo 2, the lounge by the fireplace, no team member; the guest seated on the striped bench,
   # long full warm-brown waves down her back. Qwen-Image-Edit 2511 on the Mac Studio (EX6 seed 3), then only the guest pasted
