@@ -84,7 +84,12 @@ SERVICE_PHOTO = [
   # seed 8), whole frame, canvas, switches, counter and lights checked against photo 15 (the color bar sits behind her)
   ('om-menu-color-correction.webp', 'A generated guest with even, glossy warm brown hair in the doorway beside the Aveda canvas at Salon OM', '22% 42%'),
   ('om-menu-cut-and-style.webp', 'A generated guest with a polished bob beside stylist Katie Paonessa, in a photo of Salon OM', '33% 50%'),
-  ('om-menu-extensions.webp', 'A generated guest with long, full hair beside Maggie Woodward, in a photo of Salon OM', '22% 40%'),
+  # Luxury Extensions (task 1c6ed2aa, StoryLegal 17 Nov 2026: no real team member beside a generated guest until her own
+  # written yes): the salon's photo 2, the lounge by the fireplace, no team member; the guest seated on the striped bench,
+  # long full warm-brown waves down her back. Qwen-Image-Edit 2511 on the Mac Studio (EX6 seed 3), then only the guest pasted
+  # back on the real photo by her own person outline (salon-om-pictures/tools/guest_paste.sh): 0 px changed outside her,
+  # the real fire and bench kept. The visit's lounge step shows the same room empty; here the crop centres on the guest
+  ('om-menu-extensions.webp', 'A generated guest with long, full, wavy hair on the bench by the fireplace, in a photo of Salon OM', '30% 52%'),
   # round 5 (task 2846db82): Finishing Touches was a pasted cut-out (a hard edge under the sweater, no shadow, front light
   # against the window); now the salon's photo 8 with the guest standing at the glo display, three-quarter profile, brows
   # shown, a tube in her hands, lit from the window like the room (Qwen-Image-Edit 2511, FT5 seed 4, whole frame; the display
