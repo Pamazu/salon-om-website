@@ -68,5 +68,8 @@ for (const v of VERS) for (const [w, opt] of SIZES) {
 }
 await b.close(); if (srv) srv.close();
 const all = res.runs.flatMap((r) => r.steps.map((s) => s.ok));
+// a page whose steps were not found is a failure, never a pass (a Windows WebKit job found none and read 0/0 pass)
+const missing = res.runs.filter((r) => !r.steps.length).map((r) => `${r.v} ${r.w}`);
+if (missing.length) console.log('entry: FAIL, no step films found on', missing.join(', '));
 console.log(`entry: ${all.filter(Boolean).length}/${all.length} pass`);
-process.exit(all.length && all.every(Boolean) ? 0 : 1);
+process.exit(all.length && !missing.length && all.every(Boolean) ? 0 : 1);
