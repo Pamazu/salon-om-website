@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>LPM film test</title>
+<style>body{margin:0;background:#111;color:#eee;font:16px system-ui}.row{display:flex;gap:12px;padding:12px}.c{flex:1}
+video,img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#333}
+@keyframes s{to{transform:rotate(360deg)}}.spin{width:48px;height:48px;background:#c96;animation:s 2s linear infinite}</style>
+<div class="row"><div class="c">video + play()<video id="v" muted playsinline loop preload="auto" src="https://salon-om-2-2-m.web.app/media/earth.mp4"></video></div>
+<div class="c">img src=mp4<img id="i" alt="" src="https://salon-om-2-2-m.web.app/media/earth.mp4"></div></div>
+<div class="row"><div class="spin"></div><div>CSS animation (control)</div></div>
+<script>window.__r={};var v=document.getElementById('v'),p=v.play();if(p&&p.then)p.then(function(){__r.play='ok'},function(e){__r.play=e.name});
+document.getElementById('i').addEventListener('load',function(){__r.img='loaded'});document.getElementById('i').addEventListener('error',function(){__r.img='error'});</script>
