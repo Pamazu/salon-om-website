@@ -1426,6 +1426,10 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 .mani__label { margin-bottom: var(--sp-4); }
 .pr__lead, .om__intro, .mn__intro { margin-top: var(--sp-3); }
 .ch__btn, .facts__btn, .voices__btn, .pr__btn, .mani__btn, .om__btn, .tl__btn, .mn__after .om__btn { margin-top: var(--sp-4); }
+/* a step slide's button (M's step 05) is a row of the step's own grid, whose gap (clamp(14px, 2.4vh, 28px), base.css
+   .ch__copy) already spaces it: its margin only tops that up to the page's button gap, 40 px under its words like every
+   other button, instead of 40 px on top of the gap (62 px at 1440; J 17 Nov, "too much gap above Book your visit") */
+.ch__btn { margin-top: max(0px, calc(var(--sp-4) - clamp(14px, 2.4vh, 28px))); }
 .cy__answer, .cy__reward { margin-top: var(--sp-3); }
 .pr__body > p, .ch__body, .mn__intro, .cy__answer { font-size: var(--t-body); }
 .hero__line { font-size: max(16px, var(--t-body)); }
@@ -2208,7 +2212,7 @@ html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { bac
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="dec5b59ff04f";</script>
+<script>window.OM_BUILD="dfc25db093c6";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
