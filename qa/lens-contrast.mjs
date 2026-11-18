@@ -1,16 +1,16 @@
 // Ink on the glass (task a73569a9): Why Aveda's words stand on a ribbed pane whose picture moves, so each line's contrast is read
 // against the worst background under it, at rest and at the strongest frame (350 ms after a jump, the glass sliding in).
 // How: the words are hidden, the glass behind them is photographed, and for every line's box the darkest 3% of the pixels
-// (the worst case for dark ink on a light pane) gives the ratio WCAG uses: (L_bg + .05) / (L_ink + .05). Chromium, WebGL by swiftshader.
+// (the worst case for dark ink on a light pane) gives the ratio WCAG uses: (L_bg + .05) / (L_ink + .05). WebKit (the pool's pinned build, %WEBKIT%).
 // Usage: node lens-contrast.mjs [m,g] [1440,390,768,3230]
-import { chromium } from 'playwright';
+import { webkit } from 'playwright';
 import { serve, open, jump, wait } from './lib.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [vs = 'm,g', ws = '1440,390,3230'] = process.argv.slice(2);
 const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().port}`;
-const b = await chromium.launch({ executablePath: process.env.CHROME || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const b = await webkit.launch({ executablePath: process.env.WEBKIT || undefined });   // Safari's browser family, J's rule for every browser check (sDelegate task 79e9b12b)
 const LINES = '.av__head .eyebrow, .av__head .mid, .av__sub, .av__row dt, .av__row dd, .av__src';
 for (const w of ws.split(',').map(Number)) {
   const size = w === 390 ? { width: 390, height: 844 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
