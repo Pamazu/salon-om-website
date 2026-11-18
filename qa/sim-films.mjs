@@ -16,7 +16,7 @@ console.log('simulator', dev.name, dev.udid, wasBooted ? '(was booted)' : '(boot
 const REPORTER = `<script>try{localStorage.setItem('om-sound','off')}catch(e){}</script>
 <script>(function(){
 var post=function(o){return fetch('/__r',{method:'POST',body:JSON.stringify(o)}).catch(function(){})},sl=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
-function read(id){var s=document.getElementById(id);return [].map.call(s.querySelectorAll('video'),function(v){return{src:(v.currentSrc||v.getAttribute('data-src')||'').split('/').pop(),t:+v.currentTime.toFixed(2),paused:v.paused,rs:v.readyState,err:v.error?v.error.code:0,stop:v.getAttribute('data-stop')}})}
+function read(id){var s=document.getElementById(id);return [].map.call(s.querySelectorAll('video'),function(v){return{src:(v.currentSrc||v.getAttribute('data-src')||'').split('/').pop(),t:+v.currentTime.toFixed(2),paused:v.paused,rs:v.readyState,err:v.error?v.error.code:0,stop:v.getAttribute('data-stop'),dur:+(v.duration||0).toFixed(2),fr:(v.getVideoPlaybackQuality?v.getVideoPlaybackQuality().totalVideoFrames:-1)}})}
 function words(id){var s=document.getElementById(id),rail=document.getElementById('rail'),vw=innerWidth,vh=innerHeight,cs=rail?getComputedStyle(rail):null,on=!!rail&&cs.display!=='none'&&cs.visibility!=='hidden'&&+cs.opacity>.05;
 var links=on?[].map.call(rail.querySelectorAll('a'),function(a){var q=a.getBoundingClientRect();return{t:a.textContent.replace(/\\s+/g,' ').trim(),l:q.left,t0:q.top,r:q.right,b:q.bottom}}).filter(function(q){return q.r-q.l>2&&q.b-q.t0>2}):[];
 var hits=[],n=0,tw=document.createTreeWalker(s.querySelector('.s__leave')||s,NodeFilter.SHOW_TEXT);
@@ -27,8 +27,8 @@ async function go(){await sl(2500);await post({ev:'start',ua:navigator.userAgent
 for(var w of ['salon','coaching']){if(w==='coaching'){document.querySelector('.worlds [data-to-world="coaching"]').click();await sl(3000)}
 var ids=[].filter.call(document.querySelectorAll('#main-'+w+' > section.s'),function(s){return s.querySelector('video')}).map(function(s){return s.id});
 for(var id of ids){var s=document.getElementById(id),y=Math.round(s.getBoundingClientRect().top+scrollY),r=document.documentElement;r.style.scrollBehavior='auto';r.style.scrollSnapType='none';scrollTo(0,y);setTimeout(function(){r.style.scrollSnapType=''},60);
-await sl(1600);var a=read(id);await sl(4900);await post({ev:'shot',name:location.pathname.replace(/\\W/g,'')+'-'+w+'-'+id});await sl(500);var c=read(id),wd=words(id);
-await post({ev:'film',w:w,id:id,a:a,c:c,words:wd})}}
+await sl(1600);var a=read(id);await sl(1200);var b=read(id);await sl(3700);await post({ev:'shot',name:location.pathname.replace(/\\W/g,'')+'-'+w+'-'+id});await sl(500);var c=read(id),wd=words(id);
+await post({ev:'film',w:w,id:id,a:a,b:b,c:c,words:wd})}}
 await post({ev:'done'})}
 addEventListener('load',go)})()</script>`;
 const results = {}; let cur = null, done = null;
@@ -53,8 +53,12 @@ for (const v of VERS) {
   const nFilm = (fs.readFileSync(path.join(REPO, 'option-2.2-mgs', v, 'index.html'), 'utf8').match(/<section [^>]*>(?:(?!<\/section>)[\s\S])*?<video /g) || []).length;
   const to = setTimeout(() => done && done(), Math.max(240000, 60000 + nFilm * 32000)); await fin; clearTimeout(to);
   const r = results[cur]; if (!r) { console.log(v, 'no report: the page never started (Safari blocked the address?)'); continue; }
-  const bad = r.films.filter((f) => f.c.some((x, i) => !(!x.paused && f.a[i] && x.t > f.a[i].t + 1) && !x.stop) || f.words.hits.length);
-  console.log(v, r.vp.join('x'), 'films', r.films.length, 'moving:', r.films.filter((f) => f.c.every((x, i) => !x.paused && f.a[i] && x.t > f.a[i].t + 1)).length, 'problems:', bad.map((f) => `${f.w}:${f.id} ` + JSON.stringify(f.c.map((x, i) => [f.a[i] && f.a[i].t, x.t, x.paused, x.rs, x.err])) + ' ' + f.words.hits.join(';')).join(' | ') || 'none');
+  // a film is moving when, between the two readings 1.2 s apart, its clock advanced (or wrapped at its loop point) or its frame counter rose by 8 or more;
+  // the old readings 7-12 s apart read a looping film's wrap as "not moving" (task b36dde1f)
+  const moves = (a, b) => !b.paused && !b.err && ((b.t > a.t + 0.5) || (b.t < a.t && a.dur && a.t > a.dur - 2.5) || (a.fr >= 0 && b.fr - a.fr >= 8));
+  const isMoving = (f) => f.b.every((x, i) => f.a[i] && moves(f.a[i], x));
+  const bad = r.films.filter((f) => !isMoving(f) || f.words.hits.length);
+  console.log(v, r.vp.join('x'), 'films', r.films.length, 'moving:', r.films.filter(isMoving).length, 'problems:', bad.map((f) => `${f.w}:${f.id} ` + JSON.stringify(f.b.map((x, i) => [f.a[i] && f.a[i].t, x.t, x.dur, f.a[i] && f.a[i].fr, x.fr, x.paused, x.rs, x.err])) + ' words ' + JSON.stringify(f.words.hits)).join('  | ') || 'none')
 }
 fs.writeFileSync(path.join(OUT, 'sim-films.json'), JSON.stringify(results, null, 1));
 if (!wasBooted) { try { sh('shutdown', dev.udid); } catch (e) {} }
