@@ -25,10 +25,29 @@ c = json.load(open('option-2.2/site/firebase.json')); c['hosting']['site'] = sys
 json.dump(c, open(sys.argv[1] + '/firebase.json', 'w'), indent=2)
 open(sys.argv[1] + '/.firebaserc', 'w').write('{ "projects": { "default": "salon-om-sites" } }\n')
 PY
+  # Firebase's own answer is never cut to its last lines or filtered to one: a failed upload (18 Nov: "HTTP Error: 429, You have exceeded the
+  # Hosting storage quota", of which `| tail -2` showed only the closing "Tip: Manage your Hosting storage ...") prints Firebase's WHOLE
+  # output, and the script stops before the next site; a good one prints the address(es) Firebase reports (task 1616847c)
   if [ -n "${CHANNEL:-}" ]; then
-    (cd "$d" && firebase hosting:channel:deploy "$CHANNEL" --only "$site" --expires 7d --project salon-om-sites --non-interactive) | grep 'Channel URL' | grep -o 'https://[^ ]*web.app'
+    fb=(firebase hosting:channel:deploy "$CHANNEL" --only "$site" --expires 7d --project salon-om-sites --non-interactive)
   else
-    (cd "$d" && firebase deploy --only hosting --project salon-om-sites --non-interactive) | tail -2
+    fb=(firebase deploy --only hosting --project salon-om-sites --non-interactive)
+  fi
+  if ! out=$(cd "$d" && "${fb[@]}" 2>&1); then
+    printf '%s\n' "$out" >&2
+    echo "deploy-mgs.sh: firebase failed for $site (its whole answer is above); stopping before the next site" >&2
+    exit 1
+  fi
+  if [ -n "${CHANNEL:-}" ]; then
+    url=$(printf '%s\n' "$out" | awk '/Channel URL/ { for (i = 1; i <= NF; i++) if ($i ~ /^https:\/\/.*web\.app/) { print $i; exit } }')
+    if [ -z "$url" ]; then
+      printf '%s\n' "$out" >&2
+      echo "deploy-mgs.sh: firebase finished for $site but its answer has no Channel URL (whole answer above)" >&2
+      exit 1
+    fi
+    echo "$url"
+  else
+    printf '%s\n' "$out" | awk '/Deploy complete|Hosting URL/'
     echo "https://$site.web.app"
   fi
 done
