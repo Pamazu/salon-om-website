@@ -21,6 +21,22 @@ def ai_mark(text):
     return f'<p class="ai-mark">{E(text)}</p>'
 
 
+# the footer's AI line, true to every picture on M, G and S (task 5ae04e42): it names what is real and says the rest is
+# AI, so it holds whichever still stands in a film's place. One line per state of Designer 1's films switch (task
+# 5479dd6c), picked by FILMS_SHOWN in build.py: True = the films play, False = stills in their places.
+FOOT_AI_LINE = {
+    True: 'The photos of the salon and its people are real, a few retouched with AI to remove clutter. '
+          'Every other picture and film is made with AI, including the menu pictures with their guests.',
+    False: 'The photos of the salon and its people are real, a few retouched with AI to remove clutter. '
+           'Every other picture is made with AI, including the menu pictures with their guests.',
+}
+
+
+def foot_ai_line():
+    import build
+    return FOOT_AI_LINE[bool(getattr(build, 'FILMS_SHOWN', True))]
+
+
 def _photo(t, k):
     """the row's photo: a real photo of that service's result, or a quiet frame saying it is still to come.
     A generated picture (t['ai']) carries is-ai, which shows the panel's one AI mark while it is the open photo"""
@@ -91,7 +107,7 @@ def _foot(e, draft):
         {'' if ('visit' in e and not e['visit']) else '<div><h3 class="label">Visit</h3><ul>' + visit + '</ul></div>'}
         <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>{('<div><h3 class="label">' + e['iw_block'][0] + '</h3><ul>' + ''.join(f'<li>{x}</li>' for x in e['iw_block'][1:]) + '</ul></div>') if e.get('iw_block') else ''}
       </div>{legal}
-      <div class="foot__base"><span>{e.get('copyright', '© 2026 Salon OM · an Aveda concept salon')} · {draft}</span><span>Aveda is a trademark of Aveda Corporation. The salon photos are real. The films and the meadow picture are placeholders made with AI.</span></div>
+      <div class="foot__base"><span>{e.get('copyright', '© 2026 Salon OM · an Aveda concept salon')} · {draft}</span><span>Aveda is a trademark of Aveda Corporation. {foot_ai_line()}</span></div>
     </footer>'''
 
 
