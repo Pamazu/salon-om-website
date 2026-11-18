@@ -323,6 +323,7 @@ IW_PHOTO = dict(
     wall=('real-maggie-product-wall.webp', 'Maggie Woodward standing in the window light at Salon OM'),
     lounge=('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light'),
     chair=('real-styling-chair.webp', 'The styling chair by the window at Salon OM'),
+    basins=('real-basins-poster.webp', 'The shampoo basins at Salon OM under an Aveda poster, seen past the shelves'),
     lounge_seated=('real-maggie-lounge-seated.webp', 'Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer'),
     outdoor_chin=('real-maggie-outdoor-chin.webp', 'Maggie Woodward outside in a white blazer, her hand at her chin'),
     outdoor_portrait=('real-maggie-outdoor-portrait.webp', 'Maggie Woodward outside in a white blazer, smiling'),
@@ -386,7 +387,7 @@ def iw_entries(v, salon):
             w['tiles'] = [dict(t, img=IW_PHOTO[IW_PATH_PICS[i][0]][0], alt=IW_PHOTO[IW_PATH_PICS[i][0]][1], pos=IW_PATH_PICS[i][1], ai=None,
                                missing=f'Photo to come: {re.sub("<[^>]+>", "", t["title"])}') for i, t in enumerate(w['tiles'])]
         elif kind == 'bridge':
-            w.update(img=_iw_pic('chair')[0], mark='')
+            w.update(img=_iw_pic('basins')[0], mark='')     # landscape, so its full-bleed frame stays sharp at 3230 (the chair drew at 1.42x)
         elif kind == 'cta':
             w['close_img'] = (_iw_pic('fireside_close')[0], '50% 30%')
         elif kind == 'end':     # the footer is the salon's, its legend and its links Inner Work's (copy_2_2_iw: legend None = the salon page's)

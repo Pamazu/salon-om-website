@@ -48,6 +48,7 @@ SOURCE = {
     'real-maggie-outdoor-wide.webp': 'o:iw-5B3A1381.jpg',
     'real-styling-chair.webp': 'o:4-styling-chair-window-5B3A1068.jpg',   # Inner Work's door back to the salon (task 7a3c013b)
     'real-lounge-wide.webp': 'o:iw-5B3A1044.jpg',
+    'real-basins-poster.webp': 'o:iw-5B3A1059.jpg',
     'real-maggie-salon-wide.webp': 'o:iw-5B3A1300.jpg',
     'real-maggie-outdoor-steps.webp': 'o:iw-5B3A1385.jpg',
     'real-maggie-product-wall.webp': 'o:1-portrait-standing-product-wall-5B3A1307-2.jpg',   # Inner Work step 05 (task 7a3c013b); its img/ copy is the shoot's 1280 export, not sharpened
