@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lenticular sheet options</title>
+<style>
+@font-face { font-family: "Cormorant Garamond"; src: url(fonts/cormorant-garamond-300.woff2) format("woff2"); font-weight: 300; font-display: swap; }
+@font-face { font-family: "Cormorant Garamond"; src: url(fonts/cormorant-garamond-400.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Instrument Sans"; src: url(fonts/instrument-sans-400.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Instrument Sans"; src: url(fonts/instrument-sans-500.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+:root { --clay: #E7D9C6; --ink: #17110D; --ink-soft: #5E4E40; --ivory: #F5EEE4; --serif: "Cormorant Garamond", Georgia, serif; --sans: "Instrument Sans", system-ui, sans-serif; }
+* { box-sizing: border-box; }
+html { background: var(--clay); color: var(--ink); }
+body { margin: 0; font: 400 16px/1.5 var(--sans); }
+header { padding: 28px 24px 22px; max-width: 980px; }
+h1 { font: 300 clamp(30px, 4vw, 46px)/1.05 var(--serif); margin: 0 0 8px; }
+header p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+.bar { display: flex; gap: 16px; align-items: baseline; padding: 14px 24px; background: var(--ivory); }
+.bar b { font: 400 34px/1 var(--serif); flex: none; width: 1.2em; }
+.bar span { color: var(--ink-soft); }
+.bar span strong { color: var(--ink); font-weight: 500; }
+.stage { position: relative; height: min(80vh, 780px); min-height: 480px; overflow: hidden; background: #2a221c; touch-action: pan-y; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.words { position: absolute; top: 0; bottom: 0; left: 0; width: 42%; padding: 0 clamp(20px, 3vw, 56px); display: flex; flex-direction: column; justify-content: center; will-change: transform; pointer-events: none; }
+.words .eyebrow { font: 500 12px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink); margin: 0 0 16px; }
+.words h2 { font: 300 clamp(30px, 3.4vw, 54px)/1.02 var(--serif); margin: 0 0 clamp(18px, 3vh, 32px); color: var(--ink); }
+.words dl { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 20px; row-gap: 10px; align-items: baseline; }
+.words dt { font: 300 clamp(24px, 2.2vw, 34px)/1 var(--serif); color: var(--ink); white-space: nowrap; }
+.words dd { margin: 0; font-size: 15px; line-height: 1.35; color: var(--ink); }
+.v2 .words { width: 38%; }
+.fallback { display: none; position: absolute; inset: 0; background: url(img/aveda.webp) 50% 18% / cover; }
+.nogl .fallback { display: block; }
+@media (max-width: 700px) {
+  .words { width: 86%; }
+  .v2 .words { width: 82%; }
+  .words dd { font-size: 14px; }
+  .bar { flex-direction: column; gap: 4px; }
+}
+footer { padding: 22px 24px 60px; color: var(--ink-soft); max-width: 70ch; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lenticular sheet, four options</h1>
+  <p>The clear ribbed sheet from the video, over the Why Aveda photo. Each one is live: scroll the page and move your pointer over it (on a phone, scroll). Tell me a letter, or mix: "B's lenses with A's reveal".</p>
+</header>
+
+<section class="v" data-v="A">
+  <div class="bar"><b>A</b><span><strong>The sheet slides away.</strong> Eight wide lenses, strong sideways smear, a rainbow fringe. Scroll down: the sheet slides off to the right and the sharp photo is revealed, the words travel with it.</span></div>
+  <div class="stage"><div class="fallback"></div><canvas></canvas><div class="words"></div></div>
+</section>
+<section class="v" data-v="B">
+  <div class="bar"><b>B</b><span><strong>The sheet stays.</strong> Seven wide lenses over the whole photo, never clear: the bands shift and re-smear as you scroll or move the pointer; words on the sheet's pale side.</span></div>
+  <div class="stage"><div class="fallback"></div><canvas></canvas><div class="words"></div></div>
+</section>
+<section class="v" data-v="C">
+  <div class="bar"><b>C</b><span><strong>Half a sheet.</strong> Five lenses cover only the words' half; where the sheet ends the photo is sharp, with a soft rainbow edge. The edge follows your pointer a little; scroll slides the lenses.</span></div>
+  <div class="stage"><div class="fallback"></div><canvas></canvas><div class="words"></div></div>
+</section>
+<section class="v v2" data-v="D">
+  <div class="bar"><b>D</b><span><strong>A sheet you move.</strong> A floating sheet of five lenses follows your pointer (on a phone, it travels with the scroll); the faster you move it the more it smears; the words ride on it; everywhere else the photo is sharp.</span></div>
+  <div class="stage"><div class="fallback"></div><canvas></canvas><div class="words"></div></div>
+</section>
+<footer>Photo: the real Aveda shelves at Salon OM. Words are the page's own. Nothing here is built into the site yet.</footer>
+
+<script>
+(function () {
+  var WORDS = '<p class="eyebrow">Why Aveda</p><h2>Beauty that is kind to you and to the earth.</h2><dl>' +
+    '<dt>100%</dt><dd>vegan formulas</dd><dt>1st</dt><dd>beauty company to manufacture with 100% wind power at its primary facility (2007)</dd>' +
+    '<dt>B Corp</dt><dd>certified for people and planet (2023)</dd><dt>1978</dt><dd>the year holistic beauty through wellness began</dd></dl>';
+  var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;v.y=1.-v.y;gl_Position=vec4(p,0.,1.);}';
+  var FS = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH','precision highp float;','#else','precision mediump float;','#endif','varying vec2 v;uniform sampler2D t;uniform vec2 res,img;',
+    'uniform vec4 sheet;',                       // sheet left, right (css px, unclipped), top, bottom (0..1 of the height)
+    'uniform float lens,str,smear,fringe,edgeW,tint,ph;uniform vec2 tfade;',
+    'vec3 pic(vec2 q){float k=max(res.x/img.x,res.y/img.y);vec2 sz=img*k,org=(res-sz)*vec2(.5,.18);return texture2D(t,(q-org)/sz).rgb;}',
+    'void main(){',
+    ' vec2 q=v*res;float x=q.x;vec3 sharp=pic(q);',
+    ' float x0=sheet.x,x1=sheet.y,y0=sheet.z*res.y,y1=sheet.w*res.y;',
+    ' if(x<x0||x>x1||q.y<y0||q.y>y1){gl_FragColor=vec4(sharp,1.);return;}',
+    ' float lw=(x1-x0)/lens;float c=fract((x-x0)/lw+ph)-.5;',
+    ' float d=-c*str*lw*1.7;',
+    ' float ed=min(min(x-x0,x1-x),min(q.y-y0,y1-q.y));float eK=1.-smoothstep(0.,edgeW,ed);',
+    ' float fr=fringe*(1.+3.*eK)*str;',
+    ' vec3 col=vec3(0.);',
+    ' for(int i=0;i<16;i++){float s=(float(i)/15.-.5)*smear;',
+    '   col.r+=pic(vec2(x+d*(1.+fr)+s,q.y)).r;col.g+=pic(vec2(x+d+s,q.y)).g;col.b+=pic(vec2(x+d*(1.-fr)+s,q.y)).b;}',
+    ' col/=16.;',
+    ' float hi=smoothstep(.38,.5,abs(c));col=mix(col,col*.84+.05,hi*.55*str);',          // a light edge where one lens meets the next
+    ' vec3 rb=.5+.5*cos(6.2831*(q.y/res.y*.7+x/res.x*.4+vec3(0.,.33,.67)));',
+    ' col=col+(rb-.5)*.30*eK*str;',                                                   // the sheet's own rainbow edge
+    ' float u=(x-x0)/(x1-x0);col=mix(col,vec3(.961,.933,.894),tint*(1.-smoothstep(tfade.x,tfade.y,u)));',
+    ' gl_FragColor=vec4(col,1.);}'
+  ].join('\n');
+
+  var clamp = function (a, lo, hi) { return Math.max(lo, Math.min(hi, a)); };
+  var smooth = function (a) { a = clamp(a, 0, 1); return a * a * (3 - 2 * a); };
+  var stages = [], lastScroll = window.pageYOffset, scrollVel = 0;
+
+  function Stage(sec) {
+    this.sec = sec; this.id = sec.getAttribute('data-v'); this.el = sec.querySelector('.stage'); this.cv = sec.querySelector('canvas');
+    this.wd = sec.querySelector('.words'); this.wd.innerHTML = WORDS;
+    this.px = .5; this.py = .5; this.pvx = 0; this.cx = .3; this.vis = false; this.ready = false; this.lastPx = .5; this.pointer = false;
+    var gl = null; try { gl = this.cv.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' }); } catch (e) {}
+    if (!gl) { this.el.classList.add('nogl'); this.dead = true; return; }
+    this.gl = gl;
+    function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.log('shader', gl.getShaderInfoLog(s)); return null; } return s; }
+    var pr = gl.createProgram(), vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+    if (!vs || !fs) { this.el.classList.add('nogl'); this.dead = true; return; }
+    gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr); gl.useProgram(pr); this.pr = pr;
+    this.u = {}; ['t', 'res', 'img', 'sheet', 'lens', 'str', 'smear', 'fringe', 'edgeW', 'tint', 'ph', 'tfade'].forEach(function (n) { this.u[n] = gl.getUniformLocation(pr, n); }, this);
+    var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var a = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+    var tex = gl.createTexture(), im = new Image(), self = this; this.im = im;
+    im.onload = function () {
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); self.ready = true;
+    };
+    im.src = 'img/aveda.webp';
+    var el = this.el, me = this;
+    el.addEventListener('pointermove', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointer = e.pointerType !== 'touch'; });
+    new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; }, { rootMargin: '10% 0px' }).observe(el);
+  }
+
+  // what each option does with the page's scroll and the pointer: the sheet's place (px), strength, smear (px), phase
+  var OPT = {
+    A: function (s, W, H, vh, r) {                          // the sheet slides off to the right as the section scrolls into the middle
+      var k = smooth((vh * .98 - r.top) / (vh * .95)), left = k * W * 1.04;
+      s.words(left, 1 - clamp(k * 1.5, 0, 1));
+      return { sheet: [left, left + W, 0, 1], lens: 8, str: 1, smear: 70 * (1 - k * .4) + clamp(Math.abs(scrollVel) * 7, 0, 220), ph: (s.px - .5) * .5, fringe: .12, edge: 60, tint: .55, tfade: [.08, .5] };
+    },
+    B: function (s, W, H, vh, r) {                          // the sheet stays; scroll and the pointer shift and re-smear the bands
+      return { sheet: [0, W, 0, 1], lens: 7, str: 1, smear: 55 + clamp(Math.abs(scrollVel) * 8 + Math.abs(s.pvx) * 700, 0, 230), ph: -r.top * .0016 + (s.px - .5) * .9, fringe: .10, edge: 30, tint: .64, tfade: [.2, .62] };
+    },
+    C: function (s, W, H, vh, r) {                          // half a sheet; its soft rainbow edge follows the pointer a little
+      var edge = W * (.5 + (s.px - .5) * .08);
+      return { sheet: [0, edge, 0, 1], lens: 5, str: 1, smear: 95 + clamp(Math.abs(scrollVel) * 6, 0, 160), ph: -r.top * .0013, fringe: .14, edge: 110, tint: .6, tfade: [.0, .88] };
+    },
+    D: function (s, W, H, vh, r) {                          // a floating sheet that follows the pointer (the scroll on a phone)
+      var sw = W < 700 ? W * .88 : Math.min(W * .46, 640), target = s.pointer ? s.px * W : W * (.1 + .8 * smooth((vh - r.top) / (vh + r.height * .6))) + sw * .0;
+      if (!s.init) { s.cx = clamp(target, sw * .5, W - sw * .5); s.init = 1; }
+      var prev = s.cx; s.cx += (clamp(target, sw * .5, W - sw * .5) - s.cx) * .09; var vx = (s.cx - prev);
+      s.words(s.cx - sw * .5, 1);
+      return { sheet: [s.cx - sw * .5, s.cx + sw * .5, .07, .93], lens: 5, str: 1, smear: 50 + clamp(Math.abs(vx) * 26, 0, 300), ph: 0, fringe: .12, edge: 40, tint: .55, tfade: [.0, .9] };
+    }
+  };
+
+  Stage.prototype.words = function (left, opacity) {
+    var w = this.wd, pad = parseFloat(getComputedStyle(w).paddingLeft) || 0;
+    w.style.transform = 'translateX(' + Math.round(left) + 'px)'; w.style.opacity = opacity;
+  };
+  Stage.prototype.draw = function () {
+    var gl = this.gl, el = this.el, r = el.getBoundingClientRect(), vh = innerHeight, W = r.width, H = r.height;
+    if (this.id !== 'A' && this.id !== 'D') this.words(0, 1);
+    var dpr = Math.min(devicePixelRatio || 1, 1.5), cw = Math.round(W * dpr), ch = Math.round(H * dpr);
+    if (this.cv.width !== cw || this.cv.height !== ch) { this.cv.width = cw; this.cv.height = ch; }
+    var o = OPT[this.id](this, W, H, vh, r);
+    this.pvx = this.px - this.lastPx; this.lastPx = this.px;
+    gl.viewport(0, 0, cw, ch); var u = this.u;
+    gl.uniform1i(u.t, 0); gl.uniform2f(u.res, W, H); gl.uniform2f(u.img, this.im.naturalWidth, this.im.naturalHeight);
+    gl.uniform4f(u.sheet, o.sheet[0], o.sheet[1], o.sheet[2], o.sheet[3]); gl.uniform1f(u.lens, o.lens); gl.uniform1f(u.str, o.str);
+    gl.uniform1f(u.smear, o.smear); gl.uniform1f(u.fringe, o.fringe); gl.uniform1f(u.edgeW, o.edge); gl.uniform1f(u.tint, o.tint); gl.uniform1f(u.ph, o.ph);
+    gl.uniform2f(u.tfade, o.tfade[0], o.tfade[1]);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+
+  [].forEach.call(document.querySelectorAll('.v'), function (sec) { stages.push(new Stage(sec)); });
+  var last = 0;
+  function loop(now) {
+    var y = window.pageYOffset; scrollVel = scrollVel * .8 + (y - lastScroll) * .2; lastScroll = y;
+    stages.forEach(function (s) { if (!s.dead && s.ready && s.vis) s.draw(); });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
