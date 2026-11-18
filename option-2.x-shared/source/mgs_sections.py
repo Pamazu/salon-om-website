@@ -303,7 +303,7 @@ def aveda(d, world):
     signed, then the reward (G) and the one button. On a phone: the heading, the photo, the pane over the photo's lower
     half. d: eyebrow, title, paras (G: her line under the question), facts, src, quote, cite, reward, btn, photo = (file, alt)."""
     f, alt = d['photo']
-    pane = lens(f'img/hd/{f[:-5]}-1280.webp', '.av__ph', pos='50% 18%', base=.6, rib=30)
+    pane = lens(f'img/hd/{f[:-5]}-1280.webp', '.av__ph', pos='50% 18%', base=.6, rib=22)
 
     def row(x, k):
         num, label = x[0], x[1]

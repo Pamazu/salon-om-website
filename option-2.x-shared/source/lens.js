@@ -30,7 +30,7 @@
     'void main(){',
     '  vec2 q=vec2(v.x,1.-v.y)*box.zw+box.xy;',
     '  float c=fract((q.x+off*rib)/rib)-.5;',                      // across one rib, -.5 .. .5
-    '  float dx=-c*str*2.3*rib;',                                  // a cylinder lens: the slice it shows is mirrored and squeezed
+    '  float dx=-c*str*1.15*rib;',                                 // a cylinder lens: each rib shows its slice magnified (full strength just starts to mirror it; 2.3 read as venetian blinds at J's 6K window)
     '  vec3 col=vec3(0.);',
     '  for(int i=0;i<5;i++){',
     '    float s=(float(i)/4.-.5)*smear;',

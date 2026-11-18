@@ -1980,7 +1980,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
    no frame. Below, her quote as a letter on the same left edge, then the reward (G) and the one button. The section grows with
    its words (row 5: a tall section scrolls freely, then pulls into the next). */
 .av { --lw: clamp(440px, 34vw, 900px); --nf: clamp(30px, 2.3vw, 60px);
-  --len-tint: linear-gradient(180deg, rgba(248, 242, 232, .66), rgba(248, 242, 232, .54));
+  --len-tint: linear-gradient(180deg, rgba(248, 242, 232, .7), rgba(248, 242, 232, .66));   /* even from top to foot: the shelves' dark foot no longer turns the glass to mud */
   background: var(--clay); color: var(--ink); padding: calc(var(--top) + var(--sp-3)) 0 var(--base); }
 .av__in { display: grid; grid-template-columns: var(--gutter) var(--lw) minmax(0, 1fr); }
 .av__ph { grid-column: 1 / -1; grid-row: 1; position: relative; margin: 0; height: max(520px, calc(100svh - var(--top) - var(--sp-3) - var(--sp-5))); overflow: hidden; }
@@ -2012,18 +2012,21 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
 /* a phone and a tablet: the heading, the photo across the width, the pane of glass over its lower half carrying the facts, the letter */
 @media (max-width: 1023px) {
   .av { --ph: min(96vw, 64svh); }
-  .av__in { display: flex; flex-direction: column; }
+  /* the photo and the pane share ONE grid cell: the cell is as tall as the pane plus a clear strip of the photo above it, so the
+     glass lies wholly on the picture (it ran past the photo's foot and showed smeared colour, not the shelves) */
+  .av__in { display: grid; grid-template-columns: minmax(0, 1fr); }
   .av__label { display: contents; }
   .av__label > .len { display: none; }
   .av__card > .len { display: block; }
-  .av__head { order: 1; padding: 0 var(--gutter); }
+  .av__head { grid-row: 1; padding: 0 var(--gutter); }
   .av__head .mid { font-size: var(--t-h2); }
-  .av__ph { order: 2; margin: var(--sp-4) 0 0; height: var(--ph); }
+  .av__ph { grid-row: 2; grid-column: 1; margin: var(--sp-4) 0 0; height: auto; min-height: var(--ph); }
   .av__ph img { object-position: 64% 70%; }   /* the gold mask at the photo's top-left corner stays out of the frame */
-  .av__card { order: 3; z-index: 2; margin: calc(var(--ph) * -.5) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
+  .av__card { grid-row: 2; grid-column: 1; align-self: end; z-index: 2; margin: calc(var(--ph) * .5 + var(--sp-4)) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
   .av__rows { margin: 0; }
   .av__row { --nf: 30px; gap: var(--sp-2); }
-  .av__letter { order: 4; padding: var(--sp-5) var(--gutter) 0; }
+  .av__letter { grid-column: 1; grid-row: 3; padding: var(--sp-5) var(--gutter) 0; }
+  .av__head { grid-column: 1; }
   .av__letter blockquote { font-size: 25px; }
 }
 @media (min-width: 600px) and (max-width: 1023px) { .av__ph img { object-position: 88% 70%; } }   /* a wider stacked frame crops less from the left */
@@ -2338,7 +2341,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="7fdf0e570cef";</script>
+<script>window.OM_BUILD="2b6873b69391";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

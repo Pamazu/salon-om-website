@@ -111,11 +111,49 @@ AI_GUEST = 'Guest made with AI'
 AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her photos (CEO MA, 18 Nov; StoryLegal asked for its words)
 # the pause (task 2b1d1187): her photo 17, the basin room seen through a doorway, with one generated guest at the basin below the poster
 PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway'
-# the door's picture is photo 17 cropped to a tall arch, so it is drawn about 1.5 x the door's height wide: its srcset says so
-# (sizes by the three screens qa/sharpness.mjs measures: 390, 1440, 3230), and the glass over it takes the 1280 rung (task a73569a9)
-PAUSE_IMG = (' srcset="' + ', '.join(f'img/hd/om-pause-guest-{w}.webp {w}w' for w in (640, 960, 1280, 1920, 2560, 2906))
-             + '" sizes="(max-width: 700px) 150vw, (max-width: 2000px) 66vw, 36vw"')
-PAUSE_LENS = S.lens('img/hd/om-pause-guest-1280.webp', '.br__zoom', pos='44% 50%', base=0, rib=30)
+def _webp_size(path):
+    """(width, height) of a .webp from its header: lossy VP8, lossless VP8L or extended VP8X"""
+    with open(path, 'rb') as fh:
+        d = fh.read(32)
+    kind = d[12:16]
+    if kind == b'VP8 ':
+        return int.from_bytes(d[26:28], 'little') & 0x3fff, int.from_bytes(d[28:30], 'little') & 0x3fff
+    if kind == b'VP8L':
+        b = int.from_bytes(d[21:25], 'little')
+        return (b & 0x3fff) + 1, ((b >> 14) & 0x3fff) + 1
+    if kind == b'VP8X':
+        return int.from_bytes(d[24:27], 'little') + 1, int.from_bytes(d[27:30], 'little') + 1
+    raise ValueError(f'{path}: not a webp this reads')
+
+
+def pause_img(name):
+    """srcset and sizes for the door's picture (task a73569a9), whichever picture a world puts in it. The door is 3:4, min(68vh,
+    740 px) tall (70vw, 320 px wide on a phone) and the picture is drawn to cover it, so it is drawn as wide as the larger of the
+    door's width and the door's height x the picture's proportion; sizes say that width (5 % over) at the three screens
+    qa/sharpness.mjs measures (390 x 844, 1440 x 900, 3230 x 1319). Photo 17 (3:2) is drawn about 1.5 x the door's height wide,
+    Inner Work's lounge (2:3) only as wide as the door"""
+    import json, math
+    here = os.path.dirname(os.path.abspath(__file__)) + '/'
+    ladder = json.load(open(here + 'photo_exports.json'))[name]
+    wpx, hpx = _webp_size(here + '../../option-2.2/site/img/' + name)
+    stem = name[:-5]
+
+    def vw(screen, vh):
+        door_h = min(.68 * vh, 740) if screen > 700 else min(.7 * screen, 320) * 4 / 3
+        door_w = door_h * 3 / 4
+        return math.ceil(max(door_w, door_h * wpx / hpx) / screen * 105)
+    return (' srcset="' + ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ladder) + '" sizes="(max-width: 700px) '
+            f'{vw(390, 844)}vw, (max-width: 2000px) {vw(1440, 900)}vw, {vw(3230, 1319)}vw"')
+
+
+def pause_lens(name):
+    """the glass over the door: its texture is the picture's own 1280 rung (task a73569a9)"""
+    return S.lens(f'img/hd/{name[:-5]}-1280.webp', '.br__zoom', pos='44% 50%', base=0, rib=30)
+
+
+# the door's picture is photo 17 cropped to a tall arch (see pause_img), and the glass over it takes the 1280 rung
+PAUSE_IMG = pause_img('om-pause-guest.webp')
+PAUSE_LENS = pause_lens('om-pause-guest.webp')
 
 
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:
@@ -276,7 +314,7 @@ TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open',
               'proof_line', 'btn', 'reward', 'answer', 'title', 'rows', 'name', 'sub', 'body', 'specs', 'paras', 'quote', 'cite',
               'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
               'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
-TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
+TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'breath_img', 'breath_lens', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}   # breath_img, breath_lens: the door's srcset and glass follow its picture (task a73569a9)
 # lists of cards: each card takes its words, and its picture
 TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}
 
@@ -378,7 +416,7 @@ def iw_entries(v, salon):
         if kind == 'hero_mark':
             w['aria'] = M.IW_TITLE
         elif kind == 'tease' and d.get('breath'):
-            f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='')
+            f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='', breath_img=pause_img(f), breath_lens=pause_lens(f))
         elif kind == 'ch':
             f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)
         elif kind is S.visit:
