@@ -311,25 +311,33 @@ def twin(salon, words):
 
 # ---- Inner Work's pictures and the words' adapter (task 7a3c013b) --------------------------------------------------------
 # J, 18 Nov: "pictures and copy change". The words are Copywriter 1's (copy_2_2_iw.IW, task 51b1c84d); the pictures are
-# placed here, her own photos first (the February shoot: Maggie by the fire, arms crossed, outdoors in the white blazer, in
-# the window light; the lounge), the salon's styling chair for the door that leads back to the salon. Each is placed by
-# its frame's shape, and never where the salon shows the same original photo (check_one_design compares originals).
+# placed here, all her own photos of the February shoot (CEO MA, 18 Nov: her own portraits first): Maggie in the white
+# blazer she wears in her Inner Work pictures (by the fire, outdoors) where the salon shows her in black, the lounge, and
+# the salon's styling chair for the door that leads back to the salon. Each is placed by its frame's shape, and never where
+# the salon shows the same original photo (check_one_design compares originals). The nine added 18 Nov are the shoot's
+# originals 1401, 1387, 1368, 1410, 1292-2, 1403, 1279-2, 1373 and 1381, downscaled to 1280 (not sharpened).
 IW_PHOTO = dict(
     portrait=('real-maggie-portrait-iw.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM'),
     fire=('real-maggie-fireplace.webp', 'Maggie Woodward seated by the fireplace at Salon OM, in a white blazer'),
     outdoor=('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer'),
     wall=('real-maggie-product-wall.webp', 'Maggie Woodward standing in the window light at Salon OM'),
     lounge=('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light'),
-    chair=('real-styling-chair.webp', 'The styling chair by the window at Salon OM'))
+    chair=('real-styling-chair.webp', 'The styling chair by the window at Salon OM'),
+    lounge_seated=('real-maggie-lounge-seated.webp', 'Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer'),
+    outdoor_chin=('real-maggie-outdoor-chin.webp', 'Maggie Woodward outside in a white blazer, her hand at her chin'),
+    outdoor_portrait=('real-maggie-outdoor-portrait.webp', 'Maggie Woodward outside in a white blazer, smiling'),
+    fireside_close=('real-maggie-fireside-close.webp', 'Maggie Woodward seated by the fireplace at Salon OM, smiling, in a white blazer'),
+    warm=('real-maggie-warm.webp', 'Maggie Woodward smiling, her hand at her cheek, at Salon OM'),
+    fireside=('real-maggie-fireside.webp', 'Maggie Woodward seated by the fireplace at Salon OM, in a white blazer'),
+    smile=('real-maggie-smile.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM'),
+    outdoor_turn=('real-maggie-outdoor-turn.webp', 'Maggie Woodward outside in a white blazer, turned a little, her hand at her chin'),
+    outdoor_wide=('real-maggie-outdoor-wide.webp', 'Maggie Woodward outside in a white blazer, by a flight of steps'))
+# the path's four offers (the menu's twin), one portrait each: (photo, focus point)
+IW_PATH_PICS = [('warm', '50% 24%'), ('fireside', '50% 40%'), ('smile', '50% 26%'), ('outdoor_turn', '50% 24%')]
 # the five steps of the Journey, five different photos (approved-features row 2): (photo, focus point or None)
 IW_STEP_PICS = [('fire', None), ('lounge', None), ('portrait', '50% 12%'), ('outdoor', None), ('wall', None)]
 # each place that still shows a repeat or a frame, and the coaching picture it waits for (next on task 7a3c013b)
-IW_PICTURES_TO_MAKE = [
-    ('the pause', 'the lounge, as step 02', 'a client resting, eyes closed, in the lounge (her photo 2): generated client, labelled'),
-    ('the path (the menu)', '[Photo to come] frames', 'one picture per offer: a generated client with Maggie in her real lounge or by the fire, labelled'),
-    ('Begin', 'arms crossed, as step 03', 'another of her own portraits from the shoot folder (69 unused photos, task c7892a3c)'),
-    ('S: credentials line', 'by the fire, as step 01', 'another of her own portraits from the shoot folder'),
-]
+IW_PICTURES_TO_MAKE = []      # none: every Inner Work picture place shows one of her own photos, none repeated within a section
 IW_LEFT_OPEN = ['the drawn word mark of the first screen stays SALON OM, the site\'s mark in both worlds (copy_2_2_iw.NOTES asks for INNER WORK)']
 
 
@@ -360,23 +368,23 @@ def iw_entries(v, salon):
         if kind == 'hero_mark':
             w['aria'] = M.IW_TITLE
         elif kind == 'tease' and d.get('breath'):
-            f, alt = _iw_pic('lounge'); w.update(breath=f, breath_alt=alt, breath_mark='')
+            f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='')
         elif kind == 'ch':
             f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)
         elif kind is S.visit:
             w['steps'] = [tuple(x) + IW_PHOTO[IW_STEP_PICS[i][0]] for i, x in enumerate(w['steps'])]
         elif kind is S.aveda:
-            w['photo'] = _iw_pic('outdoor')
+            w['photo'] = _iw_pic('outdoor_chin')
         elif kind in ('team', 'proof'):
-            w['people'] = [dict(c, img=_iw_pic('outdoor')[0], alt=_iw_pic('outdoor')[1]) for c in w['people']]
-            if kind == 'proof': w['line_img'] = _iw_pic('fire')
+            w['people'] = [dict(c, img=_iw_pic('outdoor_portrait')[0], alt=_iw_pic('outdoor_portrait')[1]) for c in w['people']]
+            if kind == 'proof': w['line_img'] = _iw_pic('outdoor_wide')
         elif kind is S.menu:
-            w['tiles'] = [dict(t, img=None, alt='', pos='', ai=None, missing=f'Photo to come: {re.sub("<[^>]+>", "", t["title"])}')
-                          for t in w['tiles']]
+            w['tiles'] = [dict(t, img=IW_PHOTO[IW_PATH_PICS[i][0]][0], alt=IW_PHOTO[IW_PATH_PICS[i][0]][1], pos=IW_PATH_PICS[i][1], ai=None,
+                               missing=f'Photo to come: {re.sub("<[^>]+>", "", t["title"])}') for i, t in enumerate(w['tiles'])]
         elif kind == 'bridge':
             w.update(img=_iw_pic('chair')[0], mark='')
         elif kind == 'cta':
-            w['close_img'] = (_iw_pic('portrait')[0], '50% 24%')
+            w['close_img'] = (_iw_pic('fireside_close')[0], '50% 30%')
         elif kind == 'end':     # the footer is the salon's, its legend and its links Inner Work's (copy_2_2_iw: legend None = the salon page's)
             keep = {f: d[f] for f in TWIN_WORDS if d.get(f)}
             w = dict(keep, **{f: x for f, x in w.items() if x is not None}, explore=[(t, h) for _, t, h in IW.NAV[v]])

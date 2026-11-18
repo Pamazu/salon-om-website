@@ -36,6 +36,16 @@ SOURCE = {
     'real-maggie-fireplace.webp': 'o:5-portrait-seated-fireplace-5B3A1413.jpg',
     'real-maggie-outdoor.webp': 'o:13-portrait-outdoor-white-blazer-5B3A1353.jpg',
     'real-maggie-standing-shelves.webp': 'o:14-portrait-standing-shelves-5B3A1319.jpg',
+    # Inner Work (task 7a3c013b): nine more of her portraits from the shoot folder, their originals saved beside the 17 as iw-<file>
+    'real-maggie-lounge-seated.webp': 'o:iw-5B3A1401.jpg',
+    'real-maggie-outdoor-chin.webp': 'o:iw-5B3A1387.jpg',
+    'real-maggie-outdoor-portrait.webp': 'o:iw-5B3A1368.jpg',
+    'real-maggie-fireside-close.webp': 'o:iw-5B3A1410.jpg',
+    'real-maggie-warm.webp': 'o:iw-5B3A1292-2.jpg',
+    'real-maggie-fireside.webp': 'o:iw-5B3A1403.jpg',
+    'real-maggie-smile.webp': 'o:iw-5B3A1279-2.jpg',
+    'real-maggie-outdoor-turn.webp': 'o:iw-5B3A1373.jpg',
+    'real-maggie-outdoor-wide.webp': 'o:iw-5B3A1381.jpg',
     'real-maggie-product-wall.webp': 'o:1-portrait-standing-product-wall-5B3A1307-2.jpg',   # Inner Work step 05 (task 7a3c013b); its img/ copy is the shoot's 1280 export, not sharpened
     'real-color-bar.webp': 'm:10-color-bar-clean.jpg',
     'real-shampoo-basins.webp': 'm:6-shampoo-basins-clean.jpg',
