@@ -1,0 +1,7 @@
+{
+  "name": "salon-om-qa",
+  "private": true,
+  "type": "module",
+  "description": "The repo root as an sDelegate package folder (--subdir .), so a pool job's checkout holds the built pages and pictures the qa/ scripts open; the same Playwright pin as qa/package.json",
+  "dependencies": { "playwright": "1.63.0" }
+}
