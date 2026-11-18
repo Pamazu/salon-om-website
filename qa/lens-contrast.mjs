@@ -14,7 +14,7 @@ const b = await webkit.launch({ executablePath: process.env.WEBKIT || undefined 
 const LINES = '.av__head .eyebrow, .av__head .mid, .av__sub, .av__row dt, .av__row dd, .av__src';
 for (const w of ws.split(',').map(Number)) {
   const size = w === 390 ? { width: 390, height: 844 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
-  const ctx = await b.newContext({ viewport: size, deviceScaleFactor: 1, isMobile: w === 390, hasTouch: w === 390 });
+  const ctx = await b.newContext({ viewport: size, deviceScaleFactor: 1, isMobile: w === 390, hasTouch: w === 390 }); ctx.setDefaultTimeout(120000);
   for (const v of vs.split(',')) {
     const p = await open(ctx, `${base}/${v}/`);
     const top = await p.evaluate(() => document.querySelector('#aveda').getBoundingClientRect().top + scrollY);

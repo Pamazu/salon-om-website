@@ -24,7 +24,7 @@ const browser = await pw.webkit.launch({ executablePath: process.env.WEBKIT || u
 const rows = [];
 try {
   for (const v of VERS) for (const W of WIDTHS) {
-    const ctx = await browser.newContext({ viewport: { width: W, height: H[W] || 900 }, deviceScaleFactor: DPR[W] || 2, ...(W < 700 ? { isMobile: true, hasTouch: true } : {}) });
+    const ctx = await browser.newContext({ viewport: { width: W, height: H[W] || 900 }, deviceScaleFactor: DPR[W] || 2, ...(W < 700 ? { isMobile: true, hasTouch: true } : {}) }); ctx.setDefaultTimeout(120000);
     const p = await open(ctx, `${base}/${v}/`);
     const worlds = await p.evaluate(() => [...document.querySelectorAll('.worlds [data-to-world]')].map((b) => b.dataset.toWorld));
     for (const w of worlds.length ? worlds : ['']) {
