@@ -1980,7 +1980,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
    no frame. Below, her quote as a letter on the same left edge, then the reward (G) and the one button. The section grows with
    its words (row 5: a tall section scrolls freely, then pulls into the next). */
 .av { --lw: clamp(440px, 34vw, 900px); --nf: clamp(30px, 2.3vw, 60px);
-  --len-tint: linear-gradient(180deg, rgba(248, 242, 232, .66), rgba(248, 242, 232, .54));
+  --len-tint: linear-gradient(180deg, rgba(248, 242, 232, .7), rgba(248, 242, 232, .66));   /* even from top to foot: the shelves' dark foot no longer turns the glass to mud */
   background: var(--clay); color: var(--ink); padding: calc(var(--top) + var(--sp-3)) 0 var(--base); }
 .av__in { display: grid; grid-template-columns: var(--gutter) var(--lw) minmax(0, 1fr); }
 .av__ph { grid-column: 1 / -1; grid-row: 1; position: relative; margin: 0; height: max(520px, calc(100svh - var(--top) - var(--sp-3) - var(--sp-5))); overflow: hidden; }
@@ -2012,18 +2012,21 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
 /* a phone and a tablet: the heading, the photo across the width, the pane of glass over its lower half carrying the facts, the letter */
 @media (max-width: 1023px) {
   .av { --ph: min(96vw, 64svh); }
-  .av__in { display: flex; flex-direction: column; }
+  /* the photo and the pane share ONE grid cell: the cell is as tall as the pane plus a clear strip of the photo above it, so the
+     glass lies wholly on the picture (it ran past the photo's foot and showed smeared colour, not the shelves) */
+  .av__in { display: grid; grid-template-columns: minmax(0, 1fr); }
   .av__label { display: contents; }
   .av__label > .len { display: none; }
   .av__card > .len { display: block; }
-  .av__head { order: 1; padding: 0 var(--gutter); }
+  .av__head { grid-row: 1; padding: 0 var(--gutter); }
   .av__head .mid { font-size: var(--t-h2); }
-  .av__ph { order: 2; margin: var(--sp-4) 0 0; height: var(--ph); }
+  .av__ph { grid-row: 2; grid-column: 1; margin: var(--sp-4) 0 0; height: auto; min-height: var(--ph); }
   .av__ph img { object-position: 64% 70%; }   /* the gold mask at the photo's top-left corner stays out of the frame */
-  .av__card { order: 3; z-index: 2; margin: calc(var(--ph) * -.5) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
+  .av__card { grid-row: 2; grid-column: 1; align-self: end; z-index: 2; margin: calc(var(--ph) * .5 + var(--sp-4)) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
   .av__rows { margin: 0; }
   .av__row { --nf: 30px; gap: var(--sp-2); }
-  .av__letter { order: 4; padding: var(--sp-5) var(--gutter) 0; }
+  .av__letter { grid-column: 1; grid-row: 3; padding: var(--sp-5) var(--gutter) 0; }
+  .av__head { grid-column: 1; }
   .av__letter blockquote { font-size: 25px; }
 }
 @media (min-width: 600px) and (max-width: 1023px) { .av__ph img { object-position: 88% 70%; } }   /* a wider stacked frame crops less from the left */
@@ -2117,7 +2120,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
   <section class="s mani" id="pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/om-pause-guest.webp" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" sizes="(max-width: 700px) 150vw, (max-width: 2000px) 66vw, 36vw" decoding="async"><div class="len" data-len="img/hd/om-pause-guest-1280.webp" data-len-fig=".br__zoom" data-len-pos="44% 50%" data-len-base="0" data-len-rib="30" aria-hidden="true"><canvas></canvas></div></div></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/om-pause-guest.webp" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" sizes="(max-width: 700px) 147vw, (max-width: 2000px) 67vw, 37vw" decoding="async"><div class="len" data-len="img/hd/om-pause-guest-1280.webp" data-len-fig=".br__zoom" data-len-pos="44% 50%" data-len-base="0" data-len-rib="30" aria-hidden="true"><canvas></canvas></div></div></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
@@ -2283,14 +2286,14 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     <div class="av__in s__leave">
       <figure class="av__ph"><img src="img/real-aveda-shelves.webp" srcset="img/hd/real-aveda-shelves-640.webp 640w, img/hd/real-aveda-shelves-960.webp 960w, img/hd/real-aveda-shelves-1280.webp 1280w, img/hd/real-aveda-shelves-1920.webp 1920w, img/hd/real-aveda-shelves-2560.webp 2560w, img/hd/real-aveda-shelves-3840.webp 3840w, img/hd/real-aveda-shelves-5120.webp 5120w, img/hd/real-aveda-shelves-6255.webp 6255w" sizes="(max-width: 700px) 164vw, (max-width: 2000px) 90vw, 92vw" alt="Aveda products on the glass shelves at Salon OM, around a fiddle-leaf fig in the window light" decoding="async" loading="lazy"></figure>
       <div class="av__label">
-        <div class="len" data-len="img/hd/real-aveda-shelves-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="30" aria-hidden="true"><canvas></canvas></div>
+        <div class="len" data-len="img/hd/real-aveda-shelves-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="22" aria-hidden="true"><canvas></canvas></div>
         <div class="av__head">
           <p class="eyebrow a-left" style="--d:.15s">Why Aveda</p>
           <h2 class="mid" id="aveda-t"><span class="mask"><span class="mask__in" style="--d:.3s"><span class="draft">What is in your color?</span></span></span></h2>
           <p class="av__sub a-up" style="--d:0.55s">Beauty that is kind to you and to the earth.</p>
         </div>
         <div class="av__card">
-          <div class="len" data-len="img/hd/real-aveda-shelves-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="30" aria-hidden="true"><canvas></canvas></div>
+          <div class="len" data-len="img/hd/real-aveda-shelves-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="22" aria-hidden="true"><canvas></canvas></div>
           <dl class="av__rows"><div class="av__row a-up" style="--d:0.75s"><dt><span data-count="100">0</span>%</dt><dd>vegan formulas</dd></div><div class="av__row a-up" style="--d:0.91s"><dt>1st</dt><dd>beauty company to manufacture with 100% wind power at its primary facility (2007)</dd></div><div class="av__row a-up" style="--d:1.07s"><dt>B Corp</dt><dd>certified for people and planet (2023)</dd></div><div class="av__row a-up" style="--d:1.23s"><dt>1978</dt><dd>the year holistic beauty through wellness began</dd></div></dl>
           <small class="av__src a-fade" style="--d:1.5s">Facts from aveda.com. Aveda is a trademark of Aveda Corporation.</small>
         </div>
@@ -2360,7 +2363,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
   <section class="s mani" id="c-pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-lounge-iw.webp" alt="The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" sizes="(max-width: 700px) 150vw, (max-width: 2000px) 66vw, 36vw" decoding="async"><div class="len" data-len="img/hd/om-pause-guest-1280.webp" data-len-fig=".br__zoom" data-len-pos="44% 50%" data-len-base="0" data-len-rib="30" aria-hidden="true"><canvas></canvas></div></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-lounge-iw.webp" alt="The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light" srcset="img/hd/real-lounge-iw-640.webp 640w, img/hd/real-lounge-iw-960.webp 960w, img/hd/real-lounge-iw-1280.webp 1280w, img/hd/real-lounge-iw-1920.webp 1920w, img/hd/real-lounge-iw-2560.webp 2560w, img/hd/real-lounge-iw-3840.webp 3840w, img/hd/real-lounge-iw-5120.webp 5120w, img/hd/real-lounge-iw-5330.webp 5330w" sizes="(max-width: 700px) 74vw, (max-width: 2000px) 34vw, 19vw" decoding="async"><div class="len" data-len="img/hd/real-lounge-iw-1280.webp" data-len-fig=".br__zoom" data-len-pos="44% 50%" data-len-base="0" data-len-rib="30" aria-hidden="true"><canvas></canvas></div></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="roots.">Sometimes what feels like today’s challenge has deeper roots.</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">Look a little deeper.</p>
     </div>
@@ -2516,14 +2519,14 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     <div class="av__in s__leave">
       <figure class="av__ph"><img src="img/real-maggie-outdoor.webp" srcset="img/hd/real-maggie-outdoor-640.webp 640w, img/hd/real-maggie-outdoor-960.webp 960w, img/hd/real-maggie-outdoor-1280.webp 1280w" sizes="(max-width: 700px) 93vw, (max-width: 2000px) 44vw, 21vw" alt="Maggie Woodward outside, in a white blazer" decoding="async" loading="lazy"></figure>
       <div class="av__label">
-        <div class="len" data-len="img/hd/real-maggie-outdoor-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="30" aria-hidden="true"><canvas></canvas></div>
+        <div class="len" data-len="img/hd/real-maggie-outdoor-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="22" aria-hidden="true"><canvas></canvas></div>
         <div class="av__head">
           <p class="eyebrow a-left" style="--d:.15s">How we work together</p>
           <h2 class="mid" id="c-aveda-t"><span class="mask"><span class="mask__in" style="--d:.3s"><span class="draft">What is in the work?</span></span></span></h2>
           <p class="av__sub a-up" style="--d:0.55s">Grounded in research. Space to Grow. Our evidence-informed work draws on coaching, hypnotherapy, Rapid Transformational Therapy®, somatic practices, IFS-informed parts work and neuroscience.</p>
         </div>
         <div class="av__card">
-          <div class="len" data-len="img/hd/real-maggie-outdoor-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="30" aria-hidden="true"><canvas></canvas></div>
+          <div class="len" data-len="img/hd/real-maggie-outdoor-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="22" aria-hidden="true"><canvas></canvas></div>
           <dl class="av__rows av__rows--words"><div class="av__row a-up" style="--d:0.75s"><dt>Coaching</dt><dd>gives you clear goals, practical tools and support to put new insights into action.</dd></div><div class="av__row a-up" style="--d:0.91s"><dt>Hypnotherapy</dt><dd>guides you into a deeply relaxed, focused state, where new thoughts and habits can take root more easily.</dd></div><div class="av__row a-up" style="--d:1.07s"><dt>Rapid Transformational Therapy® (RTT®)</dt><dd>uses hypnosis to reach the subconscious mind, where many patterns and beliefs are formed, and helps you understand and reframe them.</dd></div><div class="av__row a-up" style="--d:1.23s"><dt>Somatic practices</dt><dd>help you notice where emotions live in the body and build a greater sense of calm and steadiness.</dd></div><div class="av__row a-up" style="--d:1.39s"><dt>IFS-informed parts work</dt><dd>helps you get to know the different parts of yourself with kindness and understanding.</dd></div><div class="av__row a-up" style="--d:1.55s"><dt>Neuroscience</dt><dd>explains how the brain forms habits and creates new pathways, so the changes you make can last.</dd></div></dl>
           <small class="av__src a-fade" style="--d:1.5s"></small>
         </div>
@@ -2576,7 +2579,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="c96cca7cd0ce";</script>
+<script>window.OM_BUILD="ad8183ca367a";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -3864,7 +3867,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     'void main(){',
     '  vec2 q=vec2(v.x,1.-v.y)*box.zw+box.xy;',
     '  float c=fract((q.x+off*rib)/rib)-.5;',                      // across one rib, -.5 .. .5
-    '  float dx=-c*str*2.3*rib;',                                  // a cylinder lens: the slice it shows is mirrored and squeezed
+    '  float dx=-c*str*1.15*rib;',                                 // a cylinder lens: each rib shows its slice magnified (full strength just starts to mirror it; 2.3 read as venetian blinds at J's 6K window)
     '  vec3 col=vec3(0.);',
     '  for(int i=0;i<5;i++){',
     '    float s=(float(i)/4.-.5)*smear;',
