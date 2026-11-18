@@ -111,6 +111,11 @@ AI_GUEST = 'Guest made with AI'
 AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her photos (CEO MA, 18 Nov; StoryLegal asked for its words)
 # the pause (task 2b1d1187): her photo 17, the basin room seen through a doorway, with one generated guest at the basin below the poster
 PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway'
+# the door's picture is photo 17 cropped to a tall arch, so it is drawn about 1.5 x the door's height wide: its srcset says so
+# (sizes by the three screens qa/sharpness.mjs measures: 390, 1440, 3230), and the glass over it takes the 1280 rung (task a73569a9)
+PAUSE_IMG = (' srcset="' + ', '.join(f'img/hd/om-pause-guest-{w}.webp {w}w' for w in (640, 960, 1280, 1920, 2560, 2906))
+             + '" sizes="(max-width: 700px) 150vw, (max-width: 2000px) 66vw, 36vw"')
+PAUSE_LENS = S.lens('img/hd/om-pause-guest-1280.webp', '.br__zoom', pos='44% 50%', base=0, rib=30)
 
 
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:

@@ -141,11 +141,12 @@ def tease(d):
         extra = (f'<div class="pz" aria-hidden="true"><img src="img/{lk["photo"]}" alt="" decoding="async" loading="lazy"></div>'
                  f'<figure class="pf" aria-hidden="true"><img src="img/{lk["frame"]}" alt="" decoding="async" loading="lazy"></figure>')
     attrs = (' data-look="0" data-pause' + (' data-parked' if d.get('parked') else '')) if lk else ''
-    # M/G pause (task 2b1d1187, J 17 Nov: "remove those green lines ... Remove the glow ... the layout is still boring"): one
-    # guest at the basin, seen through the doorway of her photo 17, large and running off the right edge, with the AI label
-    # (mgs_sections.ai_mark, passed in); 2.2-2.4 never set `breath`, so their pages stay byte-identical
-    br = (f'<figure class="br"><div class="br__ph"><img src="img/{d["breath"]}" alt="{E(d.get("breath_alt", ""))}" decoding="async"></div>'
-          f'{d.get("breath_mark", "")}</figure>') if d.get('breath') else ''
+    # M/G pause (task 2b1d1187, J 17 Nov: "remove those green lines ... Remove the glow"; task a73569a9, J 18 Nov: "I preferred the
+    # previous version with the door"): one guest at the basin, seen through the doorway of her photo 17, in a tall arched door
+    # between her words, with the AI label (mgs_sections.ai_mark) and a lenticular sheet over the picture (mgs_sections.lens,
+    # lens.js; both passed in); 2.2-2.4 never set `breath`, so their pages stay byte-identical
+    br = (f'<figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/{d["breath"]}" alt="{E(d.get("breath_alt", ""))}"{d.get("breath_img", "")} decoding="async">'
+          f'{d.get("breath_lens", "")}</div></div>{d.get("breath_mark", "")}</figure>') if d.get('breath') else ''
     return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}{' data-long' if _MGS and len(re.sub(r'<[^>]+>', '', d['text'])) > 240 else ''}>
     {extra}{ring}
     <div class="s__leave mani__in">
@@ -636,6 +637,7 @@ def page(cfg):
 <script>
 {js}</script>
 ''' + (f'<script>\n{open(V + "mgs.js").read()}</script>\n' if '-' in vkey else '')
+    if '-' in vkey and 'data-len=' in body: body += f'<script>\n{open(V + "lens.js").read()}</script>\n'     # the glass block, only on a page that has a pane (task a73569a9)
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     ids = [d['cta']['id'] if 'cta' in d else d['id'] for _, d in cfg['salon']]     # the salon world's section ids
     for f in css_files(vkey):
