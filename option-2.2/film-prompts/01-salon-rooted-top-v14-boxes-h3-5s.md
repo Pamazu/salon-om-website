@@ -25,3 +25,8 @@ Sound: soft room tone and the gentle sound of water flowing into the basin, the 
 
 WHAT CAME BACK
 (per job: arm, seed, job id, verdict at full size; Test Lab runs under SR26 / SR27)
+
+SR27 (B, part boxes), seed 42, hub job 20261117-224134-4ab706 (S1 + S2 allowed; render 455 s; clip kept on the Studio, ~/tmp/63623d0c/jobs/out/, not committed: mlx-h3 output is held from publishing until StoryLegal rules): PARTIAL. Read at 8 fps, 2x crops every 0.6 s, against the part-box previz.
+- Right: the slow push-in to the left is followed; the room is the photos' (black basin, oak drawer unit with its dark top, glass shelf with maroon / maroon / green / pale bottles, poster leaves, cream wall, brown leather chair); she lies in the LEFT chair, head at the left basin, body running right; the stylist stands behind at the right, face above the frame, black top; motion natural, no robotic limbs; adult anatomy (face, ear, neck, fingers); no box colour or box shape leaked into the take.
+- Wrong: the water runs from the spout into the bowl BESIDE her hair, not through it, no pooled water; one hand cradles the back of her head from 0.6 to 3.1 s, the other hand is never seen, and the cradling hand has left the frame by about 4 s; her hair does not drift at 2.5 s; the bottle labels are drawn blocks of illegible pseudo-text (no legible brand word).
+- Test Lab: EXP-salon-rooted-1 arm SR27 run 1, verdict partial. One take is not a rate; seeds 7 (c02218) and 1234 (ec330f) queued for B. SR26 (A, one box per person): seed 42 (20261117-210517-e0e1b2) rendered but S2's VLM check timed out, so the clip is quarantined; StoryForge re-runs S2 only. Certainty of the hypothesis unchanged, about 55 %.
