@@ -272,9 +272,6 @@ TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open',
               'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
               'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
 TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
-# the one film Inner Work keeps of its own, by J's approved-features row 19 (18 Nov: the Salon OM forest and "the Inner Work
-# hero film (the curtains) play behind their headlines"); its sound goes with it. Any other film is the salon's
-TWIN_OWN_FILMS = {'top': 'approved-features row 19: the Inner Work hero film, the curtains'}
 # lists of cards: each card takes its words, and its picture
 TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}
 
@@ -289,7 +286,7 @@ def twin(salon, words):
     out = []
     for kind, d in salon:
         w, nd = words[d['id']], dict(d)
-        bad = sorted(set(w) - TWIN_WORDS - TWIN_PICTURES - ({'film', 'sound'} if d['id'] in TWIN_OWN_FILMS else set()))
+        bad = sorted(set(w) - TWIN_WORDS - TWIN_PICTURES)
         assert not bad, f'twin: the entry for "{d["id"]}" sets {bad}; films, sounds, colours and layout stay the salon\'s'
         left = sorted(k for k in TWIN_WORDS if d.get(k) and k not in w)
         assert not left, f'twin: "{d["id"]}" would keep the salon\'s words for {left}: give each Inner Work words, or None'
@@ -361,7 +358,7 @@ def iw_entries(v, salon):
         if isinstance(w.get('open'), dict) and isinstance(w['open'].get('btns'), list):
             w['open'] = dict(w['open'], btns=''.join(_iw_btn(b) for b in w['open']['btns']))
         if kind == 'hero_mark':
-            w.update(film='air', sound='air', aria=M.IW_TITLE)                # TWIN_OWN_FILMS
+            w['aria'] = M.IW_TITLE
         elif kind == 'tease' and d.get('breath'):
             f, alt = _iw_pic('lounge'); w.update(breath=f, breath_alt=alt, breath_mark='')
         elif kind == 'ch':
@@ -528,9 +525,7 @@ def check_one_design(body, css):
     bad = [f'{len(S_)} salon sections, {len(C_)} Inner Work sections'] if len(S_) != len(C_) else []
     for k, ((si, sv), (ci, cv)) in enumerate(zip(S_, C_)):
         if ci != TWIN + si: bad.append(f'section {k + 1}: salon "{si}", Inner Work "{ci}" (not its twin)')
-        own = si in TWIN_OWN_FILMS      # its film and sound are Inner Work's own; it still has one, in the same place
-        lay = (lambda a: {k: v for k, v in a.items() if k != 'data-sound'}) if own else (lambda a: a)
-        for name, x, y in (('layout', lay(sv[0]), lay(cv[0])), ('films', len(sv[1]) if own else sv[1], len(cv[1]) if own else cv[1])):
+        for name, x, y in (('layout', sv[0], cv[0]), ('films', sv[1], cv[1])):
             if x != y: bad.append(f'section {k + 1} ("{si}"): {name} differ: salon {x} / Inner Work {y}')
         if len(sv[2]) != len(cv[2]): bad.append(f'section {k + 1} ("{si}"): {len(sv[2])} picture places in the salon, {len(cv[2])} in Inner Work')
         same = sorted({x for x, y in zip(sv[2], cv[2]) if _original(x) == _original(y)} | {y for y in cv[3] if _original(y) in {_original(x) for x in sv[3]}})

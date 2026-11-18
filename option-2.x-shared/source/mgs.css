@@ -863,12 +863,6 @@ html[data-shot] .av :is(.av__ph, .av__ph img, .av__label, .av__card), html[data-
 /* the films off, phone (task 5479dd6c QA, 18 Nov): a step's photo stays whole behind its words (no film darkens its lower half), and on
    Shine the bright wall and poster measured 2.6:1 under the headline and 3.3:1 under the text at 393 x 660, so the scrim climbs higher */
 @media (max-width: 600px) { .ch--still .ch__scrim { background: linear-gradient(to top, rgba(10, 7, 5, .9) 0%, rgba(10, 7, 5, .8) 36%, rgba(10, 7, 5, .52) 58%, rgba(10, 7, 5, .2) 76%, rgba(10, 7, 5, 0) 90%), linear-gradient(to right, rgba(10, 7, 5, .42), rgba(10, 7, 5, 0) 56%), linear-gradient(to bottom, rgba(10, 7, 5, .55), rgba(10, 7, 5, 0) 22%); } }
-/* task 7a3c013b: the curtains film (Inner Work's own hero film, approved-features row 19) is far brighter than the forest, so
-   over it the hero's lines take full ivory with a soft shadow and the scrim deepens at the centre and the foot: round 5's
-   measured fix for this film (task 2846db82: its line read 3.2 : 1 on a phone before it), now keyed to the film itself,
-   never to a world, so both worlds keep one look */
-.hero:has(video[data-src="media/air.mp4"], img[src="img/film-air-curtains.webp"]) .hero__line { color: var(--ivory); text-shadow: 0 1px 18px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .35); }
-.hero:has(video[data-src="media/air.mp4"], img[src="img/film-air-curtains.webp"]) .hero__scrim { background: radial-gradient(ellipse 72% 50% at 50% 44%, rgba(10, 7, 5, .52), rgba(10, 7, 5, .14) 74%), linear-gradient(to top, rgba(10, 7, 5, .8), rgba(10, 7, 5, 0) 40%), linear-gradient(to bottom, rgba(10, 7, 5, .5), rgba(10, 7, 5, 0) 24%); }
 /* task 7a3c013b: a lead card's list (Inner Work's six credentials, Copywriter 1: "one per line, never run together") sits
    under its role, in the letter's own body type, a hairline between lines */
 .tl__creds { list-style: none; margin: 12px 0 0; padding: 0; max-width: 52ch; }
