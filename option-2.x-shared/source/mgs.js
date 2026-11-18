@@ -409,7 +409,7 @@
     im.addEventListener('load', function () { im.classList.add('is-on'); });
     // over the <video> (a refused start still fires "playing" then "pause", which shows the <video>'s still first frame)
     // and under the photo; it steps aside once the <video> truly plays, its clock moving after a click or key
-    v.addEventListener('timeupdate', function () { if (!v.paused && v.currentTime > 0.2) im.classList.remove('is-on'); });
+    if (!v._tu) { v._tu = true; v.addEventListener('timeupdate', function () { if (v._img && !v.paused && v.currentTime > 0.2) v._img.classList.remove('is-on'); }); }
     im.src = v.getAttribute('data-src'); v.parentNode.insertBefore(im, v.nextSibling); v._img = im;
   }
   function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
@@ -417,25 +417,47 @@
     if (v._mine || calm) return; v._mine = true;
     if (refusing) asImage(v);
     var url = v.getAttribute('data-src');
-    v.addEventListener('playing', function () { v.classList.add('is-on'); });
-    v.addEventListener('canplay', function () { go(v); });
-    v.addEventListener('error', function () {
-      if (v._blob || !window.fetch) return; v._blob = true;
-      (cache[url] = cache[url] || fetch(url).then(function (r) { if (!r.ok) throw r.status; return r.blob(); }).then(function (b) { return URL.createObjectURL(b); }))
-        .then(function (u) { v.src = u; go(v); }).catch(function () {});
-    });
+    // the lighter HEVC twin where this browser plays HEVC (mgs_parts.FILM_HEAD), until it once fails here
+    if (!v._noHevc && window.omFilmSrc) url = window.omFilmSrc(v);
+    if (!v._wired) {
+      v._wired = true;
+      v.addEventListener('playing', function () { if (v._mine) v.classList.add('is-on'); });
+      v.addEventListener('canplay', function () { go(v); });
+      v.addEventListener('error', function () {
+        if (!v._mine) return;
+        // a twin that fails gives way to the H.264 film, then (as before) the whole download of it
+        if (!v._noHevc && v.getAttribute('src') === v.getAttribute('data-src-hevc')) { v._noHevc = true; v.src = v.getAttribute('data-src'); v.load(); go(v); return; }
+        url = v.getAttribute('data-src');
+        if (v._blob || !window.fetch) return; v._blob = true;
+        (cache[url] = cache[url] || fetch(url).then(function (r) { if (!r.ok) throw r.status; return r.blob(); }).then(function (b) { return URL.createObjectURL(b); }))
+          .then(function (u) { v._blobUrl = u; if (v._mine) { v.src = u; go(v); } }).catch(function () {});
+      });
+    }
     // load() as the engine did: a browser that fetches ahead on it (WebKit on a Mac does, preload="none" or not) has the
     // film ready when the person arrives; measured, without it a phone-speed film starts 0.8-1.3 s late (task b36dde1f)
-    v.src = url; v.load(); go(v);
+    v.src = v._blobUrl || url; v.load(); go(v);
+  }
+  /* task 5cb93228 (CEO MA 18 Nov: J's Safari "reloaded because it was using significant memory"): measured in WebKit
+     through a whole read of M, every film stayed loaded once attached, and a refused film's moving image beside it. A
+     film more than two screens away is let go (its decoder and buffer freed, its moving image removed) and is attached
+     again two screens before the person reaches it, from the browser's cache; its photo stands in its frame meanwhile,
+     as it does before any film arrives. */
+  function release(v) {
+    if (!v._mine) return; v._mine = false;
+    try { v.pause(); } catch (e) {}
+    v.classList.remove('is-on');
+    if (v._img) { var im = v._img; v._img = null; im.removeAttribute('src'); if (im.parentNode) im.parentNode.removeChild(im); }
+    v.removeAttribute('src'); try { v.load(); } catch (e) {}
   }
   // the engine's own attach steps aside (it returns at once on _attached); its frame loop still says which film is wanted
   films.forEach(function (v) { v._attached = true; });
-  // each film's section is watched (a film's own box can be zero-sized while its world is hidden), two screens ahead
+  // each film's section is watched (a film's own box can be zero-sized while its world is hidden): attached two screens
+  // ahead, let go once it is more than two screens away in either direction (or its world is hidden)
   var of = new Map();
   films.forEach(function (v) { var s = v.closest('.s') || v; of.set(s, (of.get(s) || []).concat(v)); });
   var io = new IntersectionObserver(function (es) {
-    es.forEach(function (e) { if (e.isIntersecting) { of.get(e.target).forEach(attach); io.unobserve(e.target); } });
-  }, { rootMargin: '0px 0px 200% 0px' });
+    es.forEach(function (e) { of.get(e.target).forEach(e.isIntersecting ? attach : release); });
+  }, { rootMargin: '200% 0px 200% 0px' });
   of.forEach(function (vs, s) { io.observe(s); });
   ['touchend', 'click', 'keydown'].forEach(function (ev) { addEventListener(ev, function () { films.forEach(go); }, { passive: true }); });
   // a wanted film that is still paused a moment after it came into view (a refused play, a stalled start) is asked again

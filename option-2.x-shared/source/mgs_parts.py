@@ -642,3 +642,45 @@ def srcset(body, v):
         set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
         return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
     return re.sub(r'<img [^>]*?src="img/([^"/]+\.webp)"[^>]*>', one, body)
+
+
+def low_after_first(body):
+    """The opening loads first (task 5cb93228, J 18 Nov: "Ensure films, music all is extremely fast"): measured on a
+    throttled 4G line (HTTP/2, one line shared as a phone's is), the opening film took 6-8 s to move because the page
+    asked at once for some 3.3 MB of pictures, the hidden world's included. A world hidden at load loads its pictures
+    as it is shown and the reader comes near them (loading="lazy", the page's own way for 16 pictures already; the
+    engine reveals a photo only once it is decoded); the shown world's pictures after its first section still load
+    from the start, at low priority, so they are there before the reader (measured: lazy there made a step's film wait
+    for them, 7-9 s). A picture that already names how it loads keeps it."""
+    import re
+    def later(seg, hidden):
+        if hidden: seg = re.sub(r'<img (?![^>]*loading=)', '<img loading="lazy" ', seg)
+        return re.sub(r'<img (?![^>]*fetchpriority)', '<img fetchpriority="low" ', seg)
+    out, pos = [], 0
+    for m in re.finditer(r'<main[^>]*data-world="\w+"[^>]*>', body):
+        hidden = re.search(r'\shidden(\s|>|=)', m.group(0)) is not None
+        start = m.end() if hidden else body.find('</section>', m.end())
+        if start < 0: continue
+        out.append(body[pos:start])
+        nxt = body.find('</main>', start)
+        seg = body[start:nxt if nxt > 0 else len(body)]
+        out.append(later(seg, hidden)); pos = start + len(seg)
+    out.append(body[pos:])
+    return ''.join(out)
+
+
+# the film a browser plays best, one function for the page (task 5cb93228): the lighter HEVC twin where the browser
+# plays HEVC, else the H.264 file; mgs.js asks it
+FILM_HEAD = ("<script>window.omFilmSrc = function (v) { var h = v.getAttribute('data-src-hevc');"
+             " return h && v.canPlayType && v.canPlayType('video/mp4; codecs=\"hvc1.1.6.L120.90\"') ? h : v.getAttribute('data-src'); };</script>\n")
+def hevc_twins(body, media_dir):
+    """Each film with a lighter HEVC twin beside it (media/<name>-hevc.mp4) names it (task 5cb93228, J 18 Nov: "Ensure
+    films, music all is extremely fast"): WebKit plays a film only once some 2 s of it have arrived, so a film at half
+    the bytes starts sooner on a slow line. Made from the same film, checked frame by frame at 100 % against it; a
+    browser that cannot play HEVC keeps the H.264 file (mgs.js chooses, FILM_HEAD)."""
+    import os, re
+    def one(m):
+        stem = m.group(1)
+        if not os.path.exists(os.path.join(media_dir, stem + '-hevc.mp4')): return m.group(0)
+        return m.group(0) + f' data-src-hevc="media/{stem}-hevc.mp4"'
+    return re.sub(r'<video data-src="media/([\w-]+)\.mp4"', one, body)

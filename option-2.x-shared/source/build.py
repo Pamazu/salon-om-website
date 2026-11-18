@@ -644,6 +644,8 @@ def page(cfg):
     if '-' in vkey: import mgs_parts as MP; css = MP.motion_css(css)      # M/G/S: one motion switch (task b36dde1f)
     if '-' in vkey: body = MP.srcset(body, vkey.split('-')[1])          # M/G/S: each picture at the size the screen needs (task b1dd24c9)
     if '-' in vkey: MP.check_one_design(body, css)                       # M/G/S: the two worlds differ only in their words, or the build stops
+    if '-' in vkey: body = MP.low_after_first(body)                    # M/G/S: the opening's film and picture load first (task 5cb93228)
+    if '-' in vkey: body = MP.hevc_twins(body, REPO + 'option-2.2/site/media')       # M/G/S: a film's lighter HEVC twin where the browser plays it (task 5cb93228)
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused
@@ -653,7 +655,7 @@ def page(cfg):
            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + title +
            f'<meta name="description" content="{E(cfg["desc"])}">\n<meta name="theme-color" content="#15100C">\n'
            '<link rel="icon" type="image/svg+xml" href="brand/salon-om-om-small-forest.svg">\n'
-           + (MP.MOTION_HEAD if '-' in vkey else '') + '<style>\n' + css + '</style>\n</head>\n<body>\n' + body + '</body>\n</html>\n')
+           + (MP.MOTION_HEAD + MP.FILM_HEAD if '-' in vkey else '') + '<style>\n' + css + '</style>\n</head>\n<body>\n' + body + '</body>\n</html>\n')
     # the artifact page has no <html> of its own: set the theme from script before paint
     art = art.replace('<script>\n', f'<script>document.documentElement.setAttribute("data-theme","{cfg["theme"]}");document.documentElement.setAttribute("data-world","salon");document.documentElement.setAttribute("data-variant","{key}");</script>\n<script>\n', 1)
     return art, doc

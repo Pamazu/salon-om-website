@@ -5,15 +5,19 @@
 //          step's sound change (from its section arriving to its own sound audible; the lowest combined level between)
 //   films: from the page opening (hero) or the section arriving (a step) to the film moving (currentTime > 0, shown)
 //   node speed.mjs <out.json> [net: fast|4g|slow] [m,g,s] [1440,390]
-import fs from 'node:fs'; import http from 'node:http'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
+import fs from 'node:fs'; import http from 'node:http'; import http2 from 'node:http2'; import os from 'node:os'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright'; import { TYPES, jump } from './lib.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [, , OUT, NET = '4g', VS = 'm,g,s', WS = '1440,390'] = process.argv;
 const NETS = { fast: [0, 0], '4g': [80, 1_200_000], slow: [150, 200_000] };      // [latency ms, bytes per second]
 const [LAT, BPS] = NETS[NET];
+let line = 0;      // when the shared line is next free (ms)
 // the pages to serve: this checkout's build, or (PAGES=dir) another build's m/, g/, s/ index.html (e.g. the live commit's)
 const PAGES = process.env.PAGES || path.join(REPO, 'option-2.2-mgs');
-const srv = http.createServer((req, res) => {
+// H2=1: HTTP/2 over TLS as the live Firebase sites serve (every file on one connection, so a film never queues for one
+// of HTTP/1.1's six); the key and certificate are a local self-signed pair (H2_DIR, default ~/tmp/12ad020c/speed)
+const H2 = process.env.H2 === '1', H2_DIR = process.env.H2_DIR || path.join(os.homedir(), 'tmp/12ad020c/speed');
+const handler = (req, res) => {
   const u = decodeURIComponent(new URL(req.url, 'http://x').pathname); const m = u.match(/^\/([mgs])\/(.*)$/);
   if (!m) { res.writeHead(404); return res.end(); }
   const file = !m[2] || m[2] === 'index.html' ? path.join(PAGES, m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
@@ -26,13 +30,18 @@ const srv = http.createServer((req, res) => {
     setTimeout(() => {
       res.writeHead(code, h); const s = fs.createReadStream(file, { start: a, end: z, highWaterMark: 16384 });
       if (!BPS) return s.pipe(res);
-      s.on('data', (c) => { s.pause(); res.write(c); setTimeout(() => s.resume(), c.length / BPS * 1000); });
-      s.on('end', () => res.end()); res.on('close', () => s.destroy());
+      // one line shared by every file at once, as a phone's 4G is: each chunk waits for the line to be free
+      s.on('data', (c) => { s.pause(); const now = Date.now(); line = Math.max(line, now) + c.length / BPS * 1000; setTimeout(() => { res.write(c); s.resume(); }, line - now); });
+      // the end goes after the last chunk, which waits for the line too
+      s.on('end', () => setTimeout(() => res.end(), Math.max(0, line - Date.now()) + 1)); res.on('close', () => s.destroy());
     }, LAT);
   });
-}).listen(0, '127.0.0.1');
+};
+const srv = H2 ? http2.createSecureServer({ key: fs.readFileSync(path.join(H2_DIR, 'key.pem')), cert: fs.readFileSync(path.join(H2_DIR, 'cert.pem')), allowHTTP1: true }, handler)
+  : http.createServer(handler);
+srv.listen(0, '127.0.0.1');
 await new Promise((r) => srv.on('listening', r));
-const BASE = `http://127.0.0.1:${srv.address().port}`;
+const BASE = `${H2 ? 'https' : 'http'}://127.0.0.1:${srv.address().port}`;
 const PROBE = () => {
   const P = window.__perf = { gains: [], srcs: [], t: [] };
   const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
@@ -59,7 +68,7 @@ const PROBE = () => {
 const rows = [];
 for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
   const b = await pw.webkit.launch();      // a fresh browser per case: no file cached from the case before
-  const ctx = await b.newContext({ viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
+  const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
   await ctx.addInitScript(PROBE);
   const p = await ctx.newPage(); const t0 = Date.now();
   await p.goto(`${BASE}/${v}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
@@ -78,6 +87,8 @@ for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
     const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, step[0]);
     // the sources playing loudest now are the opening's; the step's own sound is a source that rises from quiet after the jump
     await p.evaluate(() => { const P = window.__perf; P.before = new Set(P.srcs.filter((q) => q._g && P.chain(q) > 0.05)); });
+    // as a person arrives: near the step first (its film is attached two screens ahead), a moment there, then the step
+    await jump(p, Math.max(0, top - 1.5 * (w < 700 ? 844 : 900))); await p.waitForTimeout(2500);
     await jump(p, top); const ts = Date.now();
     for (let i = 0; i < 600 && (stepFilmMs === null || stepSoundMs === null); i++) {
       const s = await p.evaluate((id) => { const x = document.querySelector(`#${id} video`); const P = window.__perf; const m = P.gains.length ? P.gains[0].gain.value : 0;

@@ -84,11 +84,15 @@
     function drop(name) {
       var t = tracks[name]; if (!t) return;
       try { t.src && t.src.stop(); } catch (e) {} endStream(t, t.el); t.gain.disconnect(); delete tracks[name];
-      if (!(near[name] && performance.now() - near[name] < 15000)) delete bufs[name];
+      if (!near[name]) delete bufs[name];
     }
+    // memory (task 5cb93228, J's Safari reloaded the page for significant memory): a decoded loop is some 32 MB, so only
+    // the sound playing, the next step's and those of the sections within a screen are kept; a dropped one is decoded
+    // again from the browser's cache when its section comes near, and the sound before plays on until it is ready
     function tidy() {
-      var keep = {}; keep.bed = 1; keep[current] = 1; keep[NEXT[current]] = 1;
-      Object.keys(near).forEach(function (n) { if (performance.now() - near[n] < 15000) keep[n] = 1; });
+      if (!current) return;
+      var keep = {}; keep[current] = 1; keep[NEXT[current]] = 1;
+      Object.keys(near).forEach(function (n) { if (near[n] > 0) keep[n] = 1; });
       Object.keys(tracks).forEach(function (n) { if (!keep[n] && performance.now() - tracks[n].used > (XFADE + 1) * 1000) drop(n); });
       Object.keys(bufs).forEach(function (n) { if (!keep[n] && !tracks[n]) delete bufs[n]; });
     }
@@ -141,11 +145,19 @@
       ctx.resume(); stream();
     }
     GESTURES.forEach(function (ev) { window.addEventListener(ev, unlock, true); });
-    // each section's sound loads a screen before the section arrives (its file only, until there is a context to decode it)
+    // each section's sound loads a screen before the section arrives, from below or above (its file only, until there is
+    // a context to decode it); near counts the sections of each sound within a screen now
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
-        es.forEach(function (e) { if (!e.isIntersecting) return; var n = e.target.getAttribute('data-sound'); if (!SRC[n]) return; near[n] = performance.now(); if (on) { if (ctx) buffer(n); else fetchBytes(n); } });
-      }, { rootMargin: '0px 0px 100% 0px' });
+        var left = false;
+        es.forEach(function (e) {
+          var n = e.target.getAttribute('data-sound'); if (!SRC[n]) return;
+          var was = !!e.target._near; e.target._near = e.isIntersecting;
+          if (e.isIntersecting && !was) { near[n] = (near[n] || 0) + 1; if (on) { if (ctx) buffer(n); else fetchBytes(n); } }
+          else if (!e.isIntersecting && was) { near[n] = Math.max(0, near[n] - 1); left = true; }
+        });
+        if (left) setTimeout(tidy, (XFADE + 1.5) * 1000);
+      }, { rootMargin: '100% 0px 100% 0px' });
       $all('[data-sound]').forEach(function (s) { io.observe(s); });
     }
     var pref = null; try { pref = localStorage.getItem('om-sound'); } catch (e) {}
