@@ -9,7 +9,7 @@ import path from 'node:path';
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const [vs = 'm,g', ws = '1440,390,3230'] = process.argv.slice(2);
 const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().port}`;
-const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const b = await chromium.launch({ executablePath: process.env.CHROME || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const LINES = '.av__head .eyebrow, .av__head .mid, .av__sub, .av__row dt, .av__row dd, .av__src';
 for (const w of ws.split(',').map(Number)) {
   const size = w === 390 ? { width: 390, height: 844 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };

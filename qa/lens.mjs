@@ -11,7 +11,7 @@ const pre = world === 'coaching' ? 'c-' : '', tag = world === 'coaching' ? 'iw-'
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
-const b = await (br === 'chromium' ? chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] }) : webkit.launch());
+const b = await (br === 'chromium' ? chromium.launch({ executablePath: process.env.CHROME || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] }) : webkit.launch());
 for (const w of ws.split(',').map(Number)) {
   const size = w === 390 ? { width: 390, height: 844 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
   const ctx = await b.newContext({ viewport: size, deviceScaleFactor: w === 3230 || w === 768 ? 2 : w === 390 ? 3 : 1, isMobile: w === 390, hasTouch: w === 390 });

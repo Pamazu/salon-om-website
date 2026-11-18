@@ -20,7 +20,7 @@ const DPR = { 3230: 2, 1440: 2, 768: 2, 390: 3 };
 const MANIFEST = process.argv.includes('--manifest');
 const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
-const browser = await pw.chromium.launch();
+const browser = await pw.chromium.launch({ executablePath: process.env.CHROME || undefined });
 const rows = [];
 try {
   for (const v of VERS) for (const W of WIDTHS) {
