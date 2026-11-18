@@ -61,6 +61,17 @@ def fit_colour(img, ref):
     return Image.fromarray(np.clip(out, 0, 255).round().astype(np.uint8)), float(np.abs(a - b).mean())
 
 
+def used_by_frozen():
+    """every img/ file the frozen pages 2.2-2.4 show: those files never change"""
+    import re
+    out = set()
+    for k in ('2.2', '2.3', '2.4'):
+        p = REPO + f'option-{k}/site/index.html'
+        if os.path.exists(p):
+            out |= set(re.findall(r'img/([a-z0-9-]+\.webp)', open(p).read()))
+    return out
+
+
 def master(name):
     kind, f = SOURCE[name].split(':', 1)
     p = (ORIG if kind == 'o' else MASTERS) + f
@@ -86,13 +97,15 @@ def export(name, dry=False):
     if SOURCE[name].startswith('o:') or SOURCE[name].endswith(PHOTO_MASTER):
         m = m.filter(ImageFilter.GaussianBlur(GRAIN_BLUR))
     fitted, before = fit_colour(m, ref)
+    frozen = name in used_by_frozen()
     if before < 20:
         m = fitted                            # the same picture: keep the site file's grade
-    elif name.startswith(('om-menu-', 'om-pause-')):
-        # a new picture (a menu guest or the pause guest redone): only M, G and S use these, so their fallback file is replaced too
+    elif frozen:
+        return f'{name}: master differs from the site file (mean {before:.1f}) and 2.2-2.4 show that file: not exported'
+    if not frozen:
+        # only M, G and S show this picture, so its fallback is the new picture too (task a8c429a3: a cleaned picture's 1280
+        # file kept the clutter while its ladder had none); 2.2-2.4's files never change
         m.resize(ref.size, Image.LANCZOS).save(IMG + name, quality=84, method=6)
-    else:
-        return f'{name}: master differs from the site file (mean {before:.1f}) and is not a menu picture: not exported'
     os.makedirs(IMG + 'hd', exist_ok=True)
     stem = name[:-5]
     for w in ws:
