@@ -1988,6 +1988,19 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
    dissolve): the whole frame is the photo */
 .ch--still .ch__top { -webkit-mask-image: none; mask-image: none; }
 .ch--still.ch--stack.is-active .ch__top { opacity: 1; transition: none; }
+/* task 65320d04 (J 18 Nov: "Today we're going to focus heavily on QA to present the work in progress"): the second door on a short
+   phone. M's and G's long copy (two paragraphs, a line, two buttons) is taller than a phone screen under about 800 px with Safari's
+   toolbars, so the section ran under the header, behind the bottom bar and into the meadow's label. From 800 px of screen height
+   down to 660 the headline, text, gaps and buttons step down smoothly (the same words), and padding keeps the block clear of the
+   header and the meadow's label above and the bottom bar below. 800 px and taller keep today's sizes; the laptop is untouched. */
+@media (max-width: 600px) and (max-height: 799px) {
+  .bridge__in { padding-top: calc(var(--hdr) + 34px); padding-bottom: 72px; }
+  .bridge .big { font-size: clamp(36px, calc(36px + (100svh - 660px) * .0857), 48px); margin: clamp(10px, calc(10px + (100svh - 660px) * .0571), 18px) auto; text-wrap: balance; }
+  .bridge p:not(.eyebrow):not(.ai-mark) { font-size: clamp(14.5px, calc(14.5px + (100svh - 660px) * .01786), 17px); line-height: 1.4; margin-bottom: clamp(12px, calc(12px + (100svh - 660px) * .1286), 30px); }
+  .bridge__more { margin-top: clamp(-14px, calc(-6px - (100svh - 660px) * .0571), -6px) !important; }
+  .bridge__more:last-of-type { font-size: clamp(17px, calc(17px + (100svh - 660px) * .0214), 20px); }
+  .bridge .btn { min-height: clamp(44px, calc(44px + (100svh - 660px) * .0429), 50px); }
+}
 </style>
 </head>
 <body>
@@ -2247,7 +2260,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="7032ade93186";</script>
+<script>window.OM_BUILD="fdbeb3b834b3";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
