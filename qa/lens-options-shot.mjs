@@ -17,14 +17,14 @@ for (const W of SIZES) {
   for (const id of ['A', 'B', 'C', 'D']) {
     const y = await p.evaluate((id) => document.querySelector('[data-v="' + id + '"] .stage').getBoundingClientRect().top + scrollY, id);
     const vh = phone ? 844 : 900;
-    if (id === 'A') { await p.evaluate((y, vh) => scrollTo(0, y - vh * .9), y, vh); if (!phone) await p.mouse.move(700, 400); await p.waitForTimeout(800); await p.screenshot({ path: `${out}/${W}-A-0cover.jpg`, type: 'jpeg', quality: 80 }); }
-    await p.evaluate((y, k) => scrollTo(0, y - k), y, id === 'A' ? vh * .35 : 40); await p.waitForTimeout(400);
-    await p.evaluate((y, k) => scrollTo(0, y - k), y, id === 'A' ? vh * .33 : 40);
+    if (id === 'A') { await p.evaluate(([y, k]) => scrollTo(0, y - k), [y, vh * .9]); if (!phone) await p.mouse.move(700, 400); await p.waitForTimeout(800); await p.screenshot({ path: `${out}/${W}-A-0cover.jpg`, type: 'jpeg', quality: 80 }); }
+    await p.evaluate(([y, k]) => scrollTo(0, y - k), [y, id === 'A' ? vh * .35 : 40]); await p.waitForTimeout(400);
+    await p.evaluate(([y, k]) => scrollTo(0, y - k), [y, id === 'A' ? vh * .33 : 40]);
     if (!phone) await p.mouse.move(id === 'D' ? 400 : 900, 420, { steps: 6 });
     await p.waitForTimeout(1500);
     await p.screenshot({ path: `${out}/${W}-${id}-1.jpg`, type: 'jpeg', quality: 80 });
     if (id === 'A' || id === 'D') {   // a second moment: the scroll a little further, to see it move
-      await p.evaluate((y, k) => scrollTo(0, y - k), y, id === 'A' ? vh * .1 : -vh * .25); await p.waitForTimeout(1200);
+      await p.evaluate(([y, k]) => scrollTo(0, y - k), [y, id === 'A' ? vh * .1 : -vh * .25]); await p.waitForTimeout(1200);
       await p.screenshot({ path: `${out}/${W}-${id}-2.jpg`, type: 'jpeg', quality: 80 });
     }
   }
