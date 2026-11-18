@@ -50,8 +50,12 @@ SOURCE = {
     # x4 (SeedVR2 or Real-ESRGAN on the Mac Studio); the master PNG lives with the other masters, not in git
     'film-hero-forest.webp': 'm:film-hero-forest.png',
     'film-air-curtains.webp': 'm:film-air-curtains.png',
+    'om-pause-guest.webp': 'm:17-pause-guest-on-photo.png',      # the pause (task 2b1d1187): photo 17 with a generated guest
 }
 NEW = {'film-hero-forest.webp', 'film-air-curtains.webp'}      # no site file yet: the 1280 fallback is made from the master first
+# a master that is a real photo (a cleaned copy '-clean.jpg', or a generated guest pasted onto it '-on-photo.png') keeps the
+# photo's grain, so it gets the same blur as an original
+PHOTO_MASTER = ('-clean.jpg', '-on-photo.png')
 # a photo's own sensor grain costs half its bytes at 45 MP: a 0.9 px blur on the full-size original removes the grain and keeps
 # every edge and label sharp at 1:1 (lounge at 3840: 6.2 -> 2.9 MB, 17 Nov side by side); generated masters have no grain
 GRAIN_BLUR = 0.9
@@ -93,9 +97,11 @@ def export(name, dry=False):
     p = master(name)
     if not p:
         return f'{name}: no master yet ({SOURCE[name]})'
-    if name in NEW and not os.path.exists(IMG + name):
-        n = Image.open(p).convert('RGB'); n.resize((1280, round(n.height * 1280 / n.width)), Image.LANCZOS).save(IMG + name, quality=84, method=6)
-    m, ref = Image.open(p), Image.open(IMG + name)
+    m = Image.open(p)
+    if not os.path.exists(IMG + name) and (name in NEW or name.startswith('om-')):
+        # a new picture only M, G and S show (a film's still, a new generated picture): its master makes its 1280 fallback first
+        m.convert('RGB').resize((1280, round(m.height * 1280 / m.width)), Image.LANCZOS).save(IMG + name, quality=84, method=6)
+    ref = Image.open(IMG + name)
     if (m.width > m.height) != (ref.width > ref.height):
         return f'{name}: master {m.size} does not match the site file {ref.size}'
     need = int(needed(name) * 1.05)          # 5 % for the slow Ken Burns zoom the measure may have caught short of its peak
@@ -103,13 +109,13 @@ def export(name, dry=False):
     if dry:
         return f'{name}: master {m.size}, need {need} px -> {ws}'
     m = m.convert('RGB')
-    if SOURCE[name].startswith('o:') or SOURCE[name].endswith('-clean.jpg'):
+    if SOURCE[name].startswith('o:') or SOURCE[name].endswith(PHOTO_MASTER):
         m = m.filter(ImageFilter.GaussianBlur(GRAIN_BLUR))
     fitted, before = fit_colour(m, ref)
     if before < 20:
         m = fitted                            # the same picture: keep the site file's grade
-    elif name.startswith('om-menu-'):
-        # a new picture (a menu guest redone): only M, G and S use these, so their fallback file is replaced too
+    elif name.startswith(('om-menu-', 'om-pause-')):
+        # a new picture (a menu guest or the pause guest redone): only M, G and S use these, so their fallback file is replaced too
         m.resize(ref.size, Image.LANCZOS).save(IMG + name, quality=84, method=6)
     else:
         return f'{name}: master differs from the site file (mean {before:.1f}) and is not a menu picture: not exported'
