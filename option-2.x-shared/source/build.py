@@ -19,11 +19,12 @@ PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc123])/.exec(loca
 E = html.escape
 
 # THE FILMS SWITCH (J 18 Nov 2026, task 5479dd6c: "videos are lower priority than images; if we have solid, beautiful images,
-# we can use images instead of videos for now and add the videos later"). With FILMS_SHOWN False, M, G and S show a still wherever a
-# film played: a step shows its own real photo alone, the hero and Inner Work's hero a sharp frame of their film, labelled "Made
-# with AI" (mgs_parts.film_still). True (or SOM_FILMS=on in the environment) brings every film, poster and film script back,
-# unchanged: nothing of them is deleted. 2.2, 2.3 and 2.4 never read the switch (their build stays byte-identical).
-FILMS_SHOWN = os.environ.get('SOM_FILMS', 'off').lower() == 'on'
+# we can use images instead of videos for now and add the videos later"). With FILMS_SHOWN False (SOM_FILMS=off in the environment),
+# M, G and S show a still wherever a film played: a step shows its own real photo alone, the hero and Inner Work's hero a sharp
+# frame of their film (mgs_parts.film_still). DEFAULT TRUE since J 18 Nov ~14:50 Z (task c4360b88: "you removed all videos we had,
+# those videos of nature ... were hugely important"): the films that were live play again, with every later fix kept. Nothing of
+# the films was ever deleted. 2.2, 2.3 and 2.4 never read the switch (their build stays byte-identical).
+FILMS_SHOWN = os.environ.get('SOM_FILMS', 'on').lower() != 'off'
 _MGS = False      # page() sets it while an M, G or S page is drawn
 
 def svg(key):
