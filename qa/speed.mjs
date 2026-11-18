@@ -1,0 +1,98 @@
+// How fast the music and the films start (task 5cb93228, J 18 Nov: "the music takes too long to load ... Ensure films,
+// music all is extremely fast so the experience is seamless"). Serves this checkout's built M/G/S through a throttled
+// network and measures, in WebKit at 1440 and 390:
+//   sound: from the visitor's first click to the music audible (master x track gain >= 0.1, a source playing), and a
+//          step's sound change (from its section arriving to its own sound audible; the lowest combined level between)
+//   films: from the page opening (hero) or the section arriving (a step) to the film moving (currentTime > 0, shown)
+//   node speed.mjs <out.json> [net: fast|4g|slow] [m,g,s] [1440,390]
+import fs from 'node:fs'; import http from 'node:http'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
+import * as pw from 'playwright'; import { TYPES, jump } from './lib.mjs';
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const [, , OUT, NET = '4g', VS = 'm,g,s', WS = '1440,390'] = process.argv;
+const NETS = { fast: [0, 0], '4g': [80, 1_200_000], slow: [150, 200_000] };      // [latency ms, bytes per second]
+const [LAT, BPS] = NETS[NET];
+// the pages to serve: this checkout's build, or (PAGES=dir) another build's m/, g/, s/ index.html (e.g. the live commit's)
+const PAGES = process.env.PAGES || path.join(REPO, 'option-2.2-mgs');
+const srv = http.createServer((req, res) => {
+  const u = decodeURIComponent(new URL(req.url, 'http://x').pathname); const m = u.match(/^\/([mgs])\/(.*)$/);
+  if (!m) { res.writeHead(404); return res.end(); }
+  const file = !m[2] || m[2] === 'index.html' ? path.join(PAGES, m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
+  fs.stat(file, (err, st) => {
+    if (err || !st.isFile()) { res.writeHead(404); return res.end(); }
+    const type = TYPES[path.extname(file)] || 'application/octet-stream', r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
+    let a = 0, z = st.size - 1, code = 200, h = { 'Content-Type': type, 'Accept-Ranges': 'bytes' };
+    if (r) { a = r[1] ? +r[1] : 0; z = r[2] ? Math.min(+r[2], st.size - 1) : st.size - 1; code = 206; h['Content-Range'] = `bytes ${a}-${z}/${st.size}`; }
+    h['Content-Length'] = z - a + 1;
+    setTimeout(() => {
+      res.writeHead(code, h); const s = fs.createReadStream(file, { start: a, end: z, highWaterMark: 16384 });
+      if (!BPS) return s.pipe(res);
+      s.on('data', (c) => { s.pause(); res.write(c); setTimeout(() => s.resume(), c.length / BPS * 1000); });
+      s.on('end', () => res.end()); res.on('close', () => s.destroy());
+    }, LAT);
+  });
+}).listen(0, '127.0.0.1');
+await new Promise((r) => srv.on('listening', r));
+const BASE = `http://127.0.0.1:${srv.address().port}`;
+const PROBE = () => {
+  const P = window.__perf = { gains: [], srcs: [], t: [] };
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  // as Safari does: a page's audio waits for the visitor's first tap, click or key (headless WebKit would run it at once)
+  window.__gest = false; ['pointerdown', 'touchend', 'click', 'keydown'].forEach((e) => addEventListener(e, () => { window.__gest = true; }, true));
+  const r0 = AC.prototype.resume; AC.prototype.resume = function () { return window.__gest ? r0.call(this) : Promise.resolve(); };
+  const Wrapped = function (o) { const c = new AC(o); c.suspend(); return c; }; Wrapped.prototype = AC.prototype;
+  window.AudioContext = Wrapped; if (window.webkitAudioContext) window.webkitAudioContext = Wrapped;
+  const g0 = AC.prototype.createGain; AC.prototype.createGain = function () { const g = g0.call(this); P.gains.push(g); return g; };
+  const b0 = AC.prototype.createBufferSource; AC.prototype.createBufferSource = function () { const s = b0.call(this); const st = s.start; s.start = function () { s._on = true; P.t.push(['buf', performance.now()]); return st.apply(this, arguments); }; P.srcs.push(s); return s; };
+  if (AC.prototype.createMediaElementSource) { const e0 = AC.prototype.createMediaElementSource; AC.prototype.createMediaElementSource = function (el) { const s = e0.call(this, el); s._el = el; P.srcs.push(s); return s; }; }
+  // the level heard now: master gain x the loudest playing track's gain (a track = a gain node fed by a playing source)
+  P.level = () => {
+    if (!P.gains.length) return 0; const master = P.gains[0].gain.value; let best = 0;
+    for (const s of P.srcs) { const on = s._el ? (!s._el.paused && s._el.currentTime > 0) : s._on; if (!on || !s._g) continue; best = Math.max(best, P.chain(s)); }
+    return master * best;
+  };
+  // a source's level up to the master: every gain on its way multiplied (the engine has one per track, M/G/S two)
+  P.chain = (s) => { let g = s._g, v = 1, n = 0; while (g && g !== P.gains[0] && n++ < 6) { v *= g.gain.value; g = g._next; } return v; };
+  const c0 = AudioNode.prototype.connect; AudioNode.prototype.connect = function (dest) {
+    if (dest && dest.gain) { if (P.srcs.includes(this)) this._g = dest; else if (this.gain) this._next = dest; }
+    return c0.apply(this, arguments); };
+};
+const rows = [];
+for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
+  const b = await pw.webkit.launch();      // a fresh browser per case: no file cached from the case before
+  const ctx = await b.newContext({ viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
+  await ctx.addInitScript(PROBE);
+  const p = await ctx.newPage(); const t0 = Date.now();
+  await p.goto(`${BASE}/${v}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+  // hero film: from the page opening to moving
+  let heroMs = null;
+  for (let i = 0; i < 300 && heroMs === null; i++) { if (await p.evaluate(() => { const x = document.querySelector('#top video'); return !!x && x.currentTime > 0.05 && !x.paused; })) heroMs = Date.now() - t0; else await p.waitForTimeout(50); }
+  await p.waitForTimeout(Math.max(0, 3000 - (Date.now() - t0)));      // a visitor reads the opening for about 3 s, then clicks
+  const tc = Date.now(); await p.mouse.click(w / 2, 300);
+  let soundMs = null;
+  for (let i = 0; i < 300 && soundMs === null; i++) { if (await p.evaluate(() => window.__perf.level() >= 0.1)) soundMs = Date.now() - tc; else await p.waitForTimeout(20); }
+  await p.waitForTimeout(1500);      // the opening's sound fully up, so the lowest level below belongs to the step change
+  // a step's sound and film: jump to the first step, measure its film and its own sound
+  const step = await p.evaluate(() => { const s = document.querySelector('main[data-world="salon"] .s.ch[data-sound]:not([data-sound="bed"])'); return s ? [s.id, s.dataset.sound] : null; });
+  let stepFilmMs = null, stepSoundMs = null, minLevel = 1;
+  if (step) {
+    const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, step[0]);
+    // the sources playing loudest now are the opening's; the step's own sound is a source that rises from quiet after the jump
+    await p.evaluate(() => { const P = window.__perf; P.before = new Set(P.srcs.filter((q) => q._g && P.chain(q) > 0.05)); });
+    await jump(p, top); const ts = Date.now();
+    for (let i = 0; i < 600 && (stepFilmMs === null || stepSoundMs === null); i++) {
+      const s = await p.evaluate((id) => { const x = document.querySelector(`#${id} video`); const P = window.__perf; const m = P.gains.length ? P.gains[0].gain.value : 0;
+        const fresh = P.srcs.filter((q) => !P.before.has(q) && q._g && (q._el ? !q._el.paused : q._on)).reduce((a, q) => Math.max(a, P.chain(q)), 0);
+        return { film: !!x && x.currentTime > 0.05 && !x.paused, level: P.level(), fresh: m * fresh }; }, step[0]);
+      if (stepFilmMs === null && s.film) stepFilmMs = Date.now() - ts;
+      if (stepSoundMs === null && s.fresh >= 0.1) stepSoundMs = Date.now() - ts;
+      minLevel = Math.min(minLevel, s.level);
+      await p.waitForTimeout(25);
+      if (Date.now() - ts > 15000) break;
+    }
+  }
+  rows.push({ v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2) });
+  console.log(JSON.stringify(rows[rows.length - 1]));
+  await ctx.close(); await b.close();
+}
+srv.close();
+fs.writeFileSync(OUT, JSON.stringify(rows, null, 1));

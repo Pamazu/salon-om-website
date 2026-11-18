@@ -9,6 +9,16 @@ L = json.load(open(V + 'logo.json'))
 BASE_CSS = open(V + 'base.css').read()
 ADD_CSS = open(V + 'add.css').read()
 JS = open(V + 'engine.js').read()
+def _mgs_engine():
+    """M, G and S run the engine with their own soundscape (task 5cb93228, J 18 Nov: "the music takes too long to load bro.
+    Ensure films, music all is extremely fast so the experience is seamless"): mgs_sound.js is drawn over the engine's
+    Sound block, and a section's sound is asked for 120 ms after it takes the screen instead of 350. 2.2-2.4 keep the
+    engine as it is (their pages stay byte-identical)."""
+    a, b = JS.index('  var Sound = (function () {'), JS.index('  window.SalonOMSound = Sound;')
+    js = JS[:a] + open(V + 'mgs_sound.js').read() + JS[b:]
+    old = 'if (pendingSound && performance.now() - pendingSince > 350) Sound.go(pendingSound);'
+    assert js.count(old) == 1, 'engine.js: the sound debounce line moved'
+    return js.replace(old, old.replace('> 350', '> 120'))
 TW_JS = open(V + 'tweaks.js').read()
 TW_CSS = open(V + 'tweaks.css').read()
 # extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)
@@ -619,7 +629,7 @@ def page(cfg):
 {xjs}<script>
 {TW_JS}</script>
 <script>
-{JS}</script>
+{_mgs_engine() if '-' in vkey else JS}</script>
 ''' + (f'<script>\n{open(V + "mgs.js").read()}</script>\n' if '-' in vkey else '')
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     for f in css_files(vkey): css += '\n' + open(V + f).read()
