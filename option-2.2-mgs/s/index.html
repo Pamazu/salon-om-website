@@ -1713,57 +1713,67 @@ html[data-motion="calm"] .ln__dot {transform: none; transition: none;}
   .vo__foot .btn { width: 100%; }
 }
 
-/* the pause (M, G), task 2b1d1187 (J 17 Nov: "remove those green lines radiating from the image ... Remove the glow ...
-   the layout is still boring"; "I LOVE that out of focus coming in text animation"): an editorial spread (refs section 8,
-   Aman Spa, Kinfolk). The words hold the left: "Take a breath." large on its own line, the question smaller under it,
-   arriving one breath later with the same letters coming into focus; the picture runs off the right edge, one guest at
-   the basin seen through the doorway of her photo 17. It opens like that doorway, a thin upright line parting to the full
-   frame while it comes into focus, then breathes (10 s, 4 s in, 6 s out, after Apple's Mindfulness Breathe): scale and
-   light only, no rings, no glow. "You deserve this moment." is its caption. The motion switch's calm mode: all still. */
+/* the lenticular sheet (task a73569a9; lens.js; J 18 Nov: "the lenticular sheet is a great inspiration ... use the lenticular sheet and
+   glass effects if you need something on top"): ONE block for every glass pane. The pane is a frame over a picture; lens.js
+   draws the same picture through vertical ribs on a small canvas in it. Until the canvas is ready, or where a device has no
+   WebGL (.len--css), the pane is a CSS frost with ribs; a pane lying flat and clear (.is-clear) shows the page's own picture. */
+.len { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.len canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .35s var(--io); }
+.len--gl:not(.is-clear) canvas { opacity: 1; }
+.len::after { content: ""; position: absolute; inset: 0; background: var(--len-tint, none); }
+.len--css { -webkit-backdrop-filter: blur(14px) saturate(1.06); backdrop-filter: blur(14px) saturate(1.06);
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .24) 0 2px, rgba(255, 255, 255, 0) 2px var(--len-rib, 30px), rgba(23, 17, 13, .07) var(--len-rib, 30px) calc(var(--len-rib, 30px) + 2px)); }
+
+/* the pause (M, G), task a73569a9 (J 18 Nov: "for take a breath I actually preferred the previous version with the door ... this new
+   version looks more disorganized"; "the lenticular sheet is a great inspiration"): the DOOR again, with what J asked for since
+   kept (tasks 8e22db42, 2b1d1187: no rings, no glow; the guest at the basin of her photo 17 with its label; the question's
+   letters coming into focus; the 10 s breath, 4 s in, 6 s out, after Apple's Mindfulness Breathe: scale and light only).
+   Her words stand either side of a tall arched door, all centred on it: "Take a breath." large with the question under it on the
+   left, "You deserve this moment." on the right. The door opens like the doorway the picture is seen through (a thin upright
+   line parting) while a clear lenticular sheet slides off it as you arrive and smears it again as you leave. Calm mode: all still. */
 #pause .mani__ring { display: none; }
-#pause .mani__in { text-align: left; }
-#pause { --br-in: cubic-bezier(.45, 0, .55, 1); overflow: hidden; }
+#pause { --br-in: cubic-bezier(.45, 0, .55, 1); --door: 999px 999px var(--r-photo) var(--r-photo); overflow: hidden; }
 #pause .br { position: relative; margin: 0; }
-#pause .br__ph { position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: var(--r-photo) 0 0 var(--r-photo); transform: translateZ(0);
-  clip-path: inset(0 49.6% 0 49.6%); transition: clip-path 2.2s var(--io-strong) .15s; }
-#pause .br__ph img { width: 100%; height: 100%; object-fit: cover; display: block; filter: blur(14px) brightness(.9); transform: scale(1.06);
+#pause .br__ph { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: var(--door); transform: translateZ(0);
+  clip-path: inset(0 49.6% 0 49.6% round var(--door)); transition: clip-path 2.2s var(--io-strong) .15s; }
+#pause .br__zoom { position: absolute; inset: 0; transform: scale(1.06); filter: blur(14px) brightness(.9);
   transition: filter 2.4s var(--io) .35s, transform 3.2s var(--io) .15s; }
-#pause.is-active .br__ph, html[data-shot] #pause .br__ph { clip-path: inset(0 0 0 0); }
-#pause.is-active .br__ph img, html[data-shot] #pause .br__ph img { filter: blur(0) brightness(.96); transform: scale(1); }
+html.len-on #pause .br__zoom { filter: brightness(.9); }       /* the glass brings the picture into focus; without it the page's own blur does */
+#pause .br__zoom img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 44% 50%; display: block; }
+#pause.is-active .br__ph, html[data-shot] #pause .br__ph { clip-path: inset(0 0 0 0 round var(--door)); }
+#pause.is-active .br__zoom, html[data-shot] #pause .br__zoom { filter: blur(0) brightness(.96); transform: scale(1); }
 #pause .br .ai-mark { opacity: 0; transition: opacity 1.2s var(--io) 2.2s; }
 #pause.is-active .br .ai-mark, html[data-shot] #pause .br .ai-mark { opacity: 1; }
+#pause .len--css { display: none; }
 /* "Take a breath." on its own line: the engine writes one span per word; the first sentence's words lead (mgs.js marks them
    .is-head; task 7a3c013b, so any world's opening sentence leads, not a fixed three words) and an empty flex item breaks the
    line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
 #pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: none; margin: 0; text-wrap: wrap;
-  font-size: clamp(24px, 2.15vw, 40px); line-height: 1.2; }
+  font-size: clamp(20px, 1.5vw, 34px); line-height: 1.25; }
 #pause .mani__text::before { content: ""; flex-basis: 100%; height: 0; order: 1; }
 #pause .mani__text .wd { order: 2; }
 #pause .mani__text .wd.is-head { order: 0; font-size: 2.3em; line-height: 1.02; letter-spacing: -.015em; }
 #pause .mani__text .wd.is-head-end { margin-bottom: .32em; }
 #pause.is-active .mani__text .wd:not(.is-head) .l { animation-delay: calc(2.2s + var(--i) * var(--ink-gap, 18ms)); }
 #pause .lead { font-style: italic; }
-html:not([data-motion="calm"]) #pause.is-active .br__ph img { animation: br-photo 10s var(--br-in) 3.4s infinite; }
-html:not([data-motion="calm"])[data-shot] #pause .br__ph img { animation: none; }
-html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph img { transition: none; }
+html:not([data-motion="calm"]) #pause.is-active .br__zoom { animation: br-photo 10s var(--br-in) 3.4s infinite; }
+html:not([data-motion="calm"])[data-shot] #pause .br__zoom { animation: none; }
+html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__zoom { transition: none; }
 @keyframes br-photo { 0%, 100% { transform: scale(1); filter: blur(0) brightness(.96); } 40% { transform: scale(1.035); filter: blur(0) brightness(1.05); } }
 @media (min-width: 1024px) {
-  /* the words on the content column's left edge, the picture to the screen's right edge */
-  #pause .mani__in { max-width: none; padding-right: 0; padding-left: max(var(--gutter), calc((100% - 1560px) / 2 + var(--gutter)));
-    display: grid; grid-template-columns: minmax(0, 1fr) min(56vw, 99vh); grid-template-rows: 1fr auto auto 1fr auto; column-gap: clamp(40px, 4.5vw, 110px); align-items: center; }
-  /* the words centre on the picture; the caption hangs under it */
-  #pause .br { grid-column: 2; grid-row: 1 / 5; }
-  #pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; margin: 0 0 var(--sp-4); }
-  #pause .mani__text { grid-column: 1; grid-row: 3; }
-  #pause .lead { grid-column: 2; grid-row: 5; align-self: start; margin: var(--sp-3) 0 0 !important; font-size: clamp(20px, 1.6vw, 28px); }
+  /* three columns around the door: her words end at it, the caption begins at it, all on its middle */
+  #pause .mani__in { max-width: none; padding: 0 var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr; column-gap: clamp(36px, 5vw, 128px); align-items: center; text-align: left; }
+  #pause .br { grid-column: 2; grid-row: 1 / -1; height: min(68vh, 740px); aspect-ratio: 3 / 4; }
+  #pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; justify-self: end; margin: 0 0 var(--sp-4); text-align: right; }
+  #pause .mani__text { grid-column: 1; grid-row: 3; justify-self: end; justify-content: flex-end; text-align: right; }
+  #pause .lead { grid-column: 3; grid-row: 2 / 4; align-self: center; margin: 0 !important; max-width: 14em; font-size: clamp(20px, 1.6vw, 34px); }
 }
 @media (max-width: 1023px) {
-  #pause .mani__in { display: flex; flex-direction: column; align-items: flex-start; }
-  #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; font-size: 21px; } #pause .br { order: 3; } #pause .lead { order: 4; }
-  /* the picture runs to both edges of the phone */
-  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); }   /* edge to edge: the margin alone pulls it to the screen's edge */
-  #pause .br__ph { border-radius: 0; }
-  #pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
+  #pause .mani__in { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; justify-content: center; font-size: 20px; }
+  #pause .br { order: 3; width: min(70vw, 320px); aspect-ratio: 3 / 4; margin: var(--sp-5) 0 var(--sp-3); }
+  #pause .lead { order: 4; margin: var(--sp-2) 0 0 !important; font-size: 20px; }
 }
 
 
@@ -1962,63 +1972,55 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
   .bridge .btn { min-height: clamp(44px, calc(44px + (100svh - 660px) * .0429), 50px); }
 }
 
-/* ==== Why Aveda as a label (task a749167b; J 17 Nov: "much more creative in terms of layout", "think like professional
-   photographer, designer, marketer, storyteller"; reference page section 9: Allbirds, Kinfolk, her own shelf labels).
-   M and G: the real Aveda shelves run full-bleed into the right edge; an ivory label card overlaps the photo's left edge
-   and answers the heading the way a label does (the number, then the words, a hairline drawn between, the source as small
-   print); below, her quote as a letter aligned to the photo's edge, then the reward (G) and the one button. The section
-   grows with its words (row 5: a tall section scrolls freely, then pulls into the next). */
-.av { --lw: clamp(440px, 34vw, 900px); --ov: calc(var(--lw) * .6);   /* the card covers the photo's left fifth, where a gold mask is cut by the frame */
-  --nf: clamp(30px, 2.3vw, 60px);
+/* ==== Why Aveda as a sheet of fluted glass (task a73569a9; J 18 Nov: "never have cards that are simple on top like that, use the
+   lenticular sheet and glass effects if you need something on top, but make sure is cohesive with the rest of the style"; before:
+   task a749167b, reference page section 9). M and G: the real Aveda shelves run full-bleed, edge to edge; over their left side lies
+   one pane of ribbed glass the full height of the picture (.len, lens.js): the shelves behind it break into ribs that slide and smear
+   with the scroll, and her heading, her line and the four facts (the number, then the words) stand crisp on it, no card, no rule,
+   no frame. Below, her quote as a letter on the same left edge, then the reward (G) and the one button. The section grows with
+   its words (row 5: a tall section scrolls freely, then pulls into the next). */
+.av { --lw: clamp(440px, 34vw, 900px); --nf: clamp(30px, 2.3vw, 60px);
+  --len-tint: linear-gradient(180deg, rgba(248, 242, 232, .66), rgba(248, 242, 232, .54));
   background: var(--clay); color: var(--ink); padding: calc(var(--top) + var(--sp-3)) 0 var(--base); }
 .av__in { display: grid; grid-template-columns: var(--gutter) var(--lw) minmax(0, 1fr); }
-.av__ph { grid-column: 2 / -1; grid-row: 1; margin: 0 0 0 calc(var(--lw) - var(--ov)); height: max(520px, calc(100svh - var(--top) - var(--sp-3) - var(--sp-5)));
-  overflow: hidden; border-radius: var(--r-photo) 0 0 var(--r-photo); }
+.av__ph { grid-column: 1 / -1; grid-row: 1; position: relative; margin: 0; height: max(520px, calc(100svh - var(--top) - var(--sp-3) - var(--sp-5))); overflow: hidden; }
 .av__ph img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }   /* a wide window keeps the Aveda poster and loses the blurred foreground */
-.av__label { grid-column: 2; grid-row: 1; align-self: start; position: relative; z-index: 2; padding: var(--sp-4) var(--sp-4) var(--sp-3);
-  background: var(--ivory); border-radius: var(--r-photo); box-shadow: 0 34px 80px -34px rgba(23, 17, 13, .42), 0 2px 12px rgba(23, 17, 13, .06); }
+.av__label { grid-column: 1 / 3; grid-row: 1; position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center;
+  padding: var(--sp-5) var(--sp-5) var(--sp-5) var(--gutter); }
+.av__card > .len { display: none; }
+.av__head, .av__card { position: relative; z-index: 1; }
 .av__head .eyebrow { color: var(--ink-soft); }
 .av__head .mid { margin: 0; font-size: clamp(38px, 3.2vw, 80px); line-height: 1.02; }
 .av__sub { margin: var(--sp-2) 0 0; font-size: var(--t-body); color: var(--ink-soft); }
-.av__rows { margin: var(--sp-4) 0 0; }
-.av__row { position: relative; display: grid; grid-template-columns: calc(var(--nf) * 3.3) minmax(0, 1fr); gap: var(--sp-3); align-items: baseline; padding: var(--sp-2) 0; }
+.av__rows { margin: var(--sp-5) 0 0; }
+.av__row { display: grid; grid-template-columns: calc(var(--nf) * 3.3) minmax(0, 1fr); gap: var(--sp-3); align-items: baseline; padding: var(--sp-2) 0; }
 .av__row dt { font: 300 var(--nf)/1 var(--serif); letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
-.av__row dd { margin: 0; font-size: var(--t-body); line-height: 1.4; color: var(--ink-soft); }
-.av__row::before, .av__row:last-child::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(23, 17, 13, .18); transform-origin: 0 50%; }
-.av__row:first-child::before { height: 2px; background: var(--ink); }       /* a label's heavy top rule */
-.av__row:last-child::after { top: auto; bottom: 0; }
-.av__src { display: block; margin-top: var(--sp-2); font-size: 12px; line-height: 1.4; color: var(--ink-soft); }
-.av__letter { grid-column: 2 / -1; grid-row: 2; padding: var(--sp-6) var(--gutter) 0 calc(var(--lw) - var(--ov)); }
+.av__row dd { margin: 0; font-size: var(--t-body); line-height: 1.4; color: var(--ink); }
+.av__src { display: block; margin-top: var(--sp-3); font-size: 12px; line-height: 1.4; color: var(--ink-soft); }
+.av__letter { grid-column: 2 / -1; grid-row: 2; padding: var(--sp-6) var(--gutter) 0 0; }
 .av__letter blockquote { margin: 0; max-width: 48ch; text-indent: -.42em; font: italic 300 clamp(26px, 2.4vw, 58px)/1.24 var(--serif); color: var(--forest-deep); }
 .av__letter cite { display: block; margin-top: var(--sp-3); text-indent: 0; font: 500 var(--t-label)/1.3 var(--sans); font-style: normal; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
 .av__letter .cy__reward { margin-top: var(--sp-5); }
 .av__btn { margin-top: var(--sp-4); }
-/* motion: the photo opens from the right edge it bleeds into and settles; the card rises; each row's rule draws as it arrives */
-.av__ph { clip-path: inset(0 0 0 100%); transition: clip-path 1.6s var(--io-strong) .1s; }
-.av__ph img { transform: scale(1.08); transition: transform 2.8s var(--io-strong) .1s; }
-.av__label { opacity: 0; transform: translate3d(0, 48px, 0); transition: opacity var(--t-text) var(--io) .45s, transform var(--t-text) var(--io) .45s; }
-.av__row::before, .av__row:last-child::after { transform: scaleX(0); transition: transform 1.2s var(--io) var(--d, 0s); }
-.av.is-active .av__ph { clip-path: inset(0); }
-.av.is-active .av__ph img, .av.is-active .av__label { opacity: 1; transform: none; }
-.av.is-active .av__row::before, .av.is-active .av__row:last-child::after { transform: scaleX(1); }
-html[data-shot] .av :is(.av__ph, .av__ph img, .av__label, .av__card), html[data-shot] .av__row::before, html[data-shot] .av__row:last-child::after { opacity: 1 !important; clip-path: none !important; transform: none !important; transition: none !important; }
+/* motion: the picture and the glass fade in together; the glass itself slides in the first time it comes near (lens.js) */
+.av__ph img, .av__label, .av__card { opacity: 0; transition: opacity 1s var(--io) .1s; }
+.av__label { transition-delay: .3s; }
+.av.is-active .av__ph img, .av.is-active .av__label, .av.is-active .av__card { opacity: 1; }
+html[data-shot] .av :is(.av__ph img, .av__label, .av__card) { opacity: 1 !important; transition: none !important; }
 /* motion switch (was prefers-reduced-motion: reduce) */
-html[data-motion="calm"] .av__ph {clip-path: none; transition: opacity .4s var(--io);}
-html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[data-motion="calm"] .av__card {transform: none !important;}
-html[data-motion="calm"] .av__label, html[data-motion="calm"] .av__card {transition: opacity .4s var(--io);}
-html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:last-child::after {transform: none; transition: none;}
-/* a phone and a tablet: the heading, the photo across the width, the label card pulled up over its lower edge, the letter */
+html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[data-motion="calm"] .av__card {transition: opacity .4s var(--io);}
+/* a phone and a tablet: the heading, the photo across the width, the pane of glass over its lower half carrying the facts, the letter */
 @media (max-width: 1023px) {
+  .av { --ph: min(96vw, 64svh); }
   .av__in { display: flex; flex-direction: column; }
   .av__label { display: contents; }
+  .av__label > .len { display: none; }
+  .av__card > .len { display: block; }
   .av__head { order: 1; padding: 0 var(--gutter); }
   .av__head .mid { font-size: var(--t-h2); }
-  .av__ph { order: 2; margin: var(--sp-4) 0 0; height: min(96vw, 64svh); border-radius: 0; }
+  .av__ph { order: 2; margin: var(--sp-4) 0 0; height: var(--ph); }
   .av__ph img { object-position: 64% 70%; }   /* the gold mask at the photo's top-left corner stays out of the frame */
-  .av__card { order: 3; position: relative; z-index: 2; margin: calc(var(--sp-6) * -1) var(--gutter) 0; padding: var(--sp-2) var(--sp-3) var(--sp-3);
-    background: var(--ivory); border-radius: var(--r-photo); box-shadow: 0 30px 60px -30px rgba(23, 17, 13, .42), 0 2px 10px rgba(23, 17, 13, .06);
-    opacity: 0; transform: translate3d(0, 40px, 0); transition: opacity var(--t-text) var(--io) .4s, transform var(--t-text) var(--io) .4s; }
-  .av.is-active .av__card { opacity: 1; transform: none; }
+  .av__card { order: 3; z-index: 2; margin: calc(var(--ph) * -.5) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
   .av__rows { margin: 0; }
   .av__row { --nf: 30px; gap: var(--sp-2); }
   .av__letter { order: 4; padding: var(--sp-5) var(--gutter) 0; }
@@ -2336,7 +2338,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="ccb169fab324";</script>
+<script>window.OM_BUILD="19b19cb217ee";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
