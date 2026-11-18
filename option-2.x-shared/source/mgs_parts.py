@@ -679,7 +679,10 @@ def srcset(body, v):
         if name not in ex or name not in sz or ' srcset=' in tag:
             return tag
         e, stem = sz[name], name[:-5]
-        sizes = ', '.join(x for x in (f'(max-width: 700px) {vw(e, "w390", 390)}vw' if e.get('w390') else '',
+        # a tablet's stacked layout can draw a picture much wider than the 1440 clause says (Why Aveda's photo behind its pane,
+        # task a73569a9): w768 (qa/sharpness.mjs at 768 x 1024) adds a clause up to 1023 px only where it asks for more
+        tab = f'(max-width: 1023px) {vw(e, "w768", 768)}vw' if e.get('w768') and vw(e, 'w768', 768) > (vw(e, 'w1440', 1440) or 0) else ''
+        sizes = ', '.join(x for x in (f'(max-width: 700px) {vw(e, "w390", 390)}vw' if e.get('w390') else '', tab,
                                       f'(max-width: 2000px) {vw(e, "w1440", 1440)}vw' if e.get('w1440') else '',
                                       f'{vw(e, "w3230", 3230)}vw') if x)
         set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])

@@ -2,7 +2,7 @@
 // against the worst background under it, at rest and at the strongest frame (350 ms after a jump, the glass sliding in).
 // How: the words are hidden, the glass behind them is photographed, and for every line's box the darkest 3% of the pixels
 // (the worst case for dark ink on a light pane) gives the ratio WCAG uses: (L_bg + .05) / (L_ink + .05). Chromium, WebGL by swiftshader.
-// Usage: node lens-contrast.mjs [m,g] [1440,390,3230]
+// Usage: node lens-contrast.mjs [m,g] [1440,390,768,3230]
 import { chromium } from 'playwright';
 import { serve, open, jump, wait } from './lib.mjs';
 import path from 'node:path';
@@ -12,7 +12,7 @@ const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().po
 const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const LINES = '.av__head .eyebrow, .av__head .mid, .av__sub, .av__row dt, .av__row dd, .av__src';
 for (const w of ws.split(',').map(Number)) {
-  const size = w === 390 ? { width: 390, height: 844 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
+  const size = w === 390 ? { width: 390, height: 844 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
   const ctx = await b.newContext({ viewport: size, deviceScaleFactor: 1, isMobile: w === 390, hasTouch: w === 390 });
   for (const v of vs.split(',')) {
     const p = await open(ctx, `${base}/${v}/`);
