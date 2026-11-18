@@ -23,7 +23,7 @@ await new Promise((ok) => srv.on('listening', ok)); const port = srv.address().p
 const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms)); const res = [];
 import { spawn } from 'node:child_process';
 const FR = process.env.FRAMES_BIN;   // a frame reader for the recorded film (AVFoundation), times in seconds
-for (const id of ['A', 'B', 'C', 'D']) {
+for (const id of ['A', 'B', 'C', 'D', 'E']) {
   let r = null;
   for (let tries = 0; tries < 3 && !r; tries++) {   // a cold Safari under a heavy load can miss the first open: open again
     const rep = new Promise((ok) => { got = ok; setTimeout(() => ok(null), 30000); });

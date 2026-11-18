@@ -7,7 +7,7 @@ const b = await webkit.launch();
 for (const W of SIZES) {
   const phone = W < 700, H = phone ? 844 : 900;
   const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2, isMobile: phone, hasTouch: phone });
-  for (const id of ['A', 'B', 'C', 'D']) {
+  for (const id of ['A', 'B', 'C', 'D', 'E']) {
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e))); p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
     await p.goto(`${url}?only=${id}`); await p.waitForTimeout(1500);
     const t0 = Date.now(); for (let i = 0; i < 5; i++) { const due = t0 + i * 500; const w = due - Date.now(); if (w > 0) await p.waitForTimeout(w); await p.screenshot({ path: `${out}/${W}-${id}-${i}.jpg`, type: "jpeg", quality: 82 }); }
