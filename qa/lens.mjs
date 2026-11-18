@@ -4,8 +4,9 @@
 // Usage: node lens.mjs <outdir> [webkit|chromium] [m,g] [1440,390,768,3230] [pause,aveda] [salon|coaching]   (coaching: Inner Work's twins, #c-pause and #c-aveda)
 import { chromium, webkit } from 'playwright';
 import fs from 'node:fs'; import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { serve, open, jump, wait, toWorld } from './lib.mjs';
-const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [out = 'lens-shots', br = 'webkit', vs = 'm,g', ws = '1440,390,3230', secs = 'pause,aveda', world = 'salon'] = process.argv.slice(2);
 const pre = world === 'coaching' ? 'c-' : '', tag = world === 'coaching' ? 'iw-' : '';
 fs.mkdirSync(out, { recursive: true });

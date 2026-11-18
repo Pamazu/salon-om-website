@@ -6,7 +6,8 @@
 import { chromium } from 'playwright';
 import { serve, open, jump, wait } from './lib.mjs';
 import path from 'node:path';
-const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+import { fileURLToPath } from 'node:url';
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [vs = 'm,g', ws = '1440,390,3230'] = process.argv.slice(2);
 const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().port}`;
 const b = await chromium.launch({ executablePath: process.env.CHROME || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
