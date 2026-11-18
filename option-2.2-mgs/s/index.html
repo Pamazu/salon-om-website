@@ -2036,6 +2036,13 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   .av__letter blockquote { font-size: 25px; }
 }
 @media (min-width: 600px) and (max-width: 1023px) { .av__ph img { object-position: 88% 70%; } }   /* a wider stacked frame crops less from the left */
+/* phone QA (task 5479dd6c D1, real mobile Safari on an iPhone 17 and WebKit 390): on phones and tablets the team letter's photo
+   took only what its words left (minmax(0, 1fr)), so G's longer intro squeezed Maggie's portrait to a 58 px band of her
+   forehead at 390 and to nothing on a shorter screen or a tablet (M's to a 146 px strip at 768). The photo keeps at least a
+   third of the screen; where the words need more room the section grows and scrolls like the other tall sections */
+@media (max-width: 1023px) {
+  html[data-variant^="2.2-"] .team-letter { grid-template-rows: minmax(clamp(240px, 32svh, 400px), 1fr) auto; }
+}
 /* S: its one Aveda line with the same shelves beside it, drawn like the team above it on the same screen (a round
    picture, 72 px; 52 px on a phone), so the line keeps its width and the screen its height (phone QA, task 5479dd6c: a
    wider picture pushed the line under Safari's toolbar on an iPhone) */
@@ -2046,8 +2053,9 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
 @media (max-width: 639px) { .pf__av { grid-template-columns: 52px minmax(0, 1fr); } .pf__avph { width: 52px; height: 52px; } }
 
 /* the films off, phone, M and G (task 5479dd6c QA, 18 Nov): the quiet rail (the numbers 01 to 05 at the right edge, 12 px in) keeps its own
-   column, so a step's words stop short of it instead of running under its digits (Shine's "recreate," met "05") */
-@media (max-width: 600px) { html[data-variant="2.2-g"] .ch__copy, html[data-variant="2.2-m"] .ch__copy { right: calc(var(--gutter) + 12px); } }
+   column, so a step's words stop short of it instead of running under its digits (Shine's "recreate," met "05"). 22 px, not 12:
+   at 12 the words still ended 7 to 9 px from the digits at 390 and read as touching in real mobile Safari (D2, Designer 3) */
+@media (max-width: 600px) { html[data-variant="2.2-g"] .ch__copy, html[data-variant="2.2-m"] .ch__copy { right: calc(var(--gutter) + 22px); } }
 
 /* the films off, phone (task 5479dd6c QA, 18 Nov): a step's photo stays whole behind its words (no film darkens its lower half), and on
    Shine the bright wall and poster measured 2.6:1 under the headline and 3.3:1 under the text at 393 x 660, so the scrim climbs higher */
@@ -2311,7 +2319,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="4762d37f8462";</script>
+<script>window.OM_BUILD="3975d1d2fc9e";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
