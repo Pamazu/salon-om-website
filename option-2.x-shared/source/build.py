@@ -156,6 +156,15 @@ def tease(d):
     <div class="s__shade"></div>
   </section>'''
 
+def _picture_mark(src):
+    """M/G/S: a picture's AI label follows the picture itself (mgs_sections.PICTURE_AI, task a8c429a3), so a world that swaps
+    the picture never keeps the other picture's label; 2.2-2.4 carry none"""
+    if not _MGS:
+        return ''
+    import mgs_sections as S
+    name = src.rsplit('/', 1)[-1]
+    return S.ai_mark(S.PICTURE_AI[name]) if name in S.PICTURE_AI else ''
+
 def chapter(d, i, n):
     specs = ''.join(f'<div class="a-up" style="--d:{0.95 + k * 0.12:.2f}s"><dt>{a}</dt><dd>{b}</dd></div>' for k, (a, b) in enumerate(d['specs']))
     cls = ' style="grid-template-columns:repeat(2,minmax(0,1fr))"' if len(d['specs']) == 2 else ''
@@ -167,7 +176,7 @@ def chapter(d, i, n):
         pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''     # M/G/S: a portrait's own focus point (task 7a3c013b)
         top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async"{pos}>'
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
-               + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + '</div>')
+               + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + _picture_mark(t['poster']) + '</div>')
         media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
     return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}{" ch--still" if still else ""}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
     {media}
@@ -646,6 +655,7 @@ def page(cfg):
     if '-' in vkey: MP.check_one_design(body, css)                       # M/G/S: the two worlds differ only in their words, or the build stops
     if '-' in vkey: body = MP.low_after_first(body)                    # M/G/S: the opening's film and picture load first (task 5cb93228)
     if '-' in vkey: body = MP.hevc_twins(body, REPO + 'option-2.2/site/media')       # M/G/S: a film's lighter HEVC twin where the browser plays it (task 5cb93228)
+    if '-' in vkey: import photo_sources; photo_sources.check_page(body)   # M/G/S: no cleaned place shown raw, no undeclared picture (task a8c429a3)
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused

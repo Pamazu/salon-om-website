@@ -874,3 +874,6 @@ html[data-shot] .av :is(.av__ph, .av__ph img, .av__label, .av__card), html[data-
 /* a label named by words, not numbers (Inner Work's six practices): each name over its line, in the label's serif */
 .av__rows--words .av__row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
 .av__rows--words .av__row dt { font-size: calc(var(--nf) * .6); line-height: 1.15; white-space: normal; }
+/* a step picture's AI label (task a8c429a3): the top picture fades into its film below 42 %, so the label sits near its top,
+   under the header, and fades with the picture */
+.ch__top .ai-mark { top: calc(var(--hdr-h, 64px) + 16px); bottom: auto; left: 16px; }
