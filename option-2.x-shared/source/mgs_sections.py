@@ -21,6 +21,16 @@ def ai_mark(text):
     return f'<p class="ai-mark">{E(text)}</p>'
 
 
+def lens(src, fig, pos='50% 50%', base=0, rib=34, grade=1):
+    """the lenticular sheet (task a73569a9; lens.js, mgs.css .len): a pane of ribbed glass drawn over a picture. src is the
+    pane's own small texture (the 1280 rung, never the page's big file), fig the CSS selector of the picture's box (the
+    section holds it), pos the picture's object-position, base the strength at rest (0 = clear until it moves), rib the rib
+    width in px. One block for every glass pane on M, G and S; its parent is the positioned frame of the pane"""
+    g = '' if grade == 1 else f' data-len-grade="{grade}"'
+    return (f'<div class="len" data-len="{src}" data-len-fig="{fig}" data-len-pos="{pos}" data-len-base="{base}" data-len-rib="{rib}"'
+            f'{g} aria-hidden="true"><canvas></canvas></div>')
+
+
 # the footer's AI line, true to every picture on M, G and S (task 5ae04e42): it names what is real and says the rest is
 # AI, so it holds whichever still stands in a film's place. One line per state of Designer 1's films switch (task
 # 5479dd6c), picked by FILMS_SHOWN in build.py: True = the films play, False = stills in their places.
@@ -284,15 +294,16 @@ def photo_deep_prose(d, world):
 
 
 def aveda(d, world):
-    """Why Aveda as a label (task a749167b; J 17 Nov: "much more creative in terms of layout", "think like professional
-    photographer, designer, marketer, storyteller"; reference page section 9). The real Aveda shelves at Salon OM run
-    full-bleed into the right edge, sharp from the photographer's original at every size (approved features row 18); an
-    ivory label card overlaps the photo's left edge and answers the heading the way a label does: her four facts as rows,
-    the number then the words, a hairline drawn between, the source as the label's small print. Below, her quote set as a
-    letter, signed, then the reward (G) and the one button. On a phone: the heading, the photo, the card pulled up over the
-    photo's lower edge, the letter. d: eyebrow, title, paras (G: her line under the question), facts, src, quote, cite,
-    reward, btn, photo = (file, alt)."""
+    """Why Aveda as a sheet of fluted glass (task a73569a9; J 18 Nov: "never have cards that are simple on top like that, use
+    the lenticular sheet and glass effects if you need something on top"; reference page, Why Aveda). The real Aveda shelves
+    at Salon OM run full-bleed edge to edge, sharp from the photographer's original at every size (approved features row
+    18). Over their left side lies one pane of ribbed glass the full height of the picture: the shelves behind it break into
+    ribs that slide and smear with the scroll (lens.js), the words crisp on it with no card, rule or frame: the heading, her
+    one line, her four facts as the number then the words, the source as small print. Below, her quote set as a letter,
+    signed, then the reward (G) and the one button. On a phone: the heading, the photo, the pane over the photo's lower
+    half. d: eyebrow, title, paras (G: her line under the question), facts, src, quote, cite, reward, btn, photo = (file, alt)."""
     f, alt = d['photo']
+    pane = lens(f'img/hd/{f[:-5]}-1280.webp', '.av__ph', pos='50% 18%', base=.6, rib=30)
 
     def row(x, k):
         num, label = x[0], x[1]
@@ -307,12 +318,14 @@ def aveda(d, world):
     <div class="av__in s__leave">
       <figure class="av__ph"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy"></figure>
       <div class="av__label">
+        {pane}
         <div class="av__head">
           <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
           <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
           {sub}
         </div>
         <div class="av__card">
+          {pane}
           <dl class="av__rows{' av__rows--words' if words else ''}">{''.join(row(x, k) for k, x in enumerate(d['facts']))}</dl>
           <small class="av__src a-fade" style="--d:1.5s">{d['src']}</small>
         </div>
