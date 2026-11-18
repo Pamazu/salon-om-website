@@ -32,6 +32,7 @@ for (const w of ws.split(',').map(Number)) {
         const out = [];
         for (const e of document.querySelectorAll(sel)) {
           const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4 || r.bottom < 0 || r.top > innerHeight) continue;
+          if (innerWidth < 700 && r.top < 64) continue;                    // under the fixed header on a phone: its dark bar is the background there, not the glass
           const col = getComputedStyle(e).color.match(/[\d.]+/g).map(Number); const li = L(col[0], col[1], col[2]);
           const x = Math.max(0, Math.round(r.left)), y = Math.max(0, Math.round(r.top)), W = Math.min(c.width - x, Math.round(r.width)), H = Math.min(c.height - y, Math.round(r.height));
           if (W < 2 || H < 2) continue;
