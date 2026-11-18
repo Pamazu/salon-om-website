@@ -783,3 +783,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
   background: rgba(20, 35, 26, .8); color: var(--ivory); font: 500 11.5px/1.2 var(--sans); letter-spacing: .05em; pointer-events: none; }
 .mn__ph .ai-mark { left: 16px; bottom: 16px; opacity: 0; transition: opacity 1.2s var(--io); }
 .mn__ph > .is-ai.is-on ~ .ai-mark { opacity: 1; }
+/* a full-screen picture (the meadow behind the second door) carries its mark bottom right: the tweaks button holds bottom left */
+.bridge .ai-mark { left: auto; right: 16px; bottom: 16px; }
+/* on a phone the bottom bar (Book your visit · Begin) spans the width and the words fill the screen: the mark sits top right, under the header */
+@media (max-width: 600px) { .bridge .ai-mark { bottom: auto; top: calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px); } }

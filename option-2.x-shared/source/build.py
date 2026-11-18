@@ -387,7 +387,7 @@ def voices(d):
 
 def bridge(d):
     return f'''<section class="s bridge" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
-    <div class="ph-bg"><img src="img/{d['img']}" alt="" decoding="async"></div>
+    <div class="ph-bg"><img src="img/{d['img']}" alt="" decoding="async">{d.get('mark', '')}</div>
     <div class="bridge__scrim"></div>
     <div class="bridge__in s__leave">
       <p class="eyebrow a-up" style="--d:.2s">{d['eyebrow']}</p>

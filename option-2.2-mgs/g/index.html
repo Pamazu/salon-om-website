@@ -1980,6 +1980,10 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
   background: rgba(20, 35, 26, .8); color: var(--ivory); font: 500 11.5px/1.2 var(--sans); letter-spacing: .05em; pointer-events: none; }
 .mn__ph .ai-mark { left: 16px; bottom: 16px; opacity: 0; transition: opacity 1.2s var(--io); }
 .mn__ph > .is-ai.is-on ~ .ai-mark { opacity: 1; }
+/* a full-screen picture (the meadow behind the second door) carries its mark bottom right: the tweaks button holds bottom left */
+.bridge .ai-mark { left: auto; right: 16px; bottom: 16px; }
+/* on a phone the bottom bar (Book your visit · Begin) spans the width and the words fill the screen: the mark sits top right, under the header */
+@media (max-width: 600px) { .bridge .ai-mark { bottom: auto; top: calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px); } }
 </style>
 </head>
 <body>
@@ -2212,7 +2216,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
     <div class="s__shade"></div>
   </section>
   <section class="s bridge" id="deeper" data-tone="dark" data-sound="bed" aria-labelledby="deeper-t">
-    <div class="ph-bg"><img src="img/meadow.webp" srcset="img/hd/meadow-640.webp 640w, img/hd/meadow-960.webp 960w, img/hd/meadow-1280.webp 1280w, img/hd/meadow-1920.webp 1920w, img/hd/meadow-2560.webp 2560w, img/hd/meadow-3840.webp 3840w, img/hd/meadow-5120.webp 5120w, img/hd/meadow-6400.webp 6400w, img/hd/meadow-8000.webp 8000w" sizes="(max-width: 700px) 489vw, (max-width: 2000px) 142vw, 109vw" alt="" decoding="async"></div>
+    <div class="ph-bg"><img src="img/meadow.webp" srcset="img/hd/meadow-640.webp 640w, img/hd/meadow-960.webp 960w, img/hd/meadow-1280.webp 1280w, img/hd/meadow-1920.webp 1920w, img/hd/meadow-2560.webp 2560w, img/hd/meadow-3840.webp 3840w, img/hd/meadow-5120.webp 5120w, img/hd/meadow-6400.webp 6400w, img/hd/meadow-8000.webp 8000w" sizes="(max-width: 700px) 489vw, (max-width: 2000px) 142vw, 109vw" alt="" decoding="async"><p class="ai-mark">Made with AI</p></div>
     <div class="bridge__scrim"></div>
     <div class="bridge__in s__leave">
       <p class="eyebrow a-up" style="--d:.2s">The second door</p>
@@ -2350,7 +2354,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="0c4a41551e9e";</script>
+<script>window.OM_BUILD="9a3eb80ce55a";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

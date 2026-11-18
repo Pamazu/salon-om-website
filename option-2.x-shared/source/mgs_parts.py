@@ -105,6 +105,7 @@ SERVICE_PHOTO = [
 # (StoryLegal, 17 Nov 2026, msg 7d0dc68d: "\"Guest made with AI\" in a corner of the picture ... as text on the page";
 # not a footer line, a hover or tap icon, or a mark only in the file; task 1c6ed2aa)
 AI_GUEST = 'Guest made with AI'
+AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her photos (CEO MA, 18 Nov; StoryLegal asked for its words)
 # Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
 # round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
 CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
@@ -200,9 +201,9 @@ def door(short=False, exact=False):
     b = btn(d['btns'][0], '#coaching', 'light', arrow=True, world='coaching')
     call = btn(d['btns'][1], CALL_URL, 'ghost')
     if short:
-        return ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b))
+        return ('bridge', dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b))
     b += call
-    return ('bridge', dict(id='deeper', img='meadow.webp', eyebrow='The second door', title=d['title'], text=d['paras'][0],
+    return ('bridge', dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][0],
                            more=([d['paras'][1]] if exact else [d['paras'][1] + ' ' + draft(A11['call'])]) + d['paras'][2:], btn=b))
 
 
