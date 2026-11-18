@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lenticular sheet options</title>
+<style>
+@font-face { font-family: "Cormorant Garamond"; src: url(fonts/cormorant-garamond-300.woff2) format("woff2"); font-weight: 300; font-display: swap; }
+@font-face { font-family: "Cormorant Garamond"; src: url(fonts/cormorant-garamond-400.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Instrument Sans"; src: url(fonts/instrument-sans-400.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Instrument Sans"; src: url(fonts/instrument-sans-500.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+:root { --clay: #E7D9C6; --ink: #17110D; --ink-soft: #5E4E40; --ivory: #F5EEE4; --serif: "Cormorant Garamond", Georgia, serif; --sans: "Instrument Sans", system-ui, sans-serif; }
+* { box-sizing: border-box; }
+html { background: var(--clay); color: var(--ink); }
+body { margin: 0; font: 400 16px/1.5 var(--sans); }
+header { padding: 28px 24px 22px; max-width: 980px; min-height: 40vh; display: flex; flex-direction: column; justify-content: flex-end; }
+h1 { font: 300 clamp(30px, 4vw, 46px)/1.05 var(--serif); margin: 0 0 8px; }
+header p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.bar { display: flex; gap: 16px; align-items: baseline; padding: 14px 24px; background: var(--ivory); scroll-margin-top: 0; }
+.bar b { font: 400 34px/1 var(--serif); flex: none; width: 1.2em; }
+.bar span { color: var(--ink-soft); }
+.bar span strong { color: var(--ink); font-weight: 500; }
+.stage { position: relative; height: min(82vh, 800px); min-height: 520px; overflow: hidden; background: #2a221c; touch-action: pan-y; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.words { position: absolute; left: 0; top: 0; width: 40%; padding: 0 clamp(22px, 3vw, 56px); pointer-events: none; will-change: transform; }
+.words .eyebrow { font: 500 12px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; margin: 0 0 14px; }
+.words h2 { font: 300 clamp(30px, 3.3vw, 52px)/1.02 var(--serif); margin: 0 0 clamp(16px, 2.6vh, 28px); }
+.words dl { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 18px; row-gap: 9px; align-items: baseline; }
+.words dt { font: 300 clamp(24px, 2.1vw, 32px)/1 var(--serif); white-space: nowrap; }
+.words dd { margin: 0; font-size: 15px; line-height: 1.35; }
+.words, .words * { color: var(--ink); text-shadow: 0 0 18px rgba(245, 238, 228, .55); }
+.fail { display: none; position: absolute; left: 16px; right: 16px; bottom: 16px; padding: 12px 16px; border-radius: 14px; background: rgba(23, 17, 13, .82); color: #fff; font: 500 14px/1.4 var(--sans); z-index: 3; }
+.stage.broken .fail { display: block; }
+@media (max-width: 700px) {
+  .words { width: 88% !important; }
+  .words dd { font-size: 14px; }
+  .words h2 { font-size: 32px; }
+  .bar { flex-direction: column; gap: 4px; }
+}
+footer { padding: 22px 24px 60px; color: var(--ink-soft); max-width: 70ch; }
+body.solo header, body.solo footer, body.solo .v:not(.on) { display: none; }
+body.solo .stage { height: 100vh; min-height: 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lenticular sheet, four options</h1>
+  <p>A clear ribbed sheet like the one in the video, held over the Why Aveda photo. Each one moves by itself; scroll and move your pointer over it too (on a phone, scroll or drag). Tell me a letter, or mix two: "C's sheet with A's reveal".</p>
+</header>
+
+<section class="v" id="A" data-v="A">
+  <div class="bar"><b>A</b><span><strong>The sheet is lowered.</strong> About twelve wide lenses, held well away from the photo, so each band stretches its strip into soft vertical streaks. The sheet lowers and rises by itself, its clean top edge showing the sharp photo above; scrolling lowers it further.</span></div>
+  <div class="stage"><canvas></canvas><div class="words"></div><div class="fail"></div></div>
+</section>
+<section class="v" id="B" data-v="B">
+  <div class="bar"><b>B</b><span><strong>The sheet breathes.</strong> Very fine ribs over the whole photo, milky like the sheet in the video. It drifts closer to the photo and away again by itself, so the shelves clear and dissolve into streaks; a rainbow travels across it.</span></div>
+  <div class="stage"><canvas></canvas><div class="words"></div><div class="fail"></div></div>
+</section>
+<section class="v" id="C" data-v="C">
+  <div class="bar"><b>C</b><span><strong>Half a sheet, sliding.</strong> A thick sheet of medium lenses covers only the words' half and slides sideways by itself, so every band redraws its piece of the shelves; where it ends you see its glass edge, a rainbow fringe and the sharp photo. Scrolling slides it too.</span></div>
+  <div class="stage"><canvas></canvas><div class="words"></div><div class="fail"></div></div>
+</section>
+<section class="v" id="D" data-v="D">
+  <div class="bar"><b>D</b><span><strong>A sheet in the hand.</strong> A smaller sheet of four big lenses that flip and squeeze what is behind them. It drifts by itself and follows your pointer (on a phone, drag it); the words ride on it, the photo around it stays sharp.</span></div>
+  <div class="stage"><canvas></canvas><div class="words"></div><div class="fail"></div></div>
+</section>
+<footer>Photo: the real Aveda shelves at Salon OM. Words are the Why Aveda section's own. Nothing here is built into the site yet.</footer>
+
+<script>
+(function () {
+  'use strict';
+  var WORDS = '<p class="eyebrow">Why Aveda</p><h2>Beauty that is kind to you and to the earth.</h2><dl>' +
+    '<dt>100%</dt><dd>vegan formulas</dd><dt>1st</dt><dd>beauty company to manufacture with 100% wind power at its primary facility (2007)</dd>' +
+    '<dt>B Corp</dt><dd>certified for people and planet (2023)</dd><dt>1978</dt><dd>the year holistic beauty through wellness began</dd></dl>';
+  var Q = new URLSearchParams(location.search);
+  if (Q.get('only')) { document.body.classList.add('solo'); var on = document.getElementById(Q.get('only')); if (on) on.classList.add('on'); }
+
+  var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;v.y=1.-v.y;gl_Position=vec4(p,0.,1.);}';
+  // A vertical cylindrical-lens sheet held some distance in front of the photo. Per pixel on the sheet: which lens it is in,
+  // where across that lens (c, -0.5..0.5), and what part of the photo that lens images there: a strip around the lens centre,
+  // flipped and scaled by how far the sheet is from the photo, smeared sideways by the defocus, with the three colours bent
+  // by slightly different amounts. Then the lens surface itself: a thin specular line where the light catches each lens,
+  // a dark seam where two lenses meet, the sheet's milky haze, a rainbow arc, and the sheet's own edge and thickness.
+  var FS = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
+    'varying vec2 v;',
+    'uniform sampler2D t;uniform vec2 res,img;',
+    'uniform vec4 rect;',          // sheet left, right, top, bottom (css px)
+    'uniform float bow;',          // the top and bottom edges bend by this many px at the middle (a flexible sheet)
+    'uniform float pitch,ph,kk,dist,blur,jit,rib,haze,disp,thick,spec,lpos,rbI;',
+    'uniform vec3 rbC;',           // rainbow arc centre x, y and radius (css px)
+    'uniform vec4 wz;',            // the words' zone (more frost behind the words): left, top, right, bottom
+    'uniform float wzI;',
+    'float h1(float n){return fract(sin(n*127.1)*43758.5453);}',
+    'float vn(float x){float i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(h1(i),h1(i+1.),f);}',
+    'vec3 pic(vec2 q){float k=max(res.x/img.x,res.y/img.y);vec2 sz=img*k,org=(res-sz)*vec2(.5,.3);return texture2D(t,clamp((q-org)/sz,vec2(.001),vec2(.999))).rgb;}',
+    'vec3 spectrum(float x){return mix(clamp(vec3(1.5-abs(4.*x-3.),1.5-abs(4.*x-2.),1.5-abs(4.*x-1.)),0.,1.),vec3(1.),.3);}',
+    'void main(){',
+    ' vec2 q=v*res;float x=q.x,y=q.y;',
+    ' float cx=(rect.x+rect.y)*.5,hw=max((rect.y-rect.x)*.5,1.);float b=bow*(1.-pow((x-cx)/hw,2.));',
+    ' float top=rect.z+b,bot=rect.w-b;',
+    ' if(x<rect.x||x>rect.y||y<top||y>bot){',
+    '   vec3 s=pic(q);',
+    '   float dx=max(max(rect.x-x,x-rect.y),0.),dy=max(max(top-y,y-bot),0.);float od=length(vec2(dx,dy));',
+    '   s*=1.-.10*exp(-od/10.)*step(.5,thick);',                 // a faint contact shade just outside a thick sheet
+    '   gl_FragColor=vec4(s,1.);return;}',
+    ' float sx=x-rect.x+ph;float li=floor(sx/pitch);float c=fract(sx/pitch)-.5;',
+    ' float xc=x-c*pitch;',                                       // this lens's centre
+    ' float m=mix(-1.,kk,dist);',                                  // -1 = touching the photo (no change), kk = held far away
+    ' float rx=(x-rect.x+ph)/rib;float jj=((vn(rx)-.5)+.5*(vn(rx*2.7+li*3.1)-.5))*jit*dist;',  // fine irregular ribs: soft vertical streaks, never a regular stripe
+    ' vec3 col=vec3(0.);float wsum=0.;',
+    ' for(int i=0;i<20;i++){',
+    '   float s=float(i)/19.*2.-1.;float w=exp(-s*s*2.2);',
+    '   float base=xc-c*pitch*m+jj+s*blur*dist;float yy=y+s*1.6;',
+    '   float d=c*pitch*disp*dist;',
+    '   col.r+=w*pic(vec2(base-d,yy)).r;col.g+=w*pic(vec2(base,yy)).g;col.b+=w*pic(vec2(base+d,yy)).b;wsum+=w;}',
+    ' col/=wsum;',
+    ' float e=(.5-abs(c))*pitch;',                                   // px from the nearest seam between lenses
+    ' float sk=smoothstep(10.,40.,pitch)*min(dist*1.4,1.);',
+    ' col*=1.-.20*exp(-e/1.6)*sk;',                     // dark seam (only between lenses wide enough to see)
+    ' col+=.22*exp(-pow((e-.9)/.6,2.))*sk;',            // its bright lip
+    ' float sp=exp(-pow((c-lpos)/.045,2.))+.45*exp(-pow((c+lpos*.6)/.03,2.));',
+    ' col+=spec*sp*(.6+.4*h1(li));',                                   // where the light catches each lens
+    ' vec3 milk=vec3(.925,.93,.94);',
+    ' col=mix(col,milk,haze*(.55+.45*dist));col=col*.94+.05;',        // the sheet\'s own milky haze
+    ' float wm=smoothstep(wz.x-90.,wz.x+40.,x)*(1.-smoothstep(wz.z-60.,wz.z+90.,x))*smoothstep(wz.y-90.,wz.y+40.,y)*(1.-smoothstep(wz.w-40.,wz.w+90.,y));',
+    ' col=mix(col,vec3(.955,.935,.905),wzI*wm);',                       // more frost behind the words, still glass
+    ' float rd=length(q-rbC.xy)-rbC.z;float rt=rd/46.;',
+    ' if(abs(rt)<1.){vec3 rb=spectrum(rt*.5+.5);col+=rbI*rb*(1.-rt*rt)*(.75+.25*sp);}', // rainbow arc
+    ' float ed=min(min(x-rect.x,rect.y-x),min(y-top,bot-y));',
+    ' if(thick>.5){',
+    '   float r=smoothstep(thick,0.,ed);',                                  // inside the glass edge: the photo bent hard
+    '   vec3 eg=pic(vec2(x+(x<cx?-1.:1.)*thick*5.,y+(y<(top+bot)*.5?-1.:1.)*thick*2.));',
+    '   col=mix(col,eg*.82+.06,r*.7);',
+    '   col+=.55*exp(-pow((ed-.7)/.7,2.));',                                 // the bright rim of the sheet
+    '   float fr=exp(-pow((ed-thick-2.)/3.,2.));col+=.18*fr*spectrum(fract(y/220.+x/900.));', // a rainbow fringe at the edge
+    ' }',
+    ' gl_FragColor=vec4(clamp(col,0.,1.),1.);}'
+  ].join('\n');
+
+  var clamp = function (a, lo, hi) { return Math.max(lo, Math.min(hi, a)); };
+  var ease = function (a) { a = clamp(a, 0, 1); return a * a * (3 - 2 * a); };
+  var photo = new Image(), photoReady = false, photoErr = null, stages = [], scrollY0 = window.pageYOffset, scrollV = 0;
+  photo.onload = function () { photoReady = true; stages.forEach(function (s) { s.upload(); }); };
+  photo.onerror = function () { photoErr = 'the photo did not load'; stages.forEach(function (s) { s.fail(photoErr); }); };
+  photo.src = 'img/aveda.webp';
+
+  function Stage(sec) {
+    var me = this;
+    this.id = sec.getAttribute('data-v'); this.el = sec.querySelector('.stage'); this.cv = sec.querySelector('canvas');
+    this.wd = sec.querySelector('.words'); this.wd.innerHTML = WORDS; this.failEl = sec.querySelector('.fail');
+    this.px = .5; this.py = .5; this.pointerAt = -1e9; this.vis = true; this.ok = false; this.frames = 0;
+    this.dx = null; this.dy = null;
+    var gl = null;
+    try { gl = this.cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false }) || this.cv.getContext('experimental-webgl'); } catch (e) { }
+    if (!gl) { this.fail('WebGL is not available in this browser'); return; }
+    this.gl = gl;
+    function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { me.fail('shader: ' + gl.getShaderInfoLog(s)); return null; } return s; }
+    var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS); if (!vs || !fs) return;
+    var pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { this.fail('link: ' + gl.getProgramInfoLog(pr)); return; }
+    gl.useProgram(pr); this.pr = pr; this.u = {};
+    't res img rect bow pitch ph kk dist blur jit rib haze disp thick spec lpos rbI rbC wz wzI'.split(' ').forEach(function (n) { me.u[n] = gl.getUniformLocation(pr, n); });
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var a = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+    this.cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); me.fail('the drawing was lost; reload the page'); });
+    var el = this.el;
+    el.addEventListener('pointermove', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointerAt = performance.now(); });
+    el.addEventListener('pointerdown', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointerAt = performance.now(); });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; }, { rootMargin: '15% 0px' }).observe(el);
+    if (photoReady) this.upload();
+  }
+  Stage.prototype.fail = function (why) { this.broken = true; this.el.classList.add('broken'); this.failEl.textContent = 'Option ' + this.id + ' could not draw: ' + why; };
+  Stage.prototype.upload = function () {
+    if (this.broken || !this.gl) return; var gl = this.gl;
+    try {
+      var tex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, photo);
+      var err = gl.getError(); if (err) { this.fail('the photo could not be read by WebGL (error ' + err + ')'); return; }
+      this.ok = true;
+    } catch (e) { this.fail('the photo could not be read by WebGL: ' + e.message); }
+  };
+
+  // Each option: where the sheet is, its lenses, how far it is held from the photo, the light; t = seconds, r = the stage's box.
+  var OPT = {
+    A: function (s, W, H, t, r, vh) {
+      var phone = W < 700, auto = .5 - .5 * Math.cos(t * 2 * Math.PI / 6.5);                       // lowers and rises, 6.5 s
+      var sc = ease((vh * .55 - r.top) / (vh * .9)) * .18;                                          // scrolling lowers it further
+      var topY = H * (-.04 + (phone ? .30 : .40) * auto + sc), sway = Math.sin(t * .9) * 5;
+      s.place(phone ? 18 : W * .045, H - s.wdH - (phone ? 36 : H * .09));
+      return { rect: [-40 + sway, W + 40 + sway, topY, H + 60], bow: 9, pitch: phone ? W / 5.5 : W / 11, ph: 0, kk: -.5, dist: 1, blur: phone ? 70 : 120, jit: 7, rib: 2.2,
+        haze: .46, disp: .05, thick: 4, spec: .06, lpos: .18 + .1 * Math.sin(t * .8), rbI: .13, rbC: [W * .7, topY + H * 1.05, H * .9], wz: s.wz(), wzI: .26 };
+    },
+    B: function (s, W, H, t, r, vh) {
+      var phone = W < 700, br = .5 - .5 * Math.cos(t * 2 * Math.PI / 5);                            // breathes, 5 s
+      var sc = clamp(Math.abs(scrollV) * .01, 0, .25);
+      s.place(phone ? 18 : W * .045, phone ? 40 : (H - s.wdH) * .5);
+      return { rect: [-40, W + 40, -60, H + 60], bow: 0, pitch: phone ? 3 : 3.5, ph: t * 2, kk: 2.2, dist: clamp(.1 + .9 * br + sc, 0, 1), blur: phone ? 50 : 80, jit: 16, rib: 1.6,
+        haze: .42, disp: .08, thick: 0, spec: 0., lpos: .2, rbI: .12, rbC: [W * (.2 + .6 * (.5 + .5 * Math.sin(t * .45))), H * 1.55, H * 1.25], wz: s.wz(), wzI: .22 };
+    },
+    C: function (s, W, H, t, r, vh) {
+      var phone = W < 700, edge = phone ? W * .8 : W * .5;
+      s.place(phone ? 16 : W * .045, (H - s.wdH) * .5, phone ? W * .7 : 0);
+      return { rect: [-40, edge + Math.sin(t * .7) * 6, -60, H + 60], bow: 0, pitch: phone ? W / 6 : W / 16, ph: t * 22 - r.top * .25, kk: .7, dist: .9, blur: phone ? 24 : 36, jit: 4, rib: 2.4,
+        haze: .22, disp: .07, thick: 7, spec: .12, lpos: .25 * Math.sin(t * 1.1), rbI: .10, rbC: [edge + 260, H * .35, 520], wz: s.wz(), wzI: .30 };
+    },
+    D: function (s, W, H, t, r, vh) {
+      var phone = W < 700, sw = phone ? W * .86 : Math.min(W * .44, 620), shh = phone ? H * .72 : H * .78;
+      var tx = W * (.5 + (phone ? .04 : .26) * Math.sin(t * .55)), ty = H * (.5 + .04 * Math.sin(t * .9));
+      if (performance.now() - s.pointerAt < 2500) { tx = s.px * W; ty = s.py * H; }
+      tx = clamp(tx, sw * .5 + 8, W - sw * .5 - 8); ty = clamp(ty, shh * .5 + 8, H - shh * .5 - 8);
+      if (s.dx === null) { s.dx = tx; s.dy = ty; }
+      s.dx += (tx - s.dx) * .08; s.dy += (ty - s.dy) * .08;
+      var L = s.dx - sw * .5, T = s.dy - shh * .5;
+      s.place(L + (phone ? 14 : 30), T + (shh - s.wdH) * .5, sw - (phone ? 28 : 60));
+      return { rect: [L, L + sw, T, T + shh], bow: 7, pitch: sw / 4, ph: 0, kk: 1.5, dist: 1, blur: phone ? 10 : 16, jit: 3, rib: 2.4,
+        haze: .20, disp: .06, thick: 6, spec: .14, lpos: .3 * Math.sin(t * .7), rbI: .14, rbC: [L + sw * 1.1, T + shh * 1.6, shh * 1.25], wz: s.wz(), wzI: .30 };
+    }
+  };
+  Stage.prototype.place = function (x, y, w) {
+    var d = this.wd; if (w) d.style.width = w + 'px';
+    d.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'; this.wx = x; this.wy = y;
+  };
+  Stage.prototype.wz = function () { return [this.wx + 10, this.wy, this.wx + this.wd.offsetWidth - 20, this.wy + this.wdH]; };
+  Stage.prototype.draw = function (t) {
+    var gl = this.gl, r = this.el.getBoundingClientRect(), W = r.width, H = r.height, vh = innerHeight;
+    this.wdH = this.wd.offsetHeight;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), cw = Math.round(W * dpr), ch = Math.round(H * dpr);
+    if (this.cv.width !== cw || this.cv.height !== ch) { this.cv.width = cw; this.cv.height = ch; }
+    var o = OPT[this.id](this, W, H, t, r, vh), u = this.u;
+    gl.viewport(0, 0, cw, ch);
+    gl.uniform1i(u.t, 0); gl.uniform2f(u.res, W, H); gl.uniform2f(u.img, photo.naturalWidth, photo.naturalHeight);
+    gl.uniform4f(u.rect, o.rect[0], o.rect[1], o.rect[2], o.rect[3]); gl.uniform1f(u.bow, o.bow);
+    ['pitch', 'ph', 'kk', 'dist', 'blur', 'jit', 'rib', 'haze', 'disp', 'thick', 'spec', 'lpos', 'rbI', 'wzI'].forEach(function (n) { gl.uniform1f(u[n], o[n]); });
+    gl.uniform3f(u.rbC, o.rbC[0], o.rbC[1], o.rbC[2]); gl.uniform4f(u.wz, o.wz[0], o.wz[1], o.wz[2], o.wz[3]);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); this.frames++;
+  };
+
+  [].forEach.call(document.querySelectorAll('.v'), function (sec) { stages.push(new Stage(sec)); });
+  var t0 = performance.now();
+  function loop(now) {
+    var y = window.pageYOffset; scrollV = scrollV * .85 + (y - scrollY0) * .15; scrollY0 = y;
+    var t = (now - t0) / 1000;
+    stages.forEach(function (s) {
+      if (s.broken || !s.ok || !s.vis) return;
+      try { s.draw(t); } catch (e) { s.fail(e.message); }
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  // A visible note instead of a silent still photo: if a stage has not drawn after 6 s, say so on it.
+  setTimeout(function () { stages.forEach(function (s) { if (!s.broken && s.vis && s.frames === 0) s.fail(photoErr || (s.ok ? 'it did not start drawing' : 'the photo was not ready')); }); }, 6000);
+  window.__lens = function () { return stages.map(function (s) { return { id: s.id, ok: s.ok, broken: !!s.broken, frames: s.frames }; }); };
+})();
+</script>
+</body>
+</html>
