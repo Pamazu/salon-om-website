@@ -13,7 +13,7 @@
 * { box-sizing: border-box; }
 html { background: var(--clay); color: var(--ink); }
 body { margin: 0; font: 400 16px/1.5 var(--sans); }
-header { padding: 28px 24px 22px; max-width: 980px; }
+header { padding: 28px 24px 22px; max-width: 980px; min-height: 52vh; display: flex; flex-direction: column; justify-content: flex-end; }
 h1 { font: 300 clamp(30px, 4vw, 46px)/1.05 var(--serif); margin: 0 0 8px; }
 header p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
 .bar { display: flex; gap: 16px; align-items: baseline; padding: 14px 24px; background: var(--ivory); }
@@ -128,23 +128,23 @@ footer { padding: 22px 24px 60px; color: var(--ink-soft); max-width: 70ch; }
   // what each option does with the page's scroll and the pointer: the sheet's place (px), strength, smear (px), phase
   var OPT = {
     A: function (s, W, H, vh, r) {                          // the sheet slides off to the right as the section scrolls into the middle
-      var k = smooth((vh * .98 - r.top) / (vh * .95)), left = k * W * 1.04;
+      var k = smooth((vh * .82 - r.top) / (vh * .72)), left = k * W * 1.04;
       s.words(left, 1 - clamp(k * 1.5, 0, 1));
-      return { sheet: [left, left + W, 0, 1], lens: 8, str: 1, smear: 70 * (1 - k * .4) + clamp(Math.abs(scrollVel) * 7, 0, 220), ph: (s.px - .5) * .5, fringe: .12, edge: 60, tint: .55, tfade: [.08, .5] };
+      return { sheet: [left, left + W, 0, 1], lens: 8, str: 1, smear: 70 * (1 - k * .4) + clamp(Math.abs(scrollVel) * 7, 0, 220), ph: (s.px - .5) * .5, fringe: .12, edge: 60, tint: .62, tfade: [.4, .8] };
     },
     B: function (s, W, H, vh, r) {                          // the sheet stays; scroll and the pointer shift and re-smear the bands
-      return { sheet: [0, W, 0, 1], lens: 7, str: 1, smear: 55 + clamp(Math.abs(scrollVel) * 8 + Math.abs(s.pvx) * 700, 0, 230), ph: -r.top * .0016 + (s.px - .5) * .9, fringe: .10, edge: 30, tint: .64, tfade: [.2, .62] };
+      return { sheet: [0, W, 0, 1], lens: 7, str: 1, smear: 55 + clamp(Math.abs(scrollVel) * 8 + Math.abs(s.pvx) * 700, 0, 230), ph: -r.top * .0016 + (s.px - .5) * .9, fringe: .10, edge: 30, tint: .66, tfade: [.34, .7] };
     },
     C: function (s, W, H, vh, r) {                          // half a sheet; its soft rainbow edge follows the pointer a little
       var edge = W * (.5 + (s.px - .5) * .08);
-      return { sheet: [0, edge, 0, 1], lens: 5, str: 1, smear: 95 + clamp(Math.abs(scrollVel) * 6, 0, 160), ph: -r.top * .0013, fringe: .14, edge: 110, tint: .6, tfade: [.0, .88] };
+      return { sheet: [0, edge, 0, 1], lens: 5, str: 1, smear: 95 + clamp(Math.abs(scrollVel) * 6, 0, 160), ph: -r.top * .0013, fringe: .14, edge: 110, tint: .68, tfade: [.78, 1.0] };
     },
     D: function (s, W, H, vh, r) {                          // a floating sheet that follows the pointer (the scroll on a phone)
       var sw = W < 700 ? W * .88 : Math.min(W * .46, 640), target = s.pointer ? s.px * W : W * (.1 + .8 * smooth((vh - r.top) / (vh + r.height * .6))) + sw * .0;
       if (!s.init) { s.cx = clamp(target, sw * .5, W - sw * .5); s.init = 1; }
       var prev = s.cx; s.cx += (clamp(target, sw * .5, W - sw * .5) - s.cx) * .09; var vx = (s.cx - prev);
       s.words(s.cx - sw * .5, 1);
-      return { sheet: [s.cx - sw * .5, s.cx + sw * .5, .07, .93], lens: 5, str: 1, smear: 50 + clamp(Math.abs(vx) * 26, 0, 300), ph: 0, fringe: .12, edge: 40, tint: .55, tfade: [.0, .9] };
+      return { sheet: [s.cx - sw * .5, s.cx + sw * .5, .07, .93], lens: 5, str: 1, smear: 50 + clamp(Math.abs(vx) * 26, 0, 300), ph: 0, fringe: .12, edge: 40, tint: .66, tfade: [.86, 1.0] };
     }
   };
 
