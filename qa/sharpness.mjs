@@ -2,7 +2,7 @@
 // J's largest screen (his captures are 6460 px wide)"). For each <img> and film poster on M, G and S, in both worlds, at
 // J's 6K window (3230 x 1319 CSS px at 2x) and at 1440: the scale the browser draws it at (object-fit cover counted), in
 // device pixels per file pixel. Over 1.0 = the browser enlarges the file = soft on screen.
-//   node sharpness.mjs [m,g,s] [3230,1440,390]   -> prints one line per picture, worst first; qa/out-chromium/sharpness.json
+//   node sharpness.mjs [m,g,s] [3230,1440,768,390]   -> prints one line per picture, worst first; qa/out-chromium/sharpness.json
 //   ... --manifest   also writes option-2.x-shared/source/photo_sizes.json: per page and picture, the widest it is drawn
 //   (CSS px) at 3230, 1440 and 390, which build.py turns into each <img>'s sizes and export_photos.py into file widths
 import fs from 'node:fs';
@@ -15,8 +15,8 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ARGS = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const VERS = (ARGS[0] || 'm,g,s').split(',');
 const WIDTHS = (ARGS[1] || '3230').split(',').map(Number);
-const H = { 3230: 1319, 1440: 900, 390: 844 };
-const DPR = { 3230: 2, 1440: 2, 390: 3 };
+const H = { 3230: 1319, 1440: 900, 768: 1024, 390: 844 };
+const DPR = { 3230: 2, 1440: 2, 768: 2, 390: 3 };
 const MANIFEST = process.argv.includes('--manifest');
 const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
