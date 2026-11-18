@@ -109,8 +109,8 @@ body.solo .stage { height: 100vh; min-height: 0; }
     ' float m=mix(-1.,kk,dist);',                                  // -1 = touching the photo (no change), kk = held far away
     ' float rx=(x-rect.x+ph)/rib;float jj=((vn(rx)-.5)+.5*(vn(rx*2.7+li*3.1)-.5))*jit*dist;',  // fine irregular ribs: soft vertical streaks, never a regular stripe
     ' vec3 col=vec3(0.);float wsum=0.;',
-    ' for(int i=0;i<20;i++){',
-    '   float s=float(i)/19.*2.-1.;float w=exp(-s*s*2.2);',
+    ' for(int i=0;i<16;i++){',
+    '   float s=float(i)/15.*2.-1.;float w=exp(-s*s*2.2);',
     '   float base=xc-c*pitch*m+jj+s*blur*dist;float yy=y+s*1.6;',
     '   float d=c*pitch*disp*dist;',
     '   col.r+=w*pic(vec2(base-d,yy)).r;col.g+=w*pic(vec2(base,yy)).g;col.b+=w*pic(vec2(base+d,yy)).b;wsum+=w;}',
@@ -141,49 +141,63 @@ body.solo .stage { height: 100vh; min-height: 0; }
   var clamp = function (a, lo, hi) { return Math.max(lo, Math.min(hi, a)); };
   var ease = function (a) { a = clamp(a, 0, 1); return a * a * (3 - 2 * a); };
   var photo = new Image(), photoReady = false, photoErr = null, stages = [], scrollY0 = window.pageYOffset, scrollV = 0;
-  photo.onload = function () { photoReady = true; stages.forEach(function (s) { s.upload(); }); };
-  photo.onerror = function () { photoErr = 'the photo did not load'; stages.forEach(function (s) { s.fail(photoErr); }); };
+  // ONE WebGL context for the whole page, drawn into each option's own 2D canvas (r3 made four contexts: in J's Safari
+  // three of them came back lost, "shader: null"). The drawing buffer is capped: the photo is 1920 px wide, so a bigger
+  // buffer adds no detail, only GPU time (J's window is about 1976 CSS px at 2x).
+  var MAXW = 2400, MAXPX = 2.4e6, NAMES = 't res img rect bow pitch ph kk dist blur jit rib haze disp thick spec lpos rbI rbC wz wzI'.split(' ');
+  var R = { cv: null, gl: null, u: null, tex: null, ok: false, err: null, lostAt: 0, tries: 0 };
+  function initGL() {
+    R.ok = false; R.err = null; R.tries++;
+    var cv = document.createElement('canvas'); cv.width = 64; cv.height = 64; var gl = null;
+    try { gl = cv.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, preserveDrawingBuffer: true, powerPreference: 'default' }) || cv.getContext('experimental-webgl'); } catch (e) { R.err = 'WebGL: ' + e.message; }
+    if (!gl) { R.err = R.err || 'WebGL is not available in this browser'; return false; }
+    if (gl.isContextLost()) { R.err = 'the browser handed over a lost drawing context'; R.lostAt = performance.now(); return false; }
+    cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); R.ok = false; R.lostAt = performance.now(); }, false);
+    cv.addEventListener('webglcontextrestored', function () { R.lostAt = 0; setup(); }, false);
+    R.cv = cv; R.gl = gl; return setup();
+  }
+  function setup() {
+    var gl = R.gl; R.ok = false; R.tex = null;
+    function sh(type, src) {
+      var s = gl.createShader(type); if (!s) { R.err = 'no shader (drawing context lost: ' + gl.isContextLost() + ')'; return null; }
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { R.err = 'shader: ' + (gl.getShaderInfoLog(s) || 'no log, drawing context lost: ' + gl.isContextLost()); return null; }
+      return s;
+    }
+    var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS); if (!vs || !fs) return false;
+    var pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { R.err = 'link: ' + gl.getProgramInfoLog(pr); return false; }
+    gl.useProgram(pr); R.u = {}; NAMES.forEach(function (n) { R.u[n] = gl.getUniformLocation(pr, n); });
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var a = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+    R.ok = true; if (photoReady) upload(); return true;
+  }
+  function upload() {
+    var gl = R.gl; if (!gl || gl.isContextLost()) return;
+    var tex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, photo); } catch (e) { R.err = 'the photo could not be read by WebGL: ' + e.message; return; }
+    var err = gl.getError(); if (err && !gl.isContextLost()) { R.err = 'the photo could not be read by WebGL (error ' + err + ')'; return; }
+    R.tex = tex;
+  }
+  photo.onload = function () { photoReady = true; if (R.ok) upload(); };
+  photo.onerror = function () { photoErr = 'the photo did not load'; };
   photo.src = 'img/aveda.webp';
 
   function Stage(sec) {
     var me = this;
     this.id = sec.getAttribute('data-v'); this.el = sec.querySelector('.stage'); this.cv = sec.querySelector('canvas');
     this.wd = sec.querySelector('.words'); this.wd.innerHTML = WORDS; this.failEl = sec.querySelector('.fail');
-    this.px = .5; this.py = .5; this.pointerAt = -1e9; this.vis = true; this.ok = false; this.frames = 0;
-    this.dx = null; this.dy = null;
-    var gl = null;
-    try { gl = this.cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false }) || this.cv.getContext('experimental-webgl'); } catch (e) { }
-    if (!gl) { this.fail('WebGL is not available in this browser'); return; }
-    this.gl = gl;
-    function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { me.fail('shader: ' + gl.getShaderInfoLog(s)); return null; } return s; }
-    var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS); if (!vs || !fs) return;
-    var pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
-    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { this.fail('link: ' + gl.getProgramInfoLog(pr)); return; }
-    gl.useProgram(pr); this.pr = pr; this.u = {};
-    't res img rect bow pitch ph kk dist blur jit rib haze disp thick spec lpos rbI rbC wz wzI'.split(' ').forEach(function (n) { me.u[n] = gl.getUniformLocation(pr, n); });
-    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    var a = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
-    this.cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); me.fail('the drawing was lost; reload the page'); });
+    this.ctx = this.cv.getContext('2d', { alpha: false });
+    this.px = .5; this.py = .5; this.pointerAt = -1e9; this.vis = true; this.frames = 0; this.dx = null; this.dy = null;
     var el = this.el;
     el.addEventListener('pointermove', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointerAt = performance.now(); });
     el.addEventListener('pointerdown', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointerAt = performance.now(); });
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; }, { rootMargin: '15% 0px' }).observe(el);
-    if (photoReady) this.upload();
   }
-  Stage.prototype.fail = function (why) { this.broken = true; this.el.classList.add('broken'); this.failEl.textContent = 'Option ' + this.id + ' could not draw: ' + why; };
-  Stage.prototype.upload = function () {
-    if (this.broken || !this.gl) return; var gl = this.gl;
-    try {
-      var tex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, photo);
-      var err = gl.getError(); if (err) { this.fail('the photo could not be read by WebGL (error ' + err + ')'); return; }
-      this.ok = true;
-    } catch (e) { this.fail('the photo could not be read by WebGL: ' + e.message); }
-  };
-
+  Stage.prototype.fail = function (why) { this.el.classList.add('broken'); this.failEl.textContent = 'Option ' + this.id + ' could not draw: ' + why; };
+  Stage.prototype.unfail = function () { if (this.el.classList.contains('broken')) this.el.classList.remove('broken'); };
   // Each option: where the sheet is, its lenses, how far it is held from the photo, the light; t = seconds, r = the stage's box.
   var OPT = {
     A: function (s, W, H, t, r, vh) {
@@ -226,34 +240,38 @@ body.solo .stage { height: 100vh; min-height: 0; }
   };
   Stage.prototype.wz = function () { return [this.wx + 10, this.wy, this.wx + this.wd.offsetWidth - 20, this.wy + this.wdH]; };
   Stage.prototype.draw = function (t) {
-    var gl = this.gl, r = this.el.getBoundingClientRect(), W = r.width, H = r.height, vh = innerHeight;
+    var gl = R.gl, r = this.el.getBoundingClientRect(), W = r.width, H = r.height, vh = innerHeight;
     this.wdH = this.wd.offsetHeight;
-    var dpr = Math.min(window.devicePixelRatio || 1, 2), cw = Math.round(W * dpr), ch = Math.round(H * dpr);
-    if (this.cv.width !== cw || this.cv.height !== ch) { this.cv.width = cw; this.cv.height = ch; }
-    var o = OPT[this.id](this, W, H, t, r, vh), u = this.u;
-    gl.viewport(0, 0, cw, ch);
+    var sc = Math.min(window.devicePixelRatio || 1, MAXW / W, Math.sqrt(MAXPX / (W * H))), bw = Math.max(1, Math.round(W * sc)), bh = Math.max(1, Math.round(H * sc));
+    if (this.cv.width !== bw || this.cv.height !== bh) { this.cv.width = bw; this.cv.height = bh; }
+    if (R.cv.width < bw || R.cv.height < bh) { R.cv.width = Math.max(R.cv.width, bw); R.cv.height = Math.max(R.cv.height, bh); }
+    var o = OPT[this.id](this, W, H, t, r, vh), u = R.u;
+    gl.viewport(0, 0, bw, bh);
     gl.uniform1i(u.t, 0); gl.uniform2f(u.res, W, H); gl.uniform2f(u.img, photo.naturalWidth, photo.naturalHeight);
     gl.uniform4f(u.rect, o.rect[0], o.rect[1], o.rect[2], o.rect[3]); gl.uniform1f(u.bow, o.bow);
     ['pitch', 'ph', 'kk', 'dist', 'blur', 'jit', 'rib', 'haze', 'disp', 'thick', 'spec', 'lpos', 'rbI', 'wzI'].forEach(function (n) { gl.uniform1f(u[n], o[n]); });
     gl.uniform3f(u.rbC, o.rbC[0], o.rbC[1], o.rbC[2]); gl.uniform4f(u.wz, o.wz[0], o.wz[1], o.wz[2], o.wz[3]);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); this.frames++;
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    this.ctx.drawImage(R.cv, 0, R.cv.height - bh, bw, bh, 0, 0, bw, bh);   // WebGL's origin is the bottom left
+    this.frames++; this.unfail();
   };
 
   [].forEach.call(document.querySelectorAll('.v'), function (sec) { stages.push(new Stage(sec)); });
-  var t0 = performance.now();
+  initGL();
+  var t0 = performance.now(), born = t0;
   function loop(now) {
     var y = window.pageYOffset; scrollV = scrollV * .85 + (y - scrollY0) * .15; scrollY0 = y;
     var t = (now - t0) / 1000;
-    stages.forEach(function (s) {
-      if (s.broken || !s.ok || !s.vis) return;
-      try { s.draw(t); } catch (e) { s.fail(e.message); }
-    });
+    // a lost context that the browser does not give back within 2.5 s: start a fresh one (three tries)
+    if (!R.ok && R.lostAt && now - R.lostAt > 2500 && R.tries < 4) { R.lostAt = 0; initGL(); }
+    if (R.ok && R.tex && !R.gl.isContextLost()) {
+      stages.forEach(function (s) { if (!s.vis) return; try { s.draw(t); } catch (e) { R.err = e.message; } });
+    }
+    if (now - born > 6000) stages.forEach(function (s) { if (s.vis && s.frames === 0) s.fail(photoErr || R.err || (R.gl && R.gl.isContextLost() ? 'the drawing context was lost' : 'it did not start drawing')); });
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
-  // A visible note instead of a silent still photo: if a stage has not drawn after 6 s, say so on it.
-  setTimeout(function () { stages.forEach(function (s) { if (!s.broken && s.vis && s.frames === 0) s.fail(photoErr || (s.ok ? 'it did not start drawing' : 'the photo was not ready')); }); }, 6000);
-  window.__lens = function () { return stages.map(function (s) { return { id: s.id, ok: s.ok, broken: !!s.broken, frames: s.frames }; }); };
+  window.__lens = function () { return stages.map(function (s) { return { id: s.id, ok: R.ok, broken: s.el.classList.contains('broken'), frames: s.frames, err: R.err }; }); };
 })();
 </script>
 </body>
