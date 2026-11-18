@@ -331,11 +331,15 @@ IW_PHOTO = dict(
     fireside=('real-maggie-fireside.webp', 'Maggie Woodward seated by the fireplace at Salon OM, in a white blazer'),
     smile=('real-maggie-smile.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM'),
     outdoor_turn=('real-maggie-outdoor-turn.webp', 'Maggie Woodward outside in a white blazer, turned a little, her hand at her chin'),
-    outdoor_wide=('real-maggie-outdoor-wide.webp', 'Maggie Woodward outside in a white blazer, by a flight of steps'))
+    outdoor_wide=('real-maggie-outdoor-wide.webp', 'Maggie Woodward outside in a white blazer, by a flight of steps'),
+    lounge_wide=('real-lounge-wide.webp', 'The lounge at Salon OM: the fireplace, the clock and the Aveda shelves'),
+    salon_wide=('real-maggie-salon-wide.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM'),
+    outdoor_steps=('real-maggie-outdoor-steps.webp', 'Maggie Woodward outside in a white blazer by the steps, her hand at her chin'))
 # the path's four offers (the menu's twin), one portrait each: (photo, focus point)
 IW_PATH_PICS = [('warm', '50% 24%'), ('fireside', '50% 40%'), ('smile', '50% 26%'), ('outdoor_turn', '50% 24%')]
-# the five steps of the Journey, five different photos (approved-features row 2): (photo, focus point or None)
-IW_STEP_PICS = [('fire', None), ('lounge', None), ('portrait', '50% 12%'), ('outdoor', None), ('wall', None)]
+# the five steps of the Journey, five different photos (approved-features row 2), each a landscape original, so a step's
+# full-width frame stays sharp on J's 6K window (row 18; QA 18 Nov: portrait originals there drew at 1.5x): (photo, focus)
+IW_STEP_PICS = [('fire', None), ('lounge_wide', None), ('salon_wide', '50% 26%'), ('outdoor_steps', None), ('wall', None)]
 # each place that still shows a repeat or a frame, and the coaching picture it waits for (next on task 7a3c013b)
 IW_PICTURES_TO_MAKE = []      # none: every Inner Work picture place shows one of her own photos, none repeated within a section
 IW_LEFT_OPEN = ['the drawn word mark of the first screen stays SALON OM, the site\'s mark in both worlds (copy_2_2_iw.NOTES asks for INNER WORK)']

@@ -1,363 +1,553 @@
 {
- "m": {
-  "real-team-of-three.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
-   "w390": 1569
+ "g": {
+  "film-air-curtains.webp": {
+   "w1440": 1600,
+   "w3230": 3230,
+   "w390": 1500
   },
-  "real-shampoo-basins.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
-   "w390": 1569
+  "film-hero-forest.webp": {
+   "w1440": 1600,
+   "w3230": 3230,
+   "w390": 1500
   },
-  "real-color-bar.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
-   "w390": 1569
-  },
-  "real-aveda-shelves.webp": {
-   "w3230": 2979,
-   "w1440": 1275,
-   "w390": 606
-  },
-  "real-lounge.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
-   "w390": 698
-  },
-  "real-styling-stations.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
-   "w390": 698
-  },
-  "real-maggie-arms-crossed.webp": {
-   "w3230": 1574,
-   "w1440": 668,
-   "w390": 417
-  },
-  "real-katie.webp": {
-   "w3230": 56,
-   "w1440": 56,
-   "w390": 56
-  },
-  "real-chesney.webp": {
-   "w3230": 56,
-   "w1440": 56,
-   "w390": 56
-  },
-  "om-menu-signature-color.webp": {
-   "w3230": 507,
-   "w1440": 481,
-   "w390": 342
+  "meadow.webp": {
+   "w1440": 1935,
+   "w3230": 3340,
+   "w390": 1815
   },
   "om-menu-blonding.webp": {
-   "w3230": 558,
-   "w1440": 515,
+   "w1440": 514,
+   "w3230": 551,
    "w390": 342
   },
   "om-menu-color-correction.webp": {
-   "w3230": 558,
    "w1440": 515,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-cut-and-style.webp": {
-   "w3230": 558,
    "w1440": 515,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-extensions.webp": {
-   "w3230": 558,
    "w1440": 515,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-finishing-touches.webp": {
-   "w3230": 1253,
    "w1440": 1157,
+   "w3230": 1253,
    "w390": 342
   },
-  "meadow.webp": {
-   "w3230": 3467,
-   "w1440": 1935,
-   "w390": 1815
-  },
-  "real-maggie-standing-shelves.webp": {
-   "w3230": 498,
-   "w1440": 420,
-   "w390": 362
-  },
-  "real-maggie-portrait-iw.webp": {
-   "w3230": 416,
-   "w1440": 374,
+  "om-menu-signature-color.webp": {
+   "w1440": 515,
+   "w3230": 558,
    "w390": 342
+  },
+  "om-pause-guest.webp": {
+   "w1440": 855,
+   "w3230": 1384,
+   "w390": 413
+  },
+  "real-aveda-shelves.webp": {
+   "w1440": 1221,
+   "w3230": 2800,
+   "w390": 606
+  },
+  "real-chesney.webp": {
+   "w1440": 56,
+   "w3230": 56,
+   "w390": 56
+  },
+  "real-color-bar.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-katie.webp": {
+   "w1440": 56,
+   "w3230": 56,
+   "w390": 56
   },
   "real-lounge-iw.webp": {
-   "w3230": 3006,
-   "w1440": 1312,
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-lounge-wide.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-lounge.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-maggie-arms-crossed.webp": {
+   "w1440": 795,
+   "w3230": 1574,
+   "w390": 417
+  },
+  "real-maggie-fireplace.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-maggie-fireside-close.webp": {
+   "w1440": 420,
+   "w3230": 498,
+   "w390": 343
+  },
+  "real-maggie-fireside.webp": {
+   "w1440": 515,
+   "w3230": 557,
+   "w390": 342
+  },
+  "real-maggie-lounge-seated.webp": {
+   "w1440": 855,
+   "w3230": 1384,
+   "w390": 413
+  },
+  "real-maggie-outdoor-chin.webp": {
+   "w1440": 1275,
+   "w3230": 2979,
+   "w390": 606
+  },
+  "real-maggie-outdoor-portrait.webp": {
+   "w1440": 751,
+   "w3230": 1574,
+   "w390": 417
+  },
+  "real-maggie-outdoor-steps.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-maggie-outdoor-turn.webp": {
+   "w1440": 515,
+   "w3230": 557,
    "w390": 342
   },
   "real-maggie-outdoor.webp": {
-   "w3230": 625,
-   "w1440": 603,
-   "w390": 342
-  },
-  "real-maggie-fireplace.webp": {
-   "w3230": 934,
-   "w1440": 786,
-   "w390": 384
-  },
-  "film-hero-forest.webp": {
-   "w3230": 3230,
-   "w1440": 1600,
-   "w390": 1500
-  },
-  "film-air-curtains.webp": {
-   "w3230": 3230,
-   "w1440": 1600,
-   "w390": 1500
-  },
-  "om-pause-guest.webp": {
-   "w3230": 1384,
-   "w1440": 855,
-   "w390": 413
-  }
- },
- "g": {
-  "real-team-of-three.webp": {
-   "w3230": 4005,
    "w1440": 1786,
-   "w390": 1569
-  },
-  "real-shampoo-basins.webp": {
    "w3230": 4005,
-   "w1440": 1786,
-   "w390": 1569
-  },
-  "real-color-bar.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
-   "w390": 1569
-  },
-  "real-aveda-shelves.webp": {
-   "w3230": 2800,
-   "w1440": 1221,
-   "w390": 606
-  },
-  "real-lounge.webp": {
-   "w3230": 4005,
-   "w1440": 1786,
    "w390": 698
   },
-  "real-styling-stations.webp": {
-   "w3230": 4005,
+  "real-maggie-portrait-iw.webp": {
    "w1440": 1786,
+   "w3230": 4005,
    "w390": 698
   },
-  "om-menu-signature-color.webp": {
-   "w3230": 558,
+  "real-maggie-product-wall.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-maggie-salon-wide.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1570
+  },
+  "real-maggie-smile.webp": {
    "w1440": 515,
+   "w3230": 557,
    "w390": 342
-  },
-  "om-menu-blonding.webp": {
-   "w3230": 551,
-   "w1440": 514,
-   "w390": 342
-  },
-  "om-menu-color-correction.webp": {
-   "w3230": 558,
-   "w1440": 515,
-   "w390": 342
-  },
-  "om-menu-cut-and-style.webp": {
-   "w3230": 558,
-   "w1440": 515,
-   "w390": 342
-  },
-  "om-menu-extensions.webp": {
-   "w3230": 558,
-   "w1440": 515,
-   "w390": 342
-  },
-  "om-menu-finishing-touches.webp": {
-   "w3230": 1253,
-   "w1440": 1157,
-   "w390": 342
-  },
-  "real-maggie-arms-crossed.webp": {
-   "w3230": 1574,
-   "w1440": 795,
-   "w390": 417
-  },
-  "real-katie.webp": {
-   "w3230": 56,
-   "w1440": 56,
-   "w390": 56
-  },
-  "real-chesney.webp": {
-   "w3230": 56,
-   "w1440": 56,
-   "w390": 56
-  },
-  "meadow.webp": {
-   "w3230": 3340,
-   "w1440": 1935,
-   "w390": 1815
   },
   "real-maggie-standing-shelves.webp": {
-   "w3230": 495,
    "w1440": 417,
+   "w3230": 495,
    "w390": 360
   },
-  "real-maggie-portrait-iw.webp": {
-   "w3230": 416,
-   "w1440": 374,
+  "real-maggie-warm.webp": {
+   "w1440": 492,
+   "w3230": 507,
    "w390": 342
   },
+  "real-shampoo-basins.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-styling-chair.webp": {
+   "w1440": 1477,
+   "w3230": 3876,
+   "w390": 676
+  },
+  "real-styling-stations.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-team-of-three.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  }
+ },
+ "m": {
+  "film-air-curtains.webp": {
+   "w1440": 1600,
+   "w3230": 3230,
+   "w390": 1500
+  },
+  "film-hero-forest.webp": {
+   "w1440": 1600,
+   "w3230": 3230,
+   "w390": 1500
+  },
+  "meadow.webp": {
+   "w1440": 1935,
+   "w3230": 3467,
+   "w390": 1815
+  },
+  "om-menu-blonding.webp": {
+   "w1440": 515,
+   "w3230": 558,
+   "w390": 342
+  },
+  "om-menu-color-correction.webp": {
+   "w1440": 515,
+   "w3230": 558,
+   "w390": 342
+  },
+  "om-menu-cut-and-style.webp": {
+   "w1440": 515,
+   "w3230": 558,
+   "w390": 342
+  },
+  "om-menu-extensions.webp": {
+   "w1440": 515,
+   "w3230": 558,
+   "w390": 342
+  },
+  "om-menu-finishing-touches.webp": {
+   "w1440": 1157,
+   "w3230": 1253,
+   "w390": 342
+  },
+  "om-menu-signature-color.webp": {
+   "w1440": 481,
+   "w3230": 507,
+   "w390": 342
+  },
+  "om-pause-guest.webp": {
+   "w1440": 855,
+   "w3230": 1384,
+   "w390": 413
+  },
+  "real-aveda-shelves.webp": {
+   "w1440": 1275,
+   "w3230": 2979,
+   "w390": 606
+  },
+  "real-chesney.webp": {
+   "w1440": 56,
+   "w3230": 56,
+   "w390": 56
+  },
+  "real-color-bar.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-katie.webp": {
+   "w1440": 56,
+   "w3230": 56,
+   "w390": 56
+  },
   "real-lounge-iw.webp": {
-   "w3230": 3006,
-   "w1440": 1312,
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-lounge-wide.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-lounge.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-maggie-arms-crossed.webp": {
+   "w1440": 668,
+   "w3230": 1574,
+   "w390": 417
+  },
+  "real-maggie-fireplace.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-maggie-fireside-close.webp": {
+   "w1440": 398,
+   "w3230": 498,
+   "w390": 363
+  },
+  "real-maggie-fireside.webp": {
+   "w1440": 515,
+   "w3230": 557,
+   "w390": 342
+  },
+  "real-maggie-lounge-seated.webp": {
+   "w1440": 855,
+   "w3230": 1384,
+   "w390": 413
+  },
+  "real-maggie-outdoor-chin.webp": {
+   "w1440": 1275,
+   "w3230": 2979,
+   "w390": 606
+  },
+  "real-maggie-outdoor-portrait.webp": {
+   "w1440": 668,
+   "w3230": 1574,
+   "w390": 417
+  },
+  "real-maggie-outdoor-steps.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-maggie-outdoor-turn.webp": {
+   "w1440": 515,
+   "w3230": 557,
    "w390": 342
   },
   "real-maggie-outdoor.webp": {
-   "w3230": 625,
-   "w1440": 603,
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-maggie-portrait-iw.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-maggie-product-wall.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
+  },
+  "real-maggie-salon-wide.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1570
+  },
+  "real-maggie-smile.webp": {
+   "w1440": 515,
+   "w3230": 557,
    "w390": 342
   },
-  "real-maggie-fireplace.webp": {
-   "w3230": 934,
-   "w1440": 773,
-   "w390": 406
+  "real-maggie-standing-shelves.webp": {
+   "w1440": 420,
+   "w3230": 498,
+   "w390": 362
   },
-  "film-hero-forest.webp": {
-   "w3230": 3230,
-   "w1440": 1600,
-   "w390": 1500
+  "real-maggie-warm.webp": {
+   "w1440": 468,
+   "w3230": 533,
+   "w390": 342
   },
-  "film-air-curtains.webp": {
-   "w3230": 3230,
-   "w1440": 1600,
-   "w390": 1500
+  "real-shampoo-basins.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
   },
-  "om-pause-guest.webp": {
-   "w3230": 1384,
-   "w1440": 855,
-   "w390": 413
+  "real-styling-chair.webp": {
+   "w1440": 1728,
+   "w3230": 3876,
+   "w390": 583
+  },
+  "real-styling-stations.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 698
+  },
+  "real-team-of-three.webp": {
+   "w1440": 1786,
+   "w3230": 4005,
+   "w390": 1569
   }
  },
  "s": {
-  "real-team-of-three.webp": {
-   "w3230": 647,
-   "w1440": 524,
-   "w390": 498
+  "film-air-curtains.webp": {
+   "w1440": 1600,
+   "w3230": 3230,
+   "w390": 1500
   },
-  "real-shampoo-basins.webp": {
-   "w3230": 647,
-   "w1440": 524,
-   "w390": 498
+  "film-hero-forest.webp": {
+   "w1440": 1600,
+   "w3230": 3230,
+   "w390": 1500
   },
-  "real-color-bar.webp": {
-   "w3230": 647,
-   "w1440": 524,
-   "w390": 498
-  },
-  "real-aveda-shelves.webp": {
-   "w3230": 260,
-   "w1440": 158,
-   "w390": 104
-  },
-  "real-lounge.webp": {
-   "w3230": 294,
-   "w1440": 263,
-   "w390": 266
-  },
-  "real-styling-stations.webp": {
-   "w3230": 294,
-   "w1440": 263,
-   "w390": 266
-  },
-  "real-maggie-arms-crossed.webp": {
-   "w3230": 72,
-   "w1440": 72,
-   "w390": 52
-  },
-  "real-katie.webp": {
-   "w3230": 72,
-   "w1440": 72,
-   "w390": 52
-  },
-  "real-chesney.webp": {
-   "w3230": 72,
-   "w1440": 72,
-   "w390": 52
-  },
-  "om-menu-signature-color.webp": {
-   "w3230": 525,
-   "w1440": 515,
-   "w390": 342
+  "meadow.webp": {
+   "w1440": 1935,
+   "w3230": 3876,
+   "w390": 1815
   },
   "om-menu-blonding.webp": {
-   "w3230": 558,
    "w1440": 489,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-color-correction.webp": {
-   "w3230": 558,
    "w1440": 515,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-cut-and-style.webp": {
-   "w3230": 558,
    "w1440": 515,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-extensions.webp": {
-   "w3230": 558,
    "w1440": 515,
+   "w3230": 558,
    "w390": 342
   },
   "om-menu-finishing-touches.webp": {
-   "w3230": 1253,
    "w1440": 1157,
+   "w3230": 1253,
    "w390": 342
   },
-  "meadow.webp": {
-   "w3230": 3876,
-   "w1440": 1935,
-   "w390": 1815
-  },
-  "real-maggie-standing-shelves.webp": {
-   "w3230": 496,
-   "w1440": 418,
+  "om-menu-signature-color.webp": {
+   "w1440": 515,
+   "w3230": 525,
    "w390": 342
   },
-  "real-maggie-portrait-iw.webp": {
-   "w3230": 416,
-   "w1440": 374,
-   "w390": 342
+  "real-aveda-shelves.webp": {
+   "w1440": 158,
+   "w3230": 260,
+   "w390": 104
+  },
+  "real-chesney.webp": {
+   "w1440": 72,
+   "w3230": 72,
+   "w390": 52
+  },
+  "real-color-bar.webp": {
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
+  },
+  "real-katie.webp": {
+   "w1440": 72,
+   "w3230": 72,
+   "w390": 52
   },
   "real-lounge-iw.webp": {
-   "w3230": 3006,
-   "w1440": 1312,
-   "w390": 342
+   "w1440": 263,
+   "w3230": 294,
+   "w390": 266
   },
-  "real-maggie-outdoor.webp": {
-   "w3230": 625,
-   "w1440": 603,
-   "w390": 342
+  "real-lounge-wide.webp": {
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
+  },
+  "real-lounge.webp": {
+   "w1440": 263,
+   "w3230": 294,
+   "w390": 266
+  },
+  "real-maggie-arms-crossed.webp": {
+   "w1440": 72,
+   "w3230": 72,
+   "w390": 52
   },
   "real-maggie-fireplace.webp": {
-   "w3230": 931,
-   "w1440": 750,
-   "w390": 386
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
   },
-  "film-hero-forest.webp": {
-   "w3230": 3230,
-   "w1440": 1600,
-   "w390": 1500
+  "real-maggie-fireside-close.webp": {
+   "w1440": 412,
+   "w3230": 498,
+   "w390": 344
   },
-  "film-air-curtains.webp": {
-   "w3230": 3230,
-   "w1440": 1600,
-   "w390": 1500
+  "real-maggie-fireside.webp": {
+   "w1440": 515,
+   "w3230": 557,
+   "w390": 342
+  },
+  "real-maggie-outdoor-portrait.webp": {
+   "w1440": 72,
+   "w3230": 72,
+   "w390": 52
+  },
+  "real-maggie-outdoor-steps.webp": {
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
+  },
+  "real-maggie-outdoor-turn.webp": {
+   "w1440": 515,
+   "w3230": 557,
+   "w390": 342
+  },
+  "real-maggie-outdoor-wide.webp": {
+   "w1440": 108,
+   "w3230": 108,
+   "w390": 78
+  },
+  "real-maggie-outdoor.webp": {
+   "w1440": 263,
+   "w3230": 294,
+   "w390": 266
+  },
+  "real-maggie-portrait-iw.webp": {
+   "w1440": 263,
+   "w3230": 294,
+   "w390": 266
+  },
+  "real-maggie-product-wall.webp": {
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
+  },
+  "real-maggie-salon-wide.webp": {
+   "w1440": 525,
+   "w3230": 648,
+   "w390": 499
+  },
+  "real-maggie-smile.webp": {
+   "w1440": 515,
+   "w3230": 557,
+   "w390": 342
+  },
+  "real-maggie-standing-shelves.webp": {
+   "w1440": 418,
+   "w3230": 496,
+   "w390": 342
+  },
+  "real-maggie-warm.webp": {
+   "w1440": 468,
+   "w3230": 507,
+   "w390": 342
+  },
+  "real-shampoo-basins.webp": {
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
+  },
+  "real-styling-chair.webp": {
+   "w1440": 1728,
+   "w3230": 3876,
+   "w390": 676
+  },
+  "real-styling-stations.webp": {
+   "w1440": 263,
+   "w3230": 294,
+   "w390": 266
+  },
+  "real-team-of-three.webp": {
+   "w1440": 524,
+   "w3230": 647,
+   "w390": 498
   }
  }
 }

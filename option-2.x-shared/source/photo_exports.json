@@ -97,8 +97,18 @@
   1920,
   2560,
   3840,
-  5120,
   5330
+ ],
+ "real-lounge-wide.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5120,
+  6400,
+  7830
  ],
  "real-lounge.webp": [
   640,
@@ -122,22 +132,122 @@
   640,
   960,
   1280,
-  1920
+  1920,
+  2560,
+  3840,
+  5120,
+  6400,
+  8192
+ ],
+ "real-maggie-fireside-close.webp": [
+  640,
+  960,
+  1143
+ ],
+ "real-maggie-fireside.webp": [
+  640,
+  960,
+  1171
+ ],
+ "real-maggie-lounge-seated.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  2906
+ ],
+ "real-maggie-outdoor-chin.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5120,
+  6255
+ ],
+ "real-maggie-outdoor-portrait.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3305
+ ],
+ "real-maggie-outdoor-steps.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5120,
+  6400,
+  8192
+ ],
+ "real-maggie-outdoor-turn.webp": [
+  640,
+  960,
+  1171
+ ],
+ "real-maggie-outdoor-wide.webp": [
+  245
  ],
  "real-maggie-outdoor.webp": [
   640,
   960,
-  1280
+  1280,
+  1920,
+  2560,
+  3840,
+  5315
  ],
  "real-maggie-portrait-iw.webp": [
   640,
   960,
-  1077
+  1280,
+  1920,
+  2560,
+  3840,
+  5464
+ ],
+ "real-maggie-product-wall.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5120,
+  6400,
+  8192
+ ],
+ "real-maggie-salon-wide.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5120,
+  6400,
+  8008
+ ],
+ "real-maggie-smile.webp": [
+  640,
+  960,
+  1171
  ],
  "real-maggie-standing-shelves.webp": [
   640,
   960,
   1140
+ ],
+ "real-maggie-warm.webp": [
+  640,
+  960,
+  1077
  ],
  "real-shampoo-basins.webp": [
   640,
@@ -149,6 +259,15 @@
   5120,
   6400,
   8192
+ ],
+ "real-styling-chair.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5464
  ],
  "real-styling-stations.webp": [
   640,
