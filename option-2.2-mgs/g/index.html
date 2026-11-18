@@ -1772,15 +1772,6 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph
   #pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
 }
 
-/* G's Why Aveda: the real Aveda mission canvas on Salon OM's wall across the left half (M shows the Aveda shelves), the
-   words and facts on the right (Aman) */
-@media (min-width: 1024px) {
-  html[data-variant="2.2-g"] #aveda.facts { padding-left: calc(50% + var(--sp-5)); }
-  html[data-variant="2.2-g"] #aveda.facts::before { content: ""; position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; width: 50%; background: url(img/real-aveda-mission.webp) 50% 34% / cover no-repeat;
-    clip-path: inset(0 100% 0 0); transition: clip-path 1.8s var(--io-strong) .1s; }
-  html[data-variant="2.2-g"] #aveda.facts.is-active::before, html[data-shot][data-variant="2.2-g"] #aveda.facts::before { clip-path: inset(0); }
-  html[data-variant="2.2-g"] #aveda .facts__in { grid-template-columns: 1fr; gap: var(--sp-4); align-items: start; }
-}
 
 /* the five steps (J, 11 Nov, on G's Breathe at 1440: "That empty space there is too much"): the layout stays 2.2's; the
    words and their one "Feel" line now sit together under the title instead of the line floating in a three-column grid on
@@ -1799,7 +1790,6 @@ html[data-variant="2.2-g"] #pause .lead { color: var(--ivory) !important; }
 html[data-variant="2.2-g"] #pause .mani__proof { color: var(--ivory-soft); }
 .mani.dark .btn:not(.btn--ghost) { --bg: var(--ivory); --fg: var(--ink); }
 .mani.dark .btn:not(.btn--ghost):hover { --bg: #fff; }
-.mani.dark#aveda .mani__text { color: var(--ivory); }
 .mn + .vo { background: var(--clay); color: var(--ink); }
 .mn + .vo .vo__head .label, .mn + .vo .vo__count, .mn + .vo .vo__card figcaption { color: var(--ink-soft); }
 .mn + .vo .vo__count b { color: var(--ink); }
@@ -2428,7 +2418,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="5bde600ccbcb";</script>
+<script>window.OM_BUILD="fa0a27e649e0";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
