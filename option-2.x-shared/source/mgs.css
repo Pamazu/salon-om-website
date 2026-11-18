@@ -824,9 +824,11 @@ html[data-shot] .av :is(.av__ph img, .av__label, .av__card) { opacity: 1 !import
   .av__card > .len { display: block; }
   .av__head { grid-row: 1; padding: 0 var(--gutter); }
   .av__head .mid { font-size: var(--t-h2); }
-  .av__ph { grid-row: 2; grid-column: 1; margin: var(--sp-4) 0 0; height: auto; min-height: var(--ph); }
+  .av__ph { grid-row: 2; grid-column: 1; margin: var(--sp-4) 0 0; height: auto; min-height: var(--ph); max-height: min(180vw, 120svh); }   /* grows with the glass on it, never so tall that the picture is blown up */
   .av__ph img { object-position: 64% 70%; }   /* the gold mask at the photo's top-left corner stays out of the frame */
-  .av__card { grid-row: 2; grid-column: 1; align-self: end; z-index: 2; margin: calc(var(--ph) * .5 + var(--sp-4)) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
+  /* --strip: how much of the picture stays clear above the glass (default half the picture; a portrait sets more so its face stays clear);
+     a pane longer than the picture runs on below it, drawing the picture mirrored (lens.js) */
+  .av__card { grid-row: 2; grid-column: 1; align-self: start; z-index: 2; margin: calc(var(--strip, var(--ph) * .5) + var(--sp-4)) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
   .av__rows { margin: 0; }
   .av__row { --nf: 30px; gap: var(--sp-2); }
   .av__letter { grid-column: 1; grid-row: 3; padding: var(--sp-5) var(--gutter) 0; }

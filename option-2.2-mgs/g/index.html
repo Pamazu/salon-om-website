@@ -2021,9 +2021,11 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
   .av__card > .len { display: block; }
   .av__head { grid-row: 1; padding: 0 var(--gutter); }
   .av__head .mid { font-size: var(--t-h2); }
-  .av__ph { grid-row: 2; grid-column: 1; margin: var(--sp-4) 0 0; height: auto; min-height: var(--ph); }
+  .av__ph { grid-row: 2; grid-column: 1; margin: var(--sp-4) 0 0; height: auto; min-height: var(--ph); max-height: min(180vw, 120svh); }   /* grows with the glass on it, never so tall that the picture is blown up */
   .av__ph img { object-position: 64% 70%; }   /* the gold mask at the photo's top-left corner stays out of the frame */
-  .av__card { grid-row: 2; grid-column: 1; align-self: end; z-index: 2; margin: calc(var(--ph) * .5 + var(--sp-4)) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
+  /* --strip: how much of the picture stays clear above the glass (default half the picture; a portrait sets more so its face stays clear);
+     a pane longer than the picture runs on below it, drawing the picture mirrored (lens.js) */
+  .av__card { grid-row: 2; grid-column: 1; align-self: start; z-index: 2; margin: calc(var(--strip, var(--ph) * .5) + var(--sp-4)) 0 0; padding: var(--sp-4) var(--gutter) var(--sp-4); }
   .av__rows { margin: 0; }
   .av__row { --nf: 30px; gap: var(--sp-2); }
   .av__letter { grid-column: 1; grid-row: 3; padding: var(--sp-5) var(--gutter) 0; }
@@ -2517,7 +2519,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     <div class="s__shade"></div>
   </section>
   <section class="s s--auto av" id="c-aveda" data-tone="light" data-sound="bed" aria-labelledby="c-aveda-t">
-    <div class="av__in s__leave">
+    <div class="av__in s__leave" style="--strip: min(120vw, 70svh)">
       <figure class="av__ph"><img src="img/real-maggie-outdoor-chin.webp" srcset="img/hd/real-maggie-outdoor-chin-640.webp 640w, img/hd/real-maggie-outdoor-chin-960.webp 960w, img/hd/real-maggie-outdoor-chin-1280.webp 1280w, img/hd/real-maggie-outdoor-chin-1920.webp 1920w, img/hd/real-maggie-outdoor-chin-2560.webp 2560w, img/hd/real-maggie-outdoor-chin-3840.webp 3840w, img/hd/real-maggie-outdoor-chin-5120.webp 5120w, img/hd/real-maggie-outdoor-chin-6255.webp 6255w" sizes="(max-width: 700px) 164vw, (max-width: 2000px) 93vw, 97vw" alt="Maggie Woodward outside in a white blazer, her hand at her chin" decoding="async" loading="lazy"></figure>
       <div class="av__label">
         <div class="len" data-len="img/hd/real-maggie-outdoor-chin-1280.webp" data-len-fig=".av__ph" data-len-pos="50% 18%" data-len-base="0.6" data-len-rib="22" aria-hidden="true"><canvas></canvas></div>
@@ -2580,7 +2582,7 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="9c8b9a022252";</script>
+<script>window.OM_BUILD="f29d22ec3e02";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -3864,7 +3866,8 @@ html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[
     'uniform float rib,off,str,smear,grade;',                      // rib width (css px), the sheet's slide (ribs), strength 0..1, smear (css px), brightness
     'vec3 pic(vec2 q){',
     '  float k=max(fig.x/img.x,fig.y/img.y);vec2 sz=img*k,org=(fig-sz)*pos;',
-    '  return texture2D(t,(q-org)/sz).rgb;}',
+    '  vec2 u=(q-org)/sz;u=1.-abs(1.-mod(u,2.));',                    // past the picture's edge the glass shows it mirrored (a pane longer than its photo), never the last row stretched
+    '  return texture2D(t,u).rgb;}',
     'void main(){',
     '  vec2 q=vec2(v.x,1.-v.y)*box.zw+box.xy;',
     '  float c=fract((q.x+off*rib)/rib)-.5;',                      // across one rib, -.5 .. .5

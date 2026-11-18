@@ -314,8 +314,9 @@ def aveda(d, world):
     # a label whose rows are named by words, not numbers (Inner Work's six practices, task 7a3c013b): each name over its line
     words = any(not re.match(r'^[\d$]', re.sub(r'<[^>]+>', '', x[0])) and len(re.sub(r'<[^>]+>', '', x[0])) > 7 for x in d['facts'])
     btn = f'<div class="av__btn a-up" style="--d:.5s">{d["btn"]}</div>' if d.get('btn') else ''
+    strip = f' style="--strip: {d["strip"]}"' if d.get('strip') else ''
     return f'''<section class="s s--auto av" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
-    <div class="av__in s__leave">
+    <div class="av__in s__leave"{strip}>
       <figure class="av__ph"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy"></figure>
       <div class="av__label">
         {pane}

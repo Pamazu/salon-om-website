@@ -26,7 +26,8 @@
     'uniform float rib,off,str,smear,grade;',                      // rib width (css px), the sheet's slide (ribs), strength 0..1, smear (css px), brightness
     'vec3 pic(vec2 q){',
     '  float k=max(fig.x/img.x,fig.y/img.y);vec2 sz=img*k,org=(fig-sz)*pos;',
-    '  return texture2D(t,(q-org)/sz).rgb;}',
+    '  vec2 u=(q-org)/sz;u=1.-abs(1.-mod(u,2.));',                    // past the picture's edge the glass shows it mirrored (a pane longer than its photo), never the last row stretched
+    '  return texture2D(t,u).rgb;}',
     'void main(){',
     '  vec2 q=vec2(v.x,1.-v.y)*box.zw+box.xy;',
     '  float c=fract((q.x+off*rib)/rib)-.5;',                      // across one rib, -.5 .. .5

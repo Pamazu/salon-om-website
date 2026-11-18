@@ -314,7 +314,7 @@ TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open',
               'proof_line', 'btn', 'reward', 'answer', 'title', 'rows', 'name', 'sub', 'body', 'specs', 'paras', 'quote', 'cite',
               'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
               'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
-TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'breath_img', 'breath_lens', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}   # breath_img, breath_lens: the door's srcset and glass follow its picture (task a73569a9)
+TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'breath_img', 'breath_lens', 'strip', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}   # breath_img, breath_lens: the door's srcset and glass follow its picture (task a73569a9)
 # lists of cards: each card takes its words, and its picture
 TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}
 
@@ -422,7 +422,7 @@ def iw_entries(v, salon):
         elif kind is S.visit:
             w['steps'] = [tuple(x) + IW_PHOTO[IW_STEP_PICS[i][0]] for i, x in enumerate(w['steps'])]
         elif kind is S.aveda:
-            w['photo'] = _iw_pic('outdoor_chin')
+            w['photo'] = _iw_pic('outdoor_chin'); w['strip'] = 'min(120vw, 70svh)'   # a portrait: her face stays clear above the glass (task a73569a9)
         elif kind in ('team', 'proof'):
             w['people'] = [dict(c, img=_iw_pic('outdoor_portrait')[0], alt=_iw_pic('outdoor_portrait')[1]) for c in w['people']]
             if kind == 'proof': w['line_img'] = _iw_pic('outdoor_wide')
