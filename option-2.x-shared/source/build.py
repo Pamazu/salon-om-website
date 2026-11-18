@@ -512,6 +512,14 @@ def prose(d):
     <div class="s__shade"></div>
   </section>'''
 
+def _pf_line(d):
+    """S's one Aveda line; with line_img (M/G/S, task a749167b) the real Aveda shelves sit small beside it"""
+    line = f'''<p class="pf__line a-up" style="--d:1.4s"><b>{d['line_k']}</b>{d['line']}</p>'''
+    if not d.get('line_img'): return line
+    f, alt = d['line_img']
+    return (f'<div class="pf__av"><figure class="pf__avph a-fade" style="--d:1.3s"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy"></figure>'
+            + line + '</div>')
+
 def proof(d):
     """S: the proof screen. The team as three small cards, two guest quotes, one Aveda line."""
     def av(w):
@@ -525,7 +533,7 @@ def proof(d):
       <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
       <div class="pf__team">{people}</div>
       <div class="pf__qs">{qs}</div>
-      <p class="pf__line a-up" style="--d:1.4s"><b>{d['line_k']}</b>{d['line']}</p>
+      {_pf_line(d)}
     </div>
     <div class="s__shade"></div>
   </section>'''

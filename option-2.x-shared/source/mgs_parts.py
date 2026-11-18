@@ -49,6 +49,9 @@ D = dict(
 # Certified B Corporation, 2023 (aveda.com/b-corp-certification); founded 1978 by Horst Rechelbacher (aveda.com/horst-rechelbacher-aveda-history).
 # A year never counts up (third field off).
 AVEDA_FACTS = [(n, t, True) if n == '100%' else (n, t) for n, t in M.AVEDA_FACTS]   # hers, 11 Nov; only 100% counts up
+# Why Aveda's picture (task a749167b, reference page section 9): the photographer's original 7, her Aveda shelves around a
+# living plant in the window light, sharp at J's 6K window (export_photos.py); S shows it small beside its Aveda line
+AVEDA_PHOTO = ('real-aveda-shelves.webp', 'Aveda products on the glass shelves at Salon OM, around a fiddle-leaf fig in the window light')
 # the salon's public details, 10 Nov 2026 (task df14fa0d): address and hours from Maggie's own booking page
 # (maggiewoodward.glossgenius.com/about), phone from salonom.com, email from maggiewoodward.glossgenius.com/services,
 # Instagram @salonomavilabeach (both). salonom.com: "Open by appointment only".

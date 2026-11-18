@@ -19,9 +19,9 @@ SALON = [
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
                         rows=[(f'0{k + 1}', s[0], s[1].split(' · ')[-1]) for k, s in enumerate(M.STEPS)])),
 ] + [step(k, cta=(k == 4)) for k in range(5)] + [
-  ('facts', dict(id='aveda', light=True, eyebrow=M.AVEDA_EYEBROW, title=M.AVEDA, paras=[], quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE,
-                 facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
-                 btn=btn(BOOK, BOOK_URL, arrow=True))),   # her heading, her quote, her four facts (11 Nov)
+  (S.aveda, dict(id='aveda', eyebrow=M.AVEDA_EYEBROW, title=M.AVEDA, paras=[], quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE,
+                 facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.', photo=AVEDA_PHOTO,
+                 btn=btn(BOOK, BOOK_URL, arrow=True))),   # her heading, her quote, her four facts (11 Nov); the label (task a749167b)
   team(note=False),
   services(),
   voices(cta=True),

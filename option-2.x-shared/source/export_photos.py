@@ -28,6 +28,7 @@ MASTERS = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictu
 # here (a cleaned full-size original per the client's own list, or a generated picture's full-size render)
 SOURCE = {
     'real-team-of-three.webp': 'o:9-team-of-three-5B3A1134.jpg',
+    'real-aveda-shelves.webp': 'o:7-aveda-product-shelves-5B3A1050.jpg',     # Why Aveda (task a749167b)
     'real-lounge.webp': 'o:2-lounge-fireplace-5B3A1048.jpg',
     'real-lounge-iw.webp': 'o:2-lounge-fireplace-5B3A1048.jpg',
     'real-maggie-arms-crossed.webp': 'o:3-portrait-arms-crossed-5B3A1343.jpg',

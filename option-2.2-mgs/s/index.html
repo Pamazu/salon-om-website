@@ -1457,18 +1457,10 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 /* Voices: its heading line sat on the big quote mark; the mark gets its own room */
 .voices__t { margin-bottom: var(--sp-5); }
 
-/* ---- the pause and OM never look alike: the pause is a centred line; OM keeps 2.2's line beside its rings; M's Why
-   Aveda sits beside a real photo of the Aveda shelves at Salon OM */
+/* ---- the pause and OM never look alike: the pause is a centred line; OM keeps 2.2's line beside its rings */
 #pause .mani__in { text-align: center; }
 #pause .mani__text, #pause .lead, #pause .mani__proof { margin-left: auto; margin-right: auto; }
 #pause .mani__ring { right: auto; left: 50%; transform: translate(-50%, -50%); }
-@media (min-width: 1024px) {
-  .mani#aveda .mani__ring { display: none; }
-  .mani#aveda .mani__in { padding-right: 50%; }
-  .mani#aveda .mani__text { font-size: var(--t-h2); }
-  .mani#aveda::before { content: ""; position: absolute; z-index: 1; top: calc(var(--top) + var(--sp-4)); bottom: var(--sp-5); right: var(--gutter); width: calc(50% - var(--gutter) - var(--sp-4));
-    background: url(img/real-aveda-shelves.webp) 50% 50% / cover no-repeat; border-radius: var(--r-photo); }
-}
 
 /* ---- the menu as a price list (Spoke & Weal, JUUT, Gene Juarez): number, serif name, Maggie's triplet in italic,
    her prices one per line with the price on the right; the open row's photo in the panel beside (above, on a phone) */
@@ -1933,24 +1925,6 @@ main :where(.s div:has(> .btn + .btn)) { display: flex; flex-wrap: wrap; align-i
 /* a reward line under a closing line (G's How we work together): 16 px under it, like the paragraphs (the two touched),
    and the button 40 px under it (it was 56) */
 .pr__body > .cy__reward { margin: var(--sp-2) 0 0; }
-/* G's "What is in your color?" (J, 17 Nov: "seems too cramped or tight"): her long quote and the four facts no longer
-   squeeze into one window, which hid the facts under its edge: the section grows with its words, clears the header,
-   gives the quote its leading, and puts the facts before the reward line and the button, so it ends on its call to
-   action like every cycle of G */
-html[data-variant="2.2-g"] #aveda.facts { height: auto; min-height: 100vh; min-height: 100svh; padding-top: calc(var(--top) + var(--sp-4)); padding-bottom: var(--base); }
-html[data-variant="2.2-g"] #aveda .facts__in { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
-html[data-variant="2.2-g"] #aveda .facts__in > div { display: contents; }
-html[data-variant="2.2-g"] #aveda .eyebrow { margin: 0 0 var(--sp-3); }
-html[data-variant="2.2-g"] #aveda .mid { margin: 0 0 var(--sp-3); }
-html[data-variant="2.2-g"] #aveda .facts__in > div > p:not(.cy__reward, .eyebrow) { margin: 0; }
-html[data-variant="2.2-g"] #aveda blockquote { margin: var(--sp-4) 0 0; line-height: 1.28; }
-html[data-variant="2.2-g"] #aveda blockquote cite { margin-top: var(--sp-2); }
-html[data-variant="2.2-g"] #aveda .facts__grid { order: 1; width: 100%; margin-top: var(--sp-5); }
-html[data-variant="2.2-g"] #aveda small.src { order: 1; margin-top: var(--sp-3); }
-html[data-variant="2.2-g"] #aveda .cy__reward { order: 2; margin: var(--sp-5) 0 0; }
-html[data-variant="2.2-g"] #aveda .facts__btn { order: 2; margin-top: var(--sp-4); }
-@media (min-width: 1024px) { html[data-variant="2.2-g"] #aveda.facts { padding-top: calc(var(--top) + var(--sp-5)); } }
-@media (max-width: 1023px) { html[data-variant="2.2-g"] #aveda :is(.facts__grid, .cy__reward) { margin-top: var(--sp-4); } }   /* the phone's step between groups */
 /* a section never hides its own words (the gap walk's cut-off check): the Aveda facts (M's on a phone hid four facts, G's
    at every width), the team letter at 768 (G's button half under the edge; the phone's one window stays where it fits)
    and S's visit on a laptop (its first and last step cut) grow with their words; where the words fit, nothing moves.
@@ -2001,6 +1975,75 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
   .bridge__more:last-of-type { font-size: clamp(17px, calc(17px + (100svh - 660px) * .0214), 20px); }
   .bridge .btn { min-height: clamp(44px, calc(44px + (100svh - 660px) * .0429), 50px); }
 }
+
+/* ==== Why Aveda as a label (task a749167b; J 17 Nov: "much more creative in terms of layout", "think like professional
+   photographer, designer, marketer, storyteller"; reference page section 9: Allbirds, Kinfolk, her own shelf labels).
+   M and G: the real Aveda shelves run full-bleed into the right edge; an ivory label card overlaps the photo's left edge
+   and answers the heading the way a label does (the number, then the words, a hairline drawn between, the source as small
+   print); below, her quote as a letter aligned to the photo's edge, then the reward (G) and the one button. The section
+   grows with its words (row 5: a tall section scrolls freely, then pulls into the next). */
+.av { --lw: clamp(440px, 34vw, 900px); --ov: calc(var(--lw) * .6);   /* the card covers the photo's left fifth, where a gold mask is cut by the frame */
+  --nf: clamp(30px, 2.3vw, 60px);
+  background: var(--clay); color: var(--ink); padding: calc(var(--top) + var(--sp-3)) 0 var(--base); }
+.av__in { display: grid; grid-template-columns: var(--gutter) var(--lw) minmax(0, 1fr); }
+.av__ph { grid-column: 2 / -1; grid-row: 1; margin: 0 0 0 calc(var(--lw) - var(--ov)); height: max(520px, calc(100svh - var(--top) - var(--sp-3) - var(--sp-5)));
+  overflow: hidden; border-radius: var(--r-photo) 0 0 var(--r-photo); }
+.av__ph img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }   /* a wide window keeps the Aveda poster and loses the blurred foreground */
+.av__label { grid-column: 2; grid-row: 1; align-self: start; position: relative; z-index: 2; padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  background: var(--ivory); border-radius: var(--r-photo); box-shadow: 0 34px 80px -34px rgba(23, 17, 13, .42), 0 2px 12px rgba(23, 17, 13, .06); }
+.av__head .eyebrow { color: var(--ink-soft); }
+.av__head .mid { margin: 0; font-size: clamp(38px, 3.2vw, 80px); line-height: 1.02; }
+.av__sub { margin: var(--sp-2) 0 0; font-size: var(--t-body); color: var(--ink-soft); }
+.av__rows { margin: var(--sp-4) 0 0; }
+.av__row { position: relative; display: grid; grid-template-columns: calc(var(--nf) * 3.3) minmax(0, 1fr); gap: var(--sp-3); align-items: baseline; padding: var(--sp-2) 0; }
+.av__row dt { font: 300 var(--nf)/1 var(--serif); letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+.av__row dd { margin: 0; font-size: var(--t-body); line-height: 1.4; color: var(--ink-soft); }
+.av__row::before, .av__row:last-child::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(23, 17, 13, .18); transform-origin: 0 50%; }
+.av__row:first-child::before { height: 2px; background: var(--ink); }       /* a label's heavy top rule */
+.av__row:last-child::after { top: auto; bottom: 0; }
+.av__src { display: block; margin-top: var(--sp-2); font-size: 12px; line-height: 1.4; color: var(--ink-soft); }
+.av__letter { grid-column: 2 / -1; grid-row: 2; padding: var(--sp-6) var(--gutter) 0 calc(var(--lw) - var(--ov)); }
+.av__letter blockquote { margin: 0; max-width: 48ch; text-indent: -.42em; font: italic 300 clamp(26px, 2.4vw, 58px)/1.24 var(--serif); color: var(--forest-deep); }
+.av__letter cite { display: block; margin-top: var(--sp-3); text-indent: 0; font: 500 var(--t-label)/1.3 var(--sans); font-style: normal; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
+.av__letter .cy__reward { margin-top: var(--sp-5); }
+.av__btn { margin-top: var(--sp-4); }
+/* motion: the photo opens from the right edge it bleeds into and settles; the card rises; each row's rule draws as it arrives */
+.av__ph { clip-path: inset(0 0 0 100%); transition: clip-path 1.6s var(--io-strong) .1s; }
+.av__ph img { transform: scale(1.08); transition: transform 2.8s var(--io-strong) .1s; }
+.av__label { opacity: 0; transform: translate3d(0, 48px, 0); transition: opacity var(--t-text) var(--io) .45s, transform var(--t-text) var(--io) .45s; }
+.av__row::before, .av__row:last-child::after { transform: scaleX(0); transition: transform 1.2s var(--io) var(--d, 0s); }
+.av.is-active .av__ph { clip-path: inset(0); }
+.av.is-active .av__ph img, .av.is-active .av__label { opacity: 1; transform: none; }
+.av.is-active .av__row::before, .av.is-active .av__row:last-child::after { transform: scaleX(1); }
+html[data-shot] .av :is(.av__ph, .av__ph img, .av__label, .av__card), html[data-shot] .av__row::before, html[data-shot] .av__row:last-child::after { opacity: 1 !important; clip-path: none !important; transform: none !important; transition: none !important; }
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] .av__ph {clip-path: none; transition: opacity .4s var(--io);}
+html[data-motion="calm"] .av__ph img, html[data-motion="calm"] .av__label, html[data-motion="calm"] .av__card {transform: none !important;}
+html[data-motion="calm"] .av__label, html[data-motion="calm"] .av__card {transition: opacity .4s var(--io);}
+html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:last-child::after {transform: none; transition: none;}
+/* a phone and a tablet: the heading, the photo across the width, the label card pulled up over its lower edge, the letter */
+@media (max-width: 1023px) {
+  .av__in { display: flex; flex-direction: column; }
+  .av__label { display: contents; }
+  .av__head { order: 1; padding: 0 var(--gutter); }
+  .av__head .mid { font-size: var(--t-h2); }
+  .av__ph { order: 2; margin: var(--sp-4) 0 0; height: min(96vw, 64svh); border-radius: 0; }
+  .av__ph img { object-position: 64% 70%; }   /* the gold mask at the photo's top-left corner stays out of the frame */
+  .av__card { order: 3; position: relative; z-index: 2; margin: calc(var(--sp-6) * -1) var(--gutter) 0; padding: var(--sp-2) var(--sp-3) var(--sp-3);
+    background: var(--ivory); border-radius: var(--r-photo); box-shadow: 0 30px 60px -30px rgba(23, 17, 13, .42), 0 2px 10px rgba(23, 17, 13, .06);
+    opacity: 0; transform: translate3d(0, 40px, 0); transition: opacity var(--t-text) var(--io) .4s, transform var(--t-text) var(--io) .4s; }
+  .av.is-active .av__card { opacity: 1; transform: none; }
+  .av__rows { margin: 0; }
+  .av__row { --nf: 30px; gap: var(--sp-2); }
+  .av__letter { order: 4; padding: var(--sp-5) var(--gutter) 0; }
+  .av__letter blockquote { font-size: 25px; }
+}
+@media (min-width: 600px) and (max-width: 1023px) { .av__ph img { object-position: 88% 70%; } }   /* a wider stacked frame crops less from the left */
+/* S: its one Aveda line with the same shelves, small, beside it */
+.pf__av { display: flex; align-items: center; gap: var(--sp-3); margin-top: clamp(22px, 4vh, 40px); }
+.pf__avph { flex: none; width: clamp(104px, 11vw, 260px); aspect-ratio: 3 / 2; margin: 0; overflow: hidden; border-radius: var(--r-photo); }
+.pf__avph img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 56%; }
+.pf__av .pf__line { margin: 0; }
 </style>
 </head>
 <body>
@@ -2081,7 +2124,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
       <h2 class="mid" id="hosts-t"><span class="mask"><span class="mask__in" style="--d:.3s"><span class="draft">The people who listen first.</span></span></span></h2>
       <div class="pf__team"><article class="pf__p a-up" style="--d:0.50s"><img src="img/real-maggie-arms-crossed.webp" srcset="img/hd/real-maggie-arms-crossed-640.webp 640w, img/hd/real-maggie-arms-crossed-960.webp 960w, img/hd/real-maggie-arms-crossed-1280.webp 1280w, img/hd/real-maggie-arms-crossed-1920.webp 1920w, img/hd/real-maggie-arms-crossed-2560.webp 2560w, img/hd/real-maggie-arms-crossed-3305.webp 3305w" sizes="(max-width: 700px) 14vw, (max-width: 2000px) 6vw, 3vw" alt="Maggie Woodward in front of the Aveda shelves at Salon OM" decoding="async"><div><h3>Maggie Woodward</h3><p class="pf__role">Founder and Stylist</p></div></article><article class="pf__p a-up" style="--d:0.64s"><img src="img/real-katie.webp" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="pf__role">Stylist</p></div></article><article class="pf__p a-up" style="--d:0.78s"><img src="img/real-chesney.webp" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="pf__role">Salon Concierge</p></div></article></div>
       <div class="pf__qs"><figure class="pf__q a-up" style="--d:1.00s"><blockquote>“Always brings joy to my day. Friendly and expert cosmetologists.”</blockquote><figcaption>T.C. · guest of Salon OM</figcaption></figure><figure class="pf__q a-up" style="--d:1.14s"><blockquote>“Seeing you is magic for my mind, body, and soul.”</blockquote><figcaption>L.T. · guest of Maggie</figcaption></figure></div>
-      <p class="pf__line a-up" style="--d:1.4s"><b>Why Aveda</b>Beauty that is kind to you and to the earth. 100% vegan formulas.</p>
+      <div class="pf__av"><figure class="pf__avph a-fade" style="--d:1.3s"><img src="img/real-aveda-shelves.webp" alt="Aveda products on the glass shelves at Salon OM, around a fiddle-leaf fig in the window light" decoding="async" loading="lazy"></figure><p class="pf__line a-up" style="--d:1.4s"><b>Why Aveda</b>Beauty that is kind to you and to the earth. 100% vegan formulas.</p></div>
     </div>
     <div class="s__shade"></div>
   </section>
@@ -2260,7 +2303,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="fdbeb3b834b3";</script>
+<script>window.OM_BUILD="e5f0668b3951";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

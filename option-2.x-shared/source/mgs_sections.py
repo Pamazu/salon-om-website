@@ -281,3 +281,44 @@ def photo_deep_prose(d, world):
     return photo_prose(d, world).replace('class="s s--auto prose prose--photo"', 'class="s s--auto prose prose--photo prose--deep"', 1)
 
 # early_proof (G's ivory two-quote proof, round 5) was retired by task 6e4ee413: G's early proof is the voices block now
+
+
+def aveda(d, world):
+    """Why Aveda as a label (task a749167b; J 17 Nov: "much more creative in terms of layout", "think like professional
+    photographer, designer, marketer, storyteller"; reference page section 9). The real Aveda shelves at Salon OM run
+    full-bleed into the right edge, sharp from the photographer's original at every size (approved features row 18); an
+    ivory label card overlaps the photo's left edge and answers the heading the way a label does: her four facts as rows,
+    the number then the words, a hairline drawn between, the source as the label's small print. Below, her quote set as a
+    letter, signed, then the reward (G) and the one button. On a phone: the heading, the photo, the card pulled up over the
+    photo's lower edge, the letter. d: eyebrow, title, paras (G: her line under the question), facts, src, quote, cite,
+    reward, btn, photo = (file, alt)."""
+    f, alt = d['photo']
+
+    def row(x, k):
+        num, label = x[0], x[1]
+        m = re.match(r'^(\d+)(.*)$', num)
+        inner = f'<span data-count="{m.group(1)}">0</span>{m.group(2)}' if (m and len(x) > 2 and x[2]) else num
+        return f'<div class="av__row a-up" style="--d:{0.75 + k * .16:.2f}s"><dt>{inner}</dt><dd>{label}</dd></div>'
+    sub = ''.join(f'<p class="av__sub a-up" style="--d:{0.55 + k * .1:.2f}s">{p}</p>' for k, p in enumerate(d.get('paras', [])))
+    btn = f'<div class="av__btn a-up" style="--d:.5s">{d["btn"]}</div>' if d.get('btn') else ''
+    return f'''<section class="s s--auto av" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="av__in s__leave">
+      <figure class="av__ph"><img src="img/{f}" alt="{E(alt)}" decoding="async" loading="lazy"></figure>
+      <div class="av__label">
+        <div class="av__head">
+          <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+          <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+          {sub}
+        </div>
+        <div class="av__card">
+          <dl class="av__rows">{''.join(row(x, k) for k, x in enumerate(d['facts']))}</dl>
+          <small class="av__src a-fade" style="--d:1.5s">{d['src']}</small>
+        </div>
+      </div>
+      <div class="av__letter">
+        <blockquote class="a-up" style="--d:.2s">“{d['quote']}”<cite>{d['cite']}</cite></blockquote>
+        {cycle(d, .35)}{btn}
+      </div>
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
