@@ -2043,6 +2043,15 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
 @media (max-width: 1023px) {
   html[data-variant^="2.2-"] .team-letter { grid-template-rows: minmax(clamp(240px, 32svh, 400px), 1fr) auto; }
 }
+/* phone QA (task 5479dd6c D5, real mobile Safari on an iPhone 17): S's proof screen (team, two guests, the Aveda line) was
+   taller than the 714 px Safari leaves a page on an iPhone 17 (measured: innerHeight = 100svh = 714, safe areas 0), so it
+   opened with its last line under the floating toolbar. On a phone its three widest gaps close up (38 px), and the whole
+   screen, the Aveda line included, sits above the toolbar */
+@media (max-width: 639px) and (max-height: 940px) {
+  .proof .pf__team { margin-top: 16px; }
+  .proof .pf__qs { margin-top: 20px; padding-top: 16px; }
+  .proof .pf__av { margin-top: 16px; }
+}
 /* S: its one Aveda line with the same shelves beside it, drawn like the team above it on the same screen (a round
    picture, 72 px; 52 px on a phone), so the line keeps its width and the screen its height (phone QA, task 5479dd6c: a
    wider picture pushed the line under Safari's toolbar on an iPhone) */
@@ -2437,7 +2446,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="30f9a54aceb3";</script>
+<script>window.OM_BUILD="1c0e53920df5";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
