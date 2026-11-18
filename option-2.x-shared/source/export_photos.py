@@ -24,50 +24,8 @@ IMG = REPO + 'option-2.2/site/img/'
 ORIG = os.environ.get('SALON_ORIGINALS', '/Users/j/all-worktrees/salon-om-website-b9a04e51/resources/salon-photos/originals/')
 MASTERS = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictures/masters/')
 
-# site picture -> its master. 'o:' = the photographer's original (README in ORIG maps the numbers), 'm:' = a master made
-# here (a cleaned full-size original per the client's own list, or a generated picture's full-size render)
-SOURCE = {
-    'real-team-of-three.webp': 'o:9-team-of-three-5B3A1134.jpg',
-    'real-aveda-shelves.webp': 'o:7-aveda-product-shelves-5B3A1050.jpg',     # Why Aveda (task a749167b)
-    'real-lounge.webp': 'o:2-lounge-fireplace-5B3A1048.jpg',
-    'real-lounge-iw.webp': 'o:2-lounge-fireplace-5B3A1048.jpg',
-    'real-maggie-arms-crossed.webp': 'o:3-portrait-arms-crossed-5B3A1343.jpg',
-    'real-maggie-portrait-iw.webp': 'o:3-portrait-arms-crossed-5B3A1343.jpg',
-    'real-maggie-fireplace.webp': 'o:5-portrait-seated-fireplace-5B3A1413.jpg',
-    'real-maggie-outdoor.webp': 'o:13-portrait-outdoor-white-blazer-5B3A1353.jpg',
-    'real-maggie-standing-shelves.webp': 'o:14-portrait-standing-shelves-5B3A1319.jpg',
-    # Inner Work (task 7a3c013b): nine more of her portraits from the shoot folder, their originals saved beside the 17 as iw-<file>
-    'real-maggie-lounge-seated.webp': 'o:iw-5B3A1401.jpg',
-    'real-maggie-outdoor-chin.webp': 'o:iw-5B3A1387.jpg',
-    'real-maggie-outdoor-portrait.webp': 'o:iw-5B3A1368.jpg',
-    'real-maggie-fireside-close.webp': 'o:iw-5B3A1410.jpg',
-    'real-maggie-warm.webp': 'o:iw-5B3A1292-2.jpg',
-    'real-maggie-fireside.webp': 'o:iw-5B3A1403.jpg',
-    'real-maggie-smile.webp': 'o:iw-5B3A1279-2.jpg',
-    'real-maggie-outdoor-turn.webp': 'o:iw-5B3A1373.jpg',
-    'real-maggie-outdoor-wide.webp': 'o:iw-5B3A1381.jpg',
-    'real-styling-chair.webp': 'o:4-styling-chair-window-5B3A1068.jpg',   # Inner Work's door back to the salon (task 7a3c013b)
-    'real-lounge-wide.webp': 'o:iw-5B3A1044.jpg',
-    'real-basins-poster.webp': 'o:iw-5B3A1059.jpg',
-    'real-maggie-salon-wide.webp': 'o:iw-5B3A1300.jpg',
-    'real-maggie-outdoor-steps.webp': 'o:iw-5B3A1385.jpg',
-    'real-maggie-product-wall.webp': 'o:1-portrait-standing-product-wall-5B3A1307-2.jpg',   # Inner Work step 05 (task 7a3c013b); its img/ copy is the shoot's 1280 export, not sharpened
-    'real-color-bar.webp': 'm:10-color-bar-clean.jpg',
-    'real-shampoo-basins.webp': 'm:6-shampoo-basins-clean.jpg',
-    'real-styling-stations.webp': 'm:11-styling-stations-clean.jpg',
-    'om-menu-signature-color.webp': 'm:om-menu-signature-color.png',
-    'om-menu-blonding.webp': 'm:om-menu-blonding.png',
-    'om-menu-color-correction.webp': 'm:om-menu-color-correction.png',
-    'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style.png',
-    'om-menu-extensions.webp': 'm:om-menu-extensions.png',
-    'om-menu-finishing-touches.webp': 'm:om-menu-finishing-touches.png',
-    'meadow.webp': 'm:meadow.png',
-    # the two heroes' stills while the films are off (build.FILMS_SHOWN, task 5479dd6c): the sharpest frame of the film, upscaled
-    # x4 (SeedVR2 or Real-ESRGAN on the Mac Studio); the master PNG lives with the other masters, not in git
-    'film-hero-forest.webp': 'm:film-hero-forest.png',
-    'film-air-curtains.webp': 'm:film-air-curtains.png',
-    'om-pause-guest.webp': 'm:17-pause-guest-on-photo.png',      # the pause (task 2b1d1187): photo 17 with a generated guest
-}
+# site picture -> its master, and the check that no picture shows a cleaned place raw: photo_sources.py (task a8c429a3)
+from photo_sources import SOURCE, check as check_clean
 NEW = {'film-hero-forest.webp', 'film-air-curtains.webp'}      # no site file yet: the 1280 fallback is made from the master first
 # a master that is a real photo (a cleaned copy '-clean.jpg', or a generated guest pasted onto it '-on-photo.png') keeps the
 # photo's grain, so it gets the same blur as an original
@@ -147,6 +105,9 @@ def export(name, dry=False):
 
 
 if __name__ == '__main__':
+    bad = check_clean()
+    if bad:
+        sys.exit('not exported: a picture shows a cleaned place raw, or is undeclared (task a8c429a3):\n  ' + '\n  '.join(bad))
     names = [a for a in sys.argv[1:] if not a.startswith('--')] or list(SOURCE)
     for n in names:
         print(export(n, dry='--dry' in sys.argv))

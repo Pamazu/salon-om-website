@@ -14,6 +14,13 @@ def _prices(s):
     return out
 
 
+# a picture's AI label, wherever the picture shows (task a8c429a3): StoryLegal (msg a091eaf1, 18 Nov) rules that a retouch which
+# adds to or changes the room, or redraws the whole photo, says "Made with AI from real salon photos"; a retouch that only
+# removes clutter says nothing. Step 02's basins wall is J's 25 Oct edit, whose bottles the AI re-arranged
+AI_FROM_REAL = 'Made with AI from real salon photos'
+PICTURE_AI = {'real-shampoo-basins.webp': AI_FROM_REAL}
+
+
 def ai_mark(text):
     """the words that say a picture or film was made with AI, as text on the page in a corner of it, always visible (no
     hover, tap or icon): StoryLegal's ruling of 17 Nov 2026 (msg 7d0dc68d, task 1c6ed2aa). One block for every generated
@@ -157,7 +164,7 @@ def visit(d, world):
     the same real photo its long step uses in M and G, with its number, name and line under it. The heading and the one
     button share the top row. On a phone the five become a row you swipe, the next one peeking in."""
     cards = ''.join(f'''<li class="vs__step a-up" style="--d:{0.45 + k * .12:.2f}s">
-          <figure class="vs__ph" style="--d:{0.35 + k * .12:.2f}s"><img src="img/{img}" alt="{E(alt)}" decoding="async" loading="lazy"></figure>
+          <figure class="vs__ph" style="--d:{0.35 + k * .12:.2f}s"><img src="img/{img}" alt="{E(alt)}" decoding="async" loading="lazy">{ai_mark(PICTURE_AI[img]) if img in PICTURE_AI else ""}</figure>
           <p class="vs__n"><b>{n}</b>{name}</p>
           <p class="vs__t">{line}</p>
         </li>''' for k, (n, name, line, img, alt) in enumerate(d['steps']))

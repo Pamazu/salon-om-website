@@ -28,8 +28,14 @@ PHOTOS = {
     '10': ('10-color-bar.jpg', '10-color-bar-clean.png', '10-color-bar-5B3A1078.jpg', 'sr/10c.png', 55, [], [(0, 270, 110, 854), (110, 345, 335, 470), (110, 470, 430, 854), (690, 640, 990, 790)]),   # the mop's strip at the left edge; the counter's left end below the hanging tubes as one block (the re-render moved the heater and faucet: a tight mask left a ghost of them; a block reaching the rack put the re-render's garbled labels on real boxes, 17 Nov); pump bottle, glass, cups
     '11': ('11-styling-stations.jpg', '11-styling-stations-clean.png', '11-styling-stations-5B3A1083.jpg', 'sr/11c.png', 55, [], [(50, 735, 250, 1240)]),   # the cart's legs over the black mat
     '6': ('6-shampoo-basins.jpg', '6-shampoo-basins-clean.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6c.png', 55, [(590, 185, 745, 300), (865, 95, 1085, 245)], [(600, 300, 710, 395), (895, 240, 1040, 370), (840, 55, 1060, 118), (995, 245, 1280, 854), (1085, 0, 1280, 245)]),   # KEEP both shelves with their real bottles (the clean copy's 'litre bottles only' wrote fake brand text, ACTEDA, readable at 1:1, 18 Nov); ADD whole blocks (a tight mask left ghosts): the two wire racks, the lamp's arc over the cabinet, and the right side (the lamp's pole, the hair vacuum, the blurred foreground). Where the lamp crosses the real bottles it is removed after this by a local FLUX.2 Klein edit of two 1024 crops (5300,560 and 5900,560; seed 7), pasted with band_paste.py over the lamp band only (cabinet edge kept above y = 2333 - 0.3x; crop B fades in over 400 px); outside the band every pixel is this master's
+    # task a8c429a3 (J 18 Nov 18:16 Z: "Why don't we go with the option I prefered? My favorite one 25 oct"): the basins wall as
+    # J's 25 Oct edit, whose bottles stand in tidy rows on both shelves and in both baskets; ADD the whole product zones, lamp, bin, vacuum
+    '6e': ('6-shampoo-basins.jpg', '6-shampoo-basins-edit.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6e.png', 55, [(735, 140, 884, 395)], [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (888, 232, 1038, 368), (830, 55, 1075, 170)]),   # whole blocks: left shelf, left basket, right shelf, right basket, the lamp's arc
 }
-OUT = {'10': '10-color-bar-clean.jpg', '11': '11-styling-stations-clean.jpg', '6': '6-shampoo-basins-clean.jpg'}
+# a box (1280 px) whose pixels come from another master after the patch, e.g. the poster with the lamp's tip already removed
+# from the real photo (6e: the 18 Nov master's local FLUX.2 Klein edit), so no re-rendered letter lands on the poster
+PATCH = {'6e': ('6-shampoo-basins-clean.jpg', (735, 140, 884, 395))}
+OUT = {'10': '10-color-bar-clean.jpg', '11': '11-styling-stations-clean.jpg', '6': '6-shampoo-basins-clean.jpg', '6e': '6-shampoo-basins-25oct-clean.jpg'}
 
 
 def fit(src, ref, w=None):
@@ -93,6 +99,10 @@ def master(key, m):
     S = fit(S, O, np.repeat(np.repeat(ring, 4, 0), 4, 1)[:O.shape[0], :O.shape[1]])   # the patch takes the original's colour
     a = ndimage.gaussian_filter(M, 10)[..., None]                                       # a soft 10 px edge at full size
     out = O * (1 - a) + S * a
+    if key in PATCH:
+        f, (x0, y0, x1, y1) = PATCH[key]; k = O.shape[1] / 1280
+        X0, Y0, X1, Y1 = (round(v * k) for v in (x0, y0, x1, y1))
+        out[Y0:Y1, X0:X1] = np.asarray(Image.open(MASTERS + f).convert('RGB'), dtype=np.float32)[Y0:Y1, X0:X1]
     Image.fromarray(np.clip(out, 0, 255).round().astype(np.uint8)).save(MASTERS + OUT[key], quality=96, subsampling=0)
     print(key, '->', MASTERS + OUT[key], O.shape[1::-1])
 
