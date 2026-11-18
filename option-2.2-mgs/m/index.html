@@ -1767,7 +1767,7 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph
   #pause .mani__in { display: flex; flex-direction: column; align-items: flex-start; }
   #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; font-size: 21px; } #pause .br { order: 3; } #pause .lead { order: 4; }
   /* the picture runs to both edges of the phone */
-  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); align-self: center; }
+  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); }   /* edge to edge: the margin alone pulls it to the screen's edge */
   #pause .br__ph { border-radius: 0; }
   #pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
 }
@@ -2097,7 +2097,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   <section class="s mani" id="pause" data-tone="light" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><img src="img/om-pause-guest.webp" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway" decoding="async"></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><img src="img/om-pause-guest.webp" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" sizes="(max-width: 700px) 112vw, (max-width: 2000px) 63vw, 45vw" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway" decoding="async"></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
@@ -2420,7 +2420,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="90c226490717";</script>
+<script>window.OM_BUILD="4fc3e82ead0c";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

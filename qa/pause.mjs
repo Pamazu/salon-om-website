@@ -21,9 +21,11 @@ for (const w of ws.split(',').map(Number)) {
     await jump(p, y);
     for (const t of w === 3230 ? [] : [700, 1600]) { await wait(p, t === 700 ? 700 : 900); await p.screenshot({ path: `${out}/${v}-${w}-t${t}.jpg`, type: 'jpeg', quality: 80 }); }
     await wait(p, 5200);
-    await p.screenshot({ path: `${out}/${v}-${w}.jpg`, type: 'jpeg', quality: 82 });
+    await p.screenshot({ path: `${out}/${v}-${w}.jpg`, type: 'jpeg', quality: 82, timeout: 180000 });
     const m = await p.evaluate(() => { const i = document.querySelector('#pause .br__ph img'), r = i.getBoundingClientRect();
-      return { css: [Math.round(r.width), Math.round(r.height)], file: [i.naturalWidth, i.naturalHeight], devPerFile: +(r.width * devicePixelRatio / i.naturalWidth).toFixed(2) }; });
+      // with srcset, naturalWidth is the slot's width, not the file's: read the width of the file the browser chose
+      const fw = +((i.currentSrc.match(/-(\d+)\.webp$/) || [])[1] || 0) || 1280;
+      return { css: [Math.round(r.width), Math.round(r.height)], file: i.currentSrc.split('/').pop(), fileW: fw, devPerFile: +(r.width * devicePixelRatio / fw).toFixed(2) }; });
     console.log(v, w, JSON.stringify(m));
     await p.close();
   }

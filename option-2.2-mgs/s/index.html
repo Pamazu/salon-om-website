@@ -1767,7 +1767,7 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph
   #pause .mani__in { display: flex; flex-direction: column; align-items: flex-start; }
   #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; font-size: 21px; } #pause .br { order: 3; } #pause .lead { order: 4; }
   /* the picture runs to both edges of the phone */
-  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); align-self: center; }
+  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); }   /* edge to edge: the margin alone pulls it to the screen's edge */
   #pause .br__ph { border-radius: 0; }
   #pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
 }
@@ -2310,7 +2310,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="fdfc5cec591a";</script>
+<script>window.OM_BUILD="4db6bd437afc";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
