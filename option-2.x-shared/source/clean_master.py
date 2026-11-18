@@ -27,7 +27,7 @@ MASTERS = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictu
 PHOTOS = {
     '10': ('10-color-bar.jpg', '10-color-bar-clean.png', '10-color-bar-5B3A1078.jpg', 'sr/10c.png', 55, [], [(0, 270, 110, 854), (110, 345, 335, 470), (110, 470, 430, 854), (690, 640, 990, 790)]),   # the mop's strip at the left edge; the counter's left end below the hanging tubes as one block (the re-render moved the heater and faucet: a tight mask left a ghost of them; a block reaching the rack put the re-render's garbled labels on real boxes, 17 Nov); pump bottle, glass, cups
     '11': ('11-styling-stations.jpg', '11-styling-stations-clean.png', '11-styling-stations-5B3A1083.jpg', 'sr/11c.png', 55, [], [(50, 735, 250, 1240)]),   # the cart's legs over the black mat
-    '6': ('6-shampoo-basins.jpg', '6-shampoo-basins-clean.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6c.png', 55, [], []),
+    '6': ('6-shampoo-basins.jpg', '6-shampoo-basins-clean.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6c.png', 55, [(590, 185, 745, 300), (865, 95, 1085, 245)], [(600, 300, 710, 395), (895, 240, 1040, 370), (840, 55, 1060, 118), (995, 245, 1280, 854), (1085, 0, 1280, 245)]),   # KEEP both shelves with their real bottles (the clean copy's 'litre bottles only' wrote fake brand text, ACTEDA, readable at 1:1, 18 Nov); ADD whole blocks (a tight mask left ghosts): the two wire racks, the lamp's arc over the cabinet, and the right side (the lamp's pole, the hair vacuum, the blurred foreground). Where the lamp crosses the real bottles it is removed by a local edit after this (lamp_over_shelf.py)
 }
 OUT = {'10': '10-color-bar-clean.jpg', '11': '11-styling-stations-clean.jpg', '6': '6-shampoo-basins-clean.jpg'}
 

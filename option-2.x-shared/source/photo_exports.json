@@ -1,4 +1,27 @@
 {
+ "meadow.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5120,
+  6400,
+  8000
+ ],
+ "om-menu-blonding.webp": [
+  640,
+  960,
+  1171
+ ],
+ "om-menu-finishing-touches.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2631
+ ],
  "om-menu-signature-color.webp": [
   640,
   960,
@@ -63,6 +86,15 @@
   640,
   960,
   1140
+ ],
+ "real-styling-stations.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5464
  ],
  "real-team-of-three.webp": [
   640,
