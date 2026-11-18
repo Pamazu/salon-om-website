@@ -16,9 +16,10 @@ def _prices(s):
 
 # a picture's AI label, wherever the picture shows (task a8c429a3): StoryLegal (msg a091eaf1, 18 Nov) rules that a retouch which
 # adds to or changes the room, or redraws the whole photo, says "Made with AI from real salon photos"; a retouch that only
-# removes clutter says nothing. Step 02's basins wall is J's 25 Oct edit, whose bottles the AI re-arranged
+# removes clutter says nothing. StoryLegal, 18 Nov (on a8c429a3): J's 25 Oct edit of the basins wall (step 02) owes none, so
+# no picture carries one today; the footer's AI line says some photos are retouched with AI
 AI_FROM_REAL = 'Made with AI from real salon photos'
-PICTURE_AI = {'real-shampoo-basins.webp': AI_FROM_REAL}
+PICTURE_AI = {}
 
 
 def ai_mark(text):
