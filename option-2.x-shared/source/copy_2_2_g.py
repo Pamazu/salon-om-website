@@ -160,8 +160,8 @@ SALON = [
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 
-COACHING = twin(SALON, IW.g_words(G))   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
+COACHING = twin(SALON, iw_entries('g', SALON))   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
   [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'The team', 'hosts'), ('04', 'Why Aveda', 'aveda'), ('05', 'Begin', 'begin')],
-  IW.G_MENU)
+  IW.NAV['g'])

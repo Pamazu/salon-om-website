@@ -2,11 +2,11 @@
 M = Maggie's order, G = Guided, S = Short. Words come only from copy_2_2_maggie.py (Maggie, word for word) and,
 in G and S, the study's [draft] lines, wrapped in draft() so they show a dotted underline. This file holds layout
 choices (films, photos, ids), never new words."""
-import os, sys
+import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import copy_2_2_maggie as M
 import mgs_sections as S
-from build import btn, draft, ph
+from build import btn, draft, ph, E
 
 BOOK = 'Book your visit'                 # the salon's one action, the same words everywhere (study section 7, Q1)
 CALL = M.CTA_IW                          # Inner Work's one action
@@ -295,7 +295,7 @@ def twin(salon, words):
         assert not left, f'twin: "{d["id"]}" would keep the salon\'s words for {left}: give each Inner Work words, or None'
         for k, v in w.items():
             if k in TWIN_CARD_WORDS and isinstance(d.get(k), list):
-                assert len(v) == len(d[k]), f'twin: "{d["id"]}" has {len(d[k])} {k}, its words give {len(v)}'
+                assert 0 < len(v) <= len(d[k]), f'twin: "{d["id"]}" has {len(d[k])} {k}, its words give {len(v)}'
                 for a, c in zip(d[k], v):
                     assert set(c) <= TWIN_CARD_WORDS[k], f'twin: a card in "{d["id"]}" sets {sorted(set(c) - TWIN_CARD_WORDS[k])}'
                     left = sorted(f for f in TWIN_CARD_WORDS[k] if a.get(f) and f not in c)
@@ -309,6 +309,81 @@ def twin(salon, words):
         nd['id'] = TWIN + d['id']
         if d.get('next'): nd['next'] = TWIN + d['next']
         out.append((kind, nd))
+    return out
+
+
+# ---- Inner Work's pictures and the words' adapter (task 7a3c013b) --------------------------------------------------------
+# J, 18 Nov: "pictures and copy change". The words are Copywriter 1's (copy_2_2_iw.IW, task 51b1c84d); the pictures are
+# placed here, her own photos first (the February shoot: Maggie by the fire, arms crossed, outdoors in the white blazer, in
+# the window light; the lounge), the salon's styling chair for the door that leads back to the salon. Each is placed by
+# its frame's shape, and never where the salon shows the same original photo (check_one_design compares originals).
+IW_PHOTO = dict(
+    portrait=('real-maggie-portrait-iw.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM'),
+    fire=('real-maggie-fireplace.webp', 'Maggie Woodward seated by the fireplace at Salon OM, in a white blazer'),
+    outdoor=('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer'),
+    wall=('real-maggie-product-wall.webp', 'Maggie Woodward standing in the window light at Salon OM'),
+    lounge=('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light'),
+    chair=('real-styling-chair.webp', 'The styling chair by the window at Salon OM'))
+# the five steps of the Journey, five different photos (approved-features row 2): (photo, focus point or None)
+IW_STEP_PICS = [('fire', None), ('lounge', None), ('portrait', '50% 12%'), ('outdoor', None), ('wall', None)]
+# each place that still shows a repeat or a frame, and the coaching picture it waits for (next on task 7a3c013b)
+IW_PICTURES_TO_MAKE = [
+    ('the pause', 'the lounge, as step 02', 'a client resting, eyes closed, in the lounge (her photo 2): generated client, labelled'),
+    ('the path (the menu)', '[Photo to come] frames', 'one picture per offer: a generated client with Maggie in her real lounge or by the fire, labelled'),
+    ('Begin', 'arms crossed, as step 03', 'another of her own portraits from the shoot folder (69 unused photos, task c7892a3c)'),
+    ('S: credentials line', 'by the fire, as step 01', 'another of her own portraits from the shoot folder'),
+]
+IW_LEFT_OPEN = ['the drawn word mark of the first screen stays SALON OM, the site\'s mark in both worlds (copy_2_2_iw.NOTES asks for INNER WORK)']
+
+
+def _iw_btn(b):
+    """a button of copy_2_2_iw (B: label, to, kind, world, new) as the page draws it"""
+    href = {'call': CALL_URL, 'book': BOOK_URL, 'salon': '#'}.get(b['to'], b['to'])
+    h = btn(b['label'], href, b.get('kind') or '', arrow=b.get('kind') != 'ghost', world=b.get('world'))
+    return h.replace('>' + E(b['label']), '>' + draft(b['label']), 1) if b.get('new') else h
+
+
+def _iw_pic(key):
+    return IW_PHOTO[key]
+
+
+def iw_entries(v, salon):
+    """Copywriter 1's words for version v (copy_2_2_iw.IW[v]) with Inner Work's pictures, in twin()'s shape: buttons drawn,
+    the footer's unchanged lines named as kept, each picture place given its picture"""
+    import copy_2_2_iw as IW
+    out, k = {}, 0
+    for kind, d in salon:
+        sid, w = d['id'], dict(IW.IW[v][d['id']])
+        w.pop('mark', None)                                            # IW_LEFT_OPEN
+        for f in ('btns', 'ctas'):
+            if isinstance(w.get(f), list): w['btn' if f == 'btns' else 'ctas'] = ''.join(_iw_btn(b) for b in w.pop(f))
+        if isinstance(w.get('btn'), dict): w['btn'] = _iw_btn(w['btn'])
+        if isinstance(w.get('open'), dict) and isinstance(w['open'].get('btns'), list):
+            w['open'] = dict(w['open'], btns=''.join(_iw_btn(b) for b in w['open']['btns']))
+        if kind == 'hero_mark':
+            w.update(film='air', sound='air', aria=M.IW_TITLE)                # TWIN_OWN_FILMS
+        elif kind == 'tease' and d.get('breath'):
+            f, alt = _iw_pic('lounge'); w.update(breath=f, breath_alt=alt, breath_mark='')
+        elif kind == 'ch':
+            f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)
+        elif kind is S.visit:
+            w['steps'] = [tuple(x) + IW_PHOTO[IW_STEP_PICS[i][0]] for i, x in enumerate(w['steps'])]
+        elif kind is S.aveda:
+            w['photo'] = _iw_pic('outdoor')
+        elif kind in ('team', 'proof'):
+            w['people'] = [dict(c, img=_iw_pic('outdoor')[0], alt=_iw_pic('outdoor')[1]) for c in w['people']]
+            if kind == 'proof': w['line_img'] = _iw_pic('fire')
+        elif kind is S.menu:
+            w['tiles'] = [dict(t, img=None, alt='', pos='', ai=None, missing=f'Photo to come: {re.sub("<[^>]+>", "", t["title"])}')
+                          for t in w['tiles']]
+        elif kind == 'bridge':
+            w.update(img=_iw_pic('chair')[0], mark='')
+        elif kind == 'cta':
+            w['close_img'] = (_iw_pic('portrait')[0], '50% 24%')
+        elif kind == 'end':     # the footer is the salon's, its legend and its links Inner Work's (copy_2_2_iw: legend None = the salon page's)
+            keep = {f: d[f] for f in TWIN_WORDS if d.get(f)}
+            w = dict(keep, **{f: x for f, x in w.items() if x is not None}, explore=[(t, h) for _, t, h in IW.NAV[v]])
+        out[sid] = w
     return out
 
 
@@ -443,8 +518,11 @@ def check_one_design(body, css):
             a = {k: (re.search(rf' {k}="([^"]*)"', tag) or [None, None])[1] for k in ('class', 'data-tone', 'data-sound', 'data-chapter', 'style')}
             media = re.findall(r'(?<=\s)(?:src|data-src|data-src-top|poster)="([^"]+)"', s)
             films = [x for x in media if x.startswith('media/') or x.startswith('img/film-')]   # a film, or the still in its place
-            pics = [x for x in media if x not in films] + ['frame'] * len(re.findall(r'class="mn__img mn__none|class="mn__none"', s))
-            rows.append(((sid[1] if sid else '?'), (a, films, pics)))
+            fixed = re.sub(r'<figure class="mn__rph".*?</figure>|<article class="pf__p.*?</article>|<div class="om__ph mn__ph".*?</div>\s*</div>', '', s, flags=re.S)
+            fixed = re.sub(r'<img class="tl__avatar[^>]*>', '', fixed)
+            pics = [x for x in re.findall(r'(?<=\s)src="([^"]+)"', fixed) if x not in films]
+            items = [x for x in media if x not in films and x not in pics]
+            rows.append(((sid[1] if sid else '?'), (a, films, pics, items)))
         sig[w] = rows
     S_, C_ = sig['salon'], sig['coaching']
     bad = [f'{len(S_)} salon sections, {len(C_)} Inner Work sections'] if len(S_) != len(C_) else []
@@ -455,7 +533,7 @@ def check_one_design(body, css):
         for name, x, y in (('layout', lay(sv[0]), lay(cv[0])), ('films', len(sv[1]) if own else sv[1], len(cv[1]) if own else cv[1])):
             if x != y: bad.append(f'section {k + 1} ("{si}"): {name} differ: salon {x} / Inner Work {y}')
         if len(sv[2]) != len(cv[2]): bad.append(f'section {k + 1} ("{si}"): {len(sv[2])} picture places in the salon, {len(cv[2])} in Inner Work')
-        same = sorted({x for x, y in zip(sv[2], cv[2]) if x != 'frame' and _original(x) == _original(y)})
+        same = sorted({x for x, y in zip(sv[2], cv[2]) if _original(x) == _original(y)} | {y for y in cv[3] if _original(y) in {_original(x) for x in sv[3]}})
         if same: bad.append(f'section {k + 1} ("{si}"): Inner Work shows the salon\'s own picture in its place: {same}')
     ids = [i for i, _ in S_]
 

@@ -300,6 +300,8 @@ def aveda(d, world):
         inner = f'<span data-count="{m.group(1)}">0</span>{m.group(2)}' if (m and len(x) > 2 and x[2]) else num
         return f'<div class="av__row a-up" style="--d:{0.75 + k * .16:.2f}s"><dt>{inner}</dt><dd>{label}</dd></div>'
     sub = ''.join(f'<p class="av__sub a-up" style="--d:{0.55 + k * .1:.2f}s">{p}</p>' for k, p in enumerate(d.get('paras', [])))
+    # a label whose rows are named by words, not numbers (Inner Work's six practices, task 7a3c013b): each name over its line
+    words = any(not re.match(r'^[\d$]', re.sub(r'<[^>]+>', '', x[0])) and len(re.sub(r'<[^>]+>', '', x[0])) > 7 for x in d['facts'])
     btn = f'<div class="av__btn a-up" style="--d:.5s">{d["btn"]}</div>' if d.get('btn') else ''
     return f'''<section class="s s--auto av" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
     <div class="av__in s__leave">
@@ -311,7 +313,7 @@ def aveda(d, world):
           {sub}
         </div>
         <div class="av__card">
-          <dl class="av__rows">{''.join(row(x, k) for k, x in enumerate(d['facts']))}</dl>
+          <dl class="av__rows{' av__rows--words' if words else ''}">{''.join(row(x, k) for k, x in enumerate(d['facts']))}</dl>
           <small class="av__src a-fade" style="--d:1.5s">{d['src']}</small>
         </div>
       </div>

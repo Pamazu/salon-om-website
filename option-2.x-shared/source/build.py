@@ -146,7 +146,7 @@ def tease(d):
     # (mgs_sections.ai_mark, passed in); 2.2-2.4 never set `breath`, so their pages stay byte-identical
     br = (f'<figure class="br"><div class="br__ph"><img src="img/{d["breath"]}" alt="{E(d.get("breath_alt", ""))}" decoding="async"></div>'
           f'{d.get("breath_mark", "")}</figure>') if d.get('breath') else ''
-    return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}>
+    return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}{' data-long' if _MGS and len(re.sub(r'<[^>]+>', '', d['text'])) > 240 else ''}>
     {extra}{ring}
     <div class="s__leave mani__in">
       {br}<p class="mani__label label a-left" style="--d:.1s">{d['label']}</p>
@@ -294,7 +294,7 @@ def team_letter(d):
     return f'''<section class="s team-letter{' tl--wide' if d.get('ph_wide') else ''}" id="{d['id']}" data-tone="light" data-sound="{d.get('sound','bed')}" aria-labelledby="{d['id']}-t">
     <figure class="tl__ph"><img src="img/{m['img']}" alt="{E(m['alt'])}" decoding="async">{tag}</figure>
     <div class="tl__copy s__leave">
-      {head(d, 'tl', 'tl__intro', .35)}{(f'<div class="tl__lead a-up" style="--d:.95s"><h3>{m["name"]}</h3><p class="tl__role tx">{m["role"]}</p></div>') if d.get('lead') else ''}
+      {head(d, 'tl', 'tl__intro', .35)}{(f'<div class="tl__lead a-up" style="--d:.95s"><h3>{m["name"]}</h3><p class="tl__role tx">{m["role"]}</p>' + (('<ul class="tl__creds tx">' + ''.join(f'<li>{c}</li>' for c in m['desc']) + '</ul>') if isinstance(m.get('desc'), list) else '') + '</div>') if d.get('lead') else ''}
       {f'<blockquote class="tl__note a-up" style="--d:1.05s"><span class="tx">“{d["note"]}”</span><cite class="tx">{d["sign"]}</cite></blockquote>' if d.get('note') else ''}
       {withs}{('<div class="tl__btn a-up" style="--d:1.5s">' + d['btn'] + '</div>') if d.get('btn') else ''}
     </div>
