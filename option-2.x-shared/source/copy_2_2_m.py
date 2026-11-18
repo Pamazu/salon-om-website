@@ -8,6 +8,7 @@ Begin, Footer. Where her words are still to come, a visible [placeholder]. Nothi
 words are the one action of each world ('Book your visit', 'Book a Connection Call'), placed as in G (J: "just 1 for
 each salon and coaching ... but throughout the site"; task 0ab956d4)."""
 from mgs_parts import *
+import copy_2_2_iw as IW
 
 SALON = [
   salon_hero(proof=False),
@@ -29,8 +30,8 @@ SALON = [
   begin(summary=False),
   salon_end(LEGEND_M),
 ]
-COACHING = [iw_hero(), iw_deeper(), iw_how(cta=True), iw_credentials(), iw_path(cta=True), iw_voices_placeholder(), iw_begin(), iw_end(LEGEND_M, exact=True)]
+COACHING = twin(SALON, IW.M_WORDS)      # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
 
 CFG = cfg('m', "Maggie's order", SALON, COACHING,
   [('01', 'The pause', 'pause'), ('02', 'The visit', 'arrive'), ('03', 'Team and menu', 'hosts'), ('04', 'Voices', 'kind'), ('05', 'Begin', 'begin')],
-  [('01', 'Look a little deeper', 'c-deeper'), ('02', 'How we work together', 'c-how'), ('03', 'Credentials', 'c-cred'), ('04', 'The path', 'c-path'), ('05', 'Begin', 'c-begin')])
+  IW.M_MENU)

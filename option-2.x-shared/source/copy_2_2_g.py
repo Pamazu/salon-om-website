@@ -9,6 +9,7 @@ answer, btn = the world's one action. Round 2 adds five fields, for Designer 1 t
   answer     an objection answered where it comes up (the menu, the path)
   btn        the world's one action on sections that had none (OM, Team, the menu, Look a little deeper)"""
 from mgs_parts import *
+import copy_2_2_iw as IW
 
 # ---- THE CYCLE MAP (round 4, task 0fea0949; J 4 Nov: the whole page is one Hook, Proof, Retain, Reward, CTA with nested
 # cycles; a CTA right after a payoff). One line per section, in Designer 1's round 4 order: HOOK / PROOF / RETAIN / REWARD / CTA.
@@ -159,17 +160,8 @@ SALON = [
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 
-COACHING = [
-  _with(iw_hero(short_cred=True), rot=draft(G['rot_iw'])),
-  _with(iw_deeper(), btn=btn(CALL, CALL_URL, arrow=True)),
-  iw_how(cta=True),                                  # round 6: her own closing line is the one reward
-  _with(iw_credentials(), title=draft(G['cred_hook']), lead='Maggie Woodward'),
-  _with(iw_path(cta=True), title=draft(G['path_hook']), reward=draft(G['path_reward'])),
-  iw_voices_placeholder(),                           # round 3: her section 5, client words still being gathered
-  _with(iw_begin(), title=M.FIRST['close'], text=draft(G['iw_begin_text']), reward=draft(G['iw_begin_reward'])),
-  iw_end(LEGEND),
-]
+COACHING = twin(SALON, IW.g_words(G))   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
   [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'The team', 'hosts'), ('04', 'Why Aveda', 'aveda'), ('05', 'Begin', 'begin')],
-  [('01', 'Look a little deeper', 'c-deeper'), ('02', 'How we work together', 'c-how'), ('03', 'Credentials', 'c-cred'), ('04', 'The path', 'c-path'), ('05', 'Begin', 'c-begin')])
+  IW.G_MENU)

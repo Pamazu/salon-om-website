@@ -8,10 +8,28 @@
    from where it is. The moment the preview starts to leave, all five lift off where the reader saw them and stay there
    while the page slides away beneath them, already turning to the rail's ivory, so a later stop never starts from
    wherever the slide has carried it (QA 17 Nov: in Safari stops 03 to 05 left from the top edge, grey on the photo). Replaces round 5's numbers-only morph (its CSS still targeted the old list, so the names and the
-   line stayed behind). Off in ?shot and with reduced motion, where the rail simply fades in with the steps. */
+   line stayed behind). Off in ?shot and with reduced motion, where the rail simply fades in with the steps.
+   Task 7a3c013b (J 18 Nov: Inner Work is the salon world's twin, only the copy changes): one rail for both worlds. Each of
+   its links carries Inner Work's step name and link beside the salon's and takes its world's as the world changes; each
+   world's preview flies into it while that world is on screen, and a world switch (which starts at the top) sets both
+   previews' stops back on their line. */
 (function () {
-  var sec = document.querySelector('#visit.lnsec'), rail = document.getElementById('rail'), root = document.documentElement;
-  if (!sec || !rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches || !document.body.animate) return;
+  var root = document.documentElement, links = [].slice.call(document.querySelectorAll('#rail a[data-c-href]'));
+  if (!links.length) return;
+  links.forEach(function (a) { a._salon = [a.getAttribute('href'), a.querySelector('span').textContent]; });
+  function apply() {
+    var c = root.getAttribute('data-world') === 'coaching';
+    links.forEach(function (a) {
+      a.setAttribute('href', c ? a.getAttribute('data-c-href') : a._salon[0]);
+      a.querySelector('span').textContent = c ? a.getAttribute('data-c-name') : a._salon[1];
+    });
+  }
+  new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-world'] });
+  apply();
+})();
+[].forEach.call(document.querySelectorAll('#visit.lnsec, #c-visit.lnsec'), function (sec) {
+  var rail = document.getElementById('rail'), root = document.documentElement, main = sec.closest('main');
+  if (!rail || root.hasAttribute('data-shot') || matchMedia('(prefers-reduced-motion: reduce)').matches || !document.body.animate) return;
   var nx = sec.nextElementSibling; if (!nx || !nx.classList.contains('ch')) return;   // only where step 01 follows the preview
   var stops = [].slice.call(sec.querySelectorAll('.ln__stop')), links = [].slice.call(rail.querySelectorAll('a'));
   if (!stops.length || links.length < stops.length) return;
@@ -133,10 +151,11 @@
     st.forEach(function (o, k) { settle(o, k, where); });
   }
 
+  new MutationObserver(function () { jump('line'); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
   var lastY = scrollY;
   (function frame() {
     var y = scrollY, d = y > lastY + .5 ? 1 : y < lastY - .5 ? -1 : 0; lastY = y;
-    if (d) {
+    if (d && !main.hidden) {
       var r = sec.getBoundingClientRect(), vh = innerHeight, railOn = links[0].getBoundingClientRect().width > 0;
       var anyOnLine = st.some(function (o) { return o.at === 'line' || o.at === 'in'; }), anyAway = st.some(function (o) { return o.at === 'rail' || o.at === 'out'; });
       if (d > 0 && anyOnLine && r.height && r.top < -vh * .06) { if (r.bottom <= 0 || !railOn) jump('rail'); else send('out'); }
@@ -144,7 +163,14 @@
     }
     requestAnimationFrame(frame);
   })();
-})();
+});
+/* task 7a3c013b: the pause's opening sentence leads (mgs.css .is-head): its words, up to the first full stop or question
+   mark, in each world. And a voices block with a single quote shows it (engine.js only turns quotes on from two, to rotate) */
+[].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
+  var w = t.querySelectorAll('.wd');
+  for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
+});
+[].forEach.call(document.querySelectorAll('[data-quotes]'), function (q) { var it = q.querySelectorAll('.q'); if (it.length === 1) it[0].classList.add('is-on'); });
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
 (function () {
@@ -344,11 +370,11 @@
 [].forEach.call(document.querySelectorAll('.mn + .vo'), function (s) { s.setAttribute('data-tone', 'light'); });
 /* round 4: the salon world's dark teases are dark again in M, G and S (mgs.css), so the header reads them as dark; 2.2
    next marks them light (next.js), which ran first */
-[].forEach.call(document.querySelectorAll('main[data-world="salon"] .mani.dark'), function (s) { s.setAttribute('data-tone', 'dark'); });
+[].forEach.call(document.querySelectorAll('main[data-world] .mani.dark'), function (s) { s.setAttribute('data-tone', 'dark'); });
 /* round 5 (task 2846db82): the voices slide is round 3's centred one again, on the forest ground (mgs.css), so the header
    reads it as dark (next.js marked it light for 2.2's clay); a long quote is set smaller so the quotes' shared box, sized
    by the longest, does not leave a short quote floating far below the quote mark */
-[].forEach.call(document.querySelectorAll('main[data-world="salon"] .voices'), function (s) { s.setAttribute('data-tone', 'dark'); });
+[].forEach.call(document.querySelectorAll('main[data-world] .voices'), function (s) { s.setAttribute('data-tone', 'dark'); });
 [].forEach.call(document.querySelectorAll('.voices .q blockquote'), function (b) { if (b.textContent.trim().length > 90) b.parentNode.classList.add('is-long'); });
 /* task b36dde1f (J, 17 Nov: "The videos are not moving"): the films start the way a person arrives, on every Safari.
    The shared engine attaches each film two screens ahead and, 4.5 s later, if no frame has loaded yet, swaps it to a

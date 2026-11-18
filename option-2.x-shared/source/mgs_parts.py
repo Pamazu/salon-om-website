@@ -128,10 +128,9 @@ def film_still(name):
         return '<div class="s__media"><div class="s__zoom"></div></div>'
     f, alt = FILM_STILLS[name]
     return f'<div class="s__media"><div class="s__zoom"><img src="img/{f}" alt="" decoding="async"></div></div>'
-# Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
-# round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
-CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}
-CRED_IMG = ('real-maggie-outdoor.webp', 'Maggie Woodward outside, in a white blazer')
+# Begin has its own photo, used nowhere else on the page: Maggie by the Aveda shelves (round 4: the empty chair by the
+# window moved to the pause)
+CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%')}    # Inner Work's: its words' close_img (copy_2_2_iw.py)
 FOOT_VISIT = 'Salon OM in person'   # round 4 (task 0fea0949, J "GO GO" 11 Nov): where Inner Work happens stays unsaid until Maggie says it
 TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the Aveda shelves at Salon OM'),
             ('real-katie.webp', 'Katie Paonessa at Salon OM'),
@@ -139,6 +138,8 @@ TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the A
 
 
 def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
+    rail = [(s[0], STEP_ID[k] if steps else 'visit') for k, s in enumerate(M.STEPS)]
+    chs = [d for kind, d in coaching if kind == 'ch']      # the twin's five steps name the rail in Inner Work
     return {
       'title': f'Salon OM · An Aveda Concept Salon · Option 2.2-{letter}', 'theme': 'dawn', 'draft': f'Option 2.2 · {name}',
       'desc': 'Where Beauty and Inner Work Belong. Salon OM, an Aveda Concept Salon, and Inner Work with Maggie, both with Maggie Woodward.',
@@ -147,7 +148,8 @@ def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
       'book_salon_label': BOOK, 'book_coaching_label': CALL,
       'menu_salon_btn': BOOK, 'menu_coaching_btn': CALL,
       'foot_visit': FOOT_VISIT,
-      'rail': [(s[0], STEP_ID[k] if steps else 'visit') for k, s in enumerate(M.STEPS)],
+      'rail': rail,
+      'rail_coaching': [(chs[k]['name'] if chs else t, TWIN + h) for k, (t, h) in enumerate(rail)],
       'menu': {'salon': menu_salon, 'coaching': menu_coaching},
       'salon': _close(salon), 'coaching': _close(coaching),
     }
@@ -159,7 +161,7 @@ def _close(slides):
     for kind, d in slides:
         if kind == 'end' and out and out[-1][0] == 'cta':
             c = out.pop()[1]
-            out.append((S.close, dict(cta=c, end=dict(d, foot_visit=FOOT_VISIT), img=CLOSE_IMG[c['id']])))
+            out.append((S.close, dict(cta=c, end=dict(d, foot_visit=FOOT_VISIT), img=c.get('close_img') or CLOSE_IMG[c['id']])))
         else:
             out.append((kind, d))
     return out
@@ -255,67 +257,221 @@ def salon_end(legend, visit='arrive', explore=None, iw=True):
                         explore=explore or [('The visit', visit), ('The team', 'hosts'), ('The menu', 'services'), ('Begin', 'begin')]))
 
 
-# ---------------------------------------------------------------- Inner Work with Maggie
-def iw_hero(short_cred=False):
-    o = M.IW_OPEN
-    d = dict(id='c-top', film='air', sound='air', next='c-deeper', at='.5s', sub_at='1.4s', foot_at='1.7s', cls='hero--long',
-             eyebrow=M.IW_TITLE, title=o['title'], sub=o['sub'] + ' ' + o['line'],
-             ctas=btn(o['btns'][0], CALL_URL, arrow=True) + btn(o['btns'][1], '#c-how', 'ghost'), note=o['note'])
-    if short_cred: d['line'] = M.CRED_SHORT
-    return ('hero_words', d)
+# ---------------------------------------------------------------- Inner Work with Maggie: the salon world's twin
+# J, 18 Nov 2026 (task 7a3c013b): "I said both would follow the same style, only the copy is what is going to change. Same
+# sections, same color" and "Not only that but also the secuence of sections. Only the copy is what changes." So the
+# Inner Work world IS the salon world of the same version (M, G or S): its sections in their order, with their films,
+# sounds, tones, colours, layouts and motion. J, 18 Nov, 15:4x Z: "oh sorry, yeah the pictures change, only the pictures. The
+# sequence, sections, colors, style, films stay the same. So pictures and copy change". twin() lays Inner Work's words and
+# pictures (copy_2_2_iw.py) over it and nothing else.
+TWIN = 'c-'          # every Inner Work section id is its salon twin's, with this in front
+# the fields that carry words (and the links of their buttons), and those that carry pictures (with their alt text, crop
+# and AI label). Anything else (a film, sound, tone, layout flag) stays the salon section's; an entry naming one stops the build
+TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open', 'aria', 'label', 'text', 'after', 'accents',
+              'proof_line', 'btn', 'reward', 'answer', 'title', 'rows', 'name', 'sub', 'body', 'specs', 'paras', 'quote', 'cite',
+              'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
+              'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
+TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
+# lists of cards: each card takes its words, and its picture
+TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}
 
 
-def iw_deeper(short=False):
-    d = M.DEEPER
-    paras = [d['paras'][0], d['paras'][2]] if short else d['paras']
-    return (S.photo_prose, dict(id='c-deeper', sound='air', eyebrow='Recognition', title=d['title'], lead=d['lead'], paras=paras, close=d['close'],
-                                photo=('real-maggie-portrait-iw.webp', 'Maggie Woodward with her arms crossed, smiling, at Salon OM', 'side', '50% 24%')))
+def twin(salon, words):
+    """the Inner Work world: each salon section (kind, d) in order, its id (and the id it scrolls to) prefixed TWIN, its word
+    and picture fields replaced by words[<salon id>]. Every salon section needs an entry; S's visit steps are
+    (n, name, line, img, alt): three fields keep the salon's picture, five give Inner Work's"""
+    ids = [d['id'] for _, d in salon]
+    missing, extra = [i for i in ids if i not in words], [i for i in words if i not in ids]
+    assert not missing and not extra, f'twin: Inner Work words missing for {missing}, or for no salon section: {extra}'
+    out = []
+    for kind, d in salon:
+        w, nd = words[d['id']], dict(d)
+        bad = sorted(set(w) - TWIN_WORDS - TWIN_PICTURES)
+        assert not bad, f'twin: the entry for "{d["id"]}" sets {bad}; films, sounds, colours and layout stay the salon\'s'
+        left = sorted(k for k in TWIN_WORDS if d.get(k) and k not in w)
+        assert not left, f'twin: "{d["id"]}" would keep the salon\'s words for {left}: give each Inner Work words, or None'
+        for k, v in w.items():
+            if k in TWIN_CARD_WORDS and isinstance(d.get(k), list):
+                assert len(v) == len(d[k]), f'twin: "{d["id"]}" has {len(d[k])} {k}, its words give {len(v)}'
+                for a, c in zip(d[k], v):
+                    assert set(c) <= TWIN_CARD_WORDS[k], f'twin: a card in "{d["id"]}" sets {sorted(set(c) - TWIN_CARD_WORDS[k])}'
+                    left = sorted(f for f in TWIN_CARD_WORDS[k] if a.get(f) and f not in c)
+                    assert not left, f'twin: a card in "{d["id"]}" would keep the salon\'s words for {left}'
+                nd[k] = [dict(a, **b) for a, b in zip(d[k], v)]
+            elif k == 'steps' and d.get('steps') and len(d['steps'][0]) == 5:
+                assert len(v) == len(d['steps']), f'twin: "{d["id"]}" has {len(d["steps"])} steps, its words give {len(v)}'
+                nd[k] = [tuple(b) + tuple(a[len(b):]) for a, b in zip(d['steps'], v)]
+            else:
+                nd[k] = v
+        nd['id'] = TWIN + d['id']
+        if d.get('next'): nd['next'] = TWIN + d['next']
+        out.append((kind, nd))
+    return out
 
 
-def iw_how(cta=False, short=False):
-    h = M.HOW
-    d = dict(id='c-how', sound='air', eyebrow=h['eyebrow'], title=h['title'], paras=[] if short else h['paras'],
-             list=h['practices'], small='' if short else h['cred_line'], close=h['close'])
-    if cta: d['btn'] = btn(CALL, CALL_URL, arrow=True)
-    d['photo'] = ('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light', 'band', '50% 14%')
-    return (S.photo_deep_prose, d)
+# ---- one look for both worlds, and the check that keeps it so (task 7a3c013b) ---------------------------------------------
+# The CSS and scripts M, G and S share with 2.2 (add.css, next.css, next.js, engine.js) still give Inner Work a palette of
+# its own and keep some looks and the step rail to the salon; 2.2-2.4 must stay byte-identical, so those files are left as
+# they are and their M/G/S copy is rewritten at build: a rule scoped to one world may only decide what shows; a salon-only
+# look is every world's; a rule on a salon section's id also covers its twin.
+WORLD_PROPS = {'display', 'visibility', 'pointer-events', 'transform'}   # what shows, and the switch pill's side
 
 
-def iw_credentials(n=None):
-    """n: only her first n credentials (S)"""
-    return (S.cred, dict(id='c-cred', sound='air', eyebrow='Credentials', title='Maggie Woodward', list=[(c, '') for c in M.CREDENTIALS[:n]],
-                         img=CRED_IMG[0], alt=CRED_IMG[1]))
+def _css_items(css):
+    """top-level items of a stylesheet: (prelude, body) for each block, (text, None) for whatever lies between"""
+    out, i, n, start = [], 0, len(css), 0
+    while i < n:
+        if css.startswith('/*', i):
+            i = css.index('*/', i + 2) + 2
+        elif css[i] == '{':
+            j, depth = i + 1, 1
+            while depth:
+                if css.startswith('/*', j): j = css.index('*/', j + 2) + 2; continue
+                depth += (css[j] == '{') - (css[j] == '}'); j += 1
+            out.append((css[start:i], css[i + 1:j - 1])); i = start = j
+        else:
+            i += 1
+    if start < n: out.append((css[start:], None))
+    return out
 
 
-def iw_path(cta=False):
-    return (S.path_line, dict(id='c-path', sound='air', light=True, eyebrow='The path', title=ph(M.TO_COME['path_title']),
-                          steps=[(f'0{k + 1}', n, t + (' ' + draft(A11['call']) if k == 0 else '')) for k, (_, n, t) in enumerate(M.PATH)],
-                          after=M.PRICING + ' ' + draft(A11['where']),
-                          btn=btn(CALL, CALL_URL, arrow=True) if cta else ''))
+def _lead(prelude):
+    """(comments and space before the selector, the selector)"""
+    import re
+    m = re.match(r'((?:\s|/\*.*?\*/)*)(.*)$', prelude, re.S)
+    return m.group(1), m.group(2).strip()
 
 
-def iw_voices_placeholder():
-    return ('tease', dict(id='c-voices', sound='air', label='Voices', text=M.TO_COME['voices']))
+def _decls(body):
+    out, depth, cur = [], 0, ''
+    for ch in body:
+        depth += (ch == '(') - (ch == ')')
+        if ch == ';' and depth == 0: out.append(cur); cur = ''
+        else: cur += ch
+    return [d for d in out + [cur] if d.strip()]
 
 
-def iw_begin():
-    return ('cta', dict(id='c-begin', sound='air', film='air', cls='cta--long', label='Begin', title=ph(M.TO_COME['closing']),
-                        text='', btn=btn(CALL, CALL_URL, 'light', arrow=True)))
+def _prop(decl):
+    import re
+    return re.sub(r'/\*.*?\*/', '', decl, flags=re.S).split(':', 1)[0].strip().lower()
 
 
-def iw_end(legend, exact=False):
-    # exact (M): her 11 Nov footer as written, the same on every page. G and S: Inner Work's own column with where it
-    # happens (Maggie, 11 Nov, task d7b789ee: privately in the salon outside its hours, or online)
-    if exact:
-        where = dict(visit=[SALON_INFO['address'], SALON_INFO['hours'], SALON_INFO['hours_note']],
-                     connect=[SALON_INFO['phone'], SALON_INFO['email']], iw_block=IW_BLOCK)
-    else:
-        where = dict(visit=['Privately at Salon OM, outside salon hours', 'Online, wherever you are'], connect=M.FOOT_IW)
-    return ('end', dict(id='c-letters', sound='air', title='', name=M.FOOTER['name'], no_letters=True, **where,
-                        tagline=M.FOOTER['tagline'] if exact else M.FIRST['tagline'],   # M: her footer on every page
-                        brand_lines=[M.FOOTER['salon']], copyright=M.FOOTER['copyright'],
-                        disclaimer=M.DISCLAIMER, legend=legend,
-                        explore=[('Look a little deeper', 'c-deeper'), ('How we work together', 'c-how'), ('The path', 'c-path'), ('Begin', 'c-begin')]))
+def _twin_ids(sel, ids):
+    import re
+    return [x for x in ids if re.search(rf'#{re.escape(x)}(?![\w-])', sel)]
+
+
+def one_design_css(css, ids, shared=True):
+    """css with both worlds on one look. shared=True (the 2.2 files): a coaching look rule is dropped, a world-scoped rule
+    keeps only its WORLD_PROPS. shared=False (mgs.css, M/G/S's own): such a rule stops the build instead, so a new one
+    is never silently lost. Both: main[data-world="salon"] becomes main[data-world]; a selector on a salon section id
+    gains its TWIN copy."""
+    import re
+    out = []
+    for prelude, body in _css_items(css):
+        if body is None:
+            out.append(prelude); continue
+        lead, sel = _lead(prelude)
+        if sel.startswith('@'):
+            nested = sel.split()[0] in ('@media', '@supports', '@container', '@layer')
+            out.append(prelude + '{' + (one_design_css(body, ids, shared) if nested else body) + '}'); continue
+        full, world = [], []
+        for s in _split_selectors(sel):
+            s = s.replace('main[data-world="salon"]', 'main[data-world]')
+            if 'data-world="' in s:
+                look = 'main[data-world="coaching"]' in s or not all(_prop(d) in WORLD_PROPS for d in _decls(body))
+                assert shared or not look, f'mgs.css gives one world a look of its own: {s}'
+                if 'main[data-world="coaching"]' not in s: world.append(s)
+                continue
+            full.append(s)
+            for x in _twin_ids(s, ids):
+                full.append(re.sub(rf'#{re.escape(x)}(?![\w-])', '#' + TWIN + x, s))
+        if full == _split_selectors(sel) and not world:
+            out.append(prelude + '{' + body + '}'); continue
+        rules = []
+        if full: rules.append(', '.join(full) + ' {' + body + '}')
+        kept = [d for d in _decls(body) if _prop(d) in WORLD_PROPS]
+        if world and kept: rules.append(', '.join(world) + ' {' + ';'.join(kept).strip() + '; }')
+        out.append(lead + '\n'.join(rules))
+    return ''.join(out)
+
+
+# the shared scripts, the same way: exact lines, each found once or the build stops (so a change to them is noticed)
+ONE_DESIGN_JS = [
+    # engine.js: the step rail shows in whichever world's steps are on screen, not only the salon's
+    ("rail.classList.toggle('is-on', chapter >= 0 && world === 'salon');", "rail.classList.toggle('is-on', chapter >= 0);"),
+    # next.js: Inner Work's own header tone over its films (.hdr.is-film) has no look left to switch; it finds no films now
+    ("""document.querySelectorAll('main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta)')""", '[]'),
+]
+
+
+def one_design_js(js):
+    for a, b in ONE_DESIGN_JS:
+        if a in js: js = js.replace(a, b)
+    return js.replace('main[data-world="salon"]', 'main[data-world]')      # next.js: the salon's light-tone sections, both worlds
+
+
+def _original(pic):
+    """the photo a site picture is made from (export_photos.SOURCE: 'real-lounge-iw.webp' and 'real-lounge.webp' are both
+    original 2), so a regraded copy of the salon's photo never passes for Inner Work's own"""
+    import re
+    global _SOURCES
+    if '_SOURCES' not in globals():
+        txt = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'export_photos.py')).read()
+        _SOURCES = dict(re.findall(r"'([\w.-]+\.webp)':\s*'([om]:[^']+)'", txt))
+    name = pic.split('/')[-1]
+    return _SOURCES.get(name, name)
+
+
+def check_one_design(body, css):
+    """the build check (task 7a3c013b): the shipped page's two worlds have the same sections in the same order, each of the
+    same type and layout, tone, sound and chapter, with the same films and the same number of picture places, and no salon
+    picture shown in its Inner Work twin's place (J 18 Nov: "pictures and copy change"); and no CSS rule gives one world a
+    look of its own. Any difference stops the build with what differs."""
+    import re
+    sig = {}
+    for w in ('salon', 'coaching'):
+        m = re.search(rf'<main id="main-{w}" data-world="{w}"[^>]*>(.*?)</main>', body, re.S)
+        assert m, f'one design: no {w} world on the page'
+        rows = []
+        for s in re.split(r'(?=<section )', m.group(1))[1:]:
+            tag = re.match(r'<section [^>]*>', s).group(0)
+            sid = re.search(r' id="([^"]*)"', tag)
+            a = {k: (re.search(rf' {k}="([^"]*)"', tag) or [None, None])[1] for k in ('class', 'data-tone', 'data-sound', 'data-chapter', 'style')}
+            media = re.findall(r'(?<=\s)(?:src|data-src|data-src-top|poster)="([^"]+)"', s)
+            films = [x for x in media if x.startswith('media/') or x.startswith('img/film-')]   # a film, or the still in its place
+            pics = [x for x in media if x not in films] + ['frame'] * len(re.findall(r'class="mn__img mn__none|class="mn__none"', s))
+            rows.append(((sid[1] if sid else '?'), (a, films, pics)))
+        sig[w] = rows
+    S_, C_ = sig['salon'], sig['coaching']
+    bad = [f'{len(S_)} salon sections, {len(C_)} Inner Work sections'] if len(S_) != len(C_) else []
+    for k, ((si, sv), (ci, cv)) in enumerate(zip(S_, C_)):
+        if ci != TWIN + si: bad.append(f'section {k + 1}: salon "{si}", Inner Work "{ci}" (not its twin)')
+        for name, x, y in (('layout', sv[0], cv[0]), ('films', sv[1], cv[1])):
+            if x != y: bad.append(f'section {k + 1} ("{si}"): {name} differ: salon {x} / Inner Work {y}')
+        if len(sv[2]) != len(cv[2]): bad.append(f'section {k + 1} ("{si}"): {len(sv[2])} picture places in the salon, {len(cv[2])} in Inner Work')
+        same = sorted({x for x, y in zip(sv[2], cv[2]) if x != 'frame' and _original(x) == _original(y)})
+        if same: bad.append(f'section {k + 1} ("{si}"): Inner Work shows the salon\'s own picture in its place: {same}')
+    ids = [i for i, _ in S_]
+
+    def rules(css):
+        for prelude, b in _css_items(css):
+            if b is None: continue
+            sel = _lead(prelude)[1]
+            if sel.startswith('@'):
+                if sel.split()[0] in ('@media', '@supports', '@container', '@layer'): yield from rules(b)
+                continue
+            yield sel, b
+    for sel, b in rules(css):
+        for s in _split_selectors(sel):
+            if 'data-world="' in s and ('main[data-world="' in s or not all(_prop(d) in WORLD_PROPS for d in _decls(b))):
+                bad.append(f'CSS gives one world a look of its own: {s}')
+        for x in _twin_ids(sel, ids):
+            if '#' + TWIN + x not in sel: bad.append(f'CSS styles the salon\'s #{x} without its twin #{TWIN}{x}: {sel[:120]}')
+    if "world === 'salon'" in body.split('/* ---- the frame loop', 1)[-1][:3000]: bad.append('the step rail still shows only in the salon')
+    for w in ('salon', 'coaching'):     # a script that styles or marks one world's sections only
+        if f'main[data-world="{w}"]' in body: bad.append(f'a script on the page still treats only the {w} world\'s sections: main[data-world="{w}"]')
+    assert not bad, 'one design (J 18 Nov: only the copy changes):\n  ' + '\n  '.join(bad[:40])
 
 
 # ---- one motion switch (task b36dde1f; CEO MA 17 Nov, under J's direction) ----------------------------------------------

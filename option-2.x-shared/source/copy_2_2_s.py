@@ -3,6 +3,7 @@ six screens, Inner Work in five. Maggie's words only, shortened by cutting whole
 go to her); the proof line and the Begin summary are the study's [draft] lines. Left out: the pause, OM, the full step
 screens, the full credentials, Why Aveda (its one line moves into the proof screen)."""
 from mgs_parts import *
+import copy_2_2_iw as IW
 
 
 def dict_with(sec, **kw):
@@ -14,7 +15,6 @@ def dict_with(sec, **kw):
 S_AVEDA = '100% vegan formulas.'   # round 5: her own fact line (11 Nov), no longer new words
 S_ROT = 'Hair that finally feels like you, in one visit, with Maggie’s full attention.'   # as G (round 4: the T of ROT back)
 S_STACK = 'Every hair visit includes your favorite drink, a real conversation, a scalp ritual with Stress-Fix oil and time shaped around you.'
-CRED_S = iw_credentials(n=3)          # her first three credentials, on the same card as M and G (task a2e5a9d0)
 
 # round 4 (task 2846db82): the five steps with their real photos (mgs_sections.visit), the words unchanged
 # round 5 (task c446e8ba): each step's first sentence of her 11 Nov description, cut by whole sentences, never reworded
@@ -36,10 +36,8 @@ PROOF = ('proof', dict(id='hosts', eyebrow=M.TEAM_LINE, title=draft(S_TEAM_HOOK)
                        quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA, line_img=AVEDA_PHOTO))   # its picture: task a749167b
 SALON = [dict_with(salon_hero(proof=True, visit='visit', line=S_HERO_LINE), rot=draft(S_ROT)), VISIT, PROOF, services(), door(short=True),
          dict_with(begin(summary=True), answer=draft(A11['adjust'])), salon_end(LEGEND, visit='visit', iw=False)]
-COACHING = [dict_with(iw_hero(short_cred=True), rot=draft(S_ROT_IW)), iw_deeper(short=True), iw_how(cta=False, short=True), CRED_S,
-            dict_with(iw_path(cta=True), title=draft(S_PATH_HOOK)), iw_voices_placeholder(),
-            dict_with(iw_begin(), title=M.FIRST['close'], reward=draft(S_IW_REWARD)), iw_end(LEGEND)]
+COACHING = twin(SALON, IW.s_words(S_ROT_IW, S_PATH_HOOK, S_IW_REWARD))   # J 18 Nov: only the words change (task 7a3c013b)
 
 CFG = cfg('s', 'Short', SALON, COACHING,
   [('01', 'The visit', 'visit'), ('02', 'The team', 'hosts'), ('03', 'The menu', 'services'), ('04', 'Begin', 'begin')],
-  [('01', 'Look a little deeper', 'c-deeper'), ('02', 'How we work together', 'c-how'), ('03', 'Credentials', 'c-cred'), ('04', 'The path', 'c-path'), ('05', 'Begin', 'c-begin')], steps=False)
+  IW.S_MENU, steps=False)

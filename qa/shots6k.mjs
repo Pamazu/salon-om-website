@@ -38,7 +38,7 @@ try {
   }
   // every other real photo in its own slot, as drawn, in each world: pic-<section>.jpg
   const { toWorld } = await import('./lib.mjs');
-  for (const [world, ids] of [['salon', ['hosts', 'begin', 'deeper']], ['coaching', ['c-how', 'c-deeper', 'c-cred', 'c-begin']]]) {
+  for (const [world, ids] of [['salon', ['hosts', 'begin', 'deeper']], ['coaching', ['c-hosts', 'c-begin', 'c-deeper', 'c-aveda']]]) {
     if (world === 'coaching') await toWorld(p, 'coaching');
     for (const id of ids) {
       const im = p.locator(`#${id} img[src^="img/real-"], #${id} img[src="img/meadow.webp"]`).first();

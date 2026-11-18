@@ -73,7 +73,7 @@ def film(name, lazy=False):
 
 # ---------------------------------------------------------------- slide renderers
 def hero_mark(d):
-    return f'''<section class="s hero{(' ' + d['cls']) if d.get('cls') else ''}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-label="Salon OM">
+    return f'''<section class="s hero{(' ' + d['cls']) if d.get('cls') else ''}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound','bed')}" aria-label="{E(d.get('aria', 'Salon OM'))}">
     {film(d['film'])}
     <div class="s__scrim hero__scrim"></div>
     <div class="s__leave hero__lv">
@@ -584,7 +584,8 @@ def page(cfg):
     pick = ('Choose: salon or coaching' if not names else f'Choose: {names["salon"]} or {names["coaching"]}')
     worlds_btns = f'<button type="button" data-to-world="salon" aria-pressed="true">{wl("salon")}</button><button type="button" data-to-world="coaching" aria-pressed="false">{wl("coaching")}</button><i class="worlds__pill" aria-hidden="true"></i>'
     menu_lists = ''.join(f'<ul data-world-list="{w}">' + ''.join(f'<li style="--i:{k}"><a href="#{h}"><small>{n}</small>{t}</a></li>' for k, (n, t, h) in enumerate(items)) + '</ul>' for w, items in cfg['menu'].items())
-    rail = ''.join(f'<a href="#{h}"><span>{t}</span><b>0{k + 1}</b></a>' for k, (t, h) in enumerate(cfg['rail']))
+    rc = cfg.get('rail_coaching')    # M/G/S: Inner Work's own step names and links on the same rail (mgs.js swaps them with the world)
+    rail = ''.join(f'<a href="#{h}"' + (f' data-c-href="#{rc[k][1]}" data-c-name="{E(rc[k][0])}"' if rc else '') + f'><span>{t}</span><b>0{k + 1}</b></a>' for k, (t, h) in enumerate(cfg['rail']))
     hs = cfg.get('book_salon_href', '#' + cfg['book_salon']); hc = cfg.get('book_coaching_href', '#' + cfg['book_coaching'])
     ts = ' target="_blank" rel="noopener"' if hs.startswith('http') else ''
     vkey = cfg['title'].split()[-1]
@@ -593,6 +594,9 @@ def page(cfg):
     xk = vkey.split('-')[0]          # 2.2-m, 2.2-g, 2.2-s: the copy versions on the 2.2 design share its extras
     pre = PRE_PAINT.get(xk, '') + (SHOT if '-' in vkey else '')
     xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(xk, []))
+    js = JS
+    if _MGS:      # M/G/S: the scripts 2.2 shares give both worlds the salon's tones and the step rail (task 7a3c013b)
+        import mgs_parts as MP; xjs, js = MP.one_design_js(xjs), MP.one_design_js(_mgs_engine())   # the M/G/S engine: its own sound (task 5cb93228), one design
     if xk in EXTRA_JS:      # a build stamp, so a tweak draft saved against an older build is dropped (next.js)
         import hashlib
         stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=lambda o: getattr(o, '__qualname__', None) or str(o)).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in css_files(vkey))).encode()).hexdigest()[:12]
@@ -629,12 +633,16 @@ def page(cfg):
 {xjs}<script>
 {TW_JS}</script>
 <script>
-{_mgs_engine() if '-' in vkey else JS}</script>
+{js}</script>
 ''' + (f'<script>\n{open(V + "mgs.js").read()}</script>\n' if '-' in vkey else '')
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
-    for f in css_files(vkey): css += '\n' + open(V + f).read()
+    ids = [d['cta']['id'] if 'cta' in d else d['id'] for _, d in cfg['salon']]     # the salon world's section ids
+    for f in css_files(vkey):
+        if f == 'mgs.css': css = MP.one_design_css(css, ids)                 # M/G/S: the 2.2 CSS gives both worlds one look (task 7a3c013b)
+        css += '\n' + (MP.one_design_css(open(V + f).read(), ids, shared=False) if f == 'mgs.css' else open(V + f).read())
     if '-' in vkey: import mgs_parts as MP; css = MP.motion_css(css)      # M/G/S: one motion switch (task b36dde1f)
     if '-' in vkey: body = MP.srcset(body, vkey.split('-')[1])          # M/G/S: each picture at the size the screen needs (task b1dd24c9)
+    if '-' in vkey: MP.check_one_design(body, css)                       # M/G/S: the two worlds differ only in their words, or the build stops
     title = f'<title>{cfg["title"]}</title>\n'
     art = title + '<style>\n' + css + '</style>\n' + body
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused

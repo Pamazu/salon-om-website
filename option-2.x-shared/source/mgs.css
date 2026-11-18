@@ -117,10 +117,6 @@
 /* the salon opening's OM mark is sized by width; on a short laptop screen (1366 x 768) its tagline ran into the doors.
    Its height now caps it too (72vh: 553 px wide at 768 tall, 648 at 900, 660 from 917 up) */
 @media (min-width: 1024px) { .hero__mark { width: calc(min(58vw, 660px, 72vh) * var(--logo-s)); } }
-/* Inner Work's credentials and ROT line over the bright curtains: full ivory with the sub-line's soft shadow, a step
-   larger where the column has room */
-main[data-world="coaching"] .hero .hero__line { color: var(--ivory); text-shadow: 0 1px 18px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .35); }
-@media (min-width: 1280px) { main[data-world="coaching"] .hero .hero__line { font-size: 16px; } main[data-world="coaching"] .hero .hero__rot { font-size: 17px; } }
 .offers-menu { grid-template-rows: auto auto minmax(0, 1fr); }
 .offers-menu .om__btn { grid-column: 1; grid-row: 3; align-self: start; }
 .offers-menu .om__ph { grid-row: 1 / span 3; }
@@ -542,15 +538,16 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
 #pause.is-active .br__ph img, html[data-shot] #pause .br__ph img { filter: blur(0) brightness(.96); transform: scale(1); }
 #pause .br .ai-mark { opacity: 0; transition: opacity 1.2s var(--io) 2.2s; }
 #pause.is-active .br .ai-mark, html[data-shot] #pause .br .ai-mark { opacity: 1; }
-/* "Take a breath." on its own line: the engine writes one span per word, so the first three words lead and an empty flex
-   item breaks the line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
+/* "Take a breath." on its own line: the engine writes one span per word; the first sentence's words lead (mgs.js marks them
+   .is-head; task 7a3c013b, so any world's opening sentence leads, not a fixed three words) and an empty flex item breaks the
+   line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
 #pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: none; margin: 0; text-wrap: wrap;
   font-size: clamp(24px, 2.15vw, 40px); line-height: 1.2; }
 #pause .mani__text::before { content: ""; flex-basis: 100%; height: 0; order: 1; }
 #pause .mani__text .wd { order: 2; }
-#pause .mani__text .wd:nth-child(-n+3) { order: 0; font-size: 2.3em; line-height: 1.02; letter-spacing: -.015em; }
-#pause .mani__text .wd:nth-child(3) { margin-bottom: .32em; }
-#pause.is-active .mani__text .wd:nth-child(n+4) .l { animation-delay: calc(2.2s + var(--i) * var(--ink-gap, 18ms)); }
+#pause .mani__text .wd.is-head { order: 0; font-size: 2.3em; line-height: 1.02; letter-spacing: -.015em; }
+#pause .mani__text .wd.is-head-end { margin-bottom: .32em; }
+#pause.is-active .mani__text .wd:not(.is-head) .l { animation-delay: calc(2.2s + var(--i) * var(--ink-gap, 18ms)); }
 #pause .lead { font-style: italic; }
 html:not([data-motion="calm"]) #pause.is-active .br__ph img { animation: br-photo 10s var(--br-in) 3.4s infinite; }
 html:not([data-motion="calm"])[data-shot] #pause .br__ph img { animation: none; }
@@ -702,11 +699,6 @@ main[data-world="salon"] .voices .btn:not(.btn--ghost):hover { --bg: #fff; }
 @media (min-width: 1024px) {
   html[data-variant^="2.2-"] .team-letter { height: auto; min-height: 100vh; min-height: 100svh; grid-template-rows: auto; }
 }
-/* round 5 QA (task 2846db82): Inner Work's opening over the bright curtains film read at about 3.2 : 1 for its line under
-   the title on a phone (Playwright WebKit, 390 wide), under the 4.5 : 1 a line of body text needs. The line takes the full
-   ivory with a soft shadow, and the scrim's centre is a little deeper; the film and its layout are unchanged */
-html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__words p.sub { color: var(--ivory); text-shadow: 0 1px 14px rgba(10, 7, 5, .55); }
-html[data-variant^="2.2-"] main[data-world="coaching"] #c-top .hero__scrim { background: radial-gradient(ellipse 72% 50% at 50% 44%, rgba(10, 7, 5, .52), rgba(10, 7, 5, .14) 74%), linear-gradient(to top, rgba(10, 7, 5, .8), rgba(10, 7, 5, 0) 40%), linear-gradient(to bottom, rgba(10, 7, 5, .5), rgba(10, 7, 5, 0) 24%); }
 /* round 5 QA (task 2846db82): on the closing screen the line above the buttons (the owner's two-week word, G and S) took
    the light sections' soft ink, about 2.6 : 1 on the dark ground; it takes the closing screen's own soft text colour,
    which each world's theme sets (light on the salon's umber, dark on Inner Work's clay) */
