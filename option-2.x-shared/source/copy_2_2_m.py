@@ -15,8 +15,9 @@ SALON = [
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM)),   # her quiet version
   # task 59b17d9c (J 17 Nov): her visit opens with the same preview as G, so its five stops can fly into the step rail;
   # every word is hers: her visit line, then each step's name and its own heading ("01 · Arrive · The welcome")
+  # task 20529935: her headings as she writes them, with no full stop added ("The welcome", not "The welcome.")
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=M.VISIT_LINE,
-                        rows=[(f'0{k + 1}', s[0], s[1].split(' · ')[-1] + '.') for k, s in enumerate(M.STEPS)])),
+                        rows=[(f'0{k + 1}', s[0], s[1].split(' · ')[-1]) for k, s in enumerate(M.STEPS)])),
 ] + [step(k, cta=(k == 4)) for k in range(5)] + [
   ('facts', dict(id='aveda', light=True, eyebrow=M.AVEDA_EYEBROW, title=M.AVEDA, paras=[], quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE,
                  facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',

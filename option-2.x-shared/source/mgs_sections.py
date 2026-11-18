@@ -91,7 +91,7 @@ def _foot(e, draft):
         {'' if ('visit' in e and not e['visit']) else '<div><h3 class="label">Visit</h3><ul>' + visit + '</ul></div>'}
         <div><h3 class="label">Connect</h3><ul>{conn}</ul></div>{('<div><h3 class="label">' + e['iw_block'][0] + '</h3><ul>' + ''.join(f'<li>{x}</li>' for x in e['iw_block'][1:]) + '</ul></div>') if e.get('iw_block') else ''}
       </div>{legal}
-      <div class="foot__base"><span>{e.get('copyright', '© 2026 Salon OM · an Aveda concept salon')} · {draft}</span><span>Aveda is a trademark of Aveda Corporation. Films and photos generated with Magnific as placeholders.</span></div>
+      <div class="foot__base"><span>{e.get('copyright', '© 2026 Salon OM · an Aveda concept salon')} · {draft}</span><span>Aveda is a trademark of Aveda Corporation. The salon photos are real. The films and the meadow picture are placeholders made with AI.</span></div>
     </footer>'''
 
 
