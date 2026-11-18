@@ -9,6 +9,9 @@ set -euo pipefail
 cd "$(dirname "$0")"
 letters=("${@:-m g s}"); [ $# -eq 0 ] && letters=(m g s)
 python3 option-2.x-shared/source/build.py $(printf '2.2-%s ' "${letters[@]}")
+# A deploy never turns off a feature J approved (task 448f6e27): refuses before anything is staged or sent, unless the
+# deployed commit's message quotes J's words naming the row. Guards the CHANNEL= preview too.
+python3 option-2.x-shared/source/approved_gate.py "${letters[@]}"
 stage="${TMPDIR:-/tmp}/salon-om-mgs-stage"
 for l in "${letters[@]}"; do
   site="salon-om-2-2-$l"; d="$stage/$l"
