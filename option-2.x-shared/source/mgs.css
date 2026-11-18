@@ -787,3 +787,7 @@ html[data-variant^="2.2-"] .film-img.is-on { opacity: 1; }
 .bridge .ai-mark { left: auto; right: 16px; bottom: 16px; }
 /* on a phone the bottom bar (Book your visit · Begin) spans the width and the words fill the screen: the mark sits top right, under the header */
 @media (max-width: 600px) { .bridge .ai-mark { bottom: auto; top: calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px); } }
+/* the films off (build.FILMS_SHOWN False, task 5479dd6c): a step keeps its own real photo whole (no soft mask into a film, no
+   dissolve): the whole frame is the photo */
+.ch--still .ch__top { -webkit-mask-image: none; mask-image: none; }
+.ch--still.ch--stack.is-active .ch__top { opacity: 1; transition: none; }

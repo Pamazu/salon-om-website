@@ -106,6 +106,23 @@ SERVICE_PHOTO = [
 # not a footer line, a hover or tap icon, or a mark only in the file; task 1c6ed2aa)
 AI_GUEST = 'Guest made with AI'
 AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her photos (CEO MA, 18 Nov; StoryLegal asked for its words)
+
+
+# THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:
+# a step shows its own real photo (build.chapter drops the film layer, the photo stays whole); the two heroes show the
+# sharpest frame of their film (a mood film: no person, no salon), upscaled x4 on the Mac Studio and drawn like any picture here
+# (img/, srcset). StoryLegal, 18 Nov (msg a091eaf1, 65 %): a frame of today's mood films needs no label; the footer's AI line
+# (mgs_sections.FOOT_AI_LINE) says every other picture is made with AI
+FILM_STILLS = {'hero': ('film-hero-forest.webp', 'a misty forest with sun rays'), 'air': ('film-air-curtains.webp', 'sunlight through white curtains at a window')}
+
+
+def film_still(name):
+    """the picture that stands where a film plays (build.film calls it when the films are off). A film with no still of its
+    own (a step's element film: the step's photo is its picture) leaves an empty frame"""
+    if name not in FILM_STILLS:
+        return '<div class="s__media"><div class="s__zoom"></div></div>'
+    f, alt = FILM_STILLS[name]
+    return f'<div class="s__media"><div class="s__zoom"><img src="img/{f}" alt="" decoding="async"></div></div>'
 # Begin has its own photo, used nowhere else on the page: the empty chair by the window (salon), Maggie by the fire (Inner Work)
 # round 4: the empty chair by the window moves to the pause (M, G), so the salon's Begin shows Maggie by the Aveda shelves
 CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%'), 'c-begin': ('real-maggie-fireplace.webp', '72% 40%')}

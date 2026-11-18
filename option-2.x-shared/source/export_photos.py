@@ -45,7 +45,12 @@ SOURCE = {
     'om-menu-extensions.webp': 'm:om-menu-extensions.png',
     'om-menu-finishing-touches.webp': 'm:om-menu-finishing-touches.png',
     'meadow.webp': 'm:meadow.png',
+    # the two heroes' stills while the films are off (build.FILMS_SHOWN, task 5479dd6c): the sharpest frame of the film, upscaled
+    # x4 (SeedVR2 or Real-ESRGAN on the Mac Studio); the master PNG lives with the other masters, not in git
+    'film-hero-forest.webp': 'm:film-hero-forest.png',
+    'film-air-curtains.webp': 'm:film-air-curtains.png',
 }
+NEW = {'film-hero-forest.webp', 'film-air-curtains.webp'}      # no site file yet: the 1280 fallback is made from the master first
 # a photo's own sensor grain costs half its bytes at 45 MP: a 0.9 px blur on the full-size original removes the grain and keeps
 # every edge and label sharp at 1:1 (lounge at 3840: 6.2 -> 2.9 MB, 17 Nov side by side); generated masters have no grain
 GRAIN_BLUR = 0.9
@@ -87,6 +92,8 @@ def export(name, dry=False):
     p = master(name)
     if not p:
         return f'{name}: no master yet ({SOURCE[name]})'
+    if name in NEW and not os.path.exists(IMG + name):
+        n = Image.open(p).convert('RGB'); n.resize((1280, round(n.height * 1280 / n.width)), Image.LANCZOS).save(IMG + name, quality=84, method=6)
     m, ref = Image.open(p), Image.open(IMG + name)
     if (m.width > m.height) != (ref.width > ref.height):
         return f'{name}: master {m.size} does not match the site file {ref.size}'

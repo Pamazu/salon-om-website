@@ -18,6 +18,14 @@ EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
 PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc123])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?({"1":"a","2":"b","3":"c"}[m[1]]||m[1]):"b");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>\n'}
 E = html.escape
 
+# THE FILMS SWITCH (J 18 Nov 2026, task 5479dd6c: "videos are lower priority than images; if we have solid, beautiful images,
+# we can use images instead of videos for now and add the videos later"). With FILMS_SHOWN False, M, G and S show a still wherever a
+# film played: a step shows its own real photo alone, the hero and Inner Work's hero a sharp frame of their film, labelled "Made
+# with AI" (mgs_parts.film_still). True (or SOM_FILMS=on in the environment) brings every film, poster and film script back,
+# unchanged: nothing of them is deleted. 2.2, 2.3 and 2.4 never read the switch (their build stays byte-identical).
+FILMS_SHOWN = os.environ.get('SOM_FILMS', 'off').lower() == 'on'
+_MGS = False      # page() sets it while an M, G or S page is drawn
+
 def svg(key):
     return f'<svg viewBox="{L[key]["vb"]}" aria-hidden="true" focusable="false"><path fill="currentColor" d="{L[key]["d"]}"/></svg>'
 P = L['stacked_parts']
@@ -46,6 +54,9 @@ def cycle(d, at, cls=''):
 def film(name, lazy=False):
     if name.endswith('.webp'):
         return f'<div class="s__media"><div class="s__zoom"><img src="img/{name}" alt="" decoding="async"></div></div>'
+    if _MGS and not FILMS_SHOWN:
+        import mgs_parts as MP
+        return MP.film_still(name)
     return (f'<div class="s__media"><div class="s__zoom"><img src="media/{name}-poster.webp" alt="" decoding="async">'
             f'<video data-src="media/{name}.mp4" muted playsinline loop preload="none" aria-hidden="true"></video></div></div>')
 
@@ -136,14 +147,15 @@ def chapter(d, i, n):
     specs = ''.join(f'<div class="a-up" style="--d:{0.95 + k * 0.12:.2f}s"><dt>{a}</dt><dd>{b}</dd></div>' for k, (a, b) in enumerate(d['specs']))
     cls = ' style="grid-template-columns:repeat(2,minmax(0,1fr))"' if len(d['specs']) == 2 else ''
     chap = f' data-chapter="{d["chapter"]}"' if 'chapter' in d else ''
-    media = film(d['film'])
+    still = _MGS and not FILMS_SHOWN and bool(d.get('film_top'))     # films off: the step's own photo is the picture, alone and whole
+    media = '<div class="s__media"><div class="s__zoom"></div></div>' if still else film(d['film'])
     if d.get('film_top'):     # 2.2 next: two films stacked, the top one fading into the bottom one through a soft mask
         t = d['film_top']
         top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async">'
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
                + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + '</div>')
         media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
-    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
+    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}{" ch--still" if still else ""}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
     {media}
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
@@ -555,6 +567,8 @@ def page(cfg):
     hs = cfg.get('book_salon_href', '#' + cfg['book_salon']); hc = cfg.get('book_coaching_href', '#' + cfg['book_coaching'])
     ts = ' target="_blank" rel="noopener"' if hs.startswith('http') else ''
     vkey = cfg['title'].split()[-1]
+    global _MGS
+    _MGS = '-' in vkey
     xk = vkey.split('-')[0]          # 2.2-m, 2.2-g, 2.2-s: the copy versions on the 2.2 design share its extras
     pre = PRE_PAINT.get(xk, '') + (SHOT if '-' in vkey else '')
     xjs = ''.join(f'<script>\n{open(V + f).read()}</script>\n' for f in EXTRA_JS.get(xk, []))
