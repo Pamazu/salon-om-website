@@ -35,20 +35,24 @@ LOUNGE = ('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock a
 CHAIR = ('real-styling-chair.webp', 'The styling chair by the window at Salon OM')
 # Placed by the frame's shape (QA 18 Nov: her arms-crossed portrait in a wide step frame cut her at the forehead), and
 # never in the place where the salon shows the same original photo (the build check compares originals, not files).
-# The five steps of her path: the Connection Call by the fire, a session in the lounge, Becoming steps outside
-STEP_PICS = [FIRE, LOUNGE, FIRE, OUTDOOR, LOUNGE]
+PRODUCT_WALL = ('real-maggie-product-wall.webp', 'Maggie Woodward standing in the window light at Salon OM')
+# The five steps of her path, five different photos (approved-features row 2: no photo repeats across the five): the
+# Connection Call by the fire, a session in the lounge, three sessions with Maggie (her portrait, its own focus point so a
+# wide frame keeps her head), Becoming steps outside, the fifth in the window light. (file, alt, focus point or None)
+STEP_PICS = [FIRE + (None,), LOUNGE + (None,), PORTRAIT + ('50% 12%',), OUTDOOR + (None,), PRODUCT_WALL + (None,)]
 # each place still showing a repeat or a frame, with the coaching picture it waits for (made next, task 7a3c013b)
 PICTURES_TO_MAKE = [
-    ('the pause', 'the lounge (also steps 02, 05)', 'a client resting, eyes closed, in the lounge (her photo 2): generated client, labelled'),
-    ('step 03 Three sessions', 'Maggie by the fire, again (step 01)', 'a session by the fire, the client seen from behind: generated client, labelled'),
-    ('step 05', 'the lounge, again', 'its picture with its words (Copywriter 1)'),
+    ('the pause', 'the lounge, as step 02', 'a client resting, eyes closed, in the lounge (her photo 2): generated client, labelled'),
+    ('step 05', 'Maggie in the window light (her photo 1, among the Aveda shelves)', 'its picture with its words (Copywriter 1)'),
+    ('Begin', 'arms crossed, as step 03', 'another of her own portraits from the shoot folder'),
     ('How we work together, Maggie', 'Maggie outdoors, again (credentials, step 04)', 'another of her own portraits from the shoot folder (69 unused photos, task c7892a3c)'),
     ('the six practices', '[Photo to come] frames', 'one picture per practice: a generated client in her real lounge or by the fire, labelled'),
 ]
 
 
 def hero(line, rot=None):
-    return dict(aria=M.IW_TITLE, hook=M.FIRST['tagline'], eyebrow=M.FIRST['name'], line=line, rot=rot, aveda=None,
+    # its own film, the curtains, and its sound (mgs_parts.TWIN_OWN_FILMS, approved-features row 19)
+    return dict(film='air', sound='air', aria=M.IW_TITLE, hook=M.FIRST['tagline'], eyebrow=M.FIRST['name'], line=line, rot=rot, aveda=None,
                 ctas=btn(O['btns'][0], CALL_URL, 'light', arrow=True) + TO_SALON, note=O['note'], open=dict(eyebrow=M.IW_TITLE))
 
 
@@ -59,7 +63,7 @@ def steps(last_btn=False):
             w = dict(name=P[k][1], sub=None, title=P[k][1], body=P[k][2], specs=[])
         else:
             w = dict(name=STEP_NAMES[k], sub=None, title=ph('[Step five, to come]'), body=ph('[Its words, still to write]'), specs=[])
-        w['film_top'] = dict(poster='img/' + STEP_PICS[k][0])
+        w['film_top'] = dict(poster='img/' + STEP_PICS[k][0], pos=STEP_PICS[k][2])
         if last_btn and k == len(STEP_ID) - 1: w['btn'] = CALL_LIGHT
         out[sid] = w
     return out
@@ -140,7 +144,7 @@ def s_words(rot, path_hook, reward):
     return dict(
         top=hero(O['title'] + ' ' + M.CRED_SHORT, rot=draft(rot)),
         visit=dict(eyebrow='The path', title=draft(path_hook), btn=CALL_LIGHT,
-                   steps=[(f'0{k + 1}', n, (P[k][2] if k < len(P) else ph('[Its words, still to write]'))) + STEP_PICS[k] for k, n in enumerate(STEP_NAMES)]),
+                   steps=[(f'0{k + 1}', n, (P[k][2] if k < len(P) else ph('[Its words, still to write]'))) + STEP_PICS[k][:2] for k, n in enumerate(STEP_NAMES)]),
         hosts=dict(eyebrow='Credentials', title=M.FIRST['name'], quotes=VOICES_TO_COME, line_k=H['eyebrow'], line=H['title'],
                    people=[dict(p) for p in PEOPLE], line_img=OUTDOOR),
         services=MENU,

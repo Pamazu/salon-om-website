@@ -36,6 +36,7 @@ SOURCE = {
     'real-maggie-fireplace.webp': 'o:5-portrait-seated-fireplace-5B3A1413.jpg',
     'real-maggie-outdoor.webp': 'o:13-portrait-outdoor-white-blazer-5B3A1353.jpg',
     'real-maggie-standing-shelves.webp': 'o:14-portrait-standing-shelves-5B3A1319.jpg',
+    'real-maggie-product-wall.webp': 'o:1-portrait-standing-product-wall-5B3A1307-2.jpg',   # Inner Work step 05 (task 7a3c013b); its img/ copy is the shoot's 1280 export, not sharpened
     'real-color-bar.webp': 'm:10-color-bar-clean.jpg',
     'real-shampoo-basins.webp': 'm:6-shampoo-basins-clean.jpg',
     'real-styling-stations.webp': 'm:11-styling-stations-clean.jpg',

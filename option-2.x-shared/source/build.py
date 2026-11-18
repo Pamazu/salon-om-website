@@ -164,7 +164,8 @@ def chapter(d, i, n):
     media = '<div class="s__media"><div class="s__zoom"></div></div>' if still else film(d['film'])
     if d.get('film_top'):     # 2.2 next: two films stacked, the top one fading into the bottom one through a soft mask
         t = d['film_top']
-        top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async">'
+        pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''     # M/G/S: a portrait's own focus point (task 7a3c013b)
+        top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async"{pos}>'
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
                + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + '</div>')
         media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
