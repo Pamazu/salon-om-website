@@ -37,7 +37,7 @@ const extra = (u, req, res) => {
     const o = JSON.parse(b); res.writeHead(204);
     if (o.ev === 'start') { results[cur] = { ua: o.ua, vp: [o.w, o.h], films: [] }; }
     else if (o.ev === 'shot') { try { sh('io', dev.udid, 'screenshot', '--type=jpeg', path.join(OUT, o.name + '.jpg')); } catch (e) { console.log('shot', e.message.slice(0, 80)); } }
-    else if (o.ev === 'film') { results[cur].films.push(o); }
+    else if (o.ev === 'film') { if (results[cur]) results[cur].films.push(o); }   // a late report from the previous version's page is dropped, never a crash
     else if (o.ev === 'done') { done && done(); }
     res.end(); }); return true; }
   const m = u.match(/^\/([mgs])\/?(index\.html)?$/);
@@ -48,7 +48,10 @@ const extra = (u, req, res) => {
 const srv = await serve(REPO, extra), port = srv.address().port;
 for (const v of VERS) {
   cur = v; const fin = new Promise((ok) => (done = ok)); sh('openurl', dev.udid, `http://127.0.0.1:${port}/${v}/`);
-  const to = setTimeout(() => done && done(), 240000); await fin; clearTimeout(to);
+  // task 7a3c013b: Inner Work now has as many film sections as the salon, so the wait scales with the page's film sections
+  // (about 20 s each with its simulator screenshot), never a fixed 240 s that the twin outgrows
+  const nFilm = (fs.readFileSync(path.join(REPO, 'option-2.2-mgs', v, 'index.html'), 'utf8').match(/<section [^>]*>(?:(?!<\/section>)[\s\S])*?<video /g) || []).length;
+  const to = setTimeout(() => done && done(), Math.max(240000, 30000 + nFilm * 22000)); await fin; clearTimeout(to);
   const r = results[cur]; if (!r) { console.log(v, 'no report: the page never started (Safari blocked the address?)'); continue; }
   const bad = r.films.filter((f) => f.c.some((x, i) => !(!x.paused && f.a[i] && x.t > f.a[i].t + 1) && !x.stop) || f.words.hits.length);
   console.log(v, r.vp.join('x'), 'films', r.films.length, 'moving:', r.films.filter((f) => f.c.every((x, i) => !x.paused && f.a[i] && x.t > f.a[i].t + 1)).length, 'problems:', bad.map((f) => `${f.w}:${f.id} ` + JSON.stringify(f.c.map((x, i) => [f.a[i] && f.a[i].t, x.t, x.paused, x.rs, x.err])) + ' ' + f.words.hits.join(';')).join(' | ') || 'none');
