@@ -65,5 +65,57 @@ class CleanGate(unittest.TestCase):
         P.check_page('<img src="img/real-shampoo-basins.webp"><img src="img/real-katie.webp">')
 
 
+class Basins(unittest.TestCase):
+    """Every picture of the basins room is built on J's 25 Oct picture (task 69006a72, J 19 Nov 12:01 Z). Red = the declarations
+    live on 19 Nov (4547068): the tidied photo saved as '6-shampoo-basins-25oct-clean.jpg' and standing for photo 6, Blonding and
+    the pause made on it, Inner Work's picture on photo 1059; the old check passed them all, trusting the name."""
+    RED_19_NOV = {'real-shampoo-basins.webp': 'm:6-shampoo-basins-25oct-clean.jpg',
+                  'om-menu-blonding.webp': 'm:om-menu-blonding-25oct.png',
+                  'om-pause-guest.webp': 'm:om-pause-guest-25oct.png',
+                  'real-basins-poster.webp': 'm:iw-5B3A1059-clean.jpg'}
+
+    def test_red_the_pictures_j_saw_on_19_nov_are_refused(self):
+        saved_o, saved_b = dict(P.ORIGINALS), dict(P.BUILT_ON)
+        P.ORIGINALS['6-shampoo-basins-5B3A1072.jpg'] = '6-shampoo-basins-25oct-clean.jpg'
+        P.BUILT_ON.update({'om-menu-blonding-25oct.png': 'm:6-shampoo-basins-25oct-clean.jpg',
+                           'om-pause-guest-25oct.png': 'm:6-shampoo-basins-25oct-clean.jpg'})
+        P.CLEANED.add('6-shampoo-basins-25oct-clean.jpg')
+        try:
+            bad = '\n'.join(P.basins_problems(self.RED_19_NOV))
+        finally:
+            P.ORIGINALS.clear(); P.ORIGINALS.update(saved_o); P.BUILT_ON.clear(); P.BUILT_ON.update(saved_b)
+            P.CLEANED.discard('6-shampoo-basins-25oct-clean.jpg')
+        for name in self.RED_19_NOV:
+            self.assertIn(f'{name}: shows the basins room but is not built on J\'s 25 Oct picture', bad)
+
+    def test_green_every_basins_picture_today_is_built_on_his_picture(self):
+        self.assertEqual(P.basins_problems(), [])
+        self.assertEqual(set(P.basins()), {'real-shampoo-basins.webp', 'om-menu-blonding.webp'})
+        with self.assertRaises(SystemExit):                       # a retired basins picture back on a page stops the build
+            P.check_page('<img src="img/real-shampoo-basins.webp"><img src="img/real-basins-poster.webp">')
+
+    def test_a_new_picture_of_that_room_is_refused_until_built_on_his_picture(self):
+        for src in ('o:17-shampoo-basins-wide-5B3A1065.jpg', 'o:12-shampoo-basins-backbar-5B3A1067.jpg', 'm:6-shampoo-basins-tidied.jpg'):
+            self.assertTrue(any('not built on J\'s 25 Oct picture' in m for m in P.check({'new.webp': src})), src)
+
+    def test_the_measure_tells_his_room_from_the_tidied_one(self):
+        """room_check on the masters (outside Git, on the Studio): his picture at full size under the bar, the tidied photo and
+        the 19 Nov Blonding made on it over it"""
+        m = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictures/masters/')
+        j = os.path.join(HERE, '../../resources/salon-photos', P.J25_PICTURE)
+        if not os.path.exists(m + P.J25):
+            raise unittest.SkipTest(f'no masters on this machine ({m}): run on the Studio')
+        try:
+            import numpy  # noqa: F401
+        except ImportError:
+            raise unittest.SkipTest('room_check needs numpy and PIL (~/StoryForge/ComfyUI/.venv/bin/python)')
+        self.assertGreaterEqual(P.room_check(m + P.J25, j), P.ROOM_BAR)
+        self.assertLess(P.room_check(m + '6-shampoo-basins-tidied.jpg', j), P.ROOM_BAR)
+        b = 'om-menu-blonding-j25.png'
+        self.assertGreaterEqual(P.room_check(m + b, j, P.ROOM_CROP[b]), P.ROOM_BAR)
+        if os.path.exists(m + 'om-menu-blonding-25oct.png'):                      # the 19 Nov Blonding on the tidied photo
+            self.assertLess(P.room_check(m + 'om-menu-blonding-25oct.png', j, (4950, 500, 7150, 3800)), P.ROOM_BAR)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
