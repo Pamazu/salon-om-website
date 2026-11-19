@@ -592,21 +592,43 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 
 /* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page and the
    door options, task a78e6208): B's breath, the room opening as you scroll in and the question arriving on the exhale; D2's
-   step through, the door growing from where the default draws it until it fills the screen. Found again after every swap. */
+   step through, the door growing from where the default draws it until it fills the screen. Found again after every swap.
+   The five steps' scroll options too (build.chapter ch--scroll, task 5cf1107e; J 19 Nov: "play with scroll to switch between
+   the nature video and the other video ... Just like in the take a breath section"): the same progress through the section;
+   the step's content is held on screen in one sticky frame (.ch__stick, put in here and taken out again when today's comes
+   back, its elements moved, never redrawn, so its film plays on) and --e says how far its photo has handed over to its film
+   (0 the photo, 1 the film); mgs.css draws each way. The sheet's ribs are the fluted glass (data-flute) over the photo. */
 (function () {
-  var breaths = [], throughs = [], queued = false;
+  var breaths = [], throughs = [], steps = [], queued = false, RIBS = 18;
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
       return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
     });
     throughs = [].slice.call(document.querySelectorAll('.ps--through'));
+    var ribbed = false;
+    [].forEach.call(document.querySelectorAll('.s.ch.ch--stack'), function (s) {
+      var on = s.classList.contains('ch--scroll'), st = s.querySelector(':scope > .ch__stick');
+      if (on && !st) { st = document.createElement('div'); st.className = 'ch__stick'; while (s.firstChild) st.appendChild(s.firstChild); s.appendChild(st); }
+      else if (!on && st) { while (st.firstChild) s.insertBefore(st.firstChild, st); s.removeChild(st); s.style.removeProperty('--e'); }
+      var top = s.querySelector('.ch__top'), rb = top && top.querySelector(':scope > .ch__ribs'), want = s.classList.contains('ch--scroll-sheet');
+      if (want && top && !rb) {
+        rb = document.createElement('div'); rb.className = 'ch__ribs'; rb.setAttribute('aria-hidden', 'true');
+        rb.setAttribute('data-flute', RIBS); rb.setAttribute('data-flute-bend', '10'); rb.setAttribute('data-flute-mag', '1.03');
+        for (var k = 0; k < RIBS; k++) { var i = document.createElement('i'); i.style.setProperty('--j', (k / (RIBS - 1)).toFixed(3)); rb.appendChild(i); }
+        top.appendChild(rb); ribbed = true;
+      } else if (!want && rb) top.removeChild(rb);
+    });
+    steps = [].slice.call(document.querySelectorAll('.s.ch--scroll'));
+    // the fluted glass finds its ribs when a swap is announced; ribs put in at load (a remembered option) are announced here
+    if (ribbed && !loaded) document.dispatchEvent(new CustomEvent('om:swap', { detail: { key: 'steps', ribs: true } }));
     q();
   }
   var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  // how far the reader is through a section taller than the screen: 0 its top at the screen's top, 1 its end at the screen's end
+  function prog(s) { var r = s.getBoundingClientRect(), span = r.height - innerHeight; return r.height === 0 || span <= 0 ? null : Math.min(1, Math.max(0, -r.top / span)); }
   function breath(x) {
-    var r = x.s.getBoundingClientRect(), span = r.height - innerHeight; if (r.height === 0 || span <= 0) return;
-    var p = Math.min(1, Math.max(0, -r.top / span));
+    var p = prog(x.s); if (p === null) return;
     if (calm() || document.documentElement.hasAttribute('data-shot')) p = 1;
     var inh = ease(Math.min(1, p / .5)), exh = ease(Math.min(1, Math.max(0, (p - .5) / .35))), narrow = innerWidth < 760;
     x.s.style.setProperty('--ct', (48 * (1 - inh)) + '%');
@@ -621,8 +643,8 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   // the "Book your visit" bar; on a phone centred under the words); at the end it stands wider than the screen is tall,
   // centred, its arch above the top edge, so the room fills the view
   function through(s) {
-    var r = s.getBoundingClientRect(), H = innerHeight, W = innerWidth, span = r.height - H; if (r.height === 0 || span <= 0) return;
-    var p = Math.min(1, Math.max(0, -r.top / span)), still = calm();
+    var H = innerHeight, W = innerWidth, p = prog(s); if (p === null) return;
+    var still = calm();
     if (still) p = 0;
     var e = ease(Math.min(1, p / .8)), cs = getComputedStyle(s), st = s.querySelector('.ps__stick'), g = st ? parseFloat(getComputedStyle(st).paddingLeft) || 0 : 0;
     var w0, h0, l0, t0;
@@ -641,9 +663,17 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     s.style.setProperty('--co', Math.min(1, Math.max(0, (p - .7) / .2)).toFixed(3));      // the last line, once you stand in the room
     s.classList.toggle('is-still', still);
   }
-  function frame() { queued = false; breaths.forEach(breath); throughs.forEach(through); }
+  // a step: the photo held alone for the first part of the scroll (its words read on it), then handing over to the film, which
+  // has the last part to itself; calm motion and screenshots keep the photo (as today's step does under reduced motion)
+  function step(s) {
+    var p = prog(s); if (p === null) { if (s._e) { s._e = null; s.style.removeProperty('--e'); } return; }
+    if (calm() || document.documentElement.hasAttribute('data-shot')) p = 0;
+    var e = ease(Math.min(1, Math.max(0, (p - .12) / .73))).toFixed(4);
+    if (s._e !== e) { s._e = e; s.style.setProperty('--e', e); }
+  }
+  function frame() { queued = false; breaths.forEach(breath); throughs.forEach(through); steps.forEach(step); }
   function q() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
   addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
-  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
-  find();
+  document.addEventListener('om:swap', function (e) { if (e.detail && e.detail.ribs) return; find(); setTimeout(find, 0); });
+  var loaded = false; find(); loaded = true;
 })();

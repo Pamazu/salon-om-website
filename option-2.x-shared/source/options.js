@@ -32,7 +32,7 @@
       name: t.getAttribute('data-name'), ai: t.getAttribute('data-ai'), img: t.content.querySelector('img') });
   });
   function attrsOf(el) { var o = {}; [].forEach.call(el.attributes, function (a) { o[a.name] = a.value; }); return o; }
-  secs.forEach(function (s) { live[s.id] = { attrs: attrsOf(s), html: s.innerHTML }; });    // the live default, as drawn
+  secs.forEach(function (s) { live[s.id] = { attrs: attrsOf(s), html: s.innerHTML }; s._hk = LIVE; });    // the live default, as drawn
   function menuOf(s) { try { return JSON.parse(s.getAttribute('data-opts')) || []; } catch (e) { return []; } }
   function keyOf(s) { return s.getAttribute('data-opt-key'); }
   function twinsOf(key) { return secs.filter(function (s) { return keyOf(s) === key; }); }
@@ -49,13 +49,16 @@
     } catch (e) {}
   }
 
-  /* ---- the swap: the option's attributes and content into the same element */
+  /* ---- the swap: the option's attributes and content into the same element. An option whose content is the live one
+     (data-same: it changes only the section's attributes, e.g. the five steps' scroll options, task 5cf1107e) keeps the
+     content in place, so its films, their loading and what the engine holds of them carry on untouched */
   function swapOne(s, k) {
-    var src;
+    var src, hk = LIVE;
     if (k === LIVE) src = live[s.id];
     else {
       var t = (tpl[s.id] || {})[k]; if (!t) return;
-      src = { attrs: JSON.parse(t.getAttribute('data-attrs')), html: t.hasAttribute('data-same') ? live[s.id].html : t.innerHTML };
+      if (!t.hasAttribute('data-same')) hk = k;
+      src = { attrs: JSON.parse(t.getAttribute('data-attrs')), html: hk === LIVE ? live[s.id].html : t.innerHTML };
     }
     var q = s.style.getPropertyValue('--q');
     Object.keys(s._optAttrs || live[s.id].attrs).forEach(function (a) { if (!KEEP[a]) s.removeAttribute(a); });
@@ -63,9 +66,11 @@
     s._optAttrs = src.attrs;
     if (q) s.style.setProperty('--q', q);
     s.setAttribute('data-opt', k);
-    s.innerHTML = src.html;
-    if (window.OMEngine) [].forEach.call(s.querySelectorAll('[data-write]'), function (el) { window.OMEngine.writeIn(el); });
-    [].forEach.call(s.querySelectorAll('img[data-pic]'), function (im) { var o = optOf(im.getAttribute('data-pic'), pon[im.getAttribute('data-pic')]); if (o && o.k !== LIVE) picSwap(im, o); });
+    if (s._hk !== hk) {
+      s._hk = hk; s.innerHTML = src.html;
+      if (window.OMEngine) [].forEach.call(s.querySelectorAll('[data-write]'), function (el) { window.OMEngine.writeIn(el); });
+      [].forEach.call(s.querySelectorAll('img[data-pic]'), function (im) { var o = optOf(im.getAttribute('data-pic'), pon[im.getAttribute('data-pic')]); if (o && o.k !== LIVE) picSwap(im, o); });
+    }
     s.dispatchEvent(new CustomEvent('om:swap', { bubbles: true, detail: { key: keyOf(s), option: k } }));
   }
 

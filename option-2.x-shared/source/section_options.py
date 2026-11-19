@@ -11,7 +11,12 @@ Each option is a named variant of that section (its layout, its picture, its eff
 renderer (or the renderer the option names in `kind`) with the option's keys changed, so its words and pictures stay the
 section's own and Inner Work's twin (mgs_parts.twin copies the dict) gets the same options in its own words and pictures.
 The section on the page stays the live default; every other option is drawn into a <template> kept outside the two <main>s
-(inert until chosen, so it loads nothing; the build's picture checks still read it). options.js swaps a chosen option into
+(inert until chosen, so it loads nothing; the build's picture checks still read it). An option that changes only the section's
+own attributes (its class) keeps no copy of its content (data-same): options.js changes the attributes and leaves the content,
+its films included, in place.
+    option_key='...'     several sections that switch together, as one (task 5cf1107e, J 19 Nov: "Have different options
+                         for the group of 5 sections"): every section naming the same key shows the same choice, in both
+                         worlds; else a section's key is its own id options.js swaps a chosen option into
 the same <section> element in place (the engine keeps tracking it), remembers it per section and puts it in the address.
 
 render() is called by build.render_world for a section that declares options; store() returns the templates once the page's
@@ -47,12 +52,13 @@ def render(draw, kind_of, d, world):
     keys = [o['key'] for o in opts]
     assert DEFAULT['key'] not in keys and len(set(keys)) == len(keys) and all(re.fullmatch(r'[a-z0-9-]+', k) for k in keys), \
         f'section_options: "{d["id"]}" option keys must be unique, lowercase, and never "{DEFAULT["key"]}": {keys}'
-    base = {k: v for k, v in d.items() if k not in ('options', 'option_label', 'option_note', 'option_name')}
+    base = {k: v for k, v in d.items() if k not in ('options', 'option_label', 'option_note', 'option_name', 'option_key')}
     live = draw(kind_of, base)
     attrs, inner = _split(live)
     sid = attrs.get('id')
     assert sid, 'section_options: a section with options needs an id'
-    key = sid[len(world_prefix(world)):] if world_prefix(world) and sid.startswith(world_prefix(world)) else sid
+    key = d.get('option_key') or (sid[len(world_prefix(world)):] if world_prefix(world) and sid.startswith(world_prefix(world)) else sid)
+    assert re.fullmatch(r'[a-z0-9-]+', key), f'section_options: "{sid}" option key "{key}" must be lowercase letters, digits and dashes'
     menu = [dict(k=DEFAULT['key'], n=d.get('option_label') or DEFAULT['label'], **({'d': d['option_note']} if d.get('option_note') else {}))]
     for o in opts:
         changed = {k: v for k, v in o.items() if k not in OPTION_KEYS}
@@ -61,7 +67,7 @@ def render(draw, kind_of, d, world):
             assert not set(changed) & MP.TWIN_PICTURES, f'section_options: option "{o["key"]}" of "{sid}" names a picture its Inner Work twin would show as its own: {sorted(set(changed) & MP.TWIN_PICTURES)}'
         a, i = _split(draw(o.get('kind', kind_of), dict(base, **changed)))
         assert a.get('id') == sid, f'section_options: option "{o["key"]}" of "{sid}" draws a section with another id'
-        _STORE.append((sid, o['key'], world, a, None if (a == attrs and i == inner) else i))
+        _STORE.append((sid, o['key'], world, a, None if i == inner else i))
         menu.append(dict(k=o['key'], n=o['label'], **({'d': o['note']} if o.get('note') else {})))
     name = re.sub(r'<[^>]+>|\[|\]', '', str(d.get('option_name') or d.get('label') or d.get('eyebrow') or '')).strip()   # the panel's short name for it
     extra = (f' data-opt-key="{E(key)}" data-opt="{DEFAULT["key"]}" data-opts="{E(json.dumps(menu, ensure_ascii=False, separators=(",", ":")))}"'
