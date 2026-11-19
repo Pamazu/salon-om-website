@@ -12,10 +12,13 @@
   var Sound = (function () {
     // the same sounds 22 % lighter (task 5cb93228): Apple AAC, 80 kb/s (water 96, whose loop joins cleanly only there),
     // each closer to today's MP3 than one more MP3 generation (qa/sound-compare.mjs) and joining where the page loops it as
-    // the MP3 does in WebKit's own decode (qa/sound-seam.mjs); 2.2-2.4 keep the MP3s. In plain .aac (ADTS), never .m4a:
-    // WebKit's sound element plays an .m4a only once the whole file is in (4.9 s on a 200 KB/s line), an .aac from its first
-    // bytes (0.11 s, qa/sound-stream.mjs), so a tap before the decode is heard at once; the same encoded sound, decoded alike
-    var SRC = { bed: 'sound/bed.aac', earth: 'sound/earth.aac', water: 'sound/water.aac', fire: 'sound/fire.aac', air: 'sound/air.aac', ether: 'sound/ether.aac' };
+    // the MP3 does in WebKit's own decode (qa/sound-seam.mjs); 2.2-2.4 keep the MP3s.
+    // The loop is decoded from the .m4a (SRC): its start delay is written in it, so every browser loops it at the same sample.
+    // A tap before that decode streams the same sound as plain .aac (STREAM): Safari's sound element plays an .m4a only once the
+    // whole file is in (4.9 s on a 200 KB/s line, iOS 5.1 s), an .aac from its first bytes (0.11 s; qa/sound-stream.mjs); the
+    // .aac is never the loop, since Chrome's decode keeps its start delay and earth's join would step 2.6 dB (sound-seam.mjs)
+    var SRC = { bed: 'sound/bed.m4a', earth: 'sound/earth.m4a', water: 'sound/water.m4a', fire: 'sound/fire.m4a', air: 'sound/air.m4a', ether: 'sound/ether.m4a' };
+    var STREAM = { bed: 'sound/bed.aac', earth: 'sound/earth.aac', water: 'sound/water.aac', fire: 'sound/fire.aac', air: 'sound/air.aac', ether: 'sound/ether.aac' };
     var NEXT = { bed: 'earth', earth: 'water', water: 'fire', fire: 'air', air: 'ether', ether: 'bed' };
     var PAD = 0.5, LOOP = 90, LEVEL = 0.85, XFADE = 3, FIRST = 0.3, HAND = 0.4;
     var ctx = null, master = null, tracks = {}, bytes = {}, bufs = {}, near = {}, on = false, current = null, target = 'bed', heard = false;
@@ -79,7 +82,7 @@
       if (!on || !ctx) return;
       var name = current || target, t = tracks[name] || track(name);
       if (t.src || t.el) return;
-      var el = new Audio(); el.preload = 'auto'; el.loop = true; el.src = SRC[name];
+      var el = new Audio(); el.preload = 'auto'; el.loop = true; el.src = STREAM[name];
       var node; try { node = ctx.createMediaElementSource(el); } catch (e) { return; }
       t.eg = ctx.createGain(); t.eg.gain.value = 1; node.connect(t.eg); t.eg.connect(t.gain); t.el = el;
       el.addEventListener('playing', function () { if (t.el === el) t.hear(); });
