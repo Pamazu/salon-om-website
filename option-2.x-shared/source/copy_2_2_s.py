@@ -33,7 +33,8 @@ S_PATH_HOOK = 'Four steps, and the first is a conversation.'   # as G
 S_IW_REWARD = 'You leave the call knowing your next step, and whether Maggie is the one to walk it with you.'   # as G
 PROOF = ('proof', dict(id='hosts', eyebrow=M.TEAM_LINE, title=draft(S_TEAM_HOOK),
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
-                       quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA, line_img=AVEDA_PHOTO))   # its picture: task a749167b
+                       quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA, line_img=AVEDA_PHOTO,   # its picture: task a749167b
+                       photo=TEAM_PHOTO, options=S.TEAM_OPTIONS, option_label='Today’s: three cards and two quotes'))   # task 1a6089ec
 SALON = [dict_with(salon_hero(proof=True, visit='visit', line=S_HERO_LINE), rot=draft(S_ROT)), VISIT, PROOF, services(), door(short=True),
          dict_with(begin(summary=True), answer=draft(A11['adjust'])), salon_end(LEGEND, visit='visit', iw=False)]
 COACHING = twin(SALON, iw_entries('s', SALON))   # J 18 Nov: only the words change (task 7a3c013b)

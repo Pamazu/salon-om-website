@@ -147,6 +147,8 @@ def film_still(name):
 # window moved to the pause)
 CLOSE_IMG = {'begin': ('real-maggie-standing-shelves.webp', '50% 28%')}    # Inner Work's: its words' close_img (copy_2_2_iw.py)
 FOOT_VISIT = 'Salon OM in person'   # round 4 (task 0fea0949, J "GO GO" 11 Nov): where Inner Work happens stays unsaid until Maggie says it
+# the three of them together (photo 9), the team's own photo where an option shows the whole team (task 1a6089ec)
+TEAM_PHOTO = ('real-team-of-three.webp', 'Katie Paonessa, Maggie Woodward and Chesney Missamore together at Salon OM')
 TEAM_IMG = [('real-maggie-arms-crossed.webp', 'Maggie Woodward in front of the Aveda shelves at Salon OM'),
             ('real-katie.webp', 'Katie Paonessa at Salon OM'),
             ('real-chesney.webp', 'Chesney Missamore at Salon OM')]   # cut from 9-team-of-three.jpg by elimination (J, 11 Nov): Katie left, Maggie centre, Chesney right
@@ -210,7 +212,8 @@ def team(note=False, sid='hosts'):
     m = dict(M.TEAM[0], img=TEAM_IMG[0][0], alt=TEAM_IMG[0][1])
     people = [m] + [dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in (1, 2)]
     d = dict(id=sid, layout='letter', ph_tag=False, eyebrow='Meet the team', title=M.TEAM_LINE,
-             intro=M.TEAM[0]['desc'], people=people, with_label='With', lead=True)   # her card's name and role (11 Nov)
+             intro=M.TEAM[0]['desc'], people=people, with_label='With', lead=True,   # her card's name and role (11 Nov)
+             photo=TEAM_PHOTO, options=S.TEAM_OPTIONS, option_label='Today’s: her portrait and letter')   # task 1a6089ec
     if note: d.update(note=draft(TEAM_NOTE), sign='Maggie')
     return ('team', d)
 
@@ -402,6 +405,7 @@ def iw_entries(v, salon):
             w['photo'] = _iw_pic('outdoor_chin')
         elif kind in ('team', 'proof'):
             w['people'] = [dict(c, img=_iw_pic('outdoor_portrait')[0], alt=_iw_pic('outdoor_portrait')[1]) for c in w['people']]
+            if d.get('photo'): w['photo'] = _iw_pic('outdoor_wide')        # the team's whole-team photo: hers, landscape (task 1a6089ec)
             if kind == 'proof': w['line_img'] = _iw_pic('outdoor_wide')
         elif kind is S.menu:
             w['tiles'] = [dict(t, img=IW_PHOTO[IW_PATH_PICS[i][0]][0], alt=IW_PHOTO[IW_PATH_PICS[i][0]][1], pos=IW_PATH_PICS[i][1], ai=None,

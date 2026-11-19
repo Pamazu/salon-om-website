@@ -510,3 +510,62 @@ def door_sheet(d, world):
 
 DOOR_OPTIONS = [dict(key='photo', label='The words on the photo (before 19 Nov)', note='White words straight on the photo under a dark shade.', kind='bridge')]
 DOOR_LIVE_LABEL = AVEDA_LIVE_LABEL
+
+
+# where each person stands in a team picture, as fractions of its width, in the section's people order (read from the picture
+# itself, task 1a6089ec): the names arrive under each one
+PEOPLE_AT = {'real-team-of-three.webp': (.49, .33, .75),        # photo 9: Maggie in the middle, Katie on the left, Chesney on the right
+             'real-maggie-outdoor-wide.webp': (.48,)}            # Inner Work: Maggie outside, by the steps
+
+
+def team_breath(d, world):
+    """The team, drawn as the pause's B · The breath (task 1a6089ec; J 19 Nov 11:51 Z: "I really like the take a breath section
+    in which you had some scroll triggered animations ... you can have more of that for other sections (remember shift v to see
+    the different options)"; 12:01 Z: "just for weak sections like The people who listen first ... Don't over do it"). Offered
+    by the option switcher beside today's layout. Scroll through it: on the dark ground the heading arrives over a thin line;
+    the team's own photo (d['photo']) opens from that line to the screen while the heading settles below their faces; on the
+    exhale each name and role arrives under its person (PEOPLE_AT); below the pinned part the rest of the section's words
+    follow on the same ground: her letter (intro, note, cycle, button) and the bios a letter layout shows (M, G), or S's
+    quotes and Aveda line. Every word and the photo are the section's own (Inner Work's twin: its words, its photo). mgs.js
+    drives --e (the breath in) and the exhale; reduced motion shows it open."""
+    f, alt = d['photo']
+    xs = PEOPLE_AT.get(f)
+    people = d['people']
+    assert xs and len(xs) == len(people), f'team_breath: "{d["id"]}" needs where each of its {len(people)} people stands in {f} (PEOPLE_AT)'
+    order = sorted(range(len(people)), key=lambda i: xs[i])
+    names = ''.join(f'<li class="tb__name" style="--x:{xs[i]};--k:{n}"><b>{people[i]["name"]}</b><span class="label">{people[i]["role"]}</span></li>'
+                    for n, i in enumerate(order))
+    letter = d.get('layout') == 'letter'           # the letter layout shows the people's words; S's cards show only names
+    bios = ''
+    if letter:
+        def bio(p, lead):
+            if isinstance(p.get('desc'), list):
+                body = '<ul class="tl__creds tx">' + ''.join(f'<li>{c}</li>' for c in p['desc']) + '</ul>'
+            else:
+                body = '' if lead else f'<p class="tb__desc">{p.get("desc", "")}</p>'   # the lead's own words are the intro
+            return f'<article class="tb__bio"><h3>{p["name"]}</h3><p class="tb__role label">{p["role"]}</p>{body}</article>'
+        bios = '<div class="tb__bios" style="--n:{}">{}</div>'.format(len(people), ''.join(bio(p, k == 0 and d.get('lead')) for k, p in enumerate(people)))
+    note = (f'<blockquote class="tb__note"><span>“{d["note"]}”</span><cite>{d["sign"]}</cite></blockquote>' if d.get('note') else '')
+    qs = ''.join(f'<figure class="tb__q"><blockquote>“{q[0]}”</blockquote><figcaption>{q[1]} · {q[2]}</figcaption></figure>' for q in d.get('quotes', []))
+    line = f'<p class="tb__line"><b>{d["line_k"]}</b> {d["line"]}</p>' if d.get('line') else ''
+    btn = f'<div class="tb__btn">{d["btn"]}</div>' if d.get('btn') else ''
+    return f'''<section class="s s--auto tb" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="tb__run">
+      <div class="tb__stick">
+        <div class="tb__pic"><img src="img/{f}" alt="{E(alt)}" sizes="100vw" decoding="async"></div><div class="tb__dim" aria-hidden="true"></div>
+        <p class="tb__eyebrow eyebrow">{d['eyebrow']}</p>
+        <h2 class="mid tb__head" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+        <ul class="tb__names" role="list">{names}</ul>
+      </div>
+    </div>
+    <div class="tb__letter">
+      {f'<p class="tb__intro">{d["intro"]}</p>' if d.get('intro') else ''}{note}{bios}{f'<div class="tb__qs">{qs}</div>' if qs else ''}{line}
+      {cycle(d, 0)}{btn}
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+# the team section's options (task 1a6089ec): today's layout stays the section on the page until J picks
+TEAM_OPTIONS = [dict(key='breath', label='The breath: the team opens with the scroll',
+                     note='Scroll slowly: the photo of the team opens from a thin line; their names arrive on the exhale.', kind=team_breath)]
