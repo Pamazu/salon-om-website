@@ -421,12 +421,22 @@ PAUSE_LIVE_LABEL = 'B · The breath'
 PAUSE_LIVE_NOTE = 'Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.'
 
 
+# where each sheet picture's subject stands, as fractions of the picture (left top right bottom), read from the picture itself
+# (task 4739f125; J 19 Nov 14:25 Z: "you can actually place the subject more toward the visible area, the one that doesn't have
+# the effect"): sheet.js opens the clear window around it, wherever the picture's crop puts it on the screen
+SUBJECTS = {'meadow.webp': '.44 .31 .56 .93',                     # the woman in linen, walking into the meadow
+            'real-aveda-shelves.webp': '.42 .26 .60 .95',         # the fiddle-leaf fig between the shelves
+            'real-maggie-outdoor-chin.webp': '.44 .08 .70 .80',   # Maggie, her face and shoulders
+            'real-basins-poster.webp': '.40 .14 .70 .80'}         # the Aveda poster above the basins
+
+
 def sheet_stage(img, alt, preset, words, mark=''):
     """ONE block for words on a picture (task 95e37a41; J 18 Nov: "never have cards that are simple on top like that, use the
     lenticular sheet and glass effects if you need something on top"): the picture fills the screen under the lenticular sheet
     (sheet.js draws the sheet, preset `preset`), the words ride on its frost. Any section that puts words on a picture draws
     them through this; mark is the picture's AI label (ai_mark), kept on the picture above the sheet."""
-    return f'''<div class="sh" data-sheet="{preset}">
+    subject = SUBJECTS.get(img.split('?')[0].rsplit('/', 1)[-1])
+    return f'''<div class="sh" data-sheet="{preset}"{f' data-subject="{subject}"' if subject else ''}>
       <div class="sh__ph"><img src="img/{img}" alt="{E(alt)}" sizes="100vw" decoding="async" loading="lazy"></div>{mark}
       <div class="sh__words">
         {words}
