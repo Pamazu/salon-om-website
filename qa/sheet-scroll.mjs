@@ -16,12 +16,14 @@ const [v = 'm', size = '1440x900', out = 'out-sheet-scroll'] = process.argv.slic
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
 const b = await webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
-const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: D, isMobile: W < 600, hasTouch: W < 600 });
+// a phone's layout without mobile emulation: Playwright's mobile WebKit has no mouse wheel, and the sheet reads only the width
+const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: D });
 const p = await open(ctx, `${base}/${v}/`);
-const read = (id) => p.evaluate((id) => {
+// read in the frame the sheet has just drawn (a rAF after its own), so the window and the section's place belong together
+const read = (id) => p.evaluate((id) => new Promise((done) => requestAnimationFrame(() => {
   const st = document.querySelector(`#${id} [data-sheet]`), s = st && st._sheet, w = s && s.win, k = st.querySelector('.sh__streak');
-  return { y: Math.round(scrollY), top: Math.round(st.getBoundingClientRect().top), rx: w ? Math.round(w.rx) : null, x: w ? Math.round(w.x) : null, ribs: k ? k.style.backgroundPosition : null };
-}, id);
+  done({ y: Math.round(scrollY), top: Math.round(st.getBoundingClientRect().top), rx: w ? Math.round(w.rx) : null, x: w ? Math.round(w.x) : null, ribs: k ? k.style.transform : null });
+})), id);
 const rest = async () => { let y = -1; for (let i = 0; i < 20; i++) { const n = await p.evaluate(() => Math.round(scrollY)); if (n === y) return; y = n; await wait(p, 600); } };
 const ready = (id) => p.waitForFunction((id) => !!document.querySelector(`#${id} .sh--on`), id, { timeout: 30000 }).catch(() => {});
 const wheel = async (id, y0, look) => {

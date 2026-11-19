@@ -254,7 +254,10 @@
       this.set(L.sheet2, 'k4', 'webkitMaskComposite', 'source-in'); this.set(L.sheet2, 'k5', 'maskComposite', 'intersect');
     }
     this.el.classList.toggle('sh--glow', !!o.glow);
-    this.set(L.streak, 'stx', 'backgroundPosition', (o.ph || 0).toFixed(1) + 'px 0'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
+    // the ribs and the rainbow move on the compositor (task 4739f125): a strip a tile wider slides, a wider rainbow layer shifts;
+    // neither is repainted while the page scrolls (at 3230 x 2 their repaint each frame cost WebKit p95 52-66 ms against 22-25 held)
+    var sx = (((o.ph || 0) % 1024) + 1024) % 1024;
+    this.set(L.streak, 'stx', 'transform', 'translate3d(' + sx.toFixed(1) + 'px,0,0)'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
     this.set(L.milk, 'mo', 'opacity', Math.min(.95, o.haze * (.55 + .45 * o.dist) + .05).toFixed(3));
     if (!this.fz) this.shape();
     var fz = this.fz, fp = fz ? (this.wx - fz.M).toFixed(0) + 'px ' + (this.wy - fz.M).toFixed(0) + 'px' : '';   // the frost, shaped by the words (shape())
@@ -265,7 +268,9 @@
       this.set(L.frost, 'fr', 'webkitMaskRepeat', 'no-repeat'); this.set(L.frost, 'fr2', 'maskRepeat', 'no-repeat');
     }
     this.set(L.frost, 'fo', 'opacity', o.wzI.toFixed(3));
-    this.set(L.rain, 'rb', 'backgroundImage', rainbow(o.rbC[0], o.rbC[1], o.rbC[2])); this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
+    var rp = W * .5;                                                  // the rain layer reaches half a stage past each side (mgs.css)
+    this.set(L.rain, 'rb', 'backgroundImage', rainbow(W * .5 + rp, o.rbC[1], o.rbC[2])); this.set(L.rain, 'rbx', 'transform', 'translate3d(' + (o.rbC[0] - W * .5).toFixed(1) + 'px,0,0)');
+    this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
     if (o.thick > 0) {
       var box = 'display:block;transform:translate(' + x0.toFixed(1) + 'px,' + y0.toFixed(1) + 'px);width:' + (x1 - x0).toFixed(1) + 'px;height:' + (y1 - y0).toFixed(1) + 'px;';
       this.set(L.rim, 'rim', 'cssText', box + 'box-shadow:inset 0 0 0 1px rgba(255,255,255,.62),inset 0 0 0 ' + o.thick + 'px rgba(255,255,255,.10),inset 0 0 ' + (o.thick * 2.5) + 'px rgba(70,60,50,.10)');
