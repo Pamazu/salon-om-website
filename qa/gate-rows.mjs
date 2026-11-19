@@ -33,7 +33,7 @@ const WORLDS = [['salon', '', 'Salon OM'], ['coaching', 'c-', 'Inner Work']];
 const topOf = (p, id) => p.evaluate((id) => { const e = document.getElementById(id); return e ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
 const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 
-// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20
+// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22
 async function desktop(p, v, P, W, add, seen) {
   const vh = 900;
   // row 9: every green on the page is one of option B's forests (a green = its green clearly above its red and blue)
@@ -184,6 +184,10 @@ async function desktop(p, v, P, W, add, seen) {
     await door(p, P, W, add, seen, '1440');
   }
 
+  // rows 21 and 22: the second door's and Why Aveda's entries
+  await entry(p, 21, `${P}deeper`, 'the second door', W, add, seen, '1440', vh);
+  await entry(p, 22, `${P}aveda`, 'Why Aveda', W, add, seen, '1440', vh);
+
   // row 4: the visit preview's line reaches 05, its stops travel into the step rail at step 01, and back in reverse (M, G)
   const yv = await topOf(p, `${P}visit`), ya = await topOf(p, `${P}arrive`);
   if (yv >= 0 && ya >= 0 && await p.evaluate((P) => !!document.querySelector(`#${P}visit .ln__stops`), P)) {
@@ -209,6 +213,37 @@ async function desktop(p, v, P, W, add, seen) {
       if (back > 0) add(4, `${back} stops stayed in the rail after scrolling back to the preview (no reverse)`);
     }
   }
+}
+
+// rows 21 and 22: a section's entry J kept (task 4739f125; J 19 Nov 14:25 Z: "you broke the intro text and image animation, zoom
+// in text appearing"). Reached from the screen before it after a person's pause there (0.7 s), every 100 ms for 4.5 s: whether it
+// is on (active, its sheet drawn), its picture's scale (the `scale` property and its transform together) and its heading's
+// opacity. As it comes on, the picture is still close (scale over 1.04) and the heading not yet there (under 0.3); 4.5 s on, the
+// picture rests at its size (1) and the heading is there; the heading never comes in before the sheet is drawn (behind it).
+async function entry(p, n, id, name, W, add, seen, size, vh) {
+  const y = await topOf(p, id);
+  if (y < 0) return;
+  await jump(p, Math.max(0, y - vh)); await wait(p, 700);
+  await p.evaluate((id) => {
+    const s = document.getElementById(id), im = s.querySelector('.sh__ph img, .ph-bg img, .av__ph img'), h = s.querySelector('.mask__in'), t0 = performance.now(), log = window.__entry = [];
+    const sc = (e) => { if (!e) return null; const c = getComputedStyle(e), k = c.scale === 'none' ? 1 : parseFloat(c.scale), m = c.transform === 'none' ? null : new DOMMatrix(c.transform); return +(k * (m ? Math.hypot(m.a, m.b) : 1)).toFixed(3); };
+    (function tick() {
+      const t = performance.now() - t0;
+      log.push({ t: Math.round(t), a: s.classList.contains('is-active'), on: !s.querySelector('.sh') || !!s.querySelector('.sh--on'), sc: sc(im), ho: h ? +(+getComputedStyle(h).opacity).toFixed(2) : null });
+      if (t < 4500) setTimeout(tick, 100);
+    })();
+  }, id);
+  await jump(p, y); await wait(p, 4700);
+  const log = await p.evaluate(() => window.__entry), k = log.findIndex((x) => x.a && x.on), end = log[log.length - 1];
+  seen[`${n} ${W} ${size}`] = { arrive: log[k] || null, end, active: (log.find((x) => x.a) || {}).t ?? null, on: (log.find((x) => x.on) || {}).t ?? null };
+  if (k < 0) return add(n, `at ${size} ${name} did not come on 4.5 s after it was reached (${log.some((x) => x.a) ? 'its sheet was never drawn' : 'never active'})`);
+  const early = log.find((x) => !x.on && x.ho > 0.05);
+  if (early) add(n, `at ${size} ${name}'s heading came in before its sheet was drawn, behind it (opacity ${early.ho} at ${early.t} ms)`);
+  if (!(log[k].sc > 1.04)) add(n, `at ${size} ${name}'s picture does not settle in from close as it arrives (scale ${log[k].sc})`);
+  if (!(end.sc <= 1.005)) add(n, `at ${size} ${name}'s picture has not come to rest at its size 4.5 s after it was reached (scale ${end.sc})`);
+  if (!(log[k].ho < 0.3)) add(n, `at ${size} ${name}'s heading is already there as it arrives; it does not come in (opacity ${log[k].ho})`);
+  if (!(end.ho >= 0.99)) add(n, `at ${size} ${name}'s heading has not come in 4.5 s after it was reached (opacity ${end.ho})`);
+  await jump(p, y); await wait(p, 200);
 }
 
 // row 20: the pause is J's pick, B · The breath (task 95ac520e): its room picture (the salon's: the empty chair by the window;

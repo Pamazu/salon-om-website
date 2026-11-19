@@ -2251,6 +2251,15 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .sh__rim, .sh__shade { position: absolute; left: 0; top: 0; pointer-events: none; display: none; }
 .sh__words { position: absolute; z-index: 2; left: 0; top: 0; width: 40%; padding: 0 clamp(22px, 3vw, 56px); will-change: transform; opacity: 0; transition: opacity .8s var(--io); }
 .sh--on .sh__words, html[data-shot] .sh__words { opacity: 1; }
+/* the picture's entry (task 4739f125; J 19 Nov 14:25 Z: "you broke the intro text and image animation, zoom in text appearing"):
+   as the section arrives its picture settles in from close, as each did before the sheet (448686f: the second door 1.2 over
+   3.2 s, Why Aveda 1.08 over 2.8 s), at rest at its own size (row 18). The photo and its smears share the one `scale` (sheet.js
+   owns their `transform`), so the sheet stays on its photo; it starts once the sheet is drawn (.sh--on), with the words. */
+.sh { --sh-from: 1.2; --sh-zoom: 3.2s; }
+.av--sheet .sh { --sh-from: 1.08; --sh-zoom: 2.8s; }
+.sh :is(.sh__ph, .sh__sheet, .sh__sheet2) img { scale: var(--sh-from); }
+.is-active .sh--on :is(.sh__ph, .sh__sheet, .sh__sheet2) img { scale: 1; transition: scale var(--sh-zoom) var(--io-strong); }
+:is(html[data-shot], html[data-motion="calm"]) .sh :is(.sh__ph, .sh__sheet, .sh__sheet2) img { scale: 1; transition: none; }
 .sh__words, .sh__words * { color: var(--ink); text-shadow: 0 0 18px rgba(245, 238, 228, .55); }
 .sh--glow .sh__words, .sh--glow .sh__words * { text-shadow: 0 0 2px rgba(245, 238, 228, 1), 0 0 8px rgba(245, 238, 228, .97), 0 0 20px rgba(245, 238, 228, .9), 0 0 42px rgba(245, 238, 228, .7), 0 0 84px rgba(245, 238, 228, .45); }
 .sh__words .mid { margin: 0 0 clamp(16px, 2.6vh, 28px); font-size: clamp(30px, 3.3vw, 56px); line-height: 1.02; }
@@ -2315,6 +2324,12 @@ html[data-motion="calm"] {--tx-in: 1s; --tx-blur: 5px; --tx-glow: 1.25; --tx-glo
 .a-up { transform: translate3d(0, var(--tx-calm-move), 0); }
 .a-left { transform: translate3d(calc(var(--tx-calm-move) * -1), 0, 0); }
 .a-right { transform: translate3d(var(--tx-calm-move), 0, 0); }
+/* words wait for their stage: while a lenticular sheet is not yet drawn (.sh without .sh--on, sheet.js) its words hold their
+   first frame, so they arrive on the sheet, never behind it (task 4739f125) */
+html:not([data-shot]) .is-active .sh:not(.sh--on) :is(.a-up, .a-left, .a-right, .a-fade) { opacity: 0; filter: blur(var(--tx-calm-blur)); transition: none; }
+html:not([data-shot]) .is-active .sh:not(.sh--on) .a-up { transform: translate3d(0, var(--tx-calm-move), 0); }
+html:not([data-shot]) .is-active .sh:not(.sh--on) .a-left { transform: translate3d(calc(var(--tx-calm-move) * -1), 0, 0); }
+html:not([data-shot]) .is-active .sh:not(.sh--on) .mask__in { animation: none; }
 /* the calm setting: every word already there */
 html[data-motion="calm"] :is(.mask__in, blockquote.a-up, .mani__text .l, .ps [data-write] .l, .voices blockquote .wd) { opacity: 1; filter: none; transform: none; animation: none; }
 
@@ -3260,7 +3275,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="1861204450eb";</script>
+<script>window.OM_BUILD="4b9f803b3a0c";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4987,6 +5002,9 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     };
     this.fit(); if ('ResizeObserver' in window) new ResizeObserver(function () { me.fit(); }).observe(this.wd); else addEventListener('resize', this.fit);
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; if (me.vis) start(); }, { rootMargin: '15% 0px' }).observe(el); else this.vis = true;
+    // the photo loads a screen and a half ahead, so its smears are made before the section arrives and its entry (the picture
+    // settling in, the words appearing: mgs.css) plays on the drawn sheet as it comes on screen (task 4739f125)
+    if ('IntersectionObserver' in window && ph.loading === 'lazy') { var near = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { ph.loading = 'eager'; near.disconnect(); } }, { rootMargin: '150% 0px' }); near.observe(el); }
     function load() {
       copiesOf(ph.currentSrc || ph.src, function (urls, nat, err) {
         if (!urls) { el.setAttribute('data-sheet-error', err || 'no smear'); return; }

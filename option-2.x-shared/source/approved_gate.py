@@ -442,6 +442,25 @@ def row19(sections, letter, site):     # the hero film, and the Inner Work hero 
     return out
 
 
+def entry_row(sid, name):
+    """A section's entry J kept (J 19 Nov 14:25 Z, task 4739f125: "in the section on the image I like the effect but you broke the
+    intro text and image animation, zoom in text appearing, bro I've told you to don't remove the things you already know I
+    like"): its picture settles in from close and its words come in as it arrives, in both worlds. The motion itself is measured
+    in WebKit (qa/gate-rows.mjs); here, that the page carries a picture and words that come in (a .mask__in heading, .a-up lines)."""
+    def row(sections, letter, site):
+        out = []
+        for w, P, W, ids in worlds(sections):
+            sec = sections.get(P + sid)
+            if sec is None:
+                out.append(f'{W}: {name} is missing ("{P}{sid}")'); continue
+            if not sec['pics']:
+                out.append(f'{W}: {name} has no picture to settle in')
+            if not sec['classes'].get('mask__in') or not sec['classes'].get('a-up'):
+                out.append(f'{W}: {name}\'s words do not come in (no .mask__in heading or .a-up line)')
+        return out
+    return row
+
+
 # number: (what it keeps, the pages it applies to, the check over the built page). M and G have the pause, the visit preview,
 # the five steps and the voices; S is the short version (the opening, the visit, the team, the menu, the second door, the close).
 ROWS = {
@@ -461,9 +480,11 @@ ROWS = {
     18: ('every picture sharp at its display size on J\'s 6K window', 'mgs', row18),
     19: ('the hero film and the Inner Work hero film', 'mgs', row19),
     20: ('the pause is J\'s pick, B · The breath: the room opens as you breathe in, the question arrives on the exhale; never the 17 Nov spread', 'mg', row20),
+    21: ('the second door\'s entry: its picture settles in from close and its words come in as it arrives', 'mgs', entry_row('deeper', 'the second door')),
+    22: ('Why Aveda\'s entry: its picture settles in from close and its words come in as it arrives', 'mg', entry_row('aveda', 'Why Aveda')),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
-MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg'}
+MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg'}
 # the rows only measured (no built-page check), by name for the refusal
 NAMES = {5: 'slides snap with a pull; a tall section scrolls freely inside, then pulls into the next',
          9: "option B's forests on buttons and marks, never mint", 17: 'the pause: no rings and no glow around its picture'}

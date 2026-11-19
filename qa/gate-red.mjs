@@ -31,6 +31,8 @@ export const BREAKS = {
   15: ['the pause heading arrives already in focus', '<style>#pause .mani__text .l{filter:none!important;animation:none!important;transition:none!important}</style>', '1440', ['salon']],
   17: ['a glow around the pause picture', '<style>#pause .br__ph{box-shadow:0 0 80px rgba(245,238,228,.6)!important}</style>', '1440', ['salon']],
   20: ['the pause\'s door made a plain rectangle, never opened', '<style>#pause .br__ph{border-radius:24px!important;clip-path:inset(0 49.6% 0 49.6%)!important;transition:none!important}</style>', '1440', ['salon']],
+  21: ['the second door\'s picture held still as it arrives', '<style>#deeper :is(.sh__ph,.sh__sheet,.sh__sheet2,.ph-bg) img{scale:1!important;transform:none!important;transition:none!important}</style>', '1440', ['salon']],
+  22: ['Why Aveda\'s heading already there as it arrives', '<style>#aveda .mask__in{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}</style>', '1440', ['salon']],
   18: ['the menu photos from their smallest file',
     "<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('#services .mn__ph img[srcset]').forEach(function(i){var f=i.getAttribute('srcset').split(',')[0].trim().split(' ')[0];i.removeAttribute('srcset');i.src=f;});});</script>", '6K', ['salon']],
 };

@@ -79,6 +79,9 @@
     };
     this.fit(); if ('ResizeObserver' in window) new ResizeObserver(function () { me.fit(); }).observe(this.wd); else addEventListener('resize', this.fit);
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; if (me.vis) start(); }, { rootMargin: '15% 0px' }).observe(el); else this.vis = true;
+    // the photo loads a screen and a half ahead, so its smears are made before the section arrives and its entry (the picture
+    // settling in, the words appearing: mgs.css) plays on the drawn sheet as it comes on screen (task 4739f125)
+    if ('IntersectionObserver' in window && ph.loading === 'lazy') { var near = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { ph.loading = 'eager'; near.disconnect(); } }, { rootMargin: '150% 0px' }); near.observe(el); }
     function load() {
       copiesOf(ph.currentSrc || ph.src, function (urls, nat, err) {
         if (!urls) { el.setAttribute('data-sheet-error', err || 'no smear'); return; }

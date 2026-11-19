@@ -245,8 +245,9 @@ class TheList(unittest.TestCase):
         self.assertEqual(g.unchecked(rows), [])
 
     def test_a_new_row_without_its_check_is_refused(self):
-        code, _, err = self.gate(list(range(1, 22)))
-        self.assertEqual(code, 1); self.assertIn('row(s) 21', err)
+        n = max(g.ROWS) + 1                                # the next row, which no check covers yet
+        code, _, err = self.gate(list(range(1, n + 1)))
+        self.assertEqual(code, 1); self.assertIn(f'row(s) {n}', err)
 
     def test_an_unreadable_list_is_refused(self):
         keep = g.list_rows
