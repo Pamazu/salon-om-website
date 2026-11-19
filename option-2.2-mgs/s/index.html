@@ -1768,6 +1768,12 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__zo
   #pause .br { flex: 1 1 0; min-height: 150px; width: auto; max-width: min(70vw, 320px); max-height: calc(min(70vw, 320px) * 4 / 3); margin: var(--sp-4) 0 var(--sp-3); }
   #pause .lead { order: 4; margin: var(--sp-2) 0 0 !important; font-size: 20px; }
 }
+/* a short phone (Safari with its bars: 660-740 px): the first sentence a step smaller and the gaps closer, so the door keeps its size
+   beside longer words (Inner Work's four lines left it 116 px wide at 393 x 660) */
+@media (max-width: 1023px) and (max-height: 740px) {
+  #pause .mani__text .wd.is-head { font-size: 1.85em; }
+  #pause .br { margin: var(--sp-3) 0 var(--sp-2); }
+}
 
 
 /* the five steps (J, 11 Nov, on G's Breathe at 1440: "That empty space there is too much"): the layout stays 2.2's; the
@@ -2342,7 +2348,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="1534cc3e3be7";</script>
+<script>window.OM_BUILD="461eeab444b7";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

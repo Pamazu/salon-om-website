@@ -1768,6 +1768,12 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #c-pause .br__
   #pause .br, #c-pause .br { flex: 1 1 0; min-height: 150px; width: auto; max-width: min(70vw, 320px); max-height: calc(min(70vw, 320px) * 4 / 3); margin: var(--sp-4) 0 var(--sp-3); }
   #pause .lead, #c-pause .lead { order: 4; margin: var(--sp-2) 0 0 !important; font-size: 20px; }
 }
+/* a short phone (Safari with its bars: 660-740 px): the first sentence a step smaller and the gaps closer, so the door keeps its size
+   beside longer words (Inner Work's four lines left it 116 px wide at 393 x 660) */
+@media (max-width: 1023px) and (max-height: 740px) {
+  #pause .mani__text .wd.is-head, #c-pause .mani__text .wd.is-head { font-size: 1.85em; }
+  #pause .br, #c-pause .br { margin: var(--sp-3) 0 var(--sp-2); }
+}
 
 
 /* the five steps (J, 11 Nov, on G's Breathe at 1440: "That empty space there is too much"): the layout stays 2.2's; the
@@ -2121,7 +2127,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   <section class="s mani" id="pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img fetchpriority="low" src="img/om-pause-guest.webp?v=8326096d6a" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" srcset="img/hd/om-pause-guest-640.webp?v=4026aca2c0 640w, img/hd/om-pause-guest-960.webp?v=cc54fa6417 960w, img/hd/om-pause-guest-1280.webp?v=7ce5f1daca 1280w, img/hd/om-pause-guest-1920.webp?v=58e6f70706 1920w, img/hd/om-pause-guest-2560.webp?v=400693756b 2560w, img/hd/om-pause-guest-2906.webp?v=ba998b421e 2906w" sizes="(max-width: 700px) 147vw, (max-width: 2000px) 67vw, 37vw" decoding="async"></div></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img fetchpriority="low" src="img/om-pause-guest.webp?v=8326096d6a" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" srcset="img/hd/om-pause-guest-640.webp?v=4026aca2c0 640w, img/hd/om-pause-guest-960.webp?v=cc54fa6417 960w, img/hd/om-pause-guest-1280.webp?v=7ce5f1daca 1280w, img/hd/om-pause-guest-1920.webp?v=58e6f70706 1920w, img/hd/om-pause-guest-2560.webp?v=400693756b 2560w, img/hd/om-pause-guest-2906.webp?v=ba998b421e 2906w" sizes="(max-width: 700px) 147vw, (max-width: 1023px) 88vw, (max-width: 2000px) 67vw, 37vw" decoding="async"></div></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
@@ -2362,7 +2368,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   <section class="s mani" id="c-pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img fetchpriority="low" loading="lazy" src="img/real-maggie-lounge-seated.webp?v=4d8714d7e7" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-2906.webp?v=2ea9cdb647 2906w" sizes="(max-width: 700px) 74vw, (max-width: 2000px) 34vw, 19vw" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img fetchpriority="low" loading="lazy" src="img/real-maggie-lounge-seated.webp?v=4d8714d7e7" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-2906.webp?v=2ea9cdb647 2906w" sizes="(max-width: 700px) 74vw, (max-width: 1023px) 44vw, (max-width: 2000px) 34vw, 19vw" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="roots.">Sometimes what feels like today’s challenge has deeper roots.</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">Look a little deeper.</p>
     </div>
@@ -2576,7 +2582,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="8bbb5d6b914b";</script>
+<script>window.OM_BUILD="0c34d20c1fe2";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */

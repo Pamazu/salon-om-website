@@ -133,8 +133,8 @@ def _webp_size(path):
 def pause_img(name):
     """srcset and sizes for the door's picture (task a73569a9), whichever picture a world puts in it. The door is 3:4, min(68vh,
     740 px) tall (70vw, 320 px wide on a phone) and the picture is drawn to cover it, so it is drawn as wide as the larger of the
-    door's width and the door's height x the picture's proportion; sizes say that width (5 % over) at the three screens
-    qa/sharpness.mjs measures (390 x 844, 1440 x 900, 3230 x 1319). A landscape photo is drawn about 1.5 x the door's height
+    door's width and the door's height x the picture's proportion; sizes say that width (5 % over) at the screens
+    qa/sharpness.mjs measures (390 x 844, 768 x 1024, 1440 x 900, 3230 x 1319). A landscape photo is drawn about 1.5 x the door's height
     wide, a portrait one only as wide as the door"""
     import json, math
     here = os.path.dirname(os.path.abspath(__file__)) + '/'
@@ -143,10 +143,10 @@ def pause_img(name):
     stem = name[:-5]
 
     def vw(screen, vh):
-        door_h = min(.68 * vh, 740) if screen > 700 else min(.7 * screen, 320) * 4 / 3
+        door_h = min(.68 * vh, 740) if screen > 1023 else min(.7 * screen, 320) * 4 / 3     # a phone and a tablet stack it, smaller
         return math.ceil(max(door_h * 3 / 4, door_h * wpx / hpx) / screen * 105)
     return (' srcset="' + ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ladder) + '" sizes="(max-width: 700px) '
-            f'{vw(390, 844)}vw, (max-width: 2000px) {vw(1440, 900)}vw, {vw(3230, 1319)}vw"')
+            f'{vw(390, 844)}vw, (max-width: 1023px) {vw(768, 1024)}vw, (max-width: 2000px) {vw(1440, 900)}vw, {vw(3230, 1319)}vw"')
 
 
 PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster'
