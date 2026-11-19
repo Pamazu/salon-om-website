@@ -148,18 +148,25 @@
         haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * (.15 + .3 * br), H * 1.3, H * 1.0], wz: s.wz(), wzI: .42,
         mask: (function (wz, p, f) { return soft(wz[0] - p, wz[2] + p, wz[1] - p, wz[3] + p, f); })(s.wz(), (phone ? 18 : 40) + 16 * br, phone ? 70 : 140), maskAnd: 1 };
     },
-    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clear window around the picture's subject, away from the words
+    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clear window around the picture's subject, moving with the scroll
       var phone = W < 700;
       s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .48);   // .4 -> .48: the larger words' column (task 4739f125)
-      var w = s.subject(W, H), drift = -clamp(r.top, -H, H) * .06;
-      if (w) { w.x += W * .012 * Math.sin(t * .35); w.y += H * .015 * Math.sin(t * .5) + drift; }
+      // with the scroll, like the pause's B · The breath (task 4739f125; J 19 Nov 14:25 Z: "if in all sections in which you have the
+      // effect, can you synchronize it with scroll just like in the take a breath section"): as the section rises into view the
+      // clear window opens around the subject (fully open once its top is near the window's top), it and the rainbow travel a
+      // little with the page and the ribs slide with it; still while the page is still; calm motion holds it open and still.
+      // k: how far the section has come through the window (0 entering below, 1 gone above); the contrast check sweeps it.
+      var still = calm(), k = window.__lensT != null ? .5 + .5 * Math.sin(window.__lensT * 2 * Math.PI / 36) : still ? .5 : clamp((vh - r.top) / (vh + H), 0, 1);
+      var open = still || window.__lensT != null ? 1 : ease((vh - r.top) / (vh * .85)), top = still ? 0 : clamp(r.top, -H, H);
+      var w = s.subject(W, H);
+      if (w) { var g = .45 + .55 * open; w.x += W * .024 * (k - .5); w.y -= top * .06; w.rx *= g; w.ry *= g; }
       else {                                                                                // no subject named: the window drifts on the right, as before
         var R0 = Math.min(W, H) * (phone ? .16 : .15);
         w = { x: phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), y: (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12, rx: R0 * 2.8, ry: R0 * 2.8, c: 1 / 2.8 };
       }
       s.win = w;                                                                            // read by qa/lens-contrast.mjs (the worst moment)
       var at = w.rx.toFixed(0) + 'px ' + w.ry.toFixed(0) + 'px at ' + w.x.toFixed(0) + 'px ' + w.y.toFixed(0) + 'px', c = w.c * 100, f = 100 - c;
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
+      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: -top * .35, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * (.15 + .3 * k), H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
         // its edge eases out over the outer two fifths of the oval, so the window melts into the sheet (J 19 Nov 14:25 Z)
         mask: 'radial-gradient(ellipse ' + at + ', transparent ' + c.toFixed(1) + '%, rgba(0,0,0,.18) ' + (c + f * .3).toFixed(1) + '%, rgba(0,0,0,.6) ' + (c + f * .62).toFixed(1) + '%, #000 100%)' };
     },
