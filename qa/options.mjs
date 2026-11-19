@@ -48,7 +48,8 @@ const state = (p) => p.evaluate(() => {
     // Inner Work's pause has a picture of its own (task e1a1e009): its copies, its label, and where its focus lands
     iwImgs: [...document.querySelectorAll('#c-pause img[data-pic]')].map((i) => (i.getAttribute('src') || '').split('?')[0]),
     iwMark: (() => { const m = [...document.querySelectorAll('#c-pause .ai-mark')].filter((x) => !x.hidden && x.getClientRects().length)[0]; return m ? m.textContent : null; })(),
-    pos: [...document.querySelectorAll('#pause img[data-pic], #c-pause img[data-pic]')].filter((i) => i.getClientRects().length).map((i) => getComputedStyle(i).objectPosition),
+    // as WebKit writes it back (46.200001%), to the tenth of a percent the candidates declare
+    pos: [...document.querySelectorAll('#pause img[data-pic], #c-pause img[data-pic]')].filter((i) => i.getClientRects().length).map((i) => getComputedStyle(i).objectPosition.split(' ').map((x) => Math.round(parseFloat(x) * 10) / 10 + '%').join(' ')),
     pause: q('pause') && q('pause').getAttribute('data-opt'), cpause: q('c-pause') && q('c-pause').getAttribute('data-opt'),
     url: location.search, ls: Object.keys(localStorage).filter((k) => k.indexOf('om-opt-') === 0).map((k) => k + '=' + localStorage.getItem(k)),
     thumbs: pn ? [...pn.querySelectorAll('.opt__th img')].map((i) => i.complete && i.naturalWidth > 0) : [],
