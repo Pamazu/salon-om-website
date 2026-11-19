@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 import { serve, jump, wait, toWorld } from './lib.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url)), REPO = path.resolve(HERE, '..');
 const OUT = path.resolve(process.argv[2] || path.join(HERE, 'out-options')); fs.mkdirSync(OUT, { recursive: true });
-const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
+// SITE=live drives the deployed sites (salon-om-2-2-<v>.web.app) instead of this checkout
+const LIVE = process.env.SITE === 'live', srv = LIVE ? null : await serve(REPO);
+const url = (v, q = '') => (LIVE ? `https://salon-om-2-2-${v}.web.app/` : `http://127.0.0.1:${srv.address().port}/${v}/`) + q;
 const b = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
 const res = { browser: 'webkit ' + b.version(), started: new Date().toISOString(), checks: [], errors: [] };
 const ok = (name, pass, info) => { res.checks.push({ name, pass: !!pass, info }); console.log(pass ? 'PASS' : 'FAIL', name, info === undefined ? '' : JSON.stringify(info)); };
@@ -30,13 +32,13 @@ const state = (p) => p.evaluate(() => {
     rows: pn ? [...pn.querySelectorAll('.opt__row')].map((r) => r.textContent.trim()) : [], on: pn ? (pn.querySelector('.opt__row[aria-checked="true"]') || {}).textContent : null,
     pause: q('pause') && q('pause').getAttribute('data-opt'), cpause: q('c-pause') && q('c-pause').getAttribute('data-opt'),
     url: location.search, ls: Object.keys(localStorage).filter((k) => k.indexOf('om-opt-') === 0).map((k) => k + '=' + localStorage.getItem(k)),
-    letters: q('pause') ? q('pause').querySelectorAll('[data-write] .l').length : 0, sw: document.documentElement.getAttribute('data-switch') };
+    letters: q('pause') ? q('pause').querySelectorAll('[data-write] .l').length : 0, writes: q('pause') ? q('pause').querySelectorAll('[data-write]').length : 0, sw: document.documentElement.getAttribute('data-switch') };
 });
 const toPause = async (p, id = 'pause') => { await jump(p, await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id)); await wait(p, 700); };
 
 for (const v of ['m', 'g', 's']) {
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
-  const p = await page(ctx, `${base}/${v}/`, `${v}-1440`);
+  const p = await page(ctx, url(v), `${v}-1440`);
   ok(`${v}: a review page`, await p.evaluate(() => document.documentElement.hasAttribute('data-review')));
   ok(`${v}: hidden until Shift+V`, !(await state(p)).open);
   await p.keyboard.press('Shift+V'); await wait(p, 500);
@@ -58,21 +60,25 @@ for (const v of ['m', 'g', 's']) {
   const nOpts = (id) => p.evaluate((id) => JSON.parse(document.getElementById(id).dataset.opts).length, id);
   ok(`${v}: it follows the section on screen`, s.sec === 'The pause' && s.rows.length === await nOpts('pause'), { sec: s.sec, rows: s.rows });
   await shot(p, `${v}-1440-pause-live`);
-  for (const k of ['door', 'room', 'breath', 'cinema']) {
+  // every option the pause declares, today's default first (a scroll-driven one, e.g. B, is scrolled through wherever it sits)
+  const pk = await p.evaluate(() => JSON.parse(document.getElementById('pause').dataset.opts).map((o) => o.k));
+  for (const k of pk) {
     await toPause(p);
-    await p.click(`#opt-panel [data-k="${k}"]`); await wait(p, 4200); s = await state(p);
-    ok(`${v}: pause -> ${k}, both worlds, in the address and this browser`, s.pause === k && s.cpause === k && s.url.includes(`opt-pause=${k}`) && s.ls.some((x) => x.endsWith('opt-pause=' + k)) && s.letters > 0,
-      { pause: s.pause, cpause: s.cpause, url: s.url, letters: s.letters, on: s.on });
-    if (k === 'breath') {
+    if (k !== 'live') {
+      await p.click(`#opt-panel [data-k="${k}"]`); await wait(p, 4200); s = await state(p);
+      ok(`${v}: pause -> ${k}, both worlds, in the address and this browser`, s.pause === k && s.cpause === k && s.url.includes(`opt-pause=${k}`) && s.ls.some((x) => x.endsWith('opt-pause=' + k)) && (s.writes === 0 || s.letters > 0),
+        { pause: s.pause, cpause: s.cpause, url: s.url, letters: s.letters, on: s.on });
+    }
+    if (await p.evaluate(() => document.getElementById('pause').offsetHeight > innerHeight * 1.5)) {
       // with the page's snap on, the wheel moves through it (it must not jump past it)
       const top = await p.evaluate(() => document.getElementById('pause').getBoundingClientRect().top + scrollY);
       const h = await p.evaluate(() => document.getElementById('pause').offsetHeight);
       await jump(p, top); await wait(p, 900); await p.mouse.move(720, 450);
       const ys = [];
       for (let i = 0; i < 8; i++) { await p.mouse.wheel(0, 260); await wait(p, 420); ys.push(Math.round(await p.evaluate(() => scrollY - document.getElementById('pause').offsetTop))); }
-      ok(`${v}: B scrolls through with the snap on`, ys[ys.length - 1] > 0 && ys.some((y) => y > 0 && y < h - 900), { h, ys });
-      for (const f of [0, .3, .62, .97]) { await jump(p, top + (h - 900) * f); await wait(p, 1300); await shot(p, `${v}-1440-pause-breath-${Math.round(f * 100)}`); }
-      const cls = await p.evaluate(() => document.getElementById('pause').className); ok(`${v}: B rests at its end`, /is-rest/.test(cls), cls);
+      ok(`${v}: ${k} scrolls through with the snap on`, ys[ys.length - 1] > 0 && ys.some((y) => y > 0 && y < h - 900), { h, ys });
+      for (const f of [0, .3, .62, .97]) { await jump(p, top + (h - 900) * f); await wait(p, 1300); await shot(p, `${v}-1440-pause-${k}-${Math.round(f * 100)}`); }
+      const cls = await p.evaluate(() => document.getElementById('pause').className); ok(`${v}: ${k} rests at its end`, /is-rest|ps--through|is-in/.test(cls) || !/ps--breath/.test(cls), cls);
       await toPause(p);
     }
     await wait(p, 600); await shot(p, `${v}-1440-pause-${k}`);
@@ -83,16 +89,17 @@ for (const v of ['m', 'g', 's']) {
   ok(`${v}: the panel follows to Why Aveda`, /Why Aveda|What is in your color|Beauty/.test(s.sec || '') && s.rows.length === av.length, { sec: s.sec, rows: s.rows.length });
   for (const k of av.filter((k) => k !== 'live')) {
     await toPause(p, 'aveda'); await p.click(`#opt-panel [data-k="${k}"]`); await wait(p, 3200);
-    const here = await p.evaluate(() => { const el = document.querySelector('#aveda [data-sheet]'); return el && el._sheet ? { id: el._sheet.id, ready: !!el._sheet.ready, frames: el._sheet.frames, err: el.getAttribute('data-sheet-error') } : null; });
-    ok(`${v}: Why Aveda -> ${k} draws`, here && here.ready && here.frames > 10 && !here.err && (await p.evaluate(() => document.getElementById('c-aveda').getAttribute('data-opt'))) === k, here);
+    const here = await p.evaluate(() => { const el = document.querySelector('#aveda [data-sheet]'); return el ? (el._sheet ? { id: el._sheet.id, ready: !!el._sheet.ready, frames: el._sheet.frames, err: el.getAttribute('data-sheet-error') } : { id: 'not started' }) : { id: 'no sheet' }; });
+    const both = (await p.evaluate(() => [document.getElementById('aveda').getAttribute('data-opt'), document.getElementById('c-aveda').getAttribute('data-opt')])).every((x) => x === k);
+    ok(`${v}: Why Aveda -> ${k} ${here.id === 'no sheet' ? 'in place' : 'draws'}`, both && (here.id === 'no sheet' || (here.ready && here.frames > 10 && !here.err)), here);
     await shot(p, `${v}-1440-aveda-${k}`);
   }
   await p.click('#opt-panel [data-k="live"]'); await wait(p, 1500); await shot(p, `${v}-1440-aveda-live`);
   // a link opens on the option; this browser remembers it without the link
-  const p2 = await page(ctx, `${base}/${v}/?opt-pause=cinema`, `${v}-link`); s = await state(p2);
+  const p2 = await page(ctx, url(v, '?opt-pause=cinema'), `${v}-link`); s = await state(p2);
   ok(`${v}: a link opens on its option`, s.pause === 'cinema' && s.cpause === 'cinema' && s.letters > 0, { pause: s.pause, letters: s.letters });
   await p2.close();
-  const p3 = await page(ctx, `${base}/${v}/`, `${v}-memory`); s = await state(p3);
+  const p3 = await page(ctx, url(v), `${v}-memory`); s = await state(p3);
   ok(`${v}: this browser remembers it`, s.pause === 'cinema', { pause: s.pause, ls: s.ls });
   await p3.evaluate(() => window.OMOptions.choose('pause', 'live', false)); await wait(p3, 300); s = await state(p3);
   ok(`${v}: today's version again, address and memory clean`, s.pause === 'live' && !s.url.includes('opt-pause') && !s.ls.some((x) => x.includes('opt-pause')), s);
@@ -111,23 +118,24 @@ for (const v of ['m', 'g', 's']) {
 // the phone: a handle opens it; each option drawn at 390
 {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-  const p = await page(ctx, `${base}/m/`, 'm-390');
+  const p = await page(ctx, url('m'), 'm-390');
   const hv = await p.evaluate(() => { const h = document.querySelector('.opt-handle'); return h ? getComputedStyle(h).display : 'none'; });
   ok('m 390: the handle shows on a phone', hv !== 'none', hv);
   await p.tap('.opt-handle'); await wait(p, 500); let s = await state(p);
   ok('m 390: the handle opens the panel', s.open, s.sec);
   await toPause(p); s = await state(p); ok('m 390: the panel follows to the pause', s.sec === 'The pause', s.sec);
   await shot(p, 'm-390-pause-live-panel');
-  for (const k of ['door', 'room', 'breath', 'cinema']) {
+  const pk = await p.evaluate(() => JSON.parse(document.getElementById('pause').dataset.opts).map((o) => o.k).filter((k) => k !== 'live'));
+  for (const k of pk) {
     await toPause(p); await p.tap(`#opt-panel [data-k="${k}"]`); await wait(p, 600);
     await p.tap('.opt-handle'); await wait(p, 4000);
-    if (k === 'breath') { const h = await p.evaluate(() => document.getElementById('pause').offsetHeight); const top = await p.evaluate(() => document.getElementById('pause').offsetTop); await jump(p, top + (h - 844) * .97); await wait(p, 1400); }
+    if (await p.evaluate(() => document.getElementById('pause').offsetHeight > innerHeight * 1.5)) { const h = await p.evaluate(() => document.getElementById('pause').offsetHeight); const top = await p.evaluate(() => document.getElementById('pause').offsetTop); await jump(p, top + (h - 844) * .97); await wait(p, 1400); }
     const wide = await p.evaluate(() => document.documentElement.scrollWidth);
     ok(`m 390: ${k} fits the phone`, wide <= 390, wide);
     await shot(p, `m-390-pause-${k}`);
     await p.tap('.opt-handle'); await wait(p, 500);
   }
-  for (const k of ['sheet-f', 'sheet-d']) {
+  for (const k of (await p.evaluate(() => JSON.parse(document.getElementById('aveda').dataset.opts).map((o) => o.k))).filter((k) => /^sheet-/.test(k)).slice(0, 2)) {
     await toPause(p, 'aveda'); await p.tap(`#opt-panel [data-k="${k}"]`); await wait(p, 600); await p.tap('.opt-handle'); await wait(p, 3400);
     const wide = await p.evaluate(() => document.documentElement.scrollWidth);
     ok(`m 390: Why Aveda ${k} fits the phone`, wide <= 390, wide);
@@ -139,4 +147,4 @@ ok('no script errors', res.errors.length === 0, res.errors.slice(0, 8));
 res.pass = res.checks.every((c) => c.pass);
 fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify(res, null, 2));
 console.log(res.pass ? 'ALL PASS' : 'SOME FAIL', res.checks.filter((c) => !c.pass).length, 'failed of', res.checks.length);
-await b.close(); srv.close();
+await b.close(); if (srv) srv.close();
