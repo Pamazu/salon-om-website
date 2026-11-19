@@ -40,7 +40,10 @@ export const wait = (p, ms) => p.waitForTimeout(ms);
 export async function open(ctx, url) {
   const p = await ctx.newPage();
   await p.addInitScript(() => { try { localStorage.setItem('om-sound', 'off'); } catch (e) {} });
-  await p.goto(url, { waitUntil: 'load' });
+  // 'load' waits for every picture and film's first bytes: on a busy pool machine in WebKit it passed 30 s (task a73569a9), so the page is
+  // ready at domcontentloaded and 'load' gets up to 90 s more without failing the run
+  await p.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
+  await p.waitForLoadState('load', { timeout: 90000 }).catch(() => {});
   await wait(p, 1500);
   return p;
 }

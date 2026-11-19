@@ -1714,57 +1714,54 @@ html[data-motion="calm"] .ln__dot {transform: none; transition: none;}
   .vo__foot .btn { width: 100%; }
 }
 
-/* the pause (M, G), task 2b1d1187 (J 17 Nov: "remove those green lines radiating from the image ... Remove the glow ...
-   the layout is still boring"; "I LOVE that out of focus coming in text animation"): an editorial spread (refs section 8,
-   Aman Spa, Kinfolk). The words hold the left: "Take a breath." large on its own line, the question smaller under it,
-   arriving one breath later with the same letters coming into focus; the picture runs off the right edge, one guest at
-   the basin seen through the doorway of her photo 17. It opens like that doorway, a thin upright line parting to the full
-   frame while it comes into focus, then breathes (10 s, 4 s in, 6 s out, after Apple's Mindfulness Breathe): scale and
-   light only, no rings, no glow. "You deserve this moment." is its caption. The motion switch's calm mode: all still. */
+/* the pause (M, G), task a73569a9 (J 18 Nov: "for take a breath I actually preferred the previous version with the door ... this new
+   version looks more disorganized"; J 19 Nov 08:01 Z: "I explicitly requested the one with the door"): the DOOR again, with what J asked for since
+   kept (tasks 8e22db42, 2b1d1187: no rings, no glow; the guest at the basin of her photo 17 with its label; the question's
+   letters coming into focus; the 10 s breath, 4 s in, 6 s out, after Apple's Mindfulness Breathe: scale and light only).
+   Her words stand either side of a tall arched door, all centred on it: "Take a breath." large with the question under it on the
+   left, "You deserve this moment." on the right. The door opens like the doorway the picture is seen through (a thin upright
+   line parting) and the picture comes into focus. Calm mode: all still. The glass waits for J's pick of the lenticular options. */
 #pause .mani__ring, #c-pause .mani__ring { display: none; }
-#pause .mani__in, #c-pause .mani__in { text-align: left; }
-#pause, #c-pause { --br-in: cubic-bezier(.45, 0, .55, 1); overflow: hidden; }
+#pause, #c-pause { --br-in: cubic-bezier(.45, 0, .55, 1); --door: 999px 999px var(--r-photo) var(--r-photo); overflow: hidden; }
 #pause .br, #c-pause .br { position: relative; margin: 0; }
-#pause .br__ph, #c-pause .br__ph { position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: var(--r-photo) 0 0 var(--r-photo); transform: translateZ(0);
-  clip-path: inset(0 49.6% 0 49.6%); transition: clip-path 2.2s var(--io-strong) .15s; }
-#pause .br__ph img, #c-pause .br__ph img { width: 100%; height: 100%; object-fit: cover; display: block; filter: blur(14px) brightness(.9); transform: scale(1.06);
+#pause .br__ph, #c-pause .br__ph { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: var(--door); transform: translateZ(0);
+  clip-path: inset(0 49.6% 0 49.6% round var(--door)); transition: clip-path 2.2s var(--io-strong) .15s; }
+#pause .br__zoom, #c-pause .br__zoom { position: absolute; inset: 0; transform: scale(1.06); filter: blur(14px) brightness(.9);
   transition: filter 2.4s var(--io) .35s, transform 3.2s var(--io) .15s; }
-#pause.is-active .br__ph, #c-pause.is-active .br__ph, html[data-shot] #pause .br__ph, html[data-shot] #c-pause .br__ph { clip-path: inset(0 0 0 0); }
-#pause.is-active .br__ph img, #c-pause.is-active .br__ph img, html[data-shot] #pause .br__ph img, html[data-shot] #c-pause .br__ph img { filter: blur(0) brightness(.96); transform: scale(1); }
+#pause .br__zoom img, #c-pause .br__zoom img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 44% 50%; display: block; }
+#pause.is-active .br__ph, #c-pause.is-active .br__ph, html[data-shot] #pause .br__ph, html[data-shot] #c-pause .br__ph { clip-path: inset(0 0 0 0 round var(--door)); }
+#pause.is-active .br__zoom, #c-pause.is-active .br__zoom, html[data-shot] #pause .br__zoom, html[data-shot] #c-pause .br__zoom { filter: blur(0) brightness(.96); transform: scale(1); }
 #pause .br .ai-mark, #c-pause .br .ai-mark { opacity: 0; transition: opacity 1.2s var(--io) 2.2s; }
 #pause.is-active .br .ai-mark, #c-pause.is-active .br .ai-mark, html[data-shot] #pause .br .ai-mark, html[data-shot] #c-pause .br .ai-mark { opacity: 1; }
 /* "Take a breath." on its own line: the engine writes one span per word; the first sentence's words lead (mgs.js marks them
    .is-head; task 7a3c013b, so any world's opening sentence leads, not a fixed three words) and an empty flex item breaks the
    line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
 #pause .mani__text, #c-pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: none; margin: 0; text-wrap: wrap;
-  font-size: clamp(24px, 2.15vw, 40px); line-height: 1.2; }
+  font-size: clamp(20px, 1.5vw, 34px); line-height: 1.25; }
 #pause .mani__text::before, #c-pause .mani__text::before { content: ""; flex-basis: 100%; height: 0; order: 1; }
 #pause .mani__text .wd, #c-pause .mani__text .wd { order: 2; }
 #pause .mani__text .wd.is-head, #c-pause .mani__text .wd.is-head { order: 0; font-size: 2.3em; line-height: 1.02; letter-spacing: -.015em; }
 #pause .mani__text .wd.is-head-end, #c-pause .mani__text .wd.is-head-end { margin-bottom: .32em; }
 #pause.is-active .mani__text .wd:not(.is-head) .l, #c-pause.is-active .mani__text .wd:not(.is-head) .l { animation-delay: calc(2.2s + var(--i) * var(--ink-gap, 18ms)); }
 #pause .lead, #c-pause .lead { font-style: italic; }
-html:not([data-motion="calm"]) #pause.is-active .br__ph img, html:not([data-motion="calm"]) #c-pause.is-active .br__ph img { animation: br-photo 10s var(--br-in) 3.4s infinite; }
-html:not([data-motion="calm"])[data-shot] #pause .br__ph img, html:not([data-motion="calm"])[data-shot] #c-pause .br__ph img { animation: none; }
-html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #c-pause .br__ph, html[data-motion="calm"] #pause .br__ph img, html[data-motion="calm"] #c-pause .br__ph img { transition: none; }
+html:not([data-motion="calm"]) #pause.is-active .br__zoom, html:not([data-motion="calm"]) #c-pause.is-active .br__zoom { animation: br-photo 10s var(--br-in) 3.4s infinite; }
+html:not([data-motion="calm"])[data-shot] #pause .br__zoom, html:not([data-motion="calm"])[data-shot] #c-pause .br__zoom { animation: none; }
+html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #c-pause .br__ph, html[data-motion="calm"] #pause .br__zoom, html[data-motion="calm"] #c-pause .br__zoom { transition: none; }
 @keyframes br-photo { 0%, 100% { transform: scale(1); filter: blur(0) brightness(.96); } 40% { transform: scale(1.035); filter: blur(0) brightness(1.05); } }
 @media (min-width: 1024px) {
-  /* the words on the content column's left edge, the picture to the screen's right edge */
-  #pause .mani__in, #c-pause .mani__in { max-width: none; padding-right: 0; padding-left: max(var(--gutter), calc((100% - 1560px) / 2 + var(--gutter)));
-    display: grid; grid-template-columns: minmax(0, 1fr) min(56vw, 99vh); grid-template-rows: 1fr auto auto 1fr auto; column-gap: clamp(40px, 4.5vw, 110px); align-items: center; }
-  /* the words centre on the picture; the caption hangs under it */
-  #pause .br, #c-pause .br { grid-column: 2; grid-row: 1 / 5; }
-  #pause .mani__label, #c-pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; margin: 0 0 var(--sp-4); }
-  #pause .mani__text, #c-pause .mani__text { grid-column: 1; grid-row: 3; }
-  #pause .lead, #c-pause .lead { grid-column: 2; grid-row: 5; align-self: start; margin: var(--sp-3) 0 0 !important; font-size: clamp(20px, 1.6vw, 28px); }
+  /* three columns around the door: her words end at it, the caption begins at it, all on its middle */
+  #pause .mani__in, #c-pause .mani__in { max-width: none; padding: 0 var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr; column-gap: clamp(36px, 5vw, 128px); align-items: center; text-align: left; }
+  #pause .br, #c-pause .br { grid-column: 2; grid-row: 1 / -1; height: min(68vh, 740px); aspect-ratio: 3 / 4; }
+  #pause .mani__label, #c-pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; justify-self: end; margin: 0 0 var(--sp-4); text-align: right; }
+  #pause .mani__text, #c-pause .mani__text { grid-column: 1; grid-row: 3; justify-self: end; justify-content: flex-end; text-align: right; }
+  #pause .lead, #c-pause .lead { grid-column: 3; grid-row: 2 / 4; align-self: center; margin: 0 !important; max-width: 14em; font-size: clamp(20px, 1.6vw, 34px); }
 }
 @media (max-width: 1023px) {
-  #pause .mani__in, #c-pause .mani__in { display: flex; flex-direction: column; align-items: flex-start; }
-  #pause .mani__label, #c-pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text, #c-pause .mani__text { order: 2; font-size: 21px; } #pause .br, #c-pause .br { order: 3; } #pause .lead, #c-pause .lead { order: 4; }
-  /* the picture runs to both edges of the phone */
-  #pause .br, #c-pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); }   /* edge to edge: the margin alone pulls it to the screen's edge */
-  #pause .br__ph, #c-pause .br__ph { border-radius: 0; }
-  #pause .lead, #c-pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
+  #pause .mani__in, #c-pause .mani__in { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #pause .mani__label, #c-pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text, #c-pause .mani__text { order: 2; justify-content: center; font-size: 20px; }
+  #pause .br, #c-pause .br { order: 3; width: min(70vw, 320px); aspect-ratio: 3 / 4; margin: var(--sp-5) 0 var(--sp-3); }
+  #pause .lead, #c-pause .lead { order: 4; margin: var(--sp-2) 0 0 !important; font-size: 20px; }
 }
 
 
@@ -2119,7 +2116,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   <section class="s mani" id="pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><img fetchpriority="low" src="img/om-pause-guest.webp?v=8326096d6a" srcset="img/hd/om-pause-guest-640.webp?v=4026aca2c0 640w, img/hd/om-pause-guest-960.webp?v=cc54fa6417 960w, img/hd/om-pause-guest-1280.webp?v=7ce5f1daca 1280w, img/hd/om-pause-guest-1920.webp?v=58e6f70706 1920w, img/hd/om-pause-guest-2560.webp?v=400693756b 2560w, img/hd/om-pause-guest-2906.webp?v=ba998b421e 2906w" sizes="(max-width: 700px) 112vw, (max-width: 2000px) 63vw, 45vw" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" decoding="async"></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img fetchpriority="low" src="img/om-pause-guest.webp?v=8326096d6a" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" srcset="img/hd/om-pause-guest-640.webp?v=4026aca2c0 640w, img/hd/om-pause-guest-960.webp?v=cc54fa6417 960w, img/hd/om-pause-guest-1280.webp?v=7ce5f1daca 1280w, img/hd/om-pause-guest-1920.webp?v=58e6f70706 1920w, img/hd/om-pause-guest-2560.webp?v=400693756b 2560w, img/hd/om-pause-guest-2906.webp?v=ba998b421e 2906w" sizes="(max-width: 700px) 147vw, (max-width: 2000px) 67vw, 37vw" decoding="async"></div></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
@@ -2360,7 +2357,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   <section class="s mani" id="c-pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><img fetchpriority="low" loading="lazy" src="img/real-maggie-lounge-seated.webp?v=4d8714d7e7" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-2906.webp?v=2ea9cdb647 2906w" sizes="(max-width: 700px) 112vw, (max-width: 2000px) 63vw, 45vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img fetchpriority="low" loading="lazy" src="img/real-maggie-lounge-seated.webp?v=4d8714d7e7" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-2906.webp?v=2ea9cdb647 2906w" sizes="(max-width: 700px) 74vw, (max-width: 2000px) 34vw, 19vw" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="roots.">Sometimes what feels like today’s challenge has deeper roots.</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">Look a little deeper.</p>
     </div>
@@ -2574,7 +2571,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="be086d590ad7";</script>
+<script>window.OM_BUILD="4a3a2dbfdd7c";</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
