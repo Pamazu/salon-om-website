@@ -20,6 +20,8 @@ const H2 = process.env.H2 === '1', H2_DIR = process.env.H2_DIR || path.join(os.h
 // LOG=1: each case's row also lists every request (file, range, when it was asked and finished, bytes sent, ms from the
 // case's start) and the moments of the case (page asked, click, near the step, at the step), to see what holds the line
 const LOG = process.env.LOG === '1'; let reqs = [], tCase = 0;
+// NB the pool's WebKit jobs decode no sound (every decodeAudioData refused, job job_mwniea5g547ba60653, 19 Nov), so a step's
+// sound is measured only where WebKit runs in a person's session (heavy-slot.py on the Studio); there its decode takes ~100 ms
 // the browser's cache, as live has it: WebKit here keeps nothing it got over the self-signed certificate (measured 19 Nov: the
 // opening's and the first step's sounds asked for again over the line, with live's cache headers sent), while on live a
 // file under its versioned address is kept a week. So a file this case already received whole is answered at once, off
@@ -67,7 +69,7 @@ const PROBE = () => {
   window.AudioContext = Wrapped; if (window.webkitAudioContext) window.webkitAudioContext = Wrapped;
   // each decode (bytes in, when asked, when done) and each loop's start, as moments from the page's start (LOG=1 rows carry them)
   const d0 = AC.prototype.decodeAudioData; AC.prototype.decodeAudioData = function (buf, ok, bad) { const t = performance.now(), n = buf.byteLength;
-    const done = (x) => { P.t.push(['dec', Math.round(t), Math.round(performance.now()), n, x && x.duration ? +x.duration.toFixed(1) : 0]); return x; };
+    let once = false; const done = (x) => { if (!once) { once = true; P.t.push(['dec', Math.round(t), Math.round(performance.now()), n, x && x.duration ? +x.duration.toFixed(1) : 0]); } return x; };
     const r = d0.call(this, buf, (x) => { done(x); ok && ok(x); }, (e) => { P.t.push(['decfail', Math.round(t), n]); bad && bad(e); }); return r && r.then ? r.then(done) : r; };
   const g0 = AC.prototype.createGain; AC.prototype.createGain = function () { const g = g0.call(this); P.gains.push(g); return g; };
   const b0 = AC.prototype.createBufferSource; AC.prototype.createBufferSource = function () { const s = b0.call(this); const st = s.start; s.start = function () { s._on = true; P.t.push(['buf', Math.round(performance.now()), s.buffer ? +s.buffer.duration.toFixed(1) : 0]); return st.apply(this, arguments); }; P.srcs.push(s); return s; };

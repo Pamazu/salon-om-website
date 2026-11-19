@@ -5,9 +5,8 @@
 //   bands: for each third-octave band from 50 Hz to 16 kHz, how far the new sound's level is from the reference's, frame by
 //          frame (2048 samples, Hann window, half overlap), in dB: the mean and the 95th percentile over frames where the
 //          reference band is above -75 dBFS; and the whole sound's level difference
-//   seam:  the file is periodic (0.5 s pad, then the 90 s loop, then 0.5 s pad: the page loops [0.5, 90.5]), so each sample at
-//          t should equal the one at t + 90 for t in the pads; the difference's level against the signal's, for the reference
-//          and the new sound (a transcode keeps the seam when its figure stays near the reference's)
+//   seam:  where the page loops [0.5, 90.5] (the file is 0.5 s pad, the 90 s loop, 0.5 s pad): no click and no level step at
+//          the join, for the reference and the new sound (see seam() below)
 //   node sound-compare.mjs <reference.raw> <new.raw> [loop seconds, default 90]
 import fs from 'node:fs';
 const [, , A, B, LOOPS = '90'] = process.argv, SR = 44100, LOOP = +LOOPS;
@@ -43,14 +42,22 @@ const q = (arr, p) => { if (!arr.length) return null; const s = [...arr].sort((x
 const mean = (arr) => arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : null;
 const rms = (x, from, to) => { let s = 0; for (let i = from; i < to; i++) s += mono(x, i) ** 2; return 10 * Math.log10(s / (to - from) + 1e-20); };
 const bands = centres.map((c, i) => ({ hz: Math.round(c), frames: diffs[i].length, meanDb: mean(diffs[i]) === null ? null : +mean(diffs[i]).toFixed(2), p95Db: q(diffs[i], 0.95) === null ? null : +q(diffs[i], 0.95).toFixed(2) }));
-// the seam: sample t against t + LOOP across the two pads (0.05-0.95 s), as a level below the signal's
-function seam(x) {
-  const lo = Math.round(0.05 * SR), hi = Math.round(0.95 * SR), L = Math.round(LOOP * SR); let d = 0, s = 0;
-  for (let i = lo; i < hi && i + L < n; i++) { const u = mono(x, i), v = mono(x, i + L); d += (u - v) ** 2; s += u * u; }
-  return +(10 * Math.log10(d / (s + 1e-20) + 1e-20)).toFixed(1);
+// the seam, where the page loops (loopStart 0.5 s, loopEnd 0.5 + LOOP): the jump from the last sample before the loop's end to
+// the first after its start, against the largest sample-to-sample steps (99.9th percentile) in the half second either side
+// (a click is a jump far above them; <= 1 is none), and the level 50 ms either side (dB step). Also at an offset of 2112
+// samples, should a browser keep the AAC encoder's start delay (the file is periodic, so a shifted loop is still whole)
+function seam(x, off = 0) {
+  const S = Math.round(0.5 * SR) + off, E = Math.round((0.5 + LOOP) * SR) + off, W = Math.round(0.5 * SR), y = [];
+  for (let i = E - W; i < E; i++) y.push([x[2 * i] / 32768, x[2 * i + 1] / 32768]);
+  for (let i = S; i < S + W; i++) y.push([x[2 * i] / 32768, x[2 * i + 1] / 32768]);
+  const steps = []; for (let i = 1; i < y.length; i++) if (i !== W) steps.push(Math.max(Math.abs(y[i][0] - y[i - 1][0]), Math.abs(y[i][1] - y[i - 1][1])));
+  const jump = Math.max(Math.abs(y[W][0] - y[W - 1][0]), Math.abs(y[W][1] - y[W - 1][1]));
+  const lv = (a, b) => { let e = 0; for (let i = a; i < b; i++) e += y[i][0] ** 2 + y[i][1] ** 2; return 10 * Math.log10(e / (b - a) + 1e-20); };
+  const L50 = Math.round(0.05 * SR);
+  return { jumpRatio: +(jump / q(steps, 0.999)).toFixed(2), levelStepDb: +(lv(W, W + L50) - lv(W - L50, W)).toFixed(2) };
 }
 const out = { seconds: +(n / SR).toFixed(2), levelDb: { ref: +rms(a, 0, n).toFixed(2), new: +rms(b, 0, n).toFixed(2) },
   worstBandMeanDb: Math.max(...bands.filter((x) => x.meanDb !== null).map((x) => x.meanDb)),
   worstBandP95Db: Math.max(...bands.filter((x) => x.p95Db !== null).map((x) => x.p95Db)),
-  seamDb: { ref: seam(a), new: seam(b) }, bands };
+  seam: { ref: seam(a), new: seam(b), newShifted: seam(b, 2112) }, bands };
 console.log(JSON.stringify(out));

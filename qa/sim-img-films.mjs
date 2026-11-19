@@ -3,8 +3,9 @@
 // window Safari judges unseen); a twin may replace the H.264 file there only if Safari moves it as an image too.
 // Serves a probe page on 127.0.0.1 (the simulator shares the host's network) with each film of option-2.2/site/media as an
 // <img>; the page draws each picture to a canvas twice, 900 ms apart, and reports the share of pixels that changed (same
-// origin, so the canvas stays readable); two simulator screenshots 900 ms apart are kept beside the numbers (should a
-// canvas only ever draw a film-picture's first frame, they still show whether it moves). Booted headless with simctl.
+// origin, so the canvas stays readable); two simulator screenshots 900 ms apart are kept beside the numbers. Measured 19 Nov:
+// iOS Safari's canvas draws only a film-picture's first frame (changed 0 for both), so the screenshots decide: compare each
+// picture's area between them (ffmpeg ssim on the crop; a moving film is well under 0.98, a still area 1.00). Booted headless with simctl.
 //   node sim-img-films.mjs <outdir> [film,film,...]   (default: every film that has an -hevc twin, with its twin)
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url'; import { execFileSync } from 'node:child_process';
 import { serve } from './lib.mjs';
