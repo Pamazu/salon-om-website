@@ -29,7 +29,10 @@ const handler = (req, res) => {
   fs.stat(file, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); return res.end(); }
     const type = TYPES[path.extname(file)] || 'application/octet-stream', r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
-    let a = 0, z = st.size - 1, code = 200, h = { 'Content-Type': type, 'Accept-Ranges': 'bytes' };
+    // the headers live Firebase sends (19 Nov, curl -I on salon-om-2-2-m.web.app): the page revalidated on every visit, every
+    // other file kept a week under its versioned address, so a sound or film asked for again comes from the browser's cache
+    let a = 0, z = st.size - 1, code = 200, h = { 'Content-Type': type, 'Accept-Ranges': 'bytes', ETag: `"${st.size}-${+st.mtime}"`, 'Last-Modified': st.mtime.toUTCString(),
+      'Cache-Control': type.startsWith('text/html') ? 'no-cache, max-age=0, must-revalidate' : 'public, max-age=604800' };
     if (r) { a = r[1] ? +r[1] : 0; z = r[2] ? Math.min(+r[2], st.size - 1) : st.size - 1; code = 206; h['Content-Range'] = `bytes ${a}-${z}/${st.size}`; }
     h['Content-Length'] = z - a + 1;
     setTimeout(() => {
