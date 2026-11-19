@@ -148,13 +148,20 @@
         haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * (.15 + .3 * br), H * 1.3, H * 1.0], wz: s.wz(), wzI: .42,
         mask: (function (wz, p, f) { return soft(wz[0] - p, wz[2] + p, wz[1] - p, wz[3] + p, f); })(s.wz(), (phone ? 18 : 40) + 16 * br, phone ? 70 : 140), maskAnd: 1 };
     },
-    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clearer window drifts over the photo, away from the words
+    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clear window around the picture's subject, away from the words
       var phone = W < 700;
       s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
-      var wx = phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), wy = (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12;
-      var R0 = Math.min(W, H) * (phone ? .16 : .15), R1 = R0 * 2.8;
+      var w = s.subject(W, H), drift = -clamp(r.top, -H, H) * .06;
+      if (w) { w.x += W * .012 * Math.sin(t * .35); w.y += H * .015 * Math.sin(t * .5) + drift; }
+      else {                                                                                // no subject named: the window drifts on the right, as before
+        var R0 = Math.min(W, H) * (phone ? .16 : .15);
+        w = { x: phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), y: (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12, rx: R0 * 2.8, ry: R0 * 2.8, c: 1 / 2.8 };
+      }
+      s.win = w;                                                                            // read by qa/lens-contrast.mjs (the worst moment)
+      var at = w.rx.toFixed(0) + 'px ' + w.ry.toFixed(0) + 'px at ' + w.x.toFixed(0) + 'px ' + w.y.toFixed(0) + 'px', c = w.c * 100, f = 100 - c;
       return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
-        mask: 'radial-gradient(circle at ' + wx.toFixed(0) + 'px ' + wy.toFixed(0) + 'px, transparent ' + R0.toFixed(0) + 'px, #000 ' + R1.toFixed(0) + 'px)' };
+        // its edge eases out over the outer two fifths of the oval, so the window melts into the sheet (J 19 Nov 14:25 Z)
+        mask: 'radial-gradient(ellipse ' + at + ', transparent ' + c.toFixed(1) + '%, rgba(0,0,0,.18) ' + (c + f * .3).toFixed(1) + '%, rgba(0,0,0,.6) ' + (c + f * .62).toFixed(1) + '%, #000 100%)' };
     },
     G: function (s, W, H, t, r, vh) {                                                         // deepest behind the words, lighter further out
       var phone = W < 700, br = .5 + .5 * Math.sin(t * 2 * Math.PI / 7);
@@ -183,6 +190,17 @@
     d.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'; this.wx = x; this.wy = y;
   };
   Stage.prototype.wz = function () { return [this.wx + 10, this.wy, this.wx + this.wd.offsetWidth - 20, this.wy + this.wdH]; };
+  // the picture's subject on the screen (data-subject: left top right bottom, fractions of the picture, mgs_sections.SUBJECTS),
+  // through the photo's own crop (object-fit cover at its object-position), as a clear oval around it: the subject stands in the
+  // clear part (the inner 58 % of the oval), which never shrinks under a sixth of the screen (task 4739f125)
+  Stage.prototype.subject = function (W, H) {
+    var b = (this.el.getAttribute('data-subject') || '').split(/\s+/).map(Number); if (b.length !== 4 || b.some(isNaN)) return null;
+    var nw = this.nat[0], nh = this.nat[1], k = Math.max(W / nw, H / nh), op = this.op || (this.op = (getComputedStyle(this.ph).objectPosition || '50% 30%').split(' ').map(parseFloat));
+    var ox = (W - nw * k) * (op[0] || 50) / 100, oy = (H - nh * k) * (isNaN(op[1]) ? 30 : op[1]) / 100, c = .58;
+    var x0 = ox + b[0] * nw * k, x1 = ox + b[2] * nw * k, y0 = oy + b[1] * nh * k, y1 = Math.min(H, oy + b[3] * nh * k);
+    var m = Math.min(W, H) / 6 / c;
+    return { x: (x0 + x1) / 2, y: (Math.max(0, y0) + y1) / 2, rx: Math.max(m, (x1 - x0) / 2 * 1.15 / c), ry: Math.max(m, (y1 - Math.max(0, y0)) / 2 * 1.15 / c), c: c };
+  };
   // the frost behind the words, shaped by the words themselves (task 4739f125; J 19 Nov 14:25 Z: "it looks too square ... The
   // edge is very small and very clear. If you can blend it more so that the edge merges with the surroundings"): each line of
   // text and each button, widened a little, drawn on a small canvas and blurred far (a Gaussian about a twentieth of the stage

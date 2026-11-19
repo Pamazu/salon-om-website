@@ -1,8 +1,8 @@
 // Ink on the sheet (task 95e37a41; first written for Why Aveda's glass in task a73569a9): every section whose words ride on the
 // lenticular sheet (sheet.js, any [data-sheet], both worlds) has each line's contrast read against the worst background under it,
 // at rest and at the worst moment of the sheet's drift. How: the sheet's clock (window.__lensT, sheet.js) is swept over 36 s
-// (F's clear window repeats every 18 s sideways, 12.6 s up and down); at each moment the window's centre and radius are read
-// from the sheet's own mask, and the moment it comes nearest the words is the worst. There and at rest the words are hidden, the
+// (F's clear window repeats every 18 s sideways, 12.6 s up and down); at each moment the window's centre and size are read
+// from the sheet itself (its oval, sheet.js win), and the moment it comes nearest the words is the worst. There and at rest the words are hidden, the
 // glass is photographed, and for every line's box the darkest 3 % of the pixels (the worst case for dark ink on a light pane)
 // gives the ratio WCAG uses: (L_bg + .05) / (L_ink + .05). Body text needs 7:1 (AAA), large text (24 px, or 18.66 px bold) 4.5:1.
 // It also keeps screen shots of each section with its words (top, the worst moment, and where its picture meets the words below).
@@ -43,10 +43,10 @@ for (const w of ws.split(',').map(Number)) {
           let best = null;
           for (let t = 0; t <= 36; t += 0.25) {
             window.__lensT = t; await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-            const m = String(sh.style.webkitMaskImage || sh.style.maskImage || '').match(/circle at (-?[\d.]+)px (-?[\d.]+)px, transparent (-?[\d.]+)px/);
-            if (!m) return { t: 0, dist: null, note: 'no clear window in this sheet' };
-            const sr = st.getBoundingClientRect(), r = wd.getBoundingClientRect(), x = +m[1] + sr.left, y = +m[2] + sr.top;
-            const d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom)) - +m[3];
+            const w = st._sheet && st._sheet.win;                            // the clear oval, as sheet.js drew it (task 4739f125)
+            if (!w) return { t: 0, dist: null, note: 'no clear window in this sheet' };
+            const sr = st.getBoundingClientRect(), r = wd.getBoundingClientRect(), x = w.x + sr.left, y = w.y + sr.top, q = w.rx / w.ry;   // the oval's space made round
+            const d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom) * q) - w.rx * w.c;
             if (!best || d < best.dist) best = { t, dist: Math.round(d) };
           }
           return best;
