@@ -75,6 +75,17 @@ for (const v of ['m', 'g', 's']) {
     }
     await wait(p, 600); await shot(p, `${v}-1440-pause-${k}`);
   }
+  // Why Aveda under the lenticular sheet: every preset draws (sheet.js), the words on the frost
+  await toPause(p, 'aveda'); s = await state(p);
+  const av = await p.evaluate(() => JSON.parse(document.getElementById('aveda').getAttribute('data-opts')).map((o) => o.k));
+  ok(`${v}: the panel follows to Why Aveda`, /Why Aveda|What is in your color|Beauty/.test(s.sec || '') && s.rows.length === av.length, { sec: s.sec, rows: s.rows.length });
+  for (const k of av.filter((k) => k !== 'live')) {
+    await toPause(p, 'aveda'); await p.click(`#opt-panel [data-k="${k}"]`); await wait(p, 3200);
+    const here = await p.evaluate(() => { const el = document.querySelector('#aveda [data-sheet]'); return el && el._sheet ? { id: el._sheet.id, ready: !!el._sheet.ready, frames: el._sheet.frames, err: el.getAttribute('data-sheet-error') } : null; });
+    ok(`${v}: Why Aveda -> ${k} draws`, here && here.ready && here.frames > 10 && !here.err && (await p.evaluate(() => document.getElementById('c-aveda').getAttribute('data-opt'))) === k, here);
+    await shot(p, `${v}-1440-aveda-${k}`);
+  }
+  await p.click('#opt-panel [data-k="live"]'); await wait(p, 1500); await shot(p, `${v}-1440-aveda-live`);
   // a link opens on the option; this browser remembers it without the link
   const p2 = await page(ctx, `${base}/${v}/?opt-pause=cinema`, `${v}-link`); s = await state(p2);
   ok(`${v}: a link opens on its option`, s.pause === 'cinema' && s.cpause === 'cinema' && s.letters > 0, { pause: s.pause, letters: s.letters });
@@ -113,6 +124,12 @@ for (const v of ['m', 'g', 's']) {
     ok(`m 390: ${k} fits the phone`, wide <= 390, wide);
     await shot(p, `m-390-pause-${k}`);
     await p.tap('.opt-handle'); await wait(p, 500);
+  }
+  for (const k of ['sheet-f', 'sheet-d']) {
+    await toPause(p, 'aveda'); await p.tap(`#opt-panel [data-k="${k}"]`); await wait(p, 600); await p.tap('.opt-handle'); await wait(p, 3400);
+    const wide = await p.evaluate(() => document.documentElement.scrollWidth);
+    ok(`m 390: Why Aveda ${k} fits the phone`, wide <= 390, wide);
+    await shot(p, `m-390-aveda-${k}`); await p.tap('.opt-handle'); await wait(p, 500);
   }
   await ctx.close();
 }

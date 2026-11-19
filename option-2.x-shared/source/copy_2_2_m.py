@@ -23,7 +23,8 @@ SALON = [
 ] + [step(k, cta=(k == 4)) for k in range(5)] + [
   (S.aveda, dict(id='aveda', eyebrow=M.AVEDA_EYEBROW, title=M.AVEDA, paras=[], quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE,
                  facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.', photo=AVEDA_PHOTO,
-                 btn=btn(BOOK, BOOK_URL, arrow=True))),   # her heading, her quote, her four facts (11 Nov); the label (task a749167b)
+                 btn=btn(BOOK, BOOK_URL, arrow=True),
+                 options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # her heading, her quote, her four facts (11 Nov); the label (task a749167b)
   team(note=False),
   services(),
   voices(cta=True),

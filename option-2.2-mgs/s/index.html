@@ -2164,6 +2164,37 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
   .ps--cinema .ps__side { padding-top: 28px; }
 }
 
+/* the lenticular sheet (sheet.js, task e5325977; Designer 3's r6 and r7 layers, task 9b13c4b2): the photo, its three sideways
+   smears, the ribs' streaks, the milky haze, a rainbow arc, a frost behind the words and the glass rim, all plain layers */
+.sh { position: relative; height: 100vh; height: 100svh; min-height: 540px; overflow: hidden; background: #2a221c; touch-action: pan-y; }
+.sh__ph { position: absolute; inset: 0; margin: 0; }
+.sh__ph img, .sh__sheet img, .sh__sheet2 img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+.sh__sheet, .sh__sheet2 { position: absolute; inset: 0; overflow: hidden; }
+.sh__sheet img, .sh__sheet2 img { opacity: 0; }
+.sh__sheet2 { display: none; }
+.sh__streak, .sh__milk, .sh__rain, .sh__frost { position: absolute; inset: 0; opacity: 0; }
+.sh__streak { background-repeat: repeat; background-size: 1024px 4px; mix-blend-mode: soft-light; }
+.sh__milk { background: rgb(236, 237, 240); }
+.sh__frost { background: rgb(244, 238, 231); }
+.sh__rain { mix-blend-mode: screen; }
+.sh__rim, .sh__shade { position: absolute; left: 0; top: 0; pointer-events: none; display: none; }
+.sh__words { position: absolute; z-index: 2; left: 0; top: 0; width: 40%; padding: 0 clamp(22px, 3vw, 56px); will-change: transform; opacity: 0; transition: opacity .8s var(--io); }
+.sh--on .sh__words, html[data-shot] .sh__words { opacity: 1; }
+.sh__words, .sh__words * { color: var(--ink); text-shadow: 0 0 18px rgba(245, 238, 228, .55); }
+.sh--glow .sh__words, .sh--glow .sh__words * { text-shadow: 0 0 2px rgba(245, 238, 228, 1), 0 0 8px rgba(245, 238, 228, .97), 0 0 20px rgba(245, 238, 228, .9), 0 0 42px rgba(245, 238, 228, .7), 0 0 84px rgba(245, 238, 228, .45); }
+.sh__words .mid { margin: 0 0 clamp(16px, 2.6vh, 28px); font-size: clamp(30px, 3.3vw, 56px); line-height: 1.02; }
+.sh__words .av__rows { margin: 0; }
+.sh__words .av__row { --nf: clamp(24px, 2.1vw, 34px); padding: 7px 0; }
+.sh__words .av__row dd, .sh__words .av__src { color: var(--ink); }
+/* Why Aveda under the sheet: the stage fills the screen under the header, the letter follows as on the live section */
+.av.av--sheet { padding-top: 0; }
+.av--sheet .av__letter { max-width: 1560px; margin: 0 auto; padding: var(--sp-6) var(--gutter) 0; }
+@media (max-width: 700px) {
+  .sh__words { width: 88%; }
+  .sh__words .mid { font-size: 32px; }
+  .sh__words .av__row dd { font-size: 14px; }
+}
+
 /* the option switcher (task e5325977, options.js): a small panel in the page's own floating glass (the bottom anchor's,
    next.css .wdoor), anchored bottom left above the tweak button it sits beside; pill rows, the chosen one filled ivory as the
    header's chosen world is; no outline on any filled shape. Its colours are fixed, not the theme's, as the tweak button's
@@ -2487,7 +2518,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="1ad116cc1a19";</script>
+<script>window.OM_BUILD="1d0f730146d6";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor to this world’s booking"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v

@@ -151,7 +151,8 @@ SALON = [
                   btn=btn(BOOK, BOOK_URL, arrow=True))),
   (S.aveda, dict(id='aveda', eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE, facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
-                 photo=AVEDA_PHOTO, reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True))),   # the label (task a749167b)
+                 photo=AVEDA_PHOTO, reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True),
+                 options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # the label (task a749167b)
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                  btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),

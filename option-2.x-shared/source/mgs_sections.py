@@ -401,3 +401,46 @@ PAUSE_OPTIONS = [
     dict(key='cinema', label='C · Cinema', note='The room as a wide film frame; the heading huge above and below it.', kind=pause_scene, scene='cinema'),
 ]
 PAUSE_LIVE_LABEL = 'Words left, picture to the edge (today’s)'
+
+
+def aveda_sheet(d, world):
+    """Why Aveda under the lenticular sheet (task e5325977; Designer 3's options r6 A-E and r7 F-I, task 9b13c4b2; J 18 Nov:
+    "never have cards that are simple on top like that, use the lenticular sheet and glass effects if you need something on
+    top"): the section's own photo fills the screen, a milky ribbed sheet over it (sheet.js, preset d['sheet']), the heading
+    and the label's rows riding on a soft frost instead of a card; below, her quote as the letter, the reward and the button,
+    as on the live section. Every word and the photo are the section's own (aveda()'s d)."""
+    f, alt = d['photo']
+    rows = ''.join(f'<div class="av__row a-up" style="--d:{0.55 + k * .14:.2f}s"><dt>{x[0]}</dt><dd>{x[1]}</dd></div>' for k, x in enumerate(d['facts']))
+    sub = ''.join(f'<p class="av__sub a-up" style="--d:{0.45 + k * .1:.2f}s">{p}</p>' for k, p in enumerate(d.get('paras', [])))
+    btn = f'<div class="av__btn a-up" style="--d:.5s">{d["btn"]}</div>' if d.get('btn') else ''
+    words = any(not re.match(r'^[\d$]', re.sub(r'<[^>]+>', '', x[0])) and len(re.sub(r'<[^>]+>', '', x[0])) > 7 for x in d['facts'])
+    return f'''<section class="s s--auto av av--sheet" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="sh" data-sheet="{d['sheet']}">
+      <div class="sh__ph"><img src="img/{f}" alt="{E(alt)}" sizes="100vw" decoding="async" loading="lazy"></div>
+      <div class="sh__words">
+        <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+        {sub}<dl class="av__rows{' av__rows--words' if words else ''}">{rows}</dl>
+        <small class="av__src a-fade" style="--d:1.4s">{d['src']}</small>
+      </div>
+    </div>
+    <div class="av__letter">
+      <blockquote class="a-up" style="--d:.2s">“{d['quote']}”<cite>{d['cite']}</cite></blockquote>
+      {cycle(d, .35)}{btn}
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+# Why Aveda's options (task e5325977): r7's four full-section sheets first (J 19 Nov 03:38 Z asked for those), then r6's five
+SHEET_NAMES = [('F', 'A clear window drifts', 'The sheet covers the whole section; a clearer patch drifts over the photo, away from the words.'),
+               ('G', 'Deepest behind the words', 'Heaviest behind the words, clearing away from them; it breathes slowly.'),
+               ('H', 'A focus pull', 'The sheet softens and sharpens with the scroll while the photo drifts behind it.'),
+               ('I', 'A glow around the letters', 'A lighter sheet; it gathers only into a soft glow around each letter.'),
+               ('A', 'The sheet is lowered', 'It lowers and rises by itself; above its clean top edge the photo is sharp.'),
+               ('B', 'The sheet breathes', 'Over the whole photo, drifting closer and away; a faint rainbow travels across it.'),
+               ('C', 'Half a sheet', 'A thick sheet over the words’ half, sliding in and out; its glass edge and the sharp photo beside it.'),
+               ('D', 'A sheet in the hand', 'A smaller sheet drifts by itself and follows your pointer; the words ride on it.'),
+               ('E', 'Only behind the words', 'The sheet shows only where the words are and fades softly into the sharp photo.')]
+AVEDA_OPTIONS = [dict(key='sheet-' + k.lower(), label=f'{k} · {n}', note=note, kind=aveda_sheet, sheet=k) for k, n, note in SHEET_NAMES]
+AVEDA_LIVE_LABEL = 'The label card beside the photo (today’s)'
