@@ -66,8 +66,11 @@ const PROBE = () => {
     return c0.apply(this, arguments); };
 };
 const rows = [];
-for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
-  const b = await pw.webkit.launch();      // a fresh browser per case: no file cached from the case before
+// one case in a fresh browser (no file cached from the case before); the browser is handed back at once so a case that
+// hangs (the pool's WebKit sometimes stops answering mid-run, 19 Nov) can be closed and tried again
+async function one(v, w, box) {
+  line = 0;      // the shared line starts free for each case
+  const b = box.b = await pw.webkit.launch();
   const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
   await ctx.addInitScript(PROBE);
   const p = await ctx.newPage(); const t0 = Date.now();
@@ -101,9 +104,21 @@ for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
       if (Date.now() - ts > 15000) break;
     }
   }
-  rows.push({ v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2) });
-  console.log(JSON.stringify(rows[rows.length - 1]));
   await ctx.close(); await b.close();
+  return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2) };
+}
+// a case gets 150 s (a full case takes some 25-40 s); one that runs out is closed and tried once more, then written as hung
+for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
+  let row = null;
+  for (let attempt = 1; attempt <= 2 && !row; attempt++) {
+    const box = {}; let timer;
+    row = await Promise.race([one(v, w, box).catch((e) => ({ v, w, net: NET, error: String(e.message || e).slice(0, 160) })),
+      new Promise((ok) => { timer = setTimeout(() => ok(null), 150000); })]);
+    clearTimeout(timer);
+    if (!row || row.error) { if (box.b) box.b.close().catch(() => {}); if (attempt === 1) { console.log(`${v} ${w}: ${row ? row.error : 'hung 150 s'}; trying once more`); row = null; } }
+  }
+  rows.push(row || { v, w, net: NET, hung: true }); console.log(JSON.stringify(rows[rows.length - 1]));
 }
 srv.close();
 fs.writeFileSync(OUT, JSON.stringify(rows, null, 1));
+process.exit(0);      // a closed browser that never answered keeps no handle open
