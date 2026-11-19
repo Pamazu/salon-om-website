@@ -440,6 +440,42 @@ def row19(sections, letter, site):     # the hero film, and the Inner Work hero 
 
 # number: (what it keeps, the pages it applies to, the check over the built page). M and G have the pause, the visit preview,
 # the five steps and the voices; S is the short version (the opening, the visit, the team, the menu, the second door, the close).
+CHECKS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'photo_checks.json')
+
+
+def row21(sections, letter, site):     # every picture of the basins room is built on J's 25 Oct picture, by its pixels
+    PS, out = _sources(), []
+    rooms = PS.basins()
+    stamps = json.load(open(CHECKS)) if os.path.exists(CHECKS) else {}
+    for w, P, W, ids in worlds(sections):
+        for sid in ids:
+            for p in sections[sid]['pics']:
+                a = p['attrs']
+                src = (a.get('src') or '').split('?')[0]
+                name = src[4:] if src.startswith('img/') else ''
+                if name in PS.RETIRED:
+                    out.append(f'{W} "{sid}": {name}: retired, {PS.RETIRED[name]}')
+                    continue
+                if name not in rooms:
+                    continue
+                if 'm:' + PS.J25 not in PS.chain(rooms[name]):
+                    out.append(f'{W} "{sid}": {name} shows the basins room but is not built on J\'s 25 Oct picture ({PS.J25_PICTURE})')
+                    continue
+                st = stamps.get(name)
+                if not st or st.get('measure') is None or not st['measure'] >= PS.ROOM_BAR:
+                    out.append(f'{W} "{sid}": {name} was never measured against J\'s 25 Oct picture (export_photos.py writes the '
+                               'measure), or its bottles are not his')
+                    continue
+                files = [c.split()[0].split('?')[0] for c in (a.get('srcset') or '').split(',') if c.strip()] or [src]
+                for f in files:
+                    path = os.path.join(site or SITE, f)
+                    if not os.path.exists(path):
+                        continue                                   # row 18 names a missing file
+                    if st['files'].get(f) != hashlib.sha256(open(path, 'rb').read()).hexdigest():
+                        out.append(f'{W} "{sid}": {f} is not the file measured against J\'s 25 Oct picture (re-export it)')
+    return out
+
+
 ROWS = {
     1: ('each step has its own film, moving, with its own sound', 'mg', row1),
     2: ('each step shows its own real photo', 'mg', row2),
@@ -457,6 +493,7 @@ ROWS = {
     18: ('every picture sharp at its display size on J\'s 6K window', 'mgs', row18),
     19: ('the hero film and the Inner Work hero film', 'mgs', row19),
     20: ('the pause is the door: the arched door on the empty chair by the window, never the 17 Nov spread', 'mg', row20),
+    21: ('every picture of the basins room is built on J\'s 25 Oct picture, its organised bottles', 'mgs', row21),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
 MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg'}
@@ -471,7 +508,7 @@ QA_ONLY = {
 # what a row's checks leave to the QA walk (the row is machine-checked; this part is read by eye)
 QA_PART = {
     1: 'the sound heard', 5: 'the pull between slides felt on a trackpad', 7: 'anatomy, pose and nothing invented in the place',
-    18: 'composition and no visible crop',
+    18: 'composition and no visible crop', 21: 'the guest, her pose and the light, by eye beside his picture',
 }
 
 KNOWN = os.path.join(ROOT, 'qa', 'gate-known.json')

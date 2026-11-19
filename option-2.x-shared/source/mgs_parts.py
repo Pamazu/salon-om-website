@@ -83,9 +83,12 @@ SERVICE_PHOTO = [
   # angle is boring (also the lighting)"): the cleaned basins wall (step 02's master, J's 25 Oct look), photo 6's low angle,
   # the guest leaning back at the basin under the poster, her bright blonde hair down the chair back, her legs out of frame;
   # Qwen-Image-Edit 2511 (BL2 seed 3) aligned and pasted by her own outline (the poster's words and the room stay the
-  # photographer's), light graded in code (cine_grade.py)
+  # photographer's), light graded in code (cine_grade.py). Task 69006a72 (J 19 Nov 12:01 Z: "You have not yet used the approved
+  # image the one with the organized and cleaned up beauty products"): now on J's 25 Oct picture itself, his rows of bottles
+  # behind her, every label on them real; seated after her rinse, three-quarters to the camera, legs out of frame (FLUX.2
+  # Klein 4B, BL69 seed 42; photo_sources.ROOM_CROP)
   ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour in the styling chair by the window at Salon OM', '62% 45%'),
-  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair reclining at a shampoo basin, in a photo of Salon OM', '52% 46%'),
+  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair seated at a shampoo basin below shelves of Aveda bottles, in a photo of Salon OM', '48% 40%'),
   # Color Correction (round 5, task 2846db82): the salon's photo 15, the guest in the doorway beside the Aveda canvas, facing
   # the camera with body and head together, her hair an even, glossy warm brown from root to end; Qwen-Image-Edit 2511 (CC3
   # seed 8), whole frame, canvas, switches, counter and lights checked against photo 15 (the color bar sits behind her)
@@ -335,7 +338,10 @@ IW_PHOTO = dict(
     wall=('real-maggie-product-wall.webp', 'Maggie Woodward standing in the window light at Salon OM'),
     lounge=('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light'),
     chair=('real-styling-chair.webp', 'The styling chair by the window at Salon OM'),
-    basins=('real-basins-poster.webp', 'The shampoo basins at Salon OM under an Aveda poster, seen past the shelves'),
+    # the second door, back to the salon (task 69006a72): was the basins wall from photo 1059, its bottles only tidied, never J's
+    # 25 Oct picture of that room (J 19 Nov 12:01 Z); the salon world already shows photo 6, so Inner Work takes the shoot's photo 16,
+    # a stylist smiling by her mirror, shown nowhere else
+    salon_door=('real-stylist-mirror.webp', 'A stylist at Salon OM smiling by her mirror in the warm light of the salon'),
     lounge_seated=('real-maggie-lounge-seated.webp', 'Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer'),
     outdoor_chin=('real-maggie-outdoor-chin.webp', 'Maggie Woodward outside in a white blazer, her hand at her chin'),
     outdoor_portrait=('real-maggie-outdoor-portrait.webp', 'Maggie Woodward outside in a white blazer, smiling'),
@@ -399,7 +405,7 @@ def iw_entries(v, salon):
             w['tiles'] = [dict(t, img=IW_PHOTO[IW_PATH_PICS[i][0]][0], alt=IW_PHOTO[IW_PATH_PICS[i][0]][1], pos=IW_PATH_PICS[i][1], ai=None,
                                missing=f'Photo to come: {re.sub("<[^>]+>", "", t["title"])}') for i, t in enumerate(w['tiles'])]
         elif kind in ('bridge', S.door_sheet):
-            w.update(img=_iw_pic('basins')[0], mark='')     # landscape, so its full-bleed frame stays sharp at 3230 (the chair drew at 1.42x)
+            w.update(img=_iw_pic('salon_door')[0], mark='')     # landscape, so its full-bleed frame stays sharp at 3230 (the chair drew at 1.42x)
         elif kind == 'cta':
             w['close_img'] = (_iw_pic('fireside_close')[0], '50% 30%')
         elif kind == 'end':     # the footer is the salon's, its legend and its links Inner Work's (copy_2_2_iw: legend None = the salon page's)

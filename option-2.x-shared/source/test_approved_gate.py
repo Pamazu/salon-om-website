@@ -39,6 +39,29 @@ def page(commit, letter):
     return r.stdout
 
 
+@contextlib.contextmanager
+def before_21():
+    """the fixture pages (LIVE, 0db4254) predate row 21 and show the 19 Nov basins pictures it refuses: tests of the other rows run
+    on them without row 21; row 21's own tests (Row21) are red on the live pages of 19 Nov and green on this commit's"""
+    row = g.ROWS.pop(21)
+    try:
+        yield
+    finally:
+        g.ROWS[21] = row
+
+
+class Before21:
+    @classmethod
+    def setUpClass(cls):
+        cls._21 = before_21(); cls._21.__enter__()
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._21.__exit__(None, None, None)
+        super().tearDownClass()
+
+
 class RedGreen(unittest.TestCase):
     def test_red_is_refused_on_rows_1_16_19(self):
         off = g.check({'m': page(RED, 'm')})
@@ -49,7 +72,8 @@ class RedGreen(unittest.TestCase):
         self.assertEqual(set(g.check(pages)) & FIRST, set())
 
     def test_live_passes_every_row_on_all_three_pages(self):
-        self.assertEqual(g.check({l: page(LIVE, l) for l in 'mgs'}), {})
+      with before_21():
+          self.assertEqual(g.check({l: page(LIVE, l) for l in 'mgs'}), {})
 
     def test_s_has_only_its_two_film_spots(self):
         self.assertEqual(sorted(set(g.check({'s': re.sub(r'<video data-src="media/hero.mp4"[^>]*></video>', '', page(GREEN, 's'))})) & FIRST), [19])
@@ -86,7 +110,7 @@ class Mutations(unittest.TestCase):
         self.assertEqual(set(g.check({'m': html})) & FIRST, set())
 
 
-class Waiver(unittest.TestCase):
+class Waiver(Before21, unittest.TestCase):
     def test_a_quote_names_its_row(self):
         msg = 'Films off\n\nJ names row 16: "switch the step films off for now"\nJ names row 1: "short"\n'
         self.assertEqual(g.waivers(msg), {16: 'switch the step films off for now'})   # under 15 characters is no quote
@@ -129,7 +153,7 @@ class Waiver(unittest.TestCase):
         self.assertEqual(code, 0); self.assertIn('QA walks row 11', out); self.assertNotIn('NOT machine-checked', out)
 
 
-class EveryRow(unittest.TestCase):
+class EveryRow(Before21, unittest.TestCase):
     """each row the built page shows: the live page passes, the live page with that row broken is refused on that row"""
     def setUp(self):
         self.m, self.s = page(LIVE, 'm'), page(LIVE, 's')
@@ -163,7 +187,7 @@ class EveryRow(unittest.TestCase):
         self.red(6, self.m.replace('<div class="om__ph mn__ph"', '<div class="om__ph"', 1), why='photo panel')
 
     def test_7_two_menu_pictures_from_one_corner(self):
-        self.red(7, self.m.replace('img/om-menu-extensions.webp', 'img/om-pause-guest.webp'), why='same corner')
+        self.red(7, self.m.replace('img/om-menu-extensions.webp', 'img/real-shampoo-basins.webp'), why='same corner')
 
     def test_7_a_generated_guest_without_its_mark(self):
         self.red(7, self.m.replace('class="mn__img is-ai"', 'class="mn__img"', 1), why='AI mark')
@@ -238,8 +262,8 @@ class TheList(unittest.TestCase):
         self.assertEqual(g.unchecked(rows), [])
 
     def test_a_new_row_without_its_check_is_refused(self):
-        code, _, err = self.gate(list(range(1, 22)))
-        self.assertEqual(code, 1); self.assertIn('row(s) 21', err)
+        code, _, err = self.gate(list(range(1, 23)))
+        self.assertEqual(code, 1); self.assertIn('row(s) 22', err)
 
     def test_an_unreadable_list_is_refused(self):
         keep = g.list_rows
@@ -251,11 +275,12 @@ class TheList(unittest.TestCase):
         self.assertEqual(code, 1); self.assertIn('cannot be read', err)
 
     def test_a_measured_row_off_is_refused_and_a_quote_lifts_it(self):
-        off = {17: ['M (measured): Salon OM: 2 ring line(s) are drawn in the pause']}
-        code, _, err = self.gate(list(range(1, 20)), off)
-        self.assertEqual(code, 1); self.assertIn('Row 17', err); self.assertIn('ring line', err)
-        code, out, _ = self.gate(list(range(1, 20)), off, 'x\n\nJ names row 17: "bring the rings back around it"\n')
-        self.assertEqual(code, 0); self.assertIn('row 17 is off on purpose', out)
+      with before_21():
+          off = {17: ['M (measured): Salon OM: 2 ring line(s) are drawn in the pause']}
+          code, _, err = self.gate(list(range(1, 20)), off)
+          self.assertEqual(code, 1); self.assertIn('Row 17', err); self.assertIn('ring line', err)
+          code, out, _ = self.gate(list(range(1, 20)), off, 'x\n\nJ names row 17: "bring the rings back around it"\n')
+          self.assertEqual(code, 0); self.assertIn('row 17 is off on purpose', out)
 
     def test_the_key_is_the_page_and_the_measuring_scripts(self):
         a = g.measure_key(b'<html>1</html>'); b = g.measure_key(b'<html>2</html>')
@@ -294,7 +319,7 @@ class TheList(unittest.TestCase):
         self.assertEqual(why, ''); self.assertEqual(sorted(off), [14])    # row 15 is not measured on S (no pause)
 
 
-class Known(unittest.TestCase):
+class Known(Before21, unittest.TestCase):
     """a fault already on the live pages is held only by the open task that fixes it, and is printed on every run"""
     T = '6328eca1-8fad-414a-9578-8bad78014a8e'
     OFF = {18: ['M (measured): Salon OM: "unhurried": img/hd/real-lounge-5330.webp (5330 px wide) is enlarged 1.21x on J\'s 6K window, so it is soft']}
@@ -407,6 +432,55 @@ class RedControls(unittest.TestCase):
             green = json.load(fh)['off']
         new = {n: sorted(set(r['off']) - set(green.get(n, []))) for n, r in rows.items()}
         self.assertEqual([n for n, lines in new.items() if not lines], [], 'a break that adds nothing off on its row')
+
+
+class Row21(unittest.TestCase):
+    """Row 21 (task 69006a72): every picture of the basins room is built on J's 25 Oct picture, judged by its pixels. Red = the
+    pages live on 19 Nov (4547068: Blonding on the tidied photo, step 02 never measured, Inner Work's picture on photo 1059);
+    green = this commit's pages and photo_checks.json; a file changed after its measure is refused."""
+    LIVE_19_NOV = '4547068'
+
+    def off(self, html, letter):
+        return g.row21(g.parse(html), letter, g.SITE)
+
+    def test_21_red_the_live_pages_of_19_nov(self):
+        import shutil, tempfile
+        site = tempfile.mkdtemp()           # the 19 Nov pages with their own files, read from that commit
+        try:
+            for letter in 'mgs':
+                html = page(self.LIVE_19_NOV, letter)
+                for f in set(re.findall(r'img/(?:hd/)?(?:om-menu-blonding|real-shampoo-basins)[a-z0-9-]*\.webp', html)):
+                    r = subprocess.run(['git', '-C', g.ROOT, 'show', f'{self.LIVE_19_NOV}:option-2.2/site/{f}'], capture_output=True)
+                    os.makedirs(os.path.dirname(os.path.join(site, f)), exist_ok=True)
+                    open(os.path.join(site, f), 'wb').write(r.stdout)
+                off = '\n'.join(g.row21(g.parse(html), letter, site))
+                self.assertIn('om-menu-blonding-640.webp is not the file measured', off, letter)
+                self.assertIn('real-shampoo-basins-8192.webp is not the file measured', off, letter)
+                self.assertIn('real-basins-poster.webp: retired', off, letter)
+        finally:
+            shutil.rmtree(site)
+
+    def test_21_green_this_commit(self):
+        for letter in 'mgs':
+            with open(g.page_path(letter), encoding='utf-8') as fh:
+                self.assertEqual(self.off(fh.read(), letter), [], letter)
+
+    def test_21_a_file_changed_after_its_measure_is_refused(self):
+        import json, tempfile
+        with open(g.CHECKS, encoding='utf-8') as fh:
+            c = json.load(fh)
+        f = next(iter(c['om-menu-blonding.webp']['files']))
+        c['om-menu-blonding.webp']['files'][f] = '0' * 64
+        saved = g.CHECKS
+        with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as t:
+            json.dump(c, t)
+        g.CHECKS = t.name
+        try:
+            with open(g.page_path('m'), encoding='utf-8') as fh:
+                off = '\n'.join(self.off(fh.read(), 'm'))
+        finally:
+            g.CHECKS = saved; os.unlink(t.name)
+        self.assertIn(f'{f} is not the file measured against J\'s 25 Oct picture', off)
 
 
 if __name__ == '__main__':

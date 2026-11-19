@@ -26,10 +26,31 @@ MASTERS = os.environ.get('SALON_MASTERS', '/Users/j/all-worktrees/salon-om-pictu
 
 # site picture -> its master, and the check that no picture shows a cleaned place raw: photo_sources.py (task a8c429a3)
 from photo_sources import SOURCE, check as check_clean
+import photo_sources
+PHOTOS = os.path.abspath(V + '../../resources/salon-photos') + '/'
+CHECKS = V + 'photo_checks.json'
+
+
+def room(name, p):
+    """a basins-room picture: its measure against J's 25 Oct picture (photo_sources.room_check), None for any other picture"""
+    if name not in photo_sources.basins():
+        return None
+    f = SOURCE[name].split(':', 1)[1]
+    return photo_sources.room_check(p, PHOTOS + photo_sources.J25_PICTURE, photo_sources.ROOM_CROP.get(f))
+
+
+def stamp(name, d, files):
+    """photo_checks.json: the files this export wrote for a basins picture, with their measure, read by the deploy gate (row 21)"""
+    import hashlib
+    c = json.load(open(CHECKS)) if os.path.exists(CHECKS) else {}
+    c[name] = {'room': photo_sources.J25, 'measure': round(d, 3), 'bar': photo_sources.ROOM_BAR,
+               'files': {os.path.relpath(f, IMG + '..'): hashlib.sha256(open(f, 'rb').read()).hexdigest() for f in sorted(files)}}
+    json.dump(c, open(CHECKS, 'w'), indent=1, sort_keys=True)
+    open(CHECKS, 'a').write('\n')
 NEW = {'film-hero-forest.webp', 'film-air-curtains.webp'}      # no site file yet: the 1280 fallback is made from the master first
 # a master that is a real photo (a cleaned copy '-clean.jpg', or a generated guest pasted onto it '-on-photo.png') keeps the
 # photo's grain, so it gets the same blur as an original
-PHOTO_MASTER = ('-clean.jpg', '-on-photo.png')
+PHOTO_MASTER = ('-clean.jpg', '-on-photo.png', '-25oct.jpg')     # -25oct.jpg: J's basins picture on the photographer's frame, his grain
 # a photo's own sensor grain costs half its bytes at 45 MP: a 0.9 px blur on the full-size original removes the grain and keeps
 # every edge and label sharp at 1:1 (lounge at 3840: 6.2 -> 2.9 MB, 17 Nov side by side); generated masters have no grain
 GRAIN_BLUR = 0.9
@@ -92,8 +113,12 @@ def export(name, dry=False):
         return f'{name}: master {m.size} does not match the site file {ref.size}'
     need = int(needed(name) * 1.05)          # 5 % for the slow Ken Burns zoom the measure may have caught short of its peak
     ws = widths(need, m.width)
+    d = room(name, p)
+    if d is not None and not d >= photo_sources.ROOM_BAR:
+        return (f'{name}: NOT exported: it shows the basins room and only {d:.0%} of its bottles are J\'s 25 Oct picture (bar '
+                f'{photo_sources.ROOM_BAR:.0%}; task 69006a72)')
     if dry:
-        return f'{name}: master {m.size}, need {need} px -> {ws}'
+        return f'{name}: master {m.size}, need {need} px -> {ws}' + (f', room {d:.0%} J\'s' if d is not None else '')
     m = m.convert('RGB')
     if SOURCE[name].startswith('o:') or SOURCE[name].endswith(PHOTO_MASTER):
         m = m.filter(ImageFilter.GaussianBlur(GRAIN_BLUR))
@@ -109,9 +134,13 @@ def export(name, dry=False):
         m.resize(ref.size, Image.LANCZOS).save(IMG + name, quality=84, method=6)
     os.makedirs(IMG + 'hd', exist_ok=True)
     stem = name[:-5]
+    wrote = [] if frozen else [IMG + name]          # 2.2-2.4's own file is never rewritten, so never stamped
     for w in ws:
         h = round(m.height * w / m.width)
         (m if w == m.width else m.resize((w, h), Image.LANCZOS)).save(f'{IMG}hd/{stem}-{w}.webp', quality=QUALITY, method=6)
+        wrote.append(f'{IMG}hd/{stem}-{w}.webp')
+    if d is not None:
+        stamp(name, d, wrote)
     json.dump(dict(json.load(open(V + 'photo_exports.json')) if os.path.exists(V + 'photo_exports.json') else {}, **{name: ws}),
               open(V + 'photo_exports.json', 'w'), indent=1, sort_keys=True)
     open(V + 'photo_exports.json', 'a').write('\n')
