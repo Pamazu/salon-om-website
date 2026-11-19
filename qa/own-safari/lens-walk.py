@@ -36,6 +36,16 @@ def go(url): osa(f'tell application "Safari" to set URL of current tab of (first
 def cap(name):
     rc, o = sh('/usr/sbin/screencapture', '-x', '-o', '-t', 'jpg', f'-l{sid}', os.path.join(OUT, name + '.jpg'))
     if rc != 0: log(f'cap {name} rc {rc}: {o[-200:]}')
+def onstage(name):
+    # r7 run (19 Nov 08:50): in Stage Manager's side strip the page still says "visible" and draws (a live thumbnail), but the
+    # window frame comes out as a small skewed thumbnail. A frame narrower than 90 % of the window's own width at x2 is one.
+    b = osa(f'tell application "Safari" to get bounds of (first window whose id is {sid})').replace(' ', '').split(',')
+    rc, o = sh('/usr/bin/sips', '-g', 'pixelWidth', os.path.join(OUT, name + '.jpg'))
+    try: return int(o.split('pixelWidth:')[1].split()[0]) >= 0.9 * 2 * (int(b[2]) - int(b[0]))
+    except Exception: return None
+def raise_window():
+    osa(f'tell application "Safari"\nactivate\nset index of (first window whose id is {sid}) to 1\nend tell')
+    osa('tell application "System Events" to set frontmost of process "Safari" to true')
 def report():
     js = 'JSON.stringify({w:innerWidth,h:innerHeight,dpr:devicePixelRatio,lens:window.__lens?window.__lens():null,fails:[...document.querySelectorAll(".stage.broken .fail")].map(f=>f.textContent)})'
     out = osa(f'tell application "Safari" to do JavaScript {json.dumps(js)} in current tab of (first window whose id is {sid})')
@@ -55,8 +65,7 @@ def seen(id, wait=8.0):
             if f0 is None: f0 = last['f']
             elif last['f'] > f0: return True, last
         else:
-            osa(f'tell application "Safari"\nactivate\nset index of (first window whose id is {sid}) to 1\nend tell')
-            osa('tell application "System Events" to set frontmost of process "Safari" to true')
+            raise_window()
         time.sleep(0.4)
     return False, last
 try:
@@ -71,10 +80,12 @@ try:
             ok, st = seen(id)
             if not ok:
                 res['pages'].append({'page': f'r5-{size}-{id}', 'skipped': 'the page never reported itself visible and drawing', 'state': st}); log(f'r5 {size} {id} SKIPPED, not seen: {st}'); continue
+            cap(f'r5-{size}-{id}-probe'); full = onstage(f'r5-{size}-{id}-probe')
+            if full is False: raise_window(); time.sleep(1.2); cap(f'r5-{size}-{id}-probe'); full = onstage(f'r5-{size}-{id}-probe')
             t0 = time.time(); n = 5 if size == 'own' else 2; at = []
             for i in range(n):
                 time.sleep(max(0, i * 0.5 - (time.time() - t0))); at.append(round(time.time() - t0, 2)); cap(f'r5-{size}-{id}-{i}')
-            r = report(); res['pages'].append({'page': f'r5-{size}-{id}', 'at': at, 'report': r}); log(f'r5 {size} {id} at {at} ' + json.dumps(r)[:400])
+            r = report(); res['pages'].append({'page': f'r5-{size}-{id}', 'at': at, 'onStage': full, 'report': r}); log(f'r5 {size} {id} at {at} on stage {full} ' + json.dumps(r)[:400])
 except Exception as e:
     res['error'] = repr(e); log('error ' + repr(e))
 finally:
