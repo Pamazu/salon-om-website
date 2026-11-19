@@ -2536,7 +2536,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   var root = document.documentElement;
   if (!root.hasAttribute('data-review') && !/[?&]review\b/.test(location.search)) return;
   var LIVE = 'live', LS = 'om-opt-' + (root.getAttribute('data-variant') || 'x') + '-', PAGE = window.OM_PAGE_OPTS || [];
-  var KEEP = { id: 1, 'data-opt-key': 1, 'data-opts': 1, 'data-opt': 1, 'data-sk': 1, hidden: 1 };
+  var KEEP = { id: 1, 'data-opt-key': 1, 'data-opts': 1, 'data-opt': 1, 'data-opt-name': 1, 'data-sk': 1, hidden: 1 };
   var calm = function () { return root.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   var secs = [].slice.call(document.querySelectorAll('section[data-opt-key]'));
   var tpl = {}, live = {};
@@ -2618,7 +2618,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   var panel, handle, open = false, cur = null, queued = false;
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function nameOf(s) {
-    var n = s.getAttribute('aria-label'), by = s.getAttribute('aria-labelledby');
+    var n = s.getAttribute('data-opt-name') || s.getAttribute('aria-label'), by = s.getAttribute('aria-labelledby');
     if (!n && by && document.getElementById(by)) n = document.getElementById(by).textContent;
     return (n || s.id || '').replace(/\s+/g, ' ').trim();
   }
