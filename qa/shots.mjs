@@ -6,7 +6,7 @@ const [v, size, out, ids] = process.argv.slice(2); const [W, H, D = '1'] = size.
 const dwell = +(process.argv.includes('--wait') ? process.argv[process.argv.indexOf('--wait') + 1] : 2600);
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().port}`;
-const b = await pw.webkit.launch();   // WebKit only (J, 4 Nov: browser checks run in WebKit, never Chromium) const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: D, isMobile: W < 600, hasTouch: W < 600 });
+const b = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});   // WebKit only (J, 4 Nov), the pool's pinned one when %WEBKIT% is set (as gate-rows.mjs) const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: D, isMobile: W < 600, hasTouch: W < 600 });
 ctx.on('page', (pg) => { pg.on('pageerror', (e) => console.log('PAGEERROR', e.message.slice(0, 160))); pg.on('console', (m) => { if (m.type() === 'error') console.log('CONSOLE', m.text().slice(0, 160)); }); pg.on('requestfailed', (r) => console.log('REQFAIL', r.url().slice(-80))); });
 const p = await open(ctx, `${base}/${v}/`);
 for (const id of ids.split(',')) {
