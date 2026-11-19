@@ -79,9 +79,13 @@ SERVICE_PHOTO = [
   # footrest, her body turned with the chair and her head only a little more. Qwen-Image-Edit 2511 on the Mac Studio (SC5
   # seed 3) re-rendered the whole frame at the photo's own camera; every object checked against photo 4, none invented, not
   # pixel-exact (a paste left seams: Qwen moves the room a little). Round 4's view of photo 11 changed the real room.
-  # Blonding is her photo 12 with the guest reclined at the basin, neck at the bowl, only the guest's zone pasted back
+  # Blonding (task a8c429a3, J 18 Nov 17:26 Z: "you used the wrong image and the guest has her shoes in teh chair and the camera
+  # angle is boring (also the lighting)"): the cleaned basins wall (step 02's master, J's 25 Oct look), photo 6's low angle,
+  # the guest leaning back at the basin under the poster, her bright blonde hair down the chair back, her legs out of frame;
+  # Qwen-Image-Edit 2511 (BL2 seed 3) aligned and pasted by her own outline (the poster's words and the room stay the
+  # photographer's), light graded in code (cine_grade.py)
   ('om-menu-signature-color.webp', 'A generated guest with rich, dimensional brunette colour in the styling chair by the window at Salon OM', '62% 45%'),
-  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair reclining at a shampoo basin, in a photo of Salon OM', '45% 58%'),
+  ('om-menu-blonding.webp', 'A generated guest with bright, seamless blonde hair reclining at a shampoo basin, in a photo of Salon OM', '52% 46%'),
   # Color Correction (round 5, task 2846db82): the salon's photo 15, the guest in the doorway beside the Aveda canvas, facing
   # the camera with body and head together, her hair an even, glossy warm brown from root to end; Qwen-Image-Edit 2511 (CC3
   # seed 8), whole frame, canvas, switches, counter and lights checked against photo 15 (the color bar sits behind her)
@@ -109,8 +113,9 @@ SERVICE_PHOTO = [
 # not a footer line, a hover or tap icon, or a mark only in the file; task 1c6ed2aa)
 AI_GUEST = 'Guest made with AI'
 AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her photos (CEO MA, 18 Nov; StoryLegal asked for its words)
-# the pause (task 2b1d1187): her photo 17, the basin room seen through a doorway, with one generated guest at the basin below the poster
-PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, seen through a doorway'
+# the pause (task a8c429a3): the cleaned basins wall (step 02's master, J's 25 Oct look) at photo 6's low angle, one generated guest
+# resting at the basin below the poster, legs out of frame (no feet on the footstool), light graded in code; was photo 17 raw
+PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster'
 
 
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:

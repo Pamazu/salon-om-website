@@ -29,6 +29,14 @@ if B.startswith('auto'):
     del ef, d, lab
 else:
     band = ndi.binary_dilation(np.asarray(Image.open(B).convert('L'))[y:y + h, x:x + w] > 127, iterations=8)
+# FIT=1 (task a8c429a3): a removal edit that re-lit its whole crop (a local model brightened every pixel) is first fitted, channel
+# by channel, to the photo outside the band, so the band does not show as a paler or darker trace of the removed object
+import os
+if os.environ.get('FIT'):
+    out_b = ~ndi.binary_dilation(band, iterations=20)
+    for c in range(3):
+        g1, b1 = np.polyfit(e[..., c][out_b], o[..., c][out_b], 1); e[..., c] = e[..., c] * g1 + b1
+    e = np.clip(e, 0, 1)
 ring = ndi.binary_dilation(band, iterations=40) & ~ndi.binary_dilation(band, iterations=10)
 W = ndi.gaussian_filter(ring.astype(float), 40) + 1e-9
 corr = np.stack([ndi.gaussian_filter((e[..., c] - o[..., c]) * ring, 40) / W for c in range(3)], 2)

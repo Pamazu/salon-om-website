@@ -48,7 +48,7 @@ SOURCE = {
     # the photographer's original with J's 25 Oct edit where the edit changed the room (was the 18 Nov real-bottles master)
     'real-shampoo-basins.webp': 'm:6-shampoo-basins-25oct-clean.jpg',
     'real-styling-stations.webp': 'm:11-styling-stations-clean.jpg',
-    'om-menu-signature-color.webp': 'm:om-menu-signature-color.png',
+    'om-menu-signature-color.webp': 'm:om-menu-signature-color-clean.png',   # the bin and the vacuum hose removed (task a8c429a3)
     'om-menu-blonding.webp': 'm:om-menu-blonding-25oct.png',
     'om-menu-color-correction.webp': 'm:om-menu-color-correction.png',
     'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style-clean.png',
@@ -103,7 +103,7 @@ CLEANED = {v for v in ORIGINALS.values() if v}
 # the meadow). A picture made on the raw original of a cleaned place and then cleaned itself names what was removed in
 # CLEANED_IN_PLACE, so the answer is written where the picture is declared
 BUILT_ON = {
-    'om-menu-signature-color.png': 'o:4-styling-chair-window-5B3A1068.jpg',
+    'om-menu-signature-color-clean.png': 'o:4-styling-chair-window-5B3A1068.jpg',
     'om-menu-blonding-25oct.png': 'm:6-shampoo-basins-25oct-clean.jpg',
     'om-menu-color-correction.png': 'o:15-aveda-plant-artwork-5B3A1081.jpg',
     'om-menu-cut-and-style-clean.png': 'm:11-styling-stations-clean.jpg',
@@ -115,7 +115,7 @@ BUILT_ON = {
     'film-air-curtains.png': None,
 }
 CLEANED_IN_PLACE = {
-    'om-menu-signature-color.png': 'the bin by the window and the hair vacuum hose removed, as on the clean copy of photo 4',
+    'om-menu-signature-color-clean.png': 'the bin by the window and the hair vacuum hose removed, as on the clean copy of photo 4',
 }
 
 # pictures the pages show that are not exported from a master here: what they were cut from
