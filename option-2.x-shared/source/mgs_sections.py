@@ -485,7 +485,7 @@ def door_sheet(d, world):
     (sheet_stage), its words in ink on the frost, its buttons the light-ground pair. Words and picture are the door's own
     (mgs_parts.door(), Inner Work's through the twin); the words straight on the photo stay in the switcher (DOOR_OPTIONS)."""
     more = ''.join(f'<p class="sh__more a-up" style="--d:{.75 + k * .1:.2f}s">{t}</p>' for k, t in enumerate(d.get('more', [])))
-    return f'''<section class="s dr" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    return f'''<section class="s s--auto dr" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
     {sheet_stage(d['img'], d.get('alt', ''), d.get('sheet', AVEDA_SHEET), f"""<p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
         <p class="sh__text a-up" style="--d:.6s">{d['text']}</p>{more}

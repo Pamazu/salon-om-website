@@ -135,7 +135,7 @@
       s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
       var wx = phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), wy = (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12;
       var R0 = Math.min(W, H) * (phone ? .16 : .15), R1 = R0 * 2.8;
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .5,
+      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
         mask: 'radial-gradient(circle at ' + wx.toFixed(0) + 'px ' + wy.toFixed(0) + 'px, transparent ' + R0.toFixed(0) + 'px, #000 ' + R1.toFixed(0) + 'px)' };
     },
     G: function (s, W, H, t, r, vh) {                                                         // deepest behind the words, lighter further out
@@ -168,6 +168,10 @@
   Stage.prototype.draw = function (t) {
     var r = this.el.getBoundingClientRect(), W = r.width, H = r.height, vh = innerHeight, L = this.L;
     this.wdH = this.wd.offsetHeight; this.hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 76;
+    // the stage grows to hold its words when they are taller than the screen (Inner Work's long list on a phone), so no word is
+    // ever cut off at its foot (task 95e37a41); the room it keeps is place()'s, above for the header and below for the door bar
+    var fit = Math.ceil(this.hdr + 14 + this.wdH + (W < 700 ? 92 : 40));
+    this.set(this.el, 'mh', 'minHeight', fit > innerHeight ? fit + 'px' : '');
     var o = OPT[this.id](this, W, H, t, r, vh), x0 = o.rect[0], x1 = o.rect[1], y0 = o.rect[2], y1 = o.rect[3];
     var clip = 'inset(' + Math.max(0, y0).toFixed(1) + 'px ' + Math.max(0, W - x1).toFixed(1) + 'px ' + Math.max(0, H - y1).toFixed(1) + 'px ' + Math.max(0, x0).toFixed(1) + 'px)';
     this.set(L.sheet, 'clip', 'clipPath', clip); this.set(L.sheet, 'wclip', 'webkitClipPath', clip);

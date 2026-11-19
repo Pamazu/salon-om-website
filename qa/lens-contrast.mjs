@@ -51,9 +51,14 @@ for (const w of ws.split(',').map(Number)) {
           }
           return best;
         }, id);
+        // a stage taller than the screen (it grows to hold its words) is read a screen at a time, 80 % apart, down to its foot
+        const foot = await p.evaluate((id) => { const st = document.querySelector(`#${id} .sh`); return st.getBoundingClientRect().bottom + scrollY; }, id);
+        const at = [top]; while (foot - at[at.length - 1] > H + 2) at.push(Math.min(at[at.length - 1] + Math.round(H * .8), foot - H));
+        for (const [k, y] of at.entries()) {
+        if (k) { await jump(p, y); await wait(p, 1800); }
         for (const [moment, t] of [['rest', 0], ['worst', worst.t]]) {
           await p.evaluate((t) => { window.__lensT = t; }, t); await frames(p); await wait(p, 150);
-          const shot = `${v}-${w}-${id}-${moment}.png`;
+          const shot = `${v}-${w}-${id}${k ? '-' + k : ''}-${moment}.png`;
           await p.screenshot({ path: path.join(OUT, shot) });
           const tag = await p.addStyleTag({ content: '.sh__words { visibility: hidden !important; }' });
           await frames(p); await wait(p, 120);
@@ -67,13 +72,20 @@ for (const w of ws.split(',').map(Number)) {
             const hdr = innerWidth < 700 ? (document.getElementById('hdr')?.getBoundingClientRect().bottom || 64) : 0;
             const out = [];
             for (const e of document.getElementById(id).querySelectorAll(sel)) {
-              const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4 || r.bottom < 0 || r.top > innerHeight) continue;
-              if (r.top < hdr) continue;                                      // under a phone's fixed header its own bar is the background
+              // the glass behind the letters: the text's own line boxes (a Range), never the element's whole box, which also covers
+              // whatever sits beside a short line (the picture's AI label beside the eyebrow on a phone read 2.08 that way)
+              const rg = document.createRange(); rg.selectNodeContents(e);
+              const boxes = [...rg.getClientRects()].filter((r) => r.width >= 4 && r.height >= 4 && r.bottom > 0 && r.top < innerHeight && r.top >= hdr);   // under a phone's fixed header its own bar is the background
+              if (!boxes.length) continue;
               const cs = getComputedStyle(e), col = cs.color.match(/[\d.]+/g).map(Number), li = L(col[0], col[1], col[2]);
-              const x = Math.max(0, Math.round(r.left)), y = Math.max(0, Math.round(r.top)), Wd = Math.min(c.width - x, Math.round(r.width)), Hd = Math.min(c.height - y, Math.round(r.height));
-              if (Wd < 2 || Hd < 2) continue;
-              const d = g.getImageData(x, y, Wd, Hd).data, ls = [];
-              for (let i = 0; i < d.length; i += 4) ls.push(L(d[i], d[i + 1], d[i + 2]));
+              const ls = [];
+              for (const r of boxes) {
+                const x = Math.max(0, Math.round(r.left)), y = Math.max(0, Math.round(r.top)), Wd = Math.min(c.width - x, Math.round(r.width)), Hd = Math.min(c.height - y, Math.round(r.height));
+                if (Wd < 2 || Hd < 2) continue;
+                const d = g.getImageData(x, y, Wd, Hd).data;
+                for (let i = 0; i < d.length; i += 4) ls.push(L(d[i], d[i + 1], d[i + 2]));
+              }
+              if (!ls.length) continue;
               ls.sort((a, b) => a - b);
               const ratio = (lb) => (Math.max(lb, li) + .05) / (Math.min(lb, li) + .05);
               const px = parseFloat(cs.fontSize), large = px >= 24 || (px >= 18.66 && +cs.fontWeight >= 700);
@@ -84,9 +96,10 @@ for (const w of ws.split(',').map(Number)) {
           }, { dataUrl: 'data:image/png;base64,' + png.toString('base64'), sel: LINES, id });
           for (const r of rows) {
             const need = r.large ? 4.5 : 7, ok = r.worst >= need; if (!ok) red++;
-            all.push({ v, w, world, id, moment, t, ...r, need, ok });
-            console.log(ok ? 'ok ' : 'LOW', v, w, id, moment, `t=${t}`, JSON.stringify(r));
+            all.push({ v, w, world, id, part: k, moment, t, ...r, need, ok });
+            console.log(ok ? 'ok ' : 'LOW', v, w, id, k, moment, `t=${t}`, JSON.stringify(r));
           }
+        }
         }
         await p.evaluate(() => { window.__lensT = null; });
         // where the picture meets what follows it inside the same section (Why Aveda's letter): its lower edge at 55 % of the screen
