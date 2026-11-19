@@ -62,8 +62,10 @@ export async function jump(p, y) {
 
 // every <img> and film poster laid out on the page now: the file's own pixels, its box and the scale the browser draws the
 // file at (object-fit counted), in CSS px per file pixel; sharpness.mjs and gate-rows.mjs (approved-features row 18) read it
-export function pictures(p) {
-  return p.evaluate(async () => {
+// rest: true measures each picture's own laid-out box (offsetWidth/Height: no entry zoom or other transform), the size it rests at;
+// otherwise its drawn box now. An <img> straight before a <video> is that film's still (its first frame until it plays): film: true.
+export function pictures(p, { rest = false } = {}) {
+  return p.evaluate(async (rest) => {
     const out = [];
     // with a srcset, naturalWidth is density-corrected: read the chosen file's own pixels from a plain Image
     const real = {};
@@ -73,7 +75,7 @@ export function pictures(p) {
       real[u] = [t.naturalWidth, t.naturalHeight];
     }
     const fit = (el, nw, nh) => {
-      const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+      const r = rest ? { width: el.offsetWidth, height: el.offsetHeight } : el.getBoundingClientRect(), cs = getComputedStyle(el);
       if (!r.width || !r.height || !nw) return null;
       const f = cs.objectFit || 'fill';
       const s = f === 'cover' ? Math.max(r.width / nw, r.height / nh) : f === 'contain' ? Math.min(r.width / nw, r.height / nh) : Math.max(r.width / nw, r.height / nh);
@@ -83,14 +85,15 @@ export function pictures(p) {
       const [nw, nh] = el.hasAttribute('srcset') && real[el.currentSrc] ? real[el.currentSrc] : [el.naturalWidth, el.naturalHeight];
       const m = fit(el, nw, nh); if (!m) continue;
       const file = el.hasAttribute('srcset') ? el.currentSrc.replace(/^.*\/img\//, 'img/') : el.getAttribute('src');
-      out.push({ src: el.getAttribute('src'), file, nat: [nw, nh], ...m, where: el.closest('section,[id]')?.id || '' });
+      const still = el.nextElementSibling?.tagName === 'VIDEO';   // the film's still: its first frame, shown until the film plays
+      out.push({ src: el.getAttribute('src'), file, nat: [nw, nh], ...m, where: el.closest('section,[id]')?.id || '', ...(still && { film: true }) });
     }
     for (const el of document.querySelectorAll('video[poster]')) {
       const m = fit(el, el.videoWidth || 1600, el.videoHeight || 900); if (!m) continue;
       out.push({ src: el.getAttribute('poster') + ' (film ' + el.currentSrc.split('/').pop() + ', ' + (el.videoWidth || '?') + 'x' + (el.videoHeight || '?') + ')', nat: [el.videoWidth, el.videoHeight], ...m, where: el.closest('section,[id]')?.id || '', film: true });
     }
     return out;
-  });
+  }, rest);
 }
 
 // the window sizes every check walks: phone, tablet, the laptop and desktop widths
