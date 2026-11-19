@@ -424,7 +424,7 @@ MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs'
 # a machine cannot judge these; each stays a QA step, and says why
 QA_ONLY = {
     11: 'it is about what the words do (a hook in result, objection and time form, its proof, its reward); M carries only '
-        'Maggie\'s own lines by design, so no markup can tell a hook from a heading: the copy walk reads it',
+        'the owner\'s own lines by design, so no markup can tell a hook from a heading: the copy walk reads it',
 }
 # what a row's checks leave to the QA walk (the row is machine-checked; this part is read by eye)
 QA_PART = {
