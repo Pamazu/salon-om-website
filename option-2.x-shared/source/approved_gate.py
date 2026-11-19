@@ -12,6 +12,10 @@ Every row of reference/approved-features.md (Salon OM brain folder) has its chec
   - a QA step, only where a machine truly cannot judge (QA_ONLY, one line why).
 A row of the list with none of the three refuses the deploy: a new row J approves comes with its check.
 
+Before any row, the deployed commit must contain the commit live on each site it deploys (the site's deployed.json, which
+deploy-mgs.sh writes; until a site has one, origin/mgs-options): a build from an older base would take live work back off the
+sites (CEO MA, 19 Nov). To bring an older version back, revert it on top of the live commit.
+
 A failed row refuses the deploy unless the deployed commit (HEAD) quotes J's own words naming that row, one line per row:
 
     J names row 16: "<his words, at least 15 characters>"
@@ -32,6 +36,8 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import time
+import urllib.request
 from html.parser import HTMLParser
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -490,6 +496,58 @@ def check(pages, site=SITE):
     return {n: m for n, m in off.items() if m}
 
 
+LIVE_STAMP = 'https://salon-om-2-2-{}.web.app/deployed.json'
+LIVE_BRANCH = 'mgs-options'
+
+
+def read_stamp(letter):
+    """the commit a site says it carries (deploy-mgs.sh's deployed.json), or None when it has none or does not answer"""
+    try:
+        req = urllib.request.Request(LIVE_STAMP.format(letter) + f'?t={int(time.time())}', headers={'Cache-Control': 'no-cache'})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            sha = json.load(r).get('commit', '')
+        return sha if re.fullmatch(r'[0-9a-f]{40}', sha) else None
+    except Exception:
+        return None
+
+
+def live_commits(letters, stamp=read_stamp, root=ROOT):
+    """[(letter, sha, where it was read)] for each site deployed, or (None, why) when the live commit cannot be known"""
+    out, branch = [], None
+    for l in letters:
+        sha = stamp(l)
+        if sha:
+            out.append((l, sha, f'salon-om-2-2-{l}.web.app/deployed.json')); continue
+        if branch is None:
+            subprocess.run(['git', '-C', root, 'fetch', '-q', 'origin', LIVE_BRANCH], capture_output=True, text=True, timeout=120)
+            r = subprocess.run(['git', '-C', root, 'rev-parse', '--verify', '-q', f'origin/{LIVE_BRANCH}'], capture_output=True, text=True)
+            branch = r.stdout.strip() if r.returncode == 0 else ''
+        if not branch:
+            return None, (f'salon-om-2-2-{l}.web.app has no deployed.json and origin/{LIVE_BRANCH} cannot be read, so nobody can '
+                          'tell what is live')
+        out.append((l, branch, f'origin/{LIVE_BRANCH} (the site has no deployed.json yet)'))
+    return out, ''
+
+
+def base_check(letters, head='HEAD', stamp=read_stamp, root=ROOT):
+    """'' when head contains the commit live on every site deployed, else why not"""
+    live, why = live_commits(letters, stamp, root)
+    if live is None:
+        return why
+    for l, sha, where in live:
+        g = lambda *a: subprocess.run(['git', '-C', root, *a], capture_output=True, text=True)
+        if g('cat-file', '-e', f'{sha}^{{commit}}').returncode:
+            g('fetch', '-q', 'origin')
+            if g('cat-file', '-e', f'{sha}^{{commit}}').returncode:
+                return f'{l.upper()} is live at {sha[:10]} ({where}), which is not in this clone: fetch it and build on it'
+        if g('merge-base', '--is-ancestor', sha, head).returncode:
+            back = g('log', '--oneline', '--no-decorate', '-8', f'{head}..{sha}').stdout.strip()
+            return (f'{l.upper()} is live at {sha[:10]} ({where}), and this deploy\'s commit does not contain it: it would take back\n'
+                    + '\n'.join('      ' + x for x in back.splitlines())
+                    + f'\n    Rebase onto {sha[:10]} and build again (an older version comes back as a revert on top of it).')
+    return ''
+
+
 def known_list(path=KNOWN):
     """the faults already on the live pages, each with the open task that fixes it: [] with no file, None when it cannot be read"""
     if not os.path.exists(path):
@@ -638,10 +696,15 @@ def head_message(root=ROOT):
     return subprocess.run(['git', '-C', root, 'log', '-1', '--format=%B'], capture_output=True, text=True, check=True).stdout
 
 
-def main(argv, pages=None, message=None, rows=None, measured_off=None, known=None, status=task_status):
-    """pages, message, rows, measured_off, known and status are for the test; the deploy reads the built pages, the HEAD
-    message, the list, the measured result, qa/gate-known.json and StoryMind."""
+def main(argv, pages=None, message=None, rows=None, measured_off=None, known=None, status=task_status, stamp=None):
+    """pages, message, rows, measured_off, known, status and stamp are for the test; the deploy reads the live sites' stamps,
+    the built pages, the HEAD message, the list, the measured result, qa/gate-known.json and StoryMind."""
     letters = argv or ['m', 'g', 's']
+    if pages is None or stamp is not None:
+        why = base_check(letters, stamp=stamp or read_stamp)
+        if why:
+            print(f'REFUSED: this deploy is built on an older base than the live sites.\n    {why}\nNothing was deployed.', file=sys.stderr)
+            return 1
     if pages is None:
         raw = {}
         for l in letters:

@@ -344,6 +344,42 @@ class Known(unittest.TestCase):
         self.assertEqual(code, 0); self.assertIn('not read', out)
 
 
+class Base(unittest.TestCase):
+    """a deploy never goes out from a commit that lacks the one live on the sites (CEO MA, 19 Nov: 3d2a6ac, the pause heading's
+    kerning, went live while the gate sat on 0db4254)"""
+    KERNING = '3d2a6ac'            # live since 11:40 CET, 19 Nov
+    OLD = '0db4254'                # the door pause, without the kerning
+
+    def sha(self, c):
+        r = subprocess.run(['git', '-C', g.ROOT, 'rev-parse', '--verify', '-q', f'{c}^{{commit}}'], capture_output=True, text=True)
+        if r.returncode:
+            raise unittest.SkipTest(f'commit {c} is not in this clone')
+        return r.stdout.strip()
+
+    def test_a_base_without_the_live_commit_is_refused_and_names_what_it_would_take_back(self):
+        live, old = self.sha(self.KERNING), self.sha(self.OLD)
+        why = g.base_check(['m'], head=old, stamp=lambda l: live)
+        self.assertIn('does not contain it', why); self.assertIn('3d2a6ac', why); self.assertIn('Rebase onto', why)
+
+    def test_a_base_with_the_live_commit_passes(self):
+        live = self.sha(self.KERNING)
+        self.assertEqual(g.base_check(['m', 'g', 's'], head='HEAD', stamp=lambda l: live), '')
+
+    def test_a_site_without_its_stamp_is_read_from_the_live_branch(self):
+        live, err = g.live_commits(['s'], stamp=lambda l: None)
+        if live is None:
+            raise unittest.SkipTest(err)
+        self.assertIn('origin/mgs-options', live[0][2])
+
+    def test_the_deploy_is_refused_before_any_row(self):
+        live = self.sha('d2504e4')             # the gate branch before its rebase: never under this HEAD
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = g.main(['m'], pages={'m': page(LIVE, 'm')}, message='x', rows=list(range(1, 20)), measured_off={}, known=[],
+                          stamp=lambda l: live)
+        self.assertEqual(code, 1); self.assertIn('older base', err.getvalue()); self.assertNotIn('Row ', err.getvalue())
+
+
 class RedControls(unittest.TestCase):
     """every measured row goes red in WebKit when it is broken on purpose (qa/gate-red.mjs, run in the pool)"""
     def test_every_measured_row_went_red_when_broken(self):
