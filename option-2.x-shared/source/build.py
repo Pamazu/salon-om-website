@@ -148,10 +148,13 @@ def tease(d):
         extra = (f'<div class="pz" aria-hidden="true"><img src="img/{lk["photo"]}" alt="" decoding="async" loading="lazy"></div>'
                  f'<figure class="pf" aria-hidden="true"><img src="img/{lk["frame"]}" alt="" decoding="async" loading="lazy"></figure>')
     attrs = (' data-look="0" data-pause' + (' data-parked' if d.get('parked') else '')) if lk else ''
-    # M/G pause (task 2b1d1187, J 17 Nov: "remove those green lines ... Remove the glow ... the layout is still boring"): one
-    # guest at the basin, seen through the doorway of her photo 17, large and running off the right edge, with the AI label
-    # (mgs_sections.ai_mark, passed in); 2.2-2.4 never set `breath`, so their pages stay byte-identical
-    br = (f'<figure class="br"><div class="br__ph"><img src="img/{d["breath"]}" alt="{E(d.get("breath_alt", ""))}" decoding="async"></div>'
+    # M/G pause (task a78e6208, J 19 Nov: "I explicitly requested the one with the door"): the door, its picture in a frame
+    # of its own (.br__zoom: the breath scales the frame, the scroll moves the picture inside it), an AI label if the picture
+    # has one (passed in); 2.2-2.4 never set `breath`, so their pages stay byte-identical
+    # `glass` (an option, mgs_sections.PAUSE_OPTIONS): two leaves of fluted glass over the door that slide apart as it arrives
+    glass = ('<div class="br__glass" aria-hidden="true"><div class="br__leaf" data-flute="9"></div><div class="br__leaf" data-flute="9"></div></div>'
+             if d.get('glass') else '')
+    br = (f'<figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/{d["breath"]}" alt="{E(d.get("breath_alt", ""))}" decoding="async"></div>{glass}</div>'
           f'{d.get("breath_mark", "")}</figure>') if d.get('breath') else ''
     return f'''<section class="s mani{' dark' if d.get('dark') else ''}" id="{d['id']}" data-tone="{'dark' if d.get('dark') else d.get('tone','light')}" data-sound="{d.get('sound','bed')}" aria-label="{E(d['label'])}"{attrs}{' data-long' if _MGS and len(re.sub(r'<[^>]+>', '', d['text'])) > 240 else ''}>
     {extra}{ring}

@@ -170,9 +170,20 @@ function pauseHead() {      // again after the option switcher swaps the pause b
   [].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
     var w = t.querySelectorAll('.wd');
     for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
+    t.classList.toggle('has-long-head', i > 3);      // task a78e6208: a long opening sentence (Inner Work's) is set a size smaller
   });
 }
 pauseHead(); document.addEventListener('om:swap', pauseHead);
+/* task a78e6208: what keeps clear of the floating booking bar (.wdoor; the pause's door, nothing sits on a picture) reads the
+   bar's real half width, plus a 40 px gap, as --bar-half on <html>: each world's bar has its own words and width */
+(function () {
+  var bars = document.querySelectorAll('.wdoor'); if (!bars.length || !window.ResizeObserver) return;
+  var set = function () {
+    for (var k = 0; k < bars.length; k++) { var r = bars[k].getBoundingClientRect();
+      if (r.width > 0) { document.documentElement.style.setProperty('--bar-half', Math.ceil(r.width / 2 + 40) + 'px'); return; } }
+  };
+  var ro = new ResizeObserver(set); [].forEach.call(bars, function (b) { ro.observe(b); }); set();
+})();
 [].forEach.call(document.querySelectorAll('[data-quotes]'), function (q) { var it = q.querySelectorAll('.q'); if (it.length === 1) it[0].classList.add('is-on'); });
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
@@ -479,35 +490,66 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
 })();
 
-/* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page, task
-   a78e6208): A's fluted glass, slats of the section's own picture each shifted a little, sliding as you scroll; B's breath,
-   the room opening as you scroll in and the question arriving on the exhale. Found again after every swap. */
+/* the fluted glass (one block; task a78e6208): an element with data-flute="<ribs>" over a picture gets that many ribs, each the
+   same picture, shifted a little and softened, locked to the picture behind it as the glass slides and the page scrolls. The
+   picture is the first <img> of the nearest ancestor holding one; data-flute-bend sets how far a rib bends it (px, 14) and
+   data-flute-mag how much it magnifies (1.06). No WebGL (J's desktop Safari, 18 Nov). Used by A's strip (.ps__lens), the
+   glass door's two leaves and Step through's strip. Draws only while on screen; calm motion holds it still. */
 (function () {
-  var rooms = [], breaths = [], queued = false;
+  var all = [], queued = false, running = false;
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
-    rooms = [].slice.call(document.querySelectorAll('.ps--room')).map(function (s) {
-      var lens = s.querySelector('.ps__lens'), img = s.querySelector('.ps__pic img'); if (!lens || !img) return null;
-      if (!lens.children.length) for (var k = 0; k < 14; k++) lens.appendChild(document.createElement('i'));
-      return { s: s, lens: lens, img: img, slats: [].slice.call(lens.children), src: '' };
+    all = [].slice.call(document.querySelectorAll('[data-flute]')).map(function (el) {
+      var p = el.parentElement; while (p && !p.querySelector('img')) p = p.parentElement;
+      if (!p) return null;
+      var n = +el.getAttribute('data-flute') || 12;
+      if (el.children.length !== n) { el.textContent = ''; for (var k = 0; k < n; k++) el.appendChild(document.createElement('i')); }
+      return { el: el, scope: el.closest('section') || p, img: p.querySelector('img'), ribs: [].slice.call(el.children), src: '',
+               bend: +(el.getAttribute('data-flute-bend') || 14), mag: +(el.getAttribute('data-flute-mag') || 1.06) };
     }).filter(Boolean);
+    q();
+  }
+  function draw(x) {
+    var sr = x.scope.getBoundingClientRect(); if (sr.height === 0 || sr.bottom < 0 || sr.top > innerHeight) return false;
+    var src = x.img.currentSrc || x.img.src; if (!src) return false;
+    if (src !== x.src) { x.src = src; x.ribs.forEach(function (r) { r.style.backgroundImage = 'url("' + src + '")'; }); }
+    var ir = x.img.getBoundingClientRect(), ar = (x.img.naturalWidth / x.img.naturalHeight) || 1.5;
+    var bw = ir.width, bh = ir.width / ar; if (bh < ir.height) { bh = ir.height; bw = bh * ar; }
+    var op = (getComputedStyle(x.img).objectPosition || '50% 50%').split(' ').map(function (v) { return v.indexOf('%') > 0 ? parseFloat(v) / 100 : .5; });
+    var ox = ir.left + (ir.width - bw) * op[0], oy = ir.top + (ir.height - bh) * (op[1] == null ? .5 : op[1]);
+    var still = calm(), fr = x.el.getBoundingClientRect(), n = x.ribs.length, rw = fr.width / n, shift = still ? 0 : (sr.top / sr.height) * 26;
+    x.ribs.forEach(function (r, j) {
+      var b = Math.sin((j / n) * Math.PI * 2 + (still ? 0 : sr.top / 220)) * x.bend + shift;
+      r.style.backgroundSize = (bw * x.mag) + 'px ' + (bh * x.mag) + 'px';
+      r.style.backgroundPosition = (ox - (fr.left + j * rw) + b) + 'px ' + (oy - fr.top) + 'px';
+    });
+    return true;
+  }
+  function frame() {
+    queued = false; var any = false;
+    all.forEach(function (x) { if (draw(x)) any = true; });
+    // while a glass on screen can move by itself (a leaf sliding, a picture breathing), keep drawing; off screen or calm, stop
+    if (any && !calm()) { running = true; requestAnimationFrame(frame); } else running = false;
+  }
+  function q() { if (!queued && !running) { queued = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
+  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
+  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG') q(); }, true);
+  find();
+})();
+
+/* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page and the
+   door options, task a78e6208): B's breath, the room opening as you scroll in and the question arriving on the exhale; D2's
+   step through, the door growing from where the default draws it until it fills the screen. Found again after every swap. */
+(function () {
+  var breaths = [], throughs = [], queued = false;
+  var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  function find() {
     breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
       return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
     });
+    throughs = [].slice.call(document.querySelectorAll('.ps--through'));
     q();
-  }
-  function room(x) {
-    var r = x.s.getBoundingClientRect(); if (r.height === 0 || r.bottom < 0 || r.top > innerHeight) return;
-    var src = x.img.currentSrc || x.img.src;
-    if (src !== x.src) { x.src = src; x.slats.forEach(function (sl) { sl.style.backgroundImage = 'url("' + src + '")'; }); }
-    var lr = x.lens.getBoundingClientRect(), W = r.width, H = r.height, ar = (x.img.naturalWidth / x.img.naturalHeight) || 1.5;
-    var bw = W, bh = W / ar; if (bh < H) { bh = H; bw = H * ar; }
-    var ox = (W - bw) * .6, oy = (H - bh) * .5, shift = calm() ? 0 : (r.top / H) * 26, sw = lr.width / x.slats.length;
-    x.slats.forEach(function (sl, j) {
-      var bend = Math.sin((j / x.slats.length) * Math.PI * 2 + (calm() ? 0 : r.top / 220)) * 14 + shift;
-      sl.style.backgroundSize = (bw * 1.06) + 'px ' + (bh * 1.06) + 'px';
-      sl.style.backgroundPosition = (ox - (lr.left - r.left) - j * sw + bend) + 'px ' + (oy - (lr.top - r.top)) + 'px';
-    });
   }
   var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
   function breath(x) {
@@ -523,10 +565,33 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
     x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
   }
-  function frame() { queued = false; rooms.forEach(room); breaths.forEach(breath); }
+  // the door's box at the start is the default's (mgs.css #pause: on the column's right end, 86 % of the screen tall, clear of
+  // the "Book your visit" bar; on a phone centred under the words); at the end it stands wider than the screen is tall,
+  // centred, its arch above the top edge, so the room fills the view
+  function through(s) {
+    var r = s.getBoundingClientRect(), H = innerHeight, W = innerWidth, span = r.height - H; if (r.height === 0 || span <= 0) return;
+    var p = Math.min(1, Math.max(0, -r.top / span)), still = calm();
+    if (still) p = 0;
+    var e = ease(Math.min(1, p / .8)), cs = getComputedStyle(s), st = s.querySelector('.ps__stick'), g = st ? parseFloat(getComputedStyle(st).paddingLeft) || 0 : 0;
+    var w0, h0, l0, t0;
+    if (W >= 1024) {
+      var col = Math.min(W, 2000), bar = parseFloat(cs.getPropertyValue('--bar-half')) || 230;
+      w0 = Math.min(.86 * H * .625, col / 2 - g - bar); h0 = w0 * 1.6; l0 = (W + col) / 2 - g - w0; t0 = H - h0;
+    } else {
+      w0 = Math.min(.7 * W, 320, .42 * H * .75); h0 = w0 * 4 / 3; l0 = (W - w0) / 2; t0 = H - h0 - Math.max(.06 * H, 92);
+    }
+    var w1 = W >= 1024 ? Math.max(w0, H * 1.05, W * .86) : W, l1 = (W - w1) / 2, t1 = -w1 * .42, h1 = H - t1;   // 86 %: the widest the photo stays sharp on J's 6K window
+    var L = function (a, b) { return a + (b - a) * e; };
+    s.style.setProperty('--dl', L(l0, l1).toFixed(1) + 'px'); s.style.setProperty('--dt', L(t0, t1).toFixed(1) + 'px');
+    s.style.setProperty('--dw', L(w0, w1).toFixed(1) + 'px'); s.style.setProperty('--dh', L(h0, h1).toFixed(1) + 'px');
+    s.style.setProperty('--dr', (L(w0, w1) / 2).toFixed(1) + 'px');
+    s.style.setProperty('--wo', Math.max(0, 1 - p / .38).toFixed(3));                    // her words step aside as you walk in
+    s.style.setProperty('--co', Math.min(1, Math.max(0, (p - .7) / .2)).toFixed(3));      // the last line, once you stand in the room
+    s.classList.toggle('is-still', still);
+  }
+  function frame() { queued = false; breaths.forEach(breath); throughs.forEach(through); }
   function q() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
   addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
   document.addEventListener('om:swap', function () { setTimeout(find, 0); });
-  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG' && e.target.closest('.ps--room')) q(); }, true);
   find();
 })();

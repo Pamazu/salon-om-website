@@ -1714,57 +1714,78 @@ html[data-motion="calm"] .ln__dot {transform: none; transition: none;}
   .vo__foot .btn { width: 100%; }
 }
 
-/* the pause (M, G), task 2b1d1187 (J 17 Nov: "remove those green lines radiating from the image ... Remove the glow ...
-   the layout is still boring"; "I LOVE that out of focus coming in text animation"): an editorial spread (refs section 8,
-   Aman Spa, Kinfolk). The words hold the left: "Take a breath." large on its own line, the question smaller under it,
-   arriving one breath later with the same letters coming into focus; the picture runs off the right edge, one guest at
-   the basin seen through the doorway of her photo 17. It opens like that doorway, a thin upright line parting to the full
-   frame while it comes into focus, then breathes (10 s, 4 s in, 6 s out, after Apple's Mindfulness Breathe): scale and
-   light only, no rings, no glow. "You deserve this moment." is its caption. The motion switch's calm mode: all still. */
+/* the pause (M, G), task a78e6208 (J 19 Nov 08:01 Z: "I explicitly requested the one with the door, I requested to improve the
+   layout"; 18 Nov 18:22 Z, of the door between its words: "the animation of the text appearing is nice but the layout is
+   extremely boring"; 17 Nov: no rings, no glow; "I LOVE that out of focus coming in text animation"): THE DOOR, standing in
+   the room. A tall arched doorway rises from the section's floor at the right of the column, its square foot on the bottom
+   edge as a real door stands, the empty styling chair by the window seen through it; her words hold the left at the door's
+   height: "Take a breath." large, the question one breath later (the same letters coming into focus), "You deserve this
+   moment." last. The door opens like a doorway, a thin upright line parting, while the room comes into focus; as the page
+   scrolls the room moves a little slower than the door, as through a real opening; then it breathes (10 s, 4 s in, 6 s out,
+   after Apple's Mindfulness Breathe), scale and light only. The door keeps clear of the floating "Book your visit" bar at the
+   bottom centre (--bar-half: the bar's real half width, mgs.js), so nothing sits on the picture. Calm mode: all still. Phone: Designer 1's stacked door
+   (task a73569a9), which takes the height her words leave. */
 #pause .mani__ring { display: none; }
-#pause .mani__in { text-align: left; }
-#pause { --br-in: cubic-bezier(.45, 0, .55, 1); overflow: hidden; }
+#pause { --br-in: cubic-bezier(.45, 0, .55, 1); --door: 999px 999px 0 0; overflow: hidden; view-timeline: --pause-door block; }
 #pause .br { position: relative; margin: 0; }
-#pause .br__ph { position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: var(--r-photo) 0 0 var(--r-photo); transform: translateZ(0);
-  clip-path: inset(0 49.6% 0 49.6%); transition: clip-path 2.2s var(--io-strong) .15s; }
-#pause .br__ph img { width: 100%; height: 100%; object-fit: cover; display: block; filter: blur(14px) brightness(.9); transform: scale(1.06);
+#pause .br__ph { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: var(--door); transform: translateZ(0);
+  clip-path: inset(0 49.6% 0 49.6% round var(--door)); transition: clip-path 2.2s var(--io-strong) .15s; }
+#pause .br__zoom { position: absolute; inset: 0; transform: scale(1.06); filter: blur(14px) brightness(.9);
   transition: filter 2.4s var(--io) .35s, transform 3.2s var(--io) .15s; }
-#pause.is-active .br__ph, html[data-shot] #pause .br__ph { clip-path: inset(0 0 0 0); }
-#pause.is-active .br__ph img, html[data-shot] #pause .br__ph img { filter: blur(0) brightness(.96); transform: scale(1); }
+#pause .br__zoom img { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; object-position: 50% 50%; display: block; }
+#pause.is-active .br__ph, html[data-shot] #pause .br__ph { clip-path: inset(0 0 0 0 round var(--door)); }
+#pause.is-active .br__zoom, html[data-shot] #pause .br__zoom { filter: blur(0) brightness(.96); transform: scale(1); }
 #pause .br .ai-mark { opacity: 0; transition: opacity 1.2s var(--io) 2.2s; }
 #pause.is-active .br .ai-mark, html[data-shot] #pause .br .ai-mark { opacity: 1; }
+/* the room a little slower than its door while the page scrolls (the section's own view of the scroll; no script) */
+@supports (animation-timeline: view()) {
+  html:not([data-motion="calm"]):not([data-shot]) #pause .br__zoom img { animation: br-depth linear both; animation-timeline: --pause-door; animation-range: cover; }
+}
+@keyframes br-depth { from { transform: translate3d(0, -4.5%, 0); } to { transform: translate3d(0, 4.5%, 0); } }
 /* "Take a breath." on its own line: the engine writes one span per word; the first sentence's words lead (mgs.js marks them
    .is-head; task 7a3c013b, so any world's opening sentence leads, not a fixed three words) and an empty flex item breaks the
    line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
-#pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: none; margin: 0; text-wrap: wrap;
-  font-size: clamp(24px, 2.15vw, 40px); line-height: 1.2; }
+#pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: 23em; margin: 0; text-wrap: wrap;
+  font-size: clamp(21px, 1.75vw, 36px); line-height: 1.28; }
 #pause .mani__text::before { content: ""; flex-basis: 100%; height: 0; order: 1; }
 #pause .mani__text .wd { order: 2; }
-#pause .mani__text .wd.is-head { order: 0; font-size: 2.3em; line-height: 1.02; letter-spacing: -.015em; }
-#pause .mani__text .wd.is-head-end { margin-bottom: .32em; }
+#pause .mani__text .wd.is-head { order: 0; font-size: 3.3em; line-height: .98; letter-spacing: -.02em; }
+#pause .mani__text .wd.is-head-end { margin-bottom: .42em; }
+#pause .mani__text.has-long-head .wd.is-head { font-size: 2.15em; line-height: 1.04; }   /* a long opening sentence (Inner Work's) */
 #pause.is-active .mani__text .wd:not(.is-head) .l { animation-delay: calc(2.2s + var(--i) * var(--ink-gap, 18ms)); }
 #pause .lead { font-style: italic; }
-html:not([data-motion="calm"]) #pause.is-active .br__ph img { animation: br-photo 10s var(--br-in) 3.4s infinite; }
-html:not([data-motion="calm"])[data-shot] #pause .br__ph img { animation: none; }
-html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__ph img { transition: none; }
+html:not([data-motion="calm"]) #pause.is-active .br__zoom { animation: br-photo 10s var(--br-in) 3.4s infinite; }
+html:not([data-motion="calm"])[data-shot] #pause .br__zoom { animation: none; }
+html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__zoom { transition: none; }
 @keyframes br-photo { 0%, 100% { transform: scale(1); filter: blur(0) brightness(.96); } 40% { transform: scale(1.035); filter: blur(0) brightness(1.05); } }
 @media (min-width: 1024px) {
-  /* the words on the content column's left edge, the picture to the screen's right edge */
-  #pause .mani__in { max-width: none; padding-right: 0; padding-left: max(var(--gutter), calc((100% - 1560px) / 2 + var(--gutter)));
-    display: grid; grid-template-columns: minmax(0, 1fr) min(56vw, 99vh); grid-template-rows: 1fr auto auto 1fr auto; column-gap: clamp(40px, 4.5vw, 110px); align-items: center; }
-  /* the words centre on the picture; the caption hangs under it */
-  #pause .br { grid-column: 2; grid-row: 1 / 5; }
-  #pause .mani__label { grid-column: 1; grid-row: 2; align-self: end; margin: 0 0 var(--sp-4); }
+  /* a column up to 2000 px wide; the door on its right end, as tall as 86 % of the screen, but never wider than leaves the
+     bottom centre to the "Book your visit" bar; her words on the column's left edge */
+  #pause .mani__in { --col: min(100vw, 2000px); align-self: stretch; height: 100%; max-width: 2000px; padding: 0 var(--gutter);
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 1.1fr auto auto auto 1fr; column-gap: clamp(40px, 6vw, 160px); align-items: start; text-align: left; }
+  #pause .br { grid-column: 2; grid-row: 1 / -1; align-self: end; aspect-ratio: 5 / 8;
+    width: min(calc(86svh * .625), calc(var(--col) / 2 - var(--gutter) - var(--bar-half, 230px))); }
+  #pause .mani__label { grid-column: 1; grid-row: 2; margin: 0 0 var(--sp-4); }
   #pause .mani__text { grid-column: 1; grid-row: 3; }
-  #pause .lead { grid-column: 2; grid-row: 5; align-self: start; margin: var(--sp-3) 0 0 !important; font-size: clamp(20px, 1.6vw, 28px); }
+  #pause .lead { grid-column: 1; grid-row: 4; margin: clamp(28px, 5.5vh, 64px) 0 0 !important; font-size: clamp(20px, 1.5vw, 30px); }
 }
 @media (max-width: 1023px) {
-  #pause .mani__in { display: flex; flex-direction: column; align-items: flex-start; }
-  #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; font-size: 21px; } #pause .br { order: 3; } #pause .lead { order: 4; }
-  /* the picture runs to both edges of the phone */
-  #pause .br { width: 100vw; margin: var(--sp-5) 0 0 calc(50% - 50vw); }   /* edge to edge: the margin alone pulls it to the screen's edge */
-  #pause .br__ph { border-radius: 0; }
-  #pause .lead { margin: var(--sp-3) 0 0 !important; font-size: 20px; }
+  #pause { --door: 999px 999px var(--r-photo) var(--r-photo); }
+  #pause .mani__in { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #pause .mani__label { order: 1; margin-bottom: var(--sp-3); } #pause .mani__text { order: 2; justify-content: center; font-size: 20px; }
+  #pause .mani__text .wd.is-head { font-size: 2.9em; } #pause .mani__text.has-long-head .wd.is-head { font-size: 1.5em; }
+  /* the door takes the height her words leave, whatever their length (Designer 1, QA 19 Nov: Inner Work's four lines pushed
+     its caption under the floating "Book" bar at 390 x 844): the column is the screen's height less the header and the bar's
+     room, and the door grows into what is left, up to its usual size */
+  #pause .mani__in { height: 100svh; padding: calc(var(--hdr) + 3vh) var(--gutter) max(6vh, 92px); justify-content: center; }
+  #pause .br { order: 3; flex: 1 1 0; min-height: 150px; width: auto; aspect-ratio: 3 / 4; max-width: min(70vw, 320px); max-height: calc(min(70vw, 320px) * 4 / 3); margin: var(--sp-4) 0 var(--sp-3); }
+  #pause .lead { order: 4; margin: var(--sp-2) 0 0 !important; font-size: 20px; }
+}
+/* a short phone (Safari with its bars: 660-740 px): the first sentence a step smaller and the gaps closer, so the door keeps its
+   size beside longer words (Designer 1: Inner Work's four lines left it 116 px wide at 393 x 660) */
+@media (max-width: 1023px) and (max-height: 740px) {
+  #pause .mani__text .wd.is-head { font-size: 1.85em; }
+  #pause .br { margin: var(--sp-3) 0 var(--sp-2); }
 }
 
 
@@ -2074,33 +2095,60 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
    under the header, and fades with the picture */
 .ch__top .ai-mark { top: calc(var(--hdr-h, 64px) + 16px); bottom: auto; left: 16px; }
 
-/* ==== the pause's options (task e5325977): J switches them in the page (options.js, Shift+V); today's layout above stays
-   the default. Each is written on the section's chosen option (data-opt), so it gains Inner Work's twin like every rule here. */
-/* the door (Designer 1's a73569a9-r2, d6c2bea, J 18 Nov: "for take a breath I actually preferred the previous version with
-   the door"): her words either side of a tall arched door, all centred on it; the door opens like the doorway the picture is
-   seen through, a thin upright line parting, then breathes. Without the WebGL glass his Safari could not draw. */
-#pause[data-opt="door"] { --door: 999px 999px var(--r-photo) var(--r-photo); }
-#pause[data-opt="door"] .br__ph { width: 100%; height: 100%; aspect-ratio: auto; border-radius: var(--door); clip-path: inset(0 49.6% 0 49.6% round var(--door)); }
-#pause[data-opt="door"].is-active .br__ph, html[data-shot] #pause[data-opt="door"] .br__ph { clip-path: inset(0 0 0 0 round var(--door)); }
-#pause[data-opt="door"] .br__ph img { object-position: 44% 50%; }
-#pause[data-opt="door"] .mani__text { font-size: clamp(20px, 1.5vw, 34px); line-height: 1.25; }
+/* ==== the pause's options (task e5325977): J switches them in the page (options.js, Shift+V); the door above stays the
+   default (task a78e6208). Each is written on the section's chosen option (data-opt), so it gains Inner Work's twin like
+   every rule here. */
+/* the door, centred (Designer 1's a73569a9, 029cb38, J 18 Nov: "for take a breath I actually preferred the previous version
+   with the door"): her words either side of a tall arched door, all centred on it; it opens and breathes as the default.
+   Designer 2's QA fixes kept (0707c11: the words either side of the arch); on a phone it is the default's stacked door. */
 @media (min-width: 1024px) {
-  #pause[data-opt="door"] .mani__in { max-width: none; padding: 0 var(--gutter); grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    grid-template-rows: 1fr auto auto 1fr; column-gap: clamp(36px, 5vw, 128px); }
-  #pause[data-opt="door"] .br { grid-column: 2; grid-row: 1 / -1; justify-self: center; height: min(68vh, 740px); aspect-ratio: 3 / 4; }
-  /* the picture out of the flow, as in Designer 1's door (its .br__zoom): in the flow, its own width set the door's column
-     and squeezed her words into the side (seen 19 Nov, WebKit 1440) */
-  #pause[data-opt="door"] .br__ph img { position: absolute; inset: 0; }
-  #pause[data-opt="door"] .mani__label { justify-self: end; text-align: right; }
-  #pause[data-opt="door"] .mani__text { justify-self: end; justify-content: flex-end; text-align: right; }
+  #pause[data-opt="door"] { --door: 999px 999px var(--r-photo) var(--r-photo); }
+  #pause[data-opt="door"] .mani__in { align-self: center; height: auto; max-width: none; padding: 0 var(--gutter); grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr; column-gap: clamp(36px, 5vw, 128px); align-items: center; }
+  #pause[data-opt="door"] .br { grid-column: 2; grid-row: 1 / -1; align-self: center; justify-self: center; width: auto; height: min(68vh, 740px); aspect-ratio: 3 / 4; }
+  #pause[data-opt="door"] .mani__label { justify-self: end; align-self: end; text-align: right; }
+  #pause[data-opt="door"] .mani__text { justify-self: end; justify-content: flex-end; text-align: right; max-width: 13em; font-size: clamp(20px, 1.5vw, 34px); line-height: 1.25; }
+  #pause[data-opt="door"] .mani__text .wd.is-head { font-size: 2.3em; }
   #pause[data-opt="door"] .lead { grid-column: 3; grid-row: 2 / 4; align-self: center; margin: 0 !important; max-width: 14em; font-size: clamp(20px, 1.6vw, 34px); }
 }
+
+/* D1 · The glass door (task a78e6208): the default door behind two leaves of fluted glass (the shared fluted-glass block,
+   mgs.js data-flute), the room soft and ribbed through them; once the door has opened and the heading is in, the leaves slide
+   apart into the wall like a pair of glass doors and the room comes clear; then it breathes as the default. Calm: open, still. */
+#pause[data-opt="glass"] .br__glass { position: absolute; inset: 0; z-index: 1; display: flex; pointer-events: none; }
+#pause[data-opt="glass"] .br__leaf { flex: 1; display: flex; overflow: hidden; background: rgba(250, 244, 234, .10);
+  transition: transform 2.8s var(--io-strong) 2.6s; }
+#pause[data-opt="glass"] .br__leaf > i { flex: 1; background-repeat: no-repeat; filter: blur(3.5px) brightness(1.04) saturate(.82);
+  box-shadow: inset 5px 0 8px -5px rgba(255, 248, 236, .42), inset -6px 0 10px -5px rgba(0, 0, 0, .26); }
+#pause[data-opt="glass"] .br__leaf + .br__leaf { box-shadow: inset 1px 0 0 rgba(255, 248, 236, .28); }
+#pause[data-opt="glass"].is-active .br__leaf:first-child { transform: translate3d(-101%, 0, 0); }
+#pause[data-opt="glass"].is-active .br__leaf:last-child { transform: translate3d(101%, 0, 0); }
+html[data-motion="calm"] #pause[data-opt="glass"] .br__glass { display: none; }
+
+/* D2 · Step through (task a78e6208), on the dark ground of the other scenes: taller than the screen, so it scrolls freely inside and snaps only at its ends (as B);
+   the door starts where the default draws it and grows with the scroll (mgs.js sets --dl/--dt/--dw/--dh/--dr) until the room
+   fills the view; her words step aside (--wo) and the last line arrives on a strip of fluted glass at the door's foot (--co).
+   Calm: the door stays where the default draws it, her words and the last line beside it. */
+.s.ps--through { height: 260vh; height: 260svh; overflow: clip !important; scroll-snap-stop: normal; }
+.ps--through { background: var(--umber); color: var(--ivory); --dl: 60vw; --dt: 14vh; --dw: 30vw; --dh: 86vh; --dr: 15vw; --wo: 1; --co: 0; }
+.ps--through .ps__stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; padding: 0 var(--gutter); }
+.ps--through .ps__door { position: absolute; z-index: 1; left: var(--dl); top: var(--dt); width: var(--dw); height: var(--dh); overflow: hidden;
+  border-radius: var(--dr) var(--dr) 0 0; transform: translateZ(0); }
+.ps--through .ps__pic { position: absolute; inset: 0; }
+.ps--through .ps__pic img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%; display: block; }
+.ps--through .ps__strip { position: absolute; left: 0; right: 0; bottom: max(9vh, 104px); height: min(20%, 190px); display: flex; opacity: var(--co); }
+.ps--through .ps__strip > i { flex: 1; background-repeat: no-repeat; filter: blur(6px) brightness(.55) saturate(.85);
+  box-shadow: inset 6px 0 10px -6px rgba(255, 240, 220, .22), inset -8px 0 12px -6px rgba(0, 0, 0, .45); }
+.ps--through .ps__coda { position: absolute; left: 0; right: 0; bottom: max(9vh, 104px); height: min(20%, 190px); margin: 0; display: grid; place-items: center;
+  color: #F5EEE4; opacity: var(--co); text-shadow: 0 1px 18px rgba(21, 16, 12, .5); }
+.ps--through .ps__words { position: absolute; z-index: 2; left: max(var(--gutter), calc((100% - 2000px) / 2 + var(--gutter))); top: 50%; display: grid; gap: 22px;
+  max-width: min(44vw, 760px); transform: translate3d(calc((1 - var(--wo)) * -6vw), -50%, 0); opacity: var(--wo); }
+.ps--through .ps__last { display: none; margin: 0; font: 300 italic clamp(20px, 1.5vw, 30px)/1.3 var(--serif); }
+.ps--through.is-still .ps__last { display: block; }
+.ps--through.is-still .ps__strip, .ps--through.is-still .ps__coda { display: none; }
 @media (max-width: 1023px) {
-  #pause[data-opt="door"] .mani__in { align-items: center; text-align: center; }
-  #pause[data-opt="door"] .mani__text { justify-content: center; font-size: 20px; }
-  #pause[data-opt="door"] .br { width: min(70vw, 320px); aspect-ratio: 3 / 4; margin: var(--sp-5) 0 var(--sp-3); }
-  #pause[data-opt="door"] .br__ph { border-radius: var(--door); }
-  #pause[data-opt="door"] .lead { margin: var(--sp-2) 0 0 !important; }
+  .ps--through .ps__words { left: var(--gutter); right: var(--gutter); top: calc(var(--hdr) + 3vh); max-width: none; justify-items: center; text-align: center; transform: translate3d(0, calc((1 - var(--wo)) * -4vh), 0); }
+  .ps--through .ps__head { --ps-head: clamp(44px, 12vw, 64px); }
 }
 
 /* A, B, C: Designer 3's three layouts (task a78e6208, salon-om-pause-options r1), drawn by mgs_sections.pause_scene in the
@@ -2109,6 +2157,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
 .ps.ps--long { --ps-head: clamp(40px, 4.6vw, 76px); }
 .ps [data-write="letters"] .l { display: inline-block; opacity: 0; filter: blur(var(--m-blur)); transform: translate3d(0, .22em, 0); }
 .ps.is-active [data-write="letters"] .l { animation: ink 1.5s var(--io) forwards; animation-delay: calc(var(--at, .3s) + var(--i) * 20ms); }
+.ps [data-write="letters"] .wd { display: inline-block; white-space: nowrap; }   /* a word never breaks between its letters (seen 19 Nov: "ca / red for?") */
 html[data-shot] .ps [data-write] .l, html[data-motion="calm"] .ps [data-write] .l { opacity: 1 !important; filter: none !important; transform: none !important; animation: none !important; }
 .ps__head { margin: 0; font: 300 var(--ps-head)/.98 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
 .ps__sub { margin: 0; font: 300 var(--ps-sub)/1.3 var(--serif); color: var(--ivory-soft); }
@@ -2523,7 +2572,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="a7fac8c23455";</script>
+<script>window.OM_BUILD="5d8a1da79fcb";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -3688,9 +3737,20 @@ function pauseHead() {      // again after the option switcher swaps the pause b
   [].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
     var w = t.querySelectorAll('.wd');
     for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
+    t.classList.toggle('has-long-head', i > 3);      // task a78e6208: a long opening sentence (Inner Work's) is set a size smaller
   });
 }
 pauseHead(); document.addEventListener('om:swap', pauseHead);
+/* task a78e6208: what keeps clear of the floating booking bar (.wdoor; the pause's door, nothing sits on a picture) reads the
+   bar's real half width, plus a 40 px gap, as --bar-half on <html>: each world's bar has its own words and width */
+(function () {
+  var bars = document.querySelectorAll('.wdoor'); if (!bars.length || !window.ResizeObserver) return;
+  var set = function () {
+    for (var k = 0; k < bars.length; k++) { var r = bars[k].getBoundingClientRect();
+      if (r.width > 0) { document.documentElement.style.setProperty('--bar-half', Math.ceil(r.width / 2 + 40) + 'px'); return; } }
+  };
+  var ro = new ResizeObserver(set); [].forEach.call(bars, function (b) { ro.observe(b); }); set();
+})();
 [].forEach.call(document.querySelectorAll('[data-quotes]'), function (q) { var it = q.querySelectorAll('.q'); if (it.length === 1) it[0].classList.add('is-on'); });
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
@@ -3997,35 +4057,66 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
 })();
 
-/* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page, task
-   a78e6208): A's fluted glass, slats of the section's own picture each shifted a little, sliding as you scroll; B's breath,
-   the room opening as you scroll in and the question arriving on the exhale. Found again after every swap. */
+/* the fluted glass (one block; task a78e6208): an element with data-flute="<ribs>" over a picture gets that many ribs, each the
+   same picture, shifted a little and softened, locked to the picture behind it as the glass slides and the page scrolls. The
+   picture is the first <img> of the nearest ancestor holding one; data-flute-bend sets how far a rib bends it (px, 14) and
+   data-flute-mag how much it magnifies (1.06). No WebGL (J's desktop Safari, 18 Nov). Used by A's strip (.ps__lens), the
+   glass door's two leaves and Step through's strip. Draws only while on screen; calm motion holds it still. */
 (function () {
-  var rooms = [], breaths = [], queued = false;
+  var all = [], queued = false, running = false;
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
-    rooms = [].slice.call(document.querySelectorAll('.ps--room')).map(function (s) {
-      var lens = s.querySelector('.ps__lens'), img = s.querySelector('.ps__pic img'); if (!lens || !img) return null;
-      if (!lens.children.length) for (var k = 0; k < 14; k++) lens.appendChild(document.createElement('i'));
-      return { s: s, lens: lens, img: img, slats: [].slice.call(lens.children), src: '' };
+    all = [].slice.call(document.querySelectorAll('[data-flute]')).map(function (el) {
+      var p = el.parentElement; while (p && !p.querySelector('img')) p = p.parentElement;
+      if (!p) return null;
+      var n = +el.getAttribute('data-flute') || 12;
+      if (el.children.length !== n) { el.textContent = ''; for (var k = 0; k < n; k++) el.appendChild(document.createElement('i')); }
+      return { el: el, scope: el.closest('section') || p, img: p.querySelector('img'), ribs: [].slice.call(el.children), src: '',
+               bend: +(el.getAttribute('data-flute-bend') || 14), mag: +(el.getAttribute('data-flute-mag') || 1.06) };
     }).filter(Boolean);
+    q();
+  }
+  function draw(x) {
+    var sr = x.scope.getBoundingClientRect(); if (sr.height === 0 || sr.bottom < 0 || sr.top > innerHeight) return false;
+    var src = x.img.currentSrc || x.img.src; if (!src) return false;
+    if (src !== x.src) { x.src = src; x.ribs.forEach(function (r) { r.style.backgroundImage = 'url("' + src + '")'; }); }
+    var ir = x.img.getBoundingClientRect(), ar = (x.img.naturalWidth / x.img.naturalHeight) || 1.5;
+    var bw = ir.width, bh = ir.width / ar; if (bh < ir.height) { bh = ir.height; bw = bh * ar; }
+    var op = (getComputedStyle(x.img).objectPosition || '50% 50%').split(' ').map(function (v) { return v.indexOf('%') > 0 ? parseFloat(v) / 100 : .5; });
+    var ox = ir.left + (ir.width - bw) * op[0], oy = ir.top + (ir.height - bh) * (op[1] == null ? .5 : op[1]);
+    var still = calm(), fr = x.el.getBoundingClientRect(), n = x.ribs.length, rw = fr.width / n, shift = still ? 0 : (sr.top / sr.height) * 26;
+    x.ribs.forEach(function (r, j) {
+      var b = Math.sin((j / n) * Math.PI * 2 + (still ? 0 : sr.top / 220)) * x.bend + shift;
+      r.style.backgroundSize = (bw * x.mag) + 'px ' + (bh * x.mag) + 'px';
+      r.style.backgroundPosition = (ox - (fr.left + j * rw) + b) + 'px ' + (oy - fr.top) + 'px';
+    });
+    return true;
+  }
+  function frame() {
+    queued = false; var any = false;
+    all.forEach(function (x) { if (draw(x)) any = true; });
+    // while a glass on screen can move by itself (a leaf sliding, a picture breathing), keep drawing; off screen or calm, stop
+    if (any && !calm()) { running = true; requestAnimationFrame(frame); } else running = false;
+  }
+  function q() { if (!queued && !running) { queued = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
+  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
+  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG') q(); }, true);
+  find();
+})();
+
+/* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page and the
+   door options, task a78e6208): B's breath, the room opening as you scroll in and the question arriving on the exhale; D2's
+   step through, the door growing from where the default draws it until it fills the screen. Found again after every swap. */
+(function () {
+  var breaths = [], throughs = [], queued = false;
+  var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  function find() {
     breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
       return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
     });
+    throughs = [].slice.call(document.querySelectorAll('.ps--through'));
     q();
-  }
-  function room(x) {
-    var r = x.s.getBoundingClientRect(); if (r.height === 0 || r.bottom < 0 || r.top > innerHeight) return;
-    var src = x.img.currentSrc || x.img.src;
-    if (src !== x.src) { x.src = src; x.slats.forEach(function (sl) { sl.style.backgroundImage = 'url("' + src + '")'; }); }
-    var lr = x.lens.getBoundingClientRect(), W = r.width, H = r.height, ar = (x.img.naturalWidth / x.img.naturalHeight) || 1.5;
-    var bw = W, bh = W / ar; if (bh < H) { bh = H; bw = H * ar; }
-    var ox = (W - bw) * .6, oy = (H - bh) * .5, shift = calm() ? 0 : (r.top / H) * 26, sw = lr.width / x.slats.length;
-    x.slats.forEach(function (sl, j) {
-      var bend = Math.sin((j / x.slats.length) * Math.PI * 2 + (calm() ? 0 : r.top / 220)) * 14 + shift;
-      sl.style.backgroundSize = (bw * 1.06) + 'px ' + (bh * 1.06) + 'px';
-      sl.style.backgroundPosition = (ox - (lr.left - r.left) - j * sw + bend) + 'px ' + (oy - (lr.top - r.top)) + 'px';
-    });
   }
   var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
   function breath(x) {
@@ -4041,11 +4132,34 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
     x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
   }
-  function frame() { queued = false; rooms.forEach(room); breaths.forEach(breath); }
+  // the door's box at the start is the default's (mgs.css #pause: on the column's right end, 86 % of the screen tall, clear of
+  // the "Book your visit" bar; on a phone centred under the words); at the end it stands wider than the screen is tall,
+  // centred, its arch above the top edge, so the room fills the view
+  function through(s) {
+    var r = s.getBoundingClientRect(), H = innerHeight, W = innerWidth, span = r.height - H; if (r.height === 0 || span <= 0) return;
+    var p = Math.min(1, Math.max(0, -r.top / span)), still = calm();
+    if (still) p = 0;
+    var e = ease(Math.min(1, p / .8)), cs = getComputedStyle(s), st = s.querySelector('.ps__stick'), g = st ? parseFloat(getComputedStyle(st).paddingLeft) || 0 : 0;
+    var w0, h0, l0, t0;
+    if (W >= 1024) {
+      var col = Math.min(W, 2000), bar = parseFloat(cs.getPropertyValue('--bar-half')) || 230;
+      w0 = Math.min(.86 * H * .625, col / 2 - g - bar); h0 = w0 * 1.6; l0 = (W + col) / 2 - g - w0; t0 = H - h0;
+    } else {
+      w0 = Math.min(.7 * W, 320, .42 * H * .75); h0 = w0 * 4 / 3; l0 = (W - w0) / 2; t0 = H - h0 - Math.max(.06 * H, 92);
+    }
+    var w1 = W >= 1024 ? Math.max(w0, H * 1.05, W * .86) : W, l1 = (W - w1) / 2, t1 = -w1 * .42, h1 = H - t1;   // 86 %: the widest the photo stays sharp on J's 6K window
+    var L = function (a, b) { return a + (b - a) * e; };
+    s.style.setProperty('--dl', L(l0, l1).toFixed(1) + 'px'); s.style.setProperty('--dt', L(t0, t1).toFixed(1) + 'px');
+    s.style.setProperty('--dw', L(w0, w1).toFixed(1) + 'px'); s.style.setProperty('--dh', L(h0, h1).toFixed(1) + 'px');
+    s.style.setProperty('--dr', (L(w0, w1) / 2).toFixed(1) + 'px');
+    s.style.setProperty('--wo', Math.max(0, 1 - p / .38).toFixed(3));                    // her words step aside as you walk in
+    s.style.setProperty('--co', Math.min(1, Math.max(0, (p - .7) / .2)).toFixed(3));      // the last line, once you stand in the room
+    s.classList.toggle('is-still', still);
+  }
+  function frame() { queued = false; breaths.forEach(breath); throughs.forEach(through); }
   function q() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
   addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
   document.addEventListener('om:swap', function () { setTimeout(find, 0); });
-  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG' && e.target.closest('.ps--room')) q(); }, true);
   find();
 })();
 </script>

@@ -116,6 +116,11 @@ AI_MADE = 'Made with AI'   # the meadow: a generated person not made from her ph
 # the pause (task a8c429a3): the cleaned basins wall (step 02's master, J's 25 Oct look) at photo 6's low angle, one generated guest
 # resting at the basin below the poster, legs out of frame (no feet on the footstool), light graded in code; was photo 17 raw
 PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster'
+# the pause is the door again (task a78e6208; J 19 Nov 08:01 Z: "I explicitly requested the one with the door", 08:03 Z: "I need the
+# one I approved"): the empty styling chair by the window, the salon's photo 4 cleaned as the client asked (no bin, no hair
+# vacuum: photo_sources, clean_master.py 4). A real photo with clutter removed, as the colour bar and the stations: no AI label
+PAUSE_DOOR = 'real-chair-window.webp'
+PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on the leather'
 
 
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:

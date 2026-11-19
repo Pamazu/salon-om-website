@@ -124,7 +124,7 @@ HERO_LINE = M.SALON_OPEN['title'] + ' An Avila Beach salon. ' + draft(D['proof']
 
 SALON = [
   _with(salon_hero(proof=True, line=HERO_LINE), rot=draft(G['rot_salon'])),
-  ('tease', dict(id='pause', label='The pause', tone='dark', accents=['moment.'], breath='om-pause-guest.webp', breath_alt=PAUSE_ALT, breath_mark=S.ai_mark(AI_GUEST), text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='4.4s',
+  ('tease', dict(id='pause', label='The pause', tone='dark', accents=['moment.'], breath=PAUSE_DOOR, breath_alt=PAUSE_DOOR_ALT, text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='4.4s',
                  options=S.PAUSE_OPTIONS, option_label=S.PAUSE_LIVE_LABEL,
                  )),                                 # round 4: G.A.'s words move to Breathe (step 04), their proof
   # round 5 (J 13 Nov; CEO MA: Hook, then Proof early): two guests' words and the Aveda line, all from her copy; the
