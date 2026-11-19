@@ -10,6 +10,17 @@
   "measure": 0.782,
   "room": "6-shampoo-basins-25oct.jpg"
  },
+ "om-pause-exhale.webp": {
+  "bar": 0.6,
+  "files": {
+   "img/hd/om-pause-exhale-1248.webp": "c655e0ba4aab6311e939afb02d5655bc9caaefaaf57fb2b3d3386e92d84438f2",
+   "img/hd/om-pause-exhale-640.webp": "b631856783a4dd8acd7297f1ee450d36464b632cb3d0d62b0c8045de3be8ba2c",
+   "img/hd/om-pause-exhale-960.webp": "4e2d768af9890c8f9e64a399912ec538e82a735fa2d57dc0bc63673a432d9666",
+   "img/om-pause-exhale.webp": "78986932de407c522d2db249c3a2dd5401f0b30f0f8a0cf2ac44ad1b0bbbe775"
+  },
+  "measure": 0.682,
+  "room": "6-shampoo-basins-25oct.jpg"
+ },
  "om-pause-rest.webp": {
   "bar": 0.6,
   "files": {

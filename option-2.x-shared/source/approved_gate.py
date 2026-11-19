@@ -255,7 +255,7 @@ def _base_photo(PS, name):
 
 def _generated(PS, name):
     src = PS.SOURCE.get(name) or ''
-    return src.startswith('m:') and src[2:] in PS.BUILT_ON and src[2:] not in PS.CLEANED
+    return src.startswith('m:') and src[2:] in PS.BUILT_ON and src[2:] not in PS.CLEANED and src[2:] not in getattr(PS, 'GRADED', ())
 
 
 def row7(sections, letter, site):      # menu pictures: no two from the same corner; a generated guest is labelled, never a real result

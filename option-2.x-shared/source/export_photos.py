@@ -59,9 +59,17 @@ LADDER = [640, 960, 1280, 1920, 2560, 3840, 5120, 6400, 8192]
 DPR = {'w3230': 2, 'w1440': 2, 'w390': 3}
 
 
+def candidates():
+    """a picture's Shift+V candidate -> the picture it stands in for (mgs_parts.PICTURE_OPTIONS, task 279db527)"""
+    import mgs_parts
+    return {o['img']: name for name, p in mgs_parts.PICTURE_OPTIONS.items() for o in p.get('options') or []}
+
+
 def needed(name):
-    """the widest file the pages need: the widest drawn CSS width on any page and viewport, times that screen's ratio"""
+    """the widest file the pages need: the widest drawn CSS width on any page and viewport, times that screen's ratio; a
+    candidate is drawn at the size of the picture it stands in for"""
     sizes = json.load(open(V + 'photo_sizes.json'))
+    name = candidates().get(name, name) if name not in {n for v in sizes.values() for n in v} else name
     # a section's other options count too (o3230 ...: sharpness.mjs measures each option the switcher offers, task a78e6208)
     return max((e[p + k[1:]] * DPR[k] for v in sizes.values() for n, e in v.items() if n == name for k in DPR for p in 'wo' if p + k[1:] in e), default=0)
 
@@ -105,7 +113,7 @@ def export(name, dry=False):
     if not p:
         return f'{name}: no master yet ({SOURCE[name]})'
     m = Image.open(p)
-    if not os.path.exists(IMG + name) and (name in NEW or name.startswith('om-')):
+    if not os.path.exists(IMG + name) and (name in NEW or name.startswith('om-') or name in candidates()):
         # a new picture only M, G and S show (a film's still, a new generated picture): its master makes its 1280 fallback first
         m.convert('RGB').resize((1280, round(m.height * 1280 / m.width)), Image.LANCZOS).save(IMG + name, quality=84, method=6)
     ref = Image.open(IMG + name)

@@ -90,7 +90,7 @@ class Basins(unittest.TestCase):
 
     def test_green_every_basins_picture_today_is_built_on_his_picture(self):
         self.assertEqual(P.basins_problems(), [])
-        self.assertEqual(set(P.basins()), {'real-shampoo-basins.webp', 'om-menu-blonding.webp', 'om-pause-rest.webp'})
+        self.assertEqual(set(P.basins()), {'real-shampoo-basins.webp', 'om-menu-blonding.webp', 'om-pause-rest.webp', 'om-pause-exhale.webp'})
         with self.assertRaises(SystemExit):                       # a retired basins picture back on a page stops the build
             P.check_page('<img src="img/real-shampoo-basins.webp"><img src="img/real-basins-poster.webp">')
 

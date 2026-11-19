@@ -19,6 +19,25 @@
   5120,
   6783
  ],
+ "iw-pause-coach-fire.webp": [
+  640,
+  960,
+  1280,
+  1920,
+  2560,
+  3840,
+  5100
+ ],
+ "iw-pause-fire-tea.webp": [
+  640,
+  960,
+  1248
+ ],
+ "iw-pause-shelves.webp": [
+  640,
+  960,
+  1248
+ ],
  "meadow.webp": [
   640,
   960,
@@ -61,6 +80,11 @@
   960,
   1171
  ],
+ "om-pause-exhale.webp": [
+  640,
+  960,
+  1248
+ ],
  "om-pause-guest.webp": [
   640,
   960,
@@ -77,6 +101,11 @@
   2560,
   3840,
   4900
+ ],
+ "om-pause-window.webp": [
+  640,
+  960,
+  1248
  ],
  "real-aveda-shelves.webp": [
   640,
