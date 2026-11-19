@@ -16,7 +16,17 @@ res = {'started': time.strftime('%Y-%m-%dT%H:%M:%S'), 'r3': R3, 'r5': R5, 'pages
 res['front'] = osa('tell application "System Events" to get name of first process whose frontmost is true')
 stamp = int(time.time())
 first = f'{R3}?n={stamp}' if R3 != '-' else f'{R5}?only=A&n={stamp}'
-sid = osa(f'tell application "Safari"\nactivate\nmake new document with properties {{URL:"{first}"}}\nreturn id of front window\nend tell')
+# Only ever the window this run opens (19 Nov 05:08, on the Studio: "id of front window" after "make new document" named
+# another session's 31-tab window, which the run then navigated and closed). The ids before and after are compared; no
+# single new window = the run stops here, touching nothing.
+ids = lambda: set(x for x in osa('tell application "Safari" to get id of every window').replace(' ', '').split(',') if x.isdigit())
+before = ids()
+osa(f'tell application "Safari"\nactivate\nmake new document with properties {{URL:"{first}"}}\nend tell')
+time.sleep(1.0); new = ids() - before
+if len(new) != 1:
+    res['error'] = f'could not tell which window this run opened (new ids: {sorted(new)}); nothing was touched'
+    json.dump(res, open(os.path.join(OUT, 'walk.json'), 'w'), indent=1); log(res['error']); sys.exit(2)
+sid = new.pop()
 res['window'] = sid
 def setb(w):
     b = osa(f'tell application "Safari" to get bounds of (first window whose id is {sid})').replace(' ', '').split(',')
@@ -31,6 +41,24 @@ def report():
     out = osa(f'tell application "Safari" to do JavaScript {json.dumps(js)} in current tab of (first window whose id is {sid})')
     try: return json.loads(out)
     except Exception: return out[:500]
+def seen(id, wait=8.0):
+    # r7 run (19 Nov 05:06): the window landed in Stage Manager's side strip; Safari judged the page unseen and never drew it,
+    # so every frame was a skewed thumbnail. No frame is taken until the page itself says it is visible and drawing: the
+    # window is raised (to the stage) and the page asked again, for up to `wait` s; if it never is, the option is skipped.
+    js = 'JSON.stringify({v:document.visibilityState,f:window.__lens?(window.__lens().filter(function(s){return s.id==="' + id + '"})[0]||{}).frames:null})'
+    t0 = time.time(); last = None; f0 = None
+    while time.time() - t0 < wait:
+        out = osa(f'tell application "Safari" to do JavaScript {json.dumps(js)} in current tab of (first window whose id is {sid})')
+        try: last = json.loads(out)
+        except Exception: last = {'raw': out[:120]}
+        if last.get('v') == 'visible' and isinstance(last.get('f'), int):
+            if f0 is None: f0 = last['f']
+            elif last['f'] > f0: return True, last
+        else:
+            osa(f'tell application "Safari"\nactivate\nset index of (first window whose id is {sid}) to 1\nend tell')
+            osa('tell application "System Events" to set frontmost of process "Safari" to true')
+        time.sleep(0.4)
+    return False, last
 try:
     res['bounds'] = setb(0); log(f'window {sid} bounds {res["bounds"]} (J\'s default size)')
     if R3 != '-':                                   # '-' = no older round to look at this time
@@ -39,7 +67,10 @@ try:
     for size in ('own', 1440):
         if size == 1440: res['bounds1440'] = setb(1440); log(f'bounds {res["bounds1440"]}')
         for id in os.environ.get('IDS', 'ABCDE'):
-            go(f'{R5}?only={id}&n={stamp}'); time.sleep(2.5 if size == 'own' else 1.6)
+            go(f'{R5}?only={id}&n={stamp}'); time.sleep(1.5 if size == 'own' else 1.0)
+            ok, st = seen(id)
+            if not ok:
+                res['pages'].append({'page': f'r5-{size}-{id}', 'skipped': 'the page never reported itself visible and drawing', 'state': st}); log(f'r5 {size} {id} SKIPPED, not seen: {st}'); continue
             t0 = time.time(); n = 5 if size == 'own' else 2; at = []
             for i in range(n):
                 time.sleep(max(0, i * 0.5 - (time.time() - t0))); at.append(round(time.time() - t0, 2)); cap(f'r5-{size}-{id}-{i}')
