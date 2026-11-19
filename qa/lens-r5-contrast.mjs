@@ -8,12 +8,12 @@ const url = process.argv[2], WS = (process.argv[3] || '1440,390').split(',').map
 const b = await webkit.launch(); const worst = {};
 for (const W of WS) {
   const ph = W < 700, ctx = await b.newContext({ viewport: { width: W, height: ph ? 844 : 900 }, deviceScaleFactor: 1, isMobile: ph, hasTouch: ph });
-  for (const id of ['A', 'B', 'C', 'D', 'E']) {
+  for (const id of (process.env.IDS || 'ABCDE').split('')) {
     const p = await ctx.newPage(); await p.goto(`${url}?only=${id}`); await p.waitForTimeout(1500);
     const rows = {};
     for (let k = 0; k < 12; k++) {
       const t = k * 0.55; await p.evaluate((t) => { window.__lensT = t; }, t); await p.waitForTimeout(220);
-      await p.evaluate(() => document.querySelectorAll('.v.on .words').forEach((w) => (w.style.visibility = 'hidden'))); await p.waitForTimeout(120);
+      await p.evaluate(() => document.querySelectorAll('.v.on .words, .v.on .words *').forEach((w) => w.style.setProperty('color', 'transparent', 'important'))); await p.waitForTimeout(120);   // the letters go, any glow around them stays: what is really behind each letter
       const png = await p.screenshot({ type: 'png' });
       const r = await p.evaluate(async (dataUrl) => {
         const img = new Image(); img.src = dataUrl; await img.decode();
@@ -22,7 +22,7 @@ for (const W of WS) {
         const L = (r, gg, bb) => .2126 * lin(r) + .7152 * lin(gg) + .0722 * lin(bb); const out = [];
         for (const e of document.querySelectorAll('.v.on .words .eyebrow, .v.on .words h2, .v.on .words dt, .v.on .words dd')) {
           const cs = getComputedStyle(e), fs = parseFloat(cs.fontSize), large = fs >= 24 || (fs >= 18.66 && +cs.fontWeight >= 700);
-          const col = cs.color.match(/[\d.]+/g).map(Number), li = L(col[0], col[1], col[2]);
+          const col = [23, 17, 13], li = L(col[0], col[1], col[2]);   // the ink, #17110D (its colour is hidden while measuring)
           const rg = document.createRange(); rg.selectNodeContents(e);
           for (const q of rg.getClientRects()) {
             const x = Math.max(0, Math.round(q.left)), y = Math.max(0, Math.round(q.top)), w = Math.min(c.width - x, Math.round(q.width)), h = Math.min(c.height - y, Math.round(q.height));
@@ -34,7 +34,7 @@ for (const W of WS) {
         return out;
       }, 'data:image/png;base64,' + png.toString('base64'));
       for (const o of r) { const key = o.kind; if (!rows[key] || o.ratio < rows[key].ratio) rows[key] = { ...o, t }; }
-      await p.evaluate(() => document.querySelectorAll('.v.on .words').forEach((w) => (w.style.visibility = '')));
+      await p.evaluate(() => document.querySelectorAll('.v.on .words, .v.on .words *').forEach((w) => w.style.removeProperty('color')));
     }
     const line = Object.values(rows).map((o) => `${o.kind}${o.large ? '(large)' : ''} ${o.ratio.toFixed(2)}${o.ratio >= (o.large ? 3 : 4.5) ? '' : ' FAIL'} @${o.t.toFixed(2)}s`).join(' · ');
     const pass = Object.values(rows).every((o) => o.ratio >= (o.large ? 3 : 4.5));

@@ -38,7 +38,7 @@ try:
         r = report(); res['pages'].append({'page': 'r3', 'report': r}); log('r3 ' + json.dumps(r)[:600])
     for size in ('own', 1440):
         if size == 1440: res['bounds1440'] = setb(1440); log(f'bounds {res["bounds1440"]}')
-        for id in 'ABCDE':
+        for id in os.environ.get('IDS', 'ABCDE'):
             go(f'{R5}?only={id}&n={stamp}'); time.sleep(2.5 if size == 'own' else 1.6)
             t0 = time.time(); n = 5 if size == 'own' else 2; at = []
             for i in range(n):
