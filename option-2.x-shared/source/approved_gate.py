@@ -16,6 +16,10 @@ A failed row refuses the deploy unless the deployed commit (HEAD) quotes J's own
 
     J names row 16: "<his words, at least 15 characters>"
 
+or the fault is already on the live pages and qa/gate-known.json names the open task that fixes it (row, pages, a piece of the
+gate's own words for it, the task's full id): then it is held, printed on every run with its task, and stops holding the day that
+task closes; a line whose fault is gone is named so it is taken out. A new fault, or one coming back, is never held.
+
     python3 option-2.x-shared/source/approved_gate.py [m g s]        # default: all three; exit 1 = refused
 To lift this into another product: replace ROWS, MEASURED, QA_ONLY and the list's path.
 """
@@ -432,6 +436,9 @@ QA_PART = {
     18: 'composition and no visible crop',
 }
 
+KNOWN = os.path.join(ROOT, 'qa', 'gate-known.json')
+TASK_ID = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
+CLOSED = {'done', 'cancelled', 'canceled', 'archived', 'closed'}
 WAIVER = re.compile(r'^J names row (\d+): "(.{15,})"\s*$', re.M)
 
 
@@ -450,6 +457,56 @@ def check(pages, site=SITE):
             if letter in on:
                 off.setdefault(n, []).extend(f'{letter.upper()}: {m}' for m in fn(sections, letter, site))
     return {n: m for n, m in off.items() if m}
+
+
+def known_list(path=KNOWN):
+    """the faults already on the live pages, each with the open task that fixes it: [] with no file, None when it cannot be read"""
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, encoding='utf-8') as f:
+            items = json.load(f)
+    except (OSError, ValueError):
+        return None
+    return items if isinstance(items, list) else None
+
+
+def task_status(tid):
+    """the task's status in StoryMind, or None when StoryMind does not answer"""
+    if not shutil.which('storymind'):
+        return None
+    try:
+        r = subprocess.run(['storymind', 'task', 'get', tid], capture_output=True, text=True, timeout=20)
+        return json.loads(r.stdout).get('status') if r.returncode == 0 else None
+    except (subprocess.TimeoutExpired, ValueError, AttributeError):
+        return None
+
+
+def hold_known(off, items, status=task_status):
+    """(what is still refused, held [(row, what, task, its status)], lines whose fault is gone, lines that hold nothing [(line, why)])"""
+    ok, bad = [], []
+    for it in items:
+        if not (isinstance(it, dict) and isinstance(it.get('row'), int) and isinstance(it.get('match'), str) and len(it['match']) >= 6
+                and isinstance(it.get('pages'), str) and it['pages'] and set(it['pages']) <= set('mgs')
+                and TASK_ID.match(str(it.get('task', '')))):
+            bad.append((it, 'a line needs "row", "pages" (m, g, s), "match" (6 characters or more of the gate\'s words for the fault) '
+                            'and "task", the full id of the open task that fixes it'))
+            continue
+        st = status(it['task'])
+        if st in CLOSED:
+            bad.append((it, f'its task {it["task"]} is {st}: the fault is fixed (take the line out) or it needs a live task'))
+            continue
+        ok.append(dict(it, state=st or 'its status not read: StoryMind did not answer'))
+    left, held, used = {}, [], set()
+    for n, msgs in off.items():
+        for m in msgs:
+            pg = re.match(r'([MGS])( \(measured\))?:', m)
+            hit = next((i for i, it in enumerate(ok) if it['row'] == n and pg and pg.group(1).lower() in it['pages'] and it['match'] in m), None)
+            if hit is None:
+                left.setdefault(n, []).append(m)
+            else:
+                held.append((n, m, ok[hit]['task'], ok[hit]['state'])); used.add(hit)
+    return left, held, [it for i, it in enumerate(ok) if i not in used], bad
 
 
 def list_rows(path=LIST):
@@ -533,9 +590,9 @@ def head_message(root=ROOT):
     return subprocess.run(['git', '-C', root, 'log', '-1', '--format=%B'], capture_output=True, text=True, check=True).stdout
 
 
-def main(argv, pages=None, message=None, rows=None, measured_off=None):
-    """pages, message, rows and measured_off are for the test; the deploy reads the built pages, the HEAD message, the list
-    and the measured result."""
+def main(argv, pages=None, message=None, rows=None, measured_off=None, known=None, status=task_status):
+    """pages, message, rows, measured_off, known and status are for the test; the deploy reads the built pages, the HEAD
+    message, the list, the measured result, qa/gate-known.json and StoryMind."""
     letters = argv or ['m', 'g', 's']
     if pages is None:
         raw = {}
@@ -566,6 +623,18 @@ def main(argv, pages=None, message=None, rows=None, measured_off=None):
         m_off = measured_off
     for n, msgs in m_off.items():
         off.setdefault(n, []).extend(msgs)
+    known = known_list() if known is None else known
+    if known is None:
+        print(f'REFUSED: {KNOWN} cannot be read, so nobody can tell which faults are held by their task. Nothing was deployed.',
+              file=sys.stderr)
+        return 1
+    off, held, gone, bad = hold_known(off, known, status)
+    for n, m, t, st in held:
+        print(f'approved-features gate: row {n} is off on the live pages too, held by its task {t} ({st}): {m}')
+    for it in gone:
+        print(f'approved-features gate: qa/gate-known.json holds row {it["row"]} "{it["match"]}", which is no longer off: take the line out')
+    for it, why in bad:
+        print(f'approved-features gate: a line of qa/gate-known.json holds nothing ({why}): {json.dumps(it)}', file=sys.stderr)
     said = waivers(head_message() if message is None else message)
     refused = {n: m for n, m in off.items() if n not in said}
     for n, quote in said.items():
@@ -583,7 +652,8 @@ def main(argv, pages=None, message=None, rows=None, measured_off=None):
               'If J did name it, put his own words on the deployed commit (amend it) as a line, one per row:', file=sys.stderr)
         for n in sorted(refused):
             print(f'    J names row {n}: "<his words, at least 15 characters>"', file=sys.stderr)
-        print(f'\nOtherwise bring {names} back and build again. Nothing was deployed.', file=sys.stderr)
+        print(f'\nOtherwise bring {names} back and build again (a fault that is already on the live pages is held only by the open '
+              'task that fixes it, one line in qa/gate-known.json). Nothing was deployed.', file=sys.stderr)
         return 1
     held = sorted(n for n in rows if n not in QA_ONLY)
     print(f'approved-features gate: rows {", ".join(map(str, held))} hold on {" ".join(letters)} (machine-checked; measured in '
