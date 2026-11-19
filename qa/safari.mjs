@@ -1,5 +1,5 @@
 // Real Safari through safaridriver (task 2846db82, CEO MA 16 Nov): what Playwright's WebKit cannot show, on the live pages.
-//   node run.mjs safari <mac|sim> [m,g] [films,sound,snap,visit]   (visit: a person's walk, VISIT_DWELL=2300,6000 ms)
+//   node run.mjs safari <mac|sim> [m,g] [films,sound,snap,visit,entry,glass]   (visit: a person's walk, VISIT_DWELL=2300,6000 ms; glass: the header's glass)
 //   mac: Safari on macOS, its window at 1440 x 900 on the job's own screen (sDelegate --needs macos,own-screen gives
 //        SDELEGATE_SCREEN_FRAME; without one this refuses to open a window). sim: iOS Simulator Safari at iPhone size.
 // No packages: WebDriver over HTTP with Node's own fetch. Reuses r4.mjs's step ids, film timing (photo on at 1.5 s, the film
@@ -159,6 +159,7 @@ async function version(v) {
   // the visit walks first, from fresh loads, before the jumps below have asked every film to play
   if (WHAT.includes('visit')) for (const d of DWELLS) { r['visit' + d] = await visit(v, d); save(); }
   if (WHAT.includes('entry')) { r.entry = await entry(v); save(); }
+  if (WHAT.includes('glass')) { r.glass = await glass(v); save(); }
   r.steps = [];
   if (WHAT.includes('sound')) {
     r.instrument = await exec(instrument);
@@ -234,6 +235,28 @@ async function visit(v, dwell) {
 // the film's clock, paused, readiness, the frames Safari actually decoded (an interrupted film keeps paused false but decodes
 // none), is-on, is-held and the photo's opacity. Pass: the clock and the decoded frames both advance within 1.5 s of the
 // step's first visible pixel while the photo is still fully on screen. ENTRY_CSS=<css> adds a style first (to find a cause).
+// glass (task 95ac520e; J 19 Nov 11:50 Z: the navigation bar glass, never a hard background): the header's own glass layer
+// (.hdr-glass, mgs.js) over Why Aveda's sheet and the menu, in real Safari, since Playwright's WebKit draws no backdrop blur at all.
+// At each place one shot with the glass, then the same with only the glass hidden: the control, where what lies behind the bar
+// reads sharp; with the glass it must read frosted. Its computed backdrop filter, opacity and colour are kept with the shots.
+async function glass(v) {
+  const out = [];
+  for (const [id, frac] of [['aveda', .5], ['services', .4]]) {
+    const top = await exec((id) => { const e = document.getElementById(id); return e ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
+    if (top < 0) { out.push({ id, missing: true }); continue; }
+    const [h, vh] = await exec((id) => [document.getElementById(id).getBoundingClientRect().height, innerHeight], id);
+    await jump(top + Math.round(Math.max(0, h - vh) * frac)); await sleep(1800);
+    const st = await exec(() => { const g = document.querySelector('.hdr-glass'); if (!g) return { glass: 'none on the page' }; const c = getComputedStyle(g);
+      return { backdrop: c.webkitBackdropFilter || c.backdropFilter, opacity: c.opacity, bg: c.backgroundColor, h: Math.round(g.getBoundingClientRect().height), ground: document.documentElement.classList.contains('hdr-ground') }; });
+    await shot(`${v}-glass-${id}.png`);
+    await exec(() => { const g = document.querySelector('.hdr-glass'); if (g) g.style.visibility = 'hidden'; }); await sleep(500);
+    await shot(`${v}-glass-${id}-off.png`);
+    await exec(() => { const g = document.querySelector('.hdr-glass'); if (g) g.style.visibility = ''; });
+    out.push({ id, frac, ...st });
+  }
+  return out;
+}
+
 async function entry(v) {
   await wd('POST', S('/url'), { url: siteOf(v) });
   await sleep(2500);
