@@ -16,8 +16,8 @@ const srv = await serve(REPO, (u, req, res) => {
 const base = `http://127.0.0.1:${srv.address().port}`;
 const b = await webkit.launch({ executablePath: process.env.WEBKIT || undefined });
 for (const w of ws.split(',').map(Number)) {
-  const size = w === 390 ? { width: 390, height: 844 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
-  const ctx = await b.newContext({ viewport: size, deviceScaleFactor: w === 3230 ? 2 : w === 390 ? 3 : 2, isMobile: w === 390, hasTouch: w === 390 }); ctx.setDefaultTimeout(120000);
+  const size = w === 390 ? { width: 390, height: 844 } : w === 393 ? { width: 393, height: 660 } : w === 768 ? { width: 768, height: 1024 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
+  const ctx = await b.newContext({ viewport: size, deviceScaleFactor: w === 3230 ? 2 : w < 700 ? 3 : 2, isMobile: w < 700, hasTouch: w < 700 }); ctx.setDefaultTimeout(120000);
   for (const v of vs.split(',')) {
     const p = await open(ctx, `${base}/${v}/`);
     if (world === 'coaching') await toWorld(p, 'coaching');
