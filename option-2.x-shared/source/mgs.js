@@ -447,7 +447,12 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     // over the <video> (a refused start still fires "playing" then "pause", which shows the <video>'s still first frame)
     // and under the photo; it steps aside once the <video> truly plays, its clock moving after a click or key
     if (!v._tu) { v._tu = true; v.addEventListener('timeupdate', function () { if (v._img && !v.paused && v.currentTime > 0.2) v._img.classList.remove('is-on'); }); }
-    im.src = v.getAttribute('data-src'); v.parentNode.insertBefore(im, v.nextSibling); v._img = im;
+    // the lighter HEVC twin where the browser plays HEVC: iOS Safari moves it laid in as a picture as it moves the H.264 film
+    // (qa/sim-img-films.mjs, 19 Nov, two screenshots 900 ms apart: SSIM 0.56 for each, a still control 1.00); a twin it
+    // refuses as a picture gives way to the H.264 film
+    var h264 = v.getAttribute('data-src'), url = !v._noHevc && window.omFilmSrc ? window.omFilmSrc(v) : h264;
+    if (url !== h264) im.addEventListener('error', function () { if (im.getAttribute('src') !== h264) im.src = h264; });
+    im.src = url; v.parentNode.insertBefore(im, v.nextSibling); v._img = im;
   }
   function go(v) { if (calm || !v._want || v._stopped || held() || !v.paused || !v.getAttribute('src')) return; var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') refused(v); }); }
   function attach(v) {
