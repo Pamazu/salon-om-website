@@ -4,13 +4,13 @@
 // jump far above them; <= 1 is none) and against the largest of them (jumpOfMax), and the level 50 ms either side (dB step). The MP3 and its lighter .m4a side by side, so
 // a browser that keeps the AAC encoder's start delay in its decode shows here.
 // Runs in a person's session (heavy-slot.py run --local): the pool's WebKit jobs decode no sound (19 Nov).
-//   node sound-seam.mjs [names, default bed,earth,water,fire,air,ether] [exts, default mp3,m4a]
+//   node sound-seam.mjs [names, default bed,earth,water,fire,air,ether] [exts, default mp3,m4a]   BROWSER=chromium: in Chrome's decode
 import path from 'node:path'; import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright'; import { serve } from './lib.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const NAMES = (process.argv[2] || 'bed,earth,water,fire,air,ether').split(','), EXTS = (process.argv[3] || 'mp3,m4a').split(',');
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}/m/`;
-const b = await pw.webkit.launch(), p = await (await b.newContext()).newPage();
+const b = await pw[process.env.BROWSER || 'webkit'].launch(), p = await (await b.newContext()).newPage();   // BROWSER=chromium: Chrome's own decode
 await p.goto(base + 'sound/loops.json');
 let bad = 0; const got = {};
 for (const n of NAMES) for (const e of EXTS) {
