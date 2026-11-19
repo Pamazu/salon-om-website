@@ -332,3 +332,72 @@ def aveda(d, world):
     </div>
     <div class="s__shade"></div>
   </section>'''
+
+
+def _head_rest(text):
+    """a text's first sentence (its heading) and the rest: 'Take a breath.' / 'When did you last ...'"""
+    m = re.match(r'^(.*?[.?!])\s+(.+)$', text.strip(), re.S)
+    return (m.group(1), m.group(2)) if m else (text.strip(), '')
+
+
+def pause_scene(d, world):
+    """the pause drawn as one of Designer 3's three layouts (task a78e6208, page salon-om-pause-options r1), offered to J
+    in the page by the option switcher (task e5325977, section_options.py): d['scene'] is
+      room    A, Into the room: the picture is the whole section, slowly drifting; the words written into the scene, a fluted
+              glass strip behind them that bends the room as you scroll (mgs.js draws its slats from the picture);
+      breath  B, The breath: scroll-driven; the room opens from a thin line as you breathe in, the question arrives on the
+              exhale, then the last line (mgs.js);
+      cinema  C, Cinema: the room as a wide film frame opening from its centre, the heading set huge above and below it.
+    Every word is the section's own (its label, text, after; d['cue'] the two breath words); the picture is the section's
+    (breath, breath_alt) with its AI label (breath_mark); the letters come into focus as on the live pause (base.css ink)."""
+    head, rest = _head_rest(d['text'])
+    sc, f, alt, mark = d['scene'], d['breath'], E(d.get('breath_alt', '')), d.get('breath_mark', '')
+    acc = '|'.join(d.get('accents', []))
+    pic = f'<img src="img/{f}" alt="{alt}" sizes="{"100vw" if sc in ("room", "breath") else "(max-width: 760px) 100vw, 92vw"}" decoding="async">'
+    sub = (lambda cls, at: f'<p class="ps__sub{cls}" data-write="letters" style="--at:{at}">{rest}</p>' if rest else '')
+    coda = (lambda cls, at: f'<p class="ps__coda{cls}" data-write="letters" data-accents="{acc}" style="--at:{at}">{d["after"]}</p>' if d.get('after') else '')
+    if sc == 'room':
+        inner = f'''<div class="ps__pic">{pic}</div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true"></div>
+    <div class="ps__words s__leave">
+      <p class="ps__eyebrow label a-left" style="--d:.1s">{d['label']}</p>
+      <p class="ps__head" data-write="letters" style="--at:.3s">{head}</p>
+      {sub('', '1.6s')}{coda('', '3.2s')}
+    </div>{mark}'''
+    elif sc == 'breath':
+        a, b = d.get('cue', ('', ''))
+        inner = f'''<div class="ps__stick">
+      <div class="ps__pic">{pic}</div><div class="ps__dim" aria-hidden="true"></div>
+      <p class="ps__cue label" aria-hidden="true" data-in="{E(a)}" data-out="{E(b)}">{a}</p>
+      <div class="ps__words">
+        <p class="ps__head" data-write="letters" style="--at:.3s">{head}</p>
+        {f'<p class="ps__sub">{rest}</p>' if rest else ''}
+      </div>
+      {f'<p class="ps__coda">{d["after"]}</p>' if d.get('after') else ''}{mark}
+    </div>'''
+    elif sc == 'cinema':
+        w = head.split(' ')
+        top, low = ' '.join(w[:max(1, len(w) // 2)]), ' '.join(w[max(1, len(w) // 2):])
+        inner = f'''<div class="ps__cine s__leave">
+      <p class="ps__take" data-write="letters" style="--at:.3s">{top}</p>
+      <figure class="ps__band">{pic}{mark}</figure>
+      <p class="ps__breath" data-write="letters" style="--at:1.2s">{low}</p>
+      <div class="ps__side">{f'<p class="ps__sub a-fade" style="--d:2.2s">{rest}</p>' if rest else ''}{f'<p class="ps__coda a-fade" style="--d:3.2s">{d["after"]}</p>' if d.get('after') else ''}</div>
+    </div>'''
+    else:
+        raise AssertionError(f'pause_scene: no scene "{sc}"')
+    long = ' ps--long' if len(head) > 30 else ''
+    return f'''<section class="s ps ps--{sc}{long}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
+    {inner}
+    <div class="s__shade"></div>
+  </section>'''
+
+
+# the pause's options (task e5325977): today's layout stays the default; J's words for each are in the notes. One list for
+# every page that has the pause (M, G); Inner Work's twin draws the same options in its own words and picture.
+PAUSE_OPTIONS = [
+    dict(key='door', label='The door', note='Her words either side of a tall arched door, the version you preferred on 18 Nov.'),
+    dict(key='room', label='A · Into the room', note='The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.', kind=pause_scene, scene='room'),
+    dict(key='breath', label='B · The breath', note='Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.', kind=pause_scene, scene='breath', cue=('breathe in', 'breathe out')),
+    dict(key='cinema', label='C · Cinema', note='The room as a wide film frame; the heading huge above and below it.', kind=pause_scene, scene='cinema'),
+]
+PAUSE_LIVE_LABEL = 'Words left, picture to the edge (today’s)'

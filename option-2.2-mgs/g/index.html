@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dawn" data-world="salon" data-variant="2.2-g">
+<html lang="en" data-theme="dawn" data-world="salon" data-variant="2.2-g" data-review>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2073,6 +2073,153 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
 /* a step picture's AI label (task a8c429a3): the top picture fades into its film below 42 %, so the label sits near its top,
    under the header, and fades with the picture */
 .ch__top .ai-mark { top: calc(var(--hdr-h, 64px) + 16px); bottom: auto; left: 16px; }
+
+/* ==== the pause's options (task e5325977): J switches them in the page (options.js, Shift+V); today's layout above stays
+   the default. Each is written on the section's chosen option (data-opt), so it gains Inner Work's twin like every rule here. */
+/* the door (Designer 1's a73569a9-r2, d6c2bea, J 18 Nov: "for take a breath I actually preferred the previous version with
+   the door"): her words either side of a tall arched door, all centred on it; the door opens like the doorway the picture is
+   seen through, a thin upright line parting, then breathes. Without the WebGL glass his Safari could not draw. */
+#pause[data-opt="door"], #c-pause[data-opt="door"] { --door: 999px 999px var(--r-photo) var(--r-photo); }
+#pause[data-opt="door"] .br__ph, #c-pause[data-opt="door"] .br__ph { width: 100%; height: 100%; aspect-ratio: auto; border-radius: var(--door); clip-path: inset(0 49.6% 0 49.6% round var(--door)); }
+#pause[data-opt="door"].is-active .br__ph, #c-pause[data-opt="door"].is-active .br__ph, html[data-shot] #pause[data-opt="door"] .br__ph, html[data-shot] #c-pause[data-opt="door"] .br__ph { clip-path: inset(0 0 0 0 round var(--door)); }
+#pause[data-opt="door"] .br__ph img, #c-pause[data-opt="door"] .br__ph img { object-position: 44% 50%; }
+#pause[data-opt="door"] .mani__text, #c-pause[data-opt="door"] .mani__text { font-size: clamp(20px, 1.5vw, 34px); line-height: 1.25; }
+@media (min-width: 1024px) {
+  #pause[data-opt="door"] .mani__in, #c-pause[data-opt="door"] .mani__in { max-width: none; padding: 0 var(--gutter); grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr; column-gap: clamp(36px, 5vw, 128px); }
+  #pause[data-opt="door"] .br, #c-pause[data-opt="door"] .br { grid-column: 2; grid-row: 1 / -1; height: min(68vh, 740px); aspect-ratio: 3 / 4; }
+  #pause[data-opt="door"] .mani__label, #c-pause[data-opt="door"] .mani__label { justify-self: end; text-align: right; }
+  #pause[data-opt="door"] .mani__text, #c-pause[data-opt="door"] .mani__text { justify-self: end; justify-content: flex-end; text-align: right; }
+  #pause[data-opt="door"] .lead, #c-pause[data-opt="door"] .lead { grid-column: 3; grid-row: 2 / 4; align-self: center; margin: 0 !important; max-width: 14em; font-size: clamp(20px, 1.6vw, 34px); }
+}
+@media (max-width: 1023px) {
+  #pause[data-opt="door"] .mani__in, #c-pause[data-opt="door"] .mani__in { align-items: center; text-align: center; }
+  #pause[data-opt="door"] .mani__text, #c-pause[data-opt="door"] .mani__text { justify-content: center; font-size: 20px; }
+  #pause[data-opt="door"] .br, #c-pause[data-opt="door"] .br { width: min(70vw, 320px); aspect-ratio: 3 / 4; margin: var(--sp-5) 0 var(--sp-3); }
+  #pause[data-opt="door"] .br__ph, #c-pause[data-opt="door"] .br__ph { border-radius: var(--door); }
+  #pause[data-opt="door"] .lead, #c-pause[data-opt="door"] .lead { margin: var(--sp-2) 0 0 !important; }
+}
+
+/* A, B, C: Designer 3's three layouts (task a78e6208, salon-om-pause-options r1), drawn by mgs_sections.pause_scene in the
+   page's own type, colours, easing and letters coming into focus (base.css ink); the picture is the section's own */
+.ps { background: var(--umber); color: var(--ivory); --ps-head: clamp(56px, 7.4vw, 120px); --ps-sub: clamp(22px, 2.2vw, 32px); }
+.ps.ps--long { --ps-head: clamp(40px, 4.6vw, 76px); }
+.ps [data-write="letters"] .l { display: inline-block; opacity: 0; filter: blur(var(--m-blur)); transform: translate3d(0, .22em, 0); }
+.ps.is-active [data-write="letters"] .l { animation: ink 1.5s var(--io) forwards; animation-delay: calc(var(--at, .3s) + var(--i) * 20ms); }
+html[data-shot] .ps [data-write] .l, html[data-motion="calm"] .ps [data-write] .l { opacity: 1 !important; filter: none !important; transform: none !important; animation: none !important; }
+.ps__head { margin: 0; font: 300 var(--ps-head)/.98 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
+.ps__sub { margin: 0; font: 300 var(--ps-sub)/1.3 var(--serif); color: var(--ivory-soft); }
+.ps__coda { margin: 0; font: 300 italic clamp(22px, 2vw, 30px)/1.3 var(--serif); }
+.ps__coda .acc { color: var(--forest-light); }
+.ps__eyebrow { margin: 0; color: var(--ivory-soft); }
+.ps .ai-mark { left: auto; right: 16px; bottom: 16px; }
+/* A · Into the room: the picture is the section, slowly drifting; behind the words a fluted glass strip of the same picture,
+   its slats each shifted a little (mgs.js), sliding as you scroll; the words on the photo always in light ink */
+.ps--room { color: #F5EEE4; --ivory-soft: rgba(245, 238, 228, .78); }
+.ps--room .ps__pic { position: absolute; inset: 0; overflow: hidden; }
+.ps--room .ps__pic img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; display: block; transform: scale(1.04); }
+html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-drift 24s var(--io-soft) infinite alternate; }
+@keyframes ps-drift { to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); } }
+.ps--room .ps__shade { position: absolute; inset: 0; background: radial-gradient(120% 90% at 85% 50%, rgba(21, 16, 12, 0) 30%, rgba(21, 16, 12, .55) 75%), linear-gradient(90deg, rgba(21, 16, 12, .6), rgba(21, 16, 12, 0) 58%); }
+.ps--room .ps__lens { position: absolute; top: 0; bottom: 0; left: 4vw; width: min(46vw, 640px); display: flex; overflow: hidden; opacity: 0; transition: opacity 1.6s var(--io) .2s; }
+.ps--room.is-active .ps__lens, html[data-shot] .ps--room .ps__lens { opacity: 1; }
+.ps--room .ps__lens i { flex: 1; background-repeat: no-repeat; filter: blur(5px) brightness(.62) saturate(.9);
+  box-shadow: inset 6px 0 10px -6px rgba(255, 240, 220, .22), inset -8px 0 12px -6px rgba(0, 0, 0, .45); }
+.ps--room .ps__words { position: absolute; z-index: 2; left: calc(4vw + 56px); top: 50%; transform: translateY(-50%); max-width: min(42vw, 560px); display: grid; gap: 26px; }
+.ps--room .ps__coda { margin-top: 18px; }
+/* B · The breath: scroll through it; the room opens from a thin line as you breathe in (mgs.js drives it), the question
+   arrives with the exhale, then the last line. Taller than the screen, so it scrolls freely inside and snaps only at its ends. */
+.s.ps--breath { height: 320vh; height: 320svh; overflow: clip !important; scroll-snap-stop: normal; }   /* !important: the pause's own #pause rule hides overflow, which would stop the sticky */
+.ps--breath { color: #F5EEE4; --ivory-soft: rgba(245, 238, 228, .8); --ct: 48%; --cs: 18%; --cr: 40px; --sc: 1; --dim: .2; }
+.ps--breath .ps__stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; }
+.ps--breath .ps__pic { position: absolute; inset: 0; clip-path: inset(var(--ct) var(--cs) var(--ct) var(--cs) round var(--cr)); transform: scale(var(--sc)); }
+.ps--breath .ps__pic img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 55%; display: block; }
+.ps--breath .ps__dim { position: absolute; inset: 0; background: rgba(21, 16, 12, var(--dim)); }
+.ps--breath .ps__words { position: relative; z-index: 2; text-align: center; display: grid; gap: 22px; justify-items: center; padding: 0 6vw; }
+.ps--breath .ps__sub { opacity: 0; transform: translate3d(0, 14px, 0); transition: opacity 1.4s var(--io), transform 1.4s var(--io); }
+.ps--breath .ps__coda { position: absolute; z-index: 2; bottom: 9vh; left: 0; right: 0; text-align: center; opacity: 0; transition: opacity 1.6s var(--io); }
+.ps--breath.is-exhale .ps__sub, .ps--breath.is-rest .ps__coda, html[data-shot] .ps--breath .ps__sub, html[data-shot] .ps--breath .ps__coda { opacity: 1; transform: none; }
+.ps--breath .ps__cue { position: absolute; z-index: 2; top: calc(var(--hdr) + 6vh); left: 0; right: 0; margin: 0; text-align: center; color: rgba(245, 238, 228, .78); transition: opacity .8s var(--io); }
+/* C · Cinema: the room as a wide film frame opening from its centre; the heading set huge above and below it, never on it;
+   the question and the last line wait at the side */
+.ps--cinema { display: grid; align-items: center; }
+.ps--cinema .ps__cine { width: 100%; max-width: 1560px; margin: 0 auto; padding: calc(var(--hdr) + 2vh) var(--gutter) 6vh; display: grid; grid-template-columns: 1fr minmax(260px, 30%); column-gap: 5vw; align-items: end; }
+.ps--cinema .ps__take, .ps--cinema .ps__breath { margin: 0; font: 300 clamp(64px, 9vw, 150px)/.86 var(--serif); letter-spacing: -.02em; }
+.ps--cinema.ps--long .ps__take, .ps--cinema.ps--long .ps__breath { font-size: clamp(40px, 5.2vw, 92px); line-height: .95; }
+.ps--cinema .ps__take { grid-column: 1 / -1; }
+.ps--cinema .ps__band { position: relative; grid-column: 1 / -1; height: clamp(200px, min(30vw, 46vh), 440px); margin: 1.6vw 0; overflow: hidden; border-radius: var(--r-photo);
+  clip-path: inset(0 50% 0 50%); transition: clip-path 2.6s var(--io); }
+.ps--cinema .ps__band img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; display: block; }
+.ps--cinema .ps__band .ai-mark { left: 12px; right: auto; bottom: 12px; }
+.ps--cinema.is-active .ps__band, html[data-shot] .ps--cinema .ps__band, html[data-motion="calm"] .ps--cinema .ps__band { clip-path: inset(0 0 0 0); }
+.ps--cinema .ps__breath { grid-column: 1; text-align: right; }
+.ps--cinema .ps__side { grid-column: 2; display: grid; gap: 22px; padding-bottom: 1.4vw; }
+@media (max-width: 760px) {
+  .ps--room .ps__lens { left: 0; right: 0; width: auto; top: auto; height: 62%; }
+  .ps--room .ps__words { left: var(--gutter); right: var(--gutter); top: auto; bottom: 10vh; transform: none; max-width: none; }
+  .ps--room .ps__shade { background: linear-gradient(0deg, rgba(21, 16, 12, .7), rgba(21, 16, 12, .1) 70%); }
+  .ps--room .ai-mark, .ps--breath .ai-mark { top: calc(var(--hdr) + 8px); bottom: auto; }
+  .ps--cinema .ps__cine { grid-template-columns: 1fr; }
+  .ps--cinema .ps__breath, .ps--cinema .ps__side { grid-column: 1; }
+  .ps--cinema .ps__side { padding-top: 28px; }
+}
+
+/* the option switcher (task e5325977, options.js): a small panel in the page's own floating glass (the bottom anchor's,
+   next.css .wdoor), anchored bottom left above the tweak button it sits beside; pill rows, the chosen one filled ivory as the
+   header's chosen world is; no outline on any filled shape. Its colours are fixed, not the theme's, as the tweak button's
+   are, so it reads on every ground. Shown with Shift+V; on a phone, its handle. */
+.opt { position: fixed; z-index: 95; left: 14px; bottom: calc(62px + env(safe-area-inset-bottom, 0px)); width: min(300px, calc(100vw - 28px));
+  max-height: calc(100vh - 140px); max-height: calc(100svh - 140px); overflow: auto; overscroll-behavior: contain; scrollbar-width: none;
+  padding: 14px 10px 10px; border-radius: 22px; color: #F5EEE4; background: rgba(21, 16, 12, .72);
+  backdrop-filter: blur(18px) saturate(130%); -webkit-backdrop-filter: blur(18px) saturate(130%); box-shadow: 0 18px 50px rgba(0, 0, 0, .34);
+  font: 400 14px/1.35 var(--sans); opacity: 0; transform: translate3d(0, 10px, 0) scale(.98); transform-origin: 0 100%;
+  transition: opacity .32s var(--io), transform .32s var(--io); }
+.opt.is-on { opacity: 1; transform: none; }
+.opt[hidden] { display: none; }
+.opt::-webkit-scrollbar { display: none; }
+.opt__head { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.opt__k { margin: 0; font: 500 10.5px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: rgba(245, 238, 228, .62); }
+.opt__kbd { font: 500 10.5px/1 var(--sans); letter-spacing: .08em; padding: 5px 8px; border-radius: 999px; background: rgba(245, 238, 228, .1); color: rgba(245, 238, 228, .72); }
+.opt__sec { margin: 6px 8px 10px; font: 300 22px/1.15 var(--serif); }
+.opt__list { display: grid; gap: 4px; }
+.opt__row { display: flex; align-items: flex-start; gap: 12px; width: 100%; min-height: 44px; padding: 11px 14px 11px 10px; border: 0; border-radius: 18px;
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .32s var(--io), color .32s var(--io); }
+.opt__row:hover { background: rgba(245, 238, 228, .08); }
+.opt__row:focus-visible, .opt__chips button:focus-visible, .opt__go button:focus-visible, .opt-handle:focus-visible { outline: 2px solid rgba(245, 238, 228, .9); outline-offset: 2px; }
+.opt__row b { flex: none; width: 22px; height: 22px; display: grid; place-items: center; margin-top: -1px; border-radius: 50%; background: rgba(245, 238, 228, .1);
+  font: 500 11px/1 var(--sans); color: rgba(245, 238, 228, .72); transition: background-color .32s var(--io), color .32s var(--io); }
+.opt__row span { display: grid; gap: 3px; }
+.opt__row small { font-size: 12.5px; line-height: 1.4; color: rgba(23, 17, 13, .66); }
+.opt__row[aria-checked="true"] { background: #F5EEE4; color: #17110D; }
+.opt__row[aria-checked="true"] b { background: #17110D; color: #F5EEE4; }
+.opt__none { margin: 0 8px 10px; color: rgba(245, 238, 228, .62); }
+.opt__go { display: grid; gap: 4px; }
+.opt__go button { min-height: 44px; padding: 10px 14px; border: 0; border-radius: 18px; background: rgba(245, 238, 228, .08); color: inherit; font: inherit; text-align: left; cursor: pointer;
+  transition: background-color .32s var(--io); }
+.opt__go button:hover { background: rgba(245, 238, 228, .14); }
+.opt__page { margin-top: 12px; padding: 12px 8px 2px; }
+.opt__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.opt__chips button { min-height: 36px; padding: 8px 13px; border: 0; border-radius: 999px; background: rgba(245, 238, 228, .08); color: inherit; font: 400 12.5px/1.2 var(--sans);
+  cursor: pointer; transition: background-color .32s var(--io), color .32s var(--io); }
+.opt__chips button:hover { background: rgba(245, 238, 228, .14); }
+.opt__chips button[aria-checked="true"] { background: #F5EEE4; color: #17110D; }
+/* the phone's handle, beside the tweak button (tweaks.css .tw-btn: 38 px at left 14 px), its tap area 44 px */
+.opt-handle { display: none; position: fixed; z-index: 90; left: 58px; bottom: calc(11px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; padding: 0; border: 0;
+  border-radius: 50%; place-items: center; color: rgba(245, 238, 228, .9); background: rgba(21, 16, 12, .45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  cursor: pointer; transition: background-color .32s var(--io); }
+.opt-handle svg { width: 18px; height: 18px; }
+.opt-open .opt-handle { background: rgba(21, 16, 12, .78); }
+@media (hover: none) and (pointer: coarse) { .opt-handle { display: grid; } }
+@media (max-width: 760px) { .opt { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); } }
+/* a swap: the section's content fades out, the chosen option fades in and plays its own entrance */
+.s.opt-out > * { opacity: 0 !important; transition: opacity .24s var(--io) !important; }
+.s.opt-in > * { animation: opt-in .6s var(--io) both; }
+@keyframes opt-in { from { opacity: 0; } }
+html[data-motion="calm"] .opt, html[data-motion="calm"] .s.opt-in > * { transition: none; animation: none; }
+/* motion switch (was prefers-reduced-motion: reduce) */
+html[data-motion="calm"] .opt {transition: opacity .2s linear; transform: none;}
+html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
+@media print { .opt, .opt-handle { display: none; } }
 </style>
 </head>
 <body>
@@ -2102,6 +2249,61 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
 </div>
 <nav class="rail" id="rail" aria-label="The visit"><a href="#arrive" data-c-href="#c-arrive" data-c-name="Reach out"><span>Arrive</span><b>01</b></a><a href="#unwind" data-c-href="#c-unwind" data-c-name="Look deeper"><span>Unwind</span><b>02</b></a><a href="#renew" data-c-href="#c-renew" data-c-name="Soften"><span>Renew</span><b>03</b></a><a href="#unhurried" data-c-href="#c-unhurried" data-c-name="Take root"><span>Unhurried</span><b>04</b></a><a href="#home" data-c-href="#c-home" data-c-name="Yours to keep"><span>Carry it home</span><b>05</b></a></nav>
 <div class="wveil" id="wveil" aria-hidden="true"><svg viewBox="-38.9 -49.9 1589.3 725.8" aria-hidden="true" focusable="false"><path fill="currentColor" d="M304.4 637Q235.3 637 179.1 611.5Q122.9 586 83.1 541Q43.2 496 21.6 437.5Q0 379 0 313Q0 232 30.3 171Q60.5 110 110.4 69.5Q160.4 29 219.9 9Q279.5 -11 338 -11Q409.1 -11 465.3 15.5Q521.5 42 560.8 87Q600.2 132 620.9 189Q641.5 246 641.5 306Q641.5 376 614.6 436Q587.7 496 541.2 541Q494.6 586 433.6 611.5Q372.6 637 304.4 637ZM339 617Q406.2 617 461 584.5Q515.7 552 547.9 488.5Q580.1 425 580.1 334Q580.1 239 545 166.5Q510 94 446.6 52.5Q383.2 11 297.7 11Q186.3 11 123.9 83Q61.5 155 61.5 279Q61.5 349 81.2 410.5Q100.8 472 137.8 518.5Q174.8 565 225.7 591Q276.6 617 339 617ZM821.5 521 831.5 47Q800.5 12 750.5 12Q748.5 12 748.5 6Q748.5 0 750.5 0Q765.5 0 782.5 1Q799.5 2 810.5 2Q824.5 2 836.5 1Q848.5 0 854.5 0Q868.5 0 876.5 9Q884.5 18 900.5 52L1125.5 538L1349.5 25Q1354.5 14 1363 7Q1371.5 0 1379.5 0Q1384.5 0 1394.5 1Q1404.5 2 1417.5 2Q1443.5 2 1459.5 1Q1475.5 0 1493.5 0Q1495.5 0 1495.5 6Q1495.5 12 1493.5 12Q1444.5 12 1421.5 24.5Q1398.5 37 1399.5 79L1418.5 544Q1419.5 573 1426 588Q1432.5 603 1451.5 608Q1470.5 613 1508.5 613Q1511.5 613 1511.5 619Q1511.5 625 1508.5 625Q1484.5 625 1455 624Q1425.5 623 1392.5 623Q1361.5 623 1335.5 624Q1309.5 625 1288.5 625Q1286.5 625 1286.5 619Q1286.5 613 1288.5 613Q1338.5 613 1353 600Q1367.5 587 1365.5 544L1348.5 79L1114.5 618Q1113.5 622 1106.5 622Q1099.5 622 1097.5 618L853.5 83Q852.5 82 852.5 81L844.5 521Q843.5 572 861 592.5Q878.5 613 928.5 613Q930.5 613 930.5 619Q930.5 625 928.5 625Q906.5 625 883 624Q859.5 623 831.5 623Q807.5 623 785.5 624Q763.5 625 743.5 625Q741.5 625 741.5 619Q741.5 613 743.5 613Q785.5 613 803 592.5Q820.5 572 821.5 521Z"/></svg></div>
+<div id="opt-store" hidden><template data-opt-for="pause" data-opt="door" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}" data-same></template><template data-opt-for="pause" data-opt="room" data-attrs="{&quot;class&quot;:&quot;s ps ps--room&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+    <div class="ps__pic"><img src="img/om-pause-guest.webp" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" sizes="100vw" decoding="async"></div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true"></div>
+    <div class="ps__words s__leave">
+      <p class="ps__eyebrow label a-left" style="--d:.1s">The pause</p>
+      <p class="ps__head" data-write="letters" style="--at:.3s">Take a breath.</p>
+      <p class="ps__sub" data-write="letters" style="--at:1.6s">When did you last give yourself time to be cared for?</p><p class="ps__coda" data-write="letters" data-accents="moment." style="--at:3.2s">You deserve this moment.</p>
+    </div><p class="ai-mark">Guest made with AI</p>
+    <div class="s__shade"></div>
+  </template><template data-opt-for="pause" data-opt="breath" data-attrs="{&quot;class&quot;:&quot;s ps ps--breath&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+    <div class="ps__stick">
+      <div class="ps__pic"><img src="img/om-pause-guest.webp" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" sizes="100vw" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
+      <p class="ps__cue label" aria-hidden="true" data-in="breathe in" data-out="breathe out">breathe in</p>
+      <div class="ps__words">
+        <p class="ps__head" data-write="letters" style="--at:.3s">Take a breath.</p>
+        <p class="ps__sub">When did you last give yourself time to be cared for?</p>
+      </div>
+      <p class="ps__coda">You deserve this moment.</p><p class="ai-mark">Guest made with AI</p>
+    </div>
+    <div class="s__shade"></div>
+  </template><template data-opt-for="pause" data-opt="cinema" data-attrs="{&quot;class&quot;:&quot;s ps ps--cinema&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+    <div class="ps__cine s__leave">
+      <p class="ps__take" data-write="letters" style="--at:.3s">Take</p>
+      <figure class="ps__band"><img src="img/om-pause-guest.webp" srcset="img/hd/om-pause-guest-640.webp 640w, img/hd/om-pause-guest-960.webp 960w, img/hd/om-pause-guest-1280.webp 1280w, img/hd/om-pause-guest-1920.webp 1920w, img/hd/om-pause-guest-2560.webp 2560w, img/hd/om-pause-guest-2906.webp 2906w" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" sizes="(max-width: 760px) 100vw, 92vw" decoding="async"><p class="ai-mark">Guest made with AI</p></figure>
+      <p class="ps__breath" data-write="letters" style="--at:1.2s">a breath.</p>
+      <div class="ps__side"><p class="ps__sub a-fade" style="--d:2.2s">When did you last give yourself time to be cared for?</p><p class="ps__coda a-fade" style="--d:3.2s">You deserve this moment.</p></div>
+    </div>
+    <div class="s__shade"></div>
+  </template><template data-opt-for="c-pause" data-opt="door" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}" data-same></template><template data-opt-for="c-pause" data-opt="room" data-attrs="{&quot;class&quot;:&quot;s ps ps--room ps--long&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+    <div class="ps__pic"><img src="img/real-maggie-lounge-seated.webp" srcset="img/hd/real-maggie-lounge-seated-640.webp 640w, img/hd/real-maggie-lounge-seated-960.webp 960w, img/hd/real-maggie-lounge-seated-1280.webp 1280w, img/hd/real-maggie-lounge-seated-1920.webp 1920w, img/hd/real-maggie-lounge-seated-2560.webp 2560w, img/hd/real-maggie-lounge-seated-2906.webp 2906w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="100vw" decoding="async"></div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true"></div>
+    <div class="ps__words s__leave">
+      <p class="ps__eyebrow label a-left" style="--d:.1s">The pause</p>
+      <p class="ps__head" data-write="letters" style="--at:.3s">Sometimes what feels like today’s challenge has deeper roots.</p>
+      <p class="ps__coda" data-write="letters" data-accents="roots." style="--at:3.2s">Look a little deeper.</p>
+    </div>
+    <div class="s__shade"></div>
+  </template><template data-opt-for="c-pause" data-opt="breath" data-attrs="{&quot;class&quot;:&quot;s ps ps--breath ps--long&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+    <div class="ps__stick">
+      <div class="ps__pic"><img src="img/real-maggie-lounge-seated.webp" srcset="img/hd/real-maggie-lounge-seated-640.webp 640w, img/hd/real-maggie-lounge-seated-960.webp 960w, img/hd/real-maggie-lounge-seated-1280.webp 1280w, img/hd/real-maggie-lounge-seated-1920.webp 1920w, img/hd/real-maggie-lounge-seated-2560.webp 2560w, img/hd/real-maggie-lounge-seated-2906.webp 2906w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="100vw" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
+      <p class="ps__cue label" aria-hidden="true" data-in="breathe in" data-out="breathe out">breathe in</p>
+      <div class="ps__words">
+        <p class="ps__head" data-write="letters" style="--at:.3s">Sometimes what feels like today’s challenge has deeper roots.</p>
+        
+      </div>
+      <p class="ps__coda">Look a little deeper.</p>
+    </div>
+    <div class="s__shade"></div>
+  </template><template data-opt-for="c-pause" data-opt="cinema" data-attrs="{&quot;class&quot;:&quot;s ps ps--cinema ps--long&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+    <div class="ps__cine s__leave">
+      <p class="ps__take" data-write="letters" style="--at:.3s">Sometimes what feels like</p>
+      <figure class="ps__band"><img src="img/real-maggie-lounge-seated.webp" srcset="img/hd/real-maggie-lounge-seated-640.webp 640w, img/hd/real-maggie-lounge-seated-960.webp 960w, img/hd/real-maggie-lounge-seated-1280.webp 1280w, img/hd/real-maggie-lounge-seated-1920.webp 1920w, img/hd/real-maggie-lounge-seated-2560.webp 2560w, img/hd/real-maggie-lounge-seated-2906.webp 2906w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="(max-width: 760px) 100vw, 92vw" decoding="async"></figure>
+      <p class="ps__breath" data-write="letters" style="--at:1.2s">today’s challenge has deeper roots.</p>
+      <div class="ps__side"><p class="ps__coda a-fade" style="--d:3.2s">Look a little deeper.</p></div>
+    </div>
+    <div class="s__shade"></div>
+  </template></div>
 <main id="main-salon" data-world="salon">
   <section class="s hero" id="top" data-tone="dark" data-sound="bed" aria-label="Salon OM">
     <div class="s__media"><div class="s__zoom"><img src="media/hero-poster.webp?v=91e8d5861d" alt="" decoding="async"><video data-src="media/hero.mp4?v=a6babba4a6" data-src-hevc="media/hero-hevc.mp4?v=48db7a5c1d" muted playsinline loop preload="none" aria-hidden="true"></video></div></div>
@@ -2116,7 +2318,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </div>
     <div class="hero__veil"></div><div class="s__shade"></div>
   </section>
-  <section class="s mani" id="pause" data-tone="dark" data-sound="bed" aria-label="The pause">
+  <section data-opt-key="pause" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Words left, picture to the edge (today’s)&quot;},{&quot;k&quot;:&quot;door&quot;,&quot;n&quot;:&quot;The door&quot;,&quot;d&quot;:&quot;Her words either side of a tall arched door, the version you preferred on 18 Nov.&quot;},{&quot;k&quot;:&quot;room&quot;,&quot;n&quot;:&quot;A · Into the room&quot;,&quot;d&quot;:&quot;The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.&quot;},{&quot;k&quot;:&quot;breath&quot;,&quot;n&quot;:&quot;B · The breath&quot;,&quot;d&quot;:&quot;Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.&quot;},{&quot;k&quot;:&quot;cinema&quot;,&quot;n&quot;:&quot;C · Cinema&quot;,&quot;d&quot;:&quot;The room as a wide film frame; the heading huge above and below it.&quot;}]" class="s mani" id="pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
       <figure class="br"><div class="br__ph"><img fetchpriority="low" src="img/om-pause-guest.webp?v=8326096d6a" srcset="img/hd/om-pause-guest-640.webp?v=4026aca2c0 640w, img/hd/om-pause-guest-960.webp?v=cc54fa6417 960w, img/hd/om-pause-guest-1280.webp?v=7ce5f1daca 1280w, img/hd/om-pause-guest-1920.webp?v=58e6f70706 1920w, img/hd/om-pause-guest-2560.webp?v=400693756b 2560w, img/hd/om-pause-guest-2906.webp?v=ba998b421e 2906w" sizes="(max-width: 700px) 112vw, (max-width: 2000px) 63vw, 45vw" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below the Aveda poster" decoding="async"></div><p class="ai-mark">Guest made with AI</p></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
@@ -2357,7 +2559,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </div>
     <div class="hero__veil"></div><div class="s__shade"></div>
   </section>
-  <section class="s mani" id="c-pause" data-tone="dark" data-sound="bed" aria-label="The pause">
+  <section data-opt-key="pause" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Words left, picture to the edge (today’s)&quot;},{&quot;k&quot;:&quot;door&quot;,&quot;n&quot;:&quot;The door&quot;,&quot;d&quot;:&quot;Her words either side of a tall arched door, the version you preferred on 18 Nov.&quot;},{&quot;k&quot;:&quot;room&quot;,&quot;n&quot;:&quot;A · Into the room&quot;,&quot;d&quot;:&quot;The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.&quot;},{&quot;k&quot;:&quot;breath&quot;,&quot;n&quot;:&quot;B · The breath&quot;,&quot;d&quot;:&quot;Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.&quot;},{&quot;k&quot;:&quot;cinema&quot;,&quot;n&quot;:&quot;C · Cinema&quot;,&quot;d&quot;:&quot;The room as a wide film frame; the heading huge above and below it.&quot;}]" class="s mani" id="c-pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
       <figure class="br"><div class="br__ph"><img fetchpriority="low" loading="lazy" src="img/real-maggie-lounge-seated.webp?v=4d8714d7e7" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-2906.webp?v=2ea9cdb647 2906w" sizes="(max-width: 700px) 112vw, (max-width: 2000px) 63vw, 45vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
@@ -2574,7 +2776,189 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="be086d590ad7";</script>
+<script>window.OM_BUILD="535dab379684";</script>
+<script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor to this world’s booking"],["c","“Two practices”"]]}];</script>
+<script>
+/* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
+   and see a option switcher, shift v again hides it. The option swicher changes based on the section I'm in").
+   ONE block for every section; it names none. A section that declares options (section_options.py) carries its menu in
+   data-opts; its other options wait in <template>s in #opt-store. Shift+V shows a small panel listing the options of the
+   section on screen (it follows the section as you scroll); choosing one swaps that section in place, in both worlds (its
+   Inner Work twin too), the same <section> element, so the engine keeps tracking it; Shift+V again hides it. The choice is
+   kept per section in this browser and in the address (?opt-<section>=<option>), so a link shows it. The page's own options
+   (window.OM_PAGE_OPTS: an attribute on <html>, e.g. the world switch) are listed under the section's. On a phone a small
+   handle opens it. Only on review pages (<html data-review>, or ?review in the address). Runs before the engine, so a
+   remembered option is in place before anything is drawn. A section that sets itself up at load listens for "om:swap". */
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  if (!root.hasAttribute('data-review') && !/[?&]review\b/.test(location.search)) return;
+  var LIVE = 'live', LS = 'om-opt-' + (root.getAttribute('data-variant') || 'x') + '-', PAGE = window.OM_PAGE_OPTS || [];
+  var KEEP = { id: 1, 'data-opt-key': 1, 'data-opts': 1, 'data-opt': 1, 'data-sk': 1, hidden: 1 };
+  var calm = function () { return root.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  var secs = [].slice.call(document.querySelectorAll('section[data-opt-key]'));
+  var tpl = {}, live = {};
+  [].forEach.call(document.querySelectorAll('#opt-store template[data-opt-for]'), function (t) {
+    var id = t.getAttribute('data-opt-for'); (tpl[id] = tpl[id] || {})[t.getAttribute('data-opt')] = t;
+  });
+  function attrsOf(el) { var o = {}; [].forEach.call(el.attributes, function (a) { o[a.name] = a.value; }); return o; }
+  secs.forEach(function (s) { live[s.id] = { attrs: attrsOf(s), html: s.innerHTML }; });    // the live default, as drawn
+  function menuOf(s) { try { return JSON.parse(s.getAttribute('data-opts')) || []; } catch (e) { return []; } }
+  function keyOf(s) { return s.getAttribute('data-opt-key'); }
+  function twinsOf(key) { return secs.filter(function (s) { return keyOf(s) === key; }); }
+  function has(menu, k) { return menu.some(function (o) { return o.k === k; }); }
+
+  /* ---- where a choice lives: the address first (a shared link), then this browser */
+  function param(name) { var m = new RegExp('[?&]' + name + '=([^&#]*)').exec(location.search); return m ? decodeURIComponent(m[1]) : null; }
+  function saved(name) { try { return localStorage.getItem(LS + name); } catch (e) { return null; } }
+  function keep(name, val, def) {
+    try { if (val === def) localStorage.removeItem(LS + name); else localStorage.setItem(LS + name, val); } catch (e) {}
+    try {
+      var u = new URL(location.href); if (val === def) u.searchParams.delete(name); else u.searchParams.set(name, val);
+      history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+    } catch (e) {}
+  }
+
+  /* ---- the swap: the option's attributes and content into the same element */
+  function swapOne(s, k) {
+    var src;
+    if (k === LIVE) src = live[s.id];
+    else {
+      var t = (tpl[s.id] || {})[k]; if (!t) return;
+      src = { attrs: JSON.parse(t.getAttribute('data-attrs')), html: t.hasAttribute('data-same') ? live[s.id].html : t.innerHTML };
+    }
+    var q = s.style.getPropertyValue('--q');
+    Object.keys(s._optAttrs || live[s.id].attrs).forEach(function (a) { if (!KEEP[a]) s.removeAttribute(a); });
+    Object.keys(src.attrs).forEach(function (a) { if (!KEEP[a]) s.setAttribute(a, src.attrs[a]); });
+    s._optAttrs = src.attrs;
+    if (q) s.style.setProperty('--q', q);
+    s.setAttribute('data-opt', k);
+    s.innerHTML = src.html;
+    if (window.OMEngine) [].forEach.call(s.querySelectorAll('[data-write]'), function (el) { window.OMEngine.writeIn(el); });
+    s.dispatchEvent(new CustomEvent('om:swap', { bubbles: true, detail: { key: keyOf(s), option: k } }));
+  }
+  function choose(key, k, animate) {
+    var ts = twinsOf(key); if (!ts.length || !has(menuOf(ts[0]), k) || ts[0].getAttribute('data-opt') === k) return;
+    keep('opt-' + key, k, LIVE);
+    var shown = ts.filter(function (s) { var r = s.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; });
+    function go() {
+      ts.forEach(function (s) {
+        var on = s.classList.contains('is-active');
+        swapOne(s, k);
+        if (on) { void s.offsetWidth; s.classList.add('is-active'); }      // its entrance plays again, as on arrival
+        s.classList.remove('opt-out');
+        if (shown.indexOf(s) >= 0 && animate) { s.classList.add('opt-in'); setTimeout(function () { s.classList.remove('opt-in'); }, 700); }
+      });
+      draw(true);
+    }
+    if (!animate || !shown.length || calm()) return go();
+    shown.forEach(function (s) { s.classList.add('opt-out'); });
+    setTimeout(go, 260);
+  }
+  function choosePage(p, v) {
+    if (root.getAttribute(p.attr) === v) return;
+    root.setAttribute(p.attr, v); keep(p.p, v, p.d); draw(true);
+  }
+
+  /* ---- at load, before the engine: a linked or remembered option is in place */
+  var done = {};
+  secs.forEach(function (s) {
+    var key = keyOf(s); if (done[key]) return; done[key] = 1;
+    var k = param('opt-' + key) || saved('opt-' + key);
+    if (k && k !== LIVE && has(menuOf(s), k)) twinsOf(key).forEach(function (t) { swapOne(t, k); });
+  });
+  PAGE.forEach(function (p) {
+    var v = param(p.p) || saved(p.p);
+    if (v && p.o.some(function (o) { return o[0] === v; })) root.setAttribute(p.attr, v);
+  });
+
+  /* ---- the panel */
+  var panel, handle, open = false, cur = null, queued = false;
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function nameOf(s) {
+    var n = s.getAttribute('aria-label'), by = s.getAttribute('aria-labelledby');
+    if (!n && by && document.getElementById(by)) n = document.getElementById(by).textContent;
+    return (n || s.id || '').replace(/\s+/g, ' ').trim();
+  }
+  function onScreen() {
+    var mid = innerHeight / 2, all = document.querySelectorAll('main[data-world]:not([hidden]) > .s');
+    for (var i = 0; i < all.length; i++) { var r = all[i].getBoundingClientRect(); if (r.height > 0 && r.top <= mid && r.bottom > mid) return all[i]; }
+    return null;
+  }
+  function build() {
+    panel = document.createElement('div');
+    panel.className = 'opt'; panel.id = 'opt-panel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Options for the section on screen');
+    panel.hidden = true;
+    panel.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.hasAttribute('data-k')) choose(b.getAttribute('data-key'), b.getAttribute('data-k'), true);
+      else if (b.hasAttribute('data-v')) choosePage(PAGE[+b.getAttribute('data-p')], b.getAttribute('data-v'));
+      else if (b.hasAttribute('data-go')) { var t = twinsOf(b.getAttribute('data-go')).filter(function (s) { return !s.closest('[hidden]'); })[0]; if (t) t.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth' }); }
+    });
+    document.body.appendChild(panel);
+  }
+  function draw(force) {
+    if (!open) return;
+    var s = onScreen(), sig = (s ? s.id + ':' + (s.getAttribute('data-opt') || '') : '-') + '|' + PAGE.map(function (p) { return root.getAttribute(p.attr); }).join(',');
+    if (!force && sig === cur) return; cur = sig;
+    var h = '<div class="opt__head"><p class="opt__k">Options</p><kbd class="opt__kbd" aria-label="Shift V">⇧V</kbd></div>';
+    h += '<p class="opt__sec">' + esc(s ? nameOf(s) : 'This part of the page') + '</p>';
+    var menu = s && s.hasAttribute('data-opt-key') ? menuOf(s) : [];
+    if (menu.length) {
+      var key = keyOf(s), on = s.getAttribute('data-opt') || LIVE;
+      h += '<div class="opt__list" role="radiogroup" aria-label="' + esc(nameOf(s)) + '">';
+      menu.forEach(function (o, i) {
+        var sel = o.k === on;
+        h += '<button type="button" class="opt__row" role="radio" aria-checked="' + sel + '" data-key="' + esc(key) + '" data-k="' + esc(o.k) + '">'
+          + '<b aria-hidden="true">' + (i < 9 ? i + 1 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span></button>';
+      });
+      h += '</div>';
+    } else {
+      var seen = {}, more = secs.filter(function (x) { var k = keyOf(x); if (seen[k] || x.closest('[hidden]')) return false; seen[k] = 1; return true; });
+      h += '<p class="opt__none">No options in this section.</p>';
+      if (more.length) h += '<div class="opt__go">' + more.map(function (x) { return '<button type="button" data-go="' + esc(keyOf(x)) + '">' + esc(nameOf(x)) + ' <span aria-hidden="true">→</span></button>'; }).join('') + '</div>';
+    }
+    PAGE.forEach(function (p, pi) {
+      var on = root.getAttribute(p.attr) || p.d;
+      h += '<div class="opt__page"><p class="opt__k">Whole page · ' + esc(p.n) + '</p><div class="opt__chips" role="radiogroup" aria-label="' + esc(p.n) + '">'
+        + p.o.map(function (o) { return '<button type="button" role="radio" aria-checked="' + (o[0] === on) + '" data-p="' + pi + '" data-v="' + esc(o[0]) + '" title="' + esc(o[1]) + '">' + esc(o[1]) + '</button>'; }).join('')
+        + '</div></div>';
+    });
+    panel.innerHTML = h;
+  }
+  function show(v) {
+    if (!panel) build();
+    open = v; root.classList.toggle('opt-open', v);
+    if (handle) handle.setAttribute('aria-expanded', v);
+    if (v) { panel.hidden = false; cur = null; draw(true); requestAnimationFrame(function () { panel.classList.add('is-on'); }); }
+    else { panel.classList.remove('is-on'); setTimeout(function () { if (!open) panel.hidden = true; }, calm() ? 0 : 320); }
+  }
+  document.addEventListener('keydown', function (e) {
+    var t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey && (e.code === 'KeyV' || e.key === 'V' || e.key === 'v')) { e.preventDefault(); show(!open); return; }
+    if (!open || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'Escape') { show(false); return; }
+    if (/^[1-9]$/.test(e.key)) {
+      var b = panel.querySelectorAll('.opt__row')[+e.key - 1]; if (b) { e.preventDefault(); b.click(); }
+    }
+  }, true);
+  function q() { if (open && !queued) { queued = true; requestAnimationFrame(function () { queued = false; draw(false); }); } }
+  addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
+  new MutationObserver(function () { q(); setTimeout(q, 1400); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
+
+  /* ---- on a phone: a small handle beside the tweak button opens it */
+  function addHandle() {
+    handle = document.createElement('button');
+    handle.type = 'button'; handle.className = 'opt-handle'; handle.setAttribute('aria-label', 'Show the options for this section');
+    handle.setAttribute('aria-controls', 'opt-panel'); handle.setAttribute('aria-expanded', 'false');
+    handle.innerHTML = '<svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="2.5" width="13" height="5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="2.5" y="10.5" width="13" height="5" rx="2.5" fill="currentColor"/></svg>';
+    handle.addEventListener('click', function () { show(!open); });
+    document.body.appendChild(handle);
+  }
+  if (document.body) addHandle(); else addEventListener('DOMContentLoaded', addHandle);
+  window.OMOptions = { show: show, choose: choose };
+})();
+</script>
 <script>
 /* a new build drops tweak drafts saved in this browser against an older one: a draft keys images and text by slide
    position, so an old draft would show the old pictures and words over the new build (J, 19 Oct: "the site getting updated") */
@@ -2631,7 +3015,7 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
     return [].some.call(slides, function (s) { if (s.closest('[hidden]')) return false; var r = s.getBoundingClientRect(); return r.height > 0 && r.top <= mid && r.bottom > mid; });
   }
   document.addEventListener('keydown', function (e) {
-    if (!e.shiftKey || e.metaKey || e.ctrlKey || e.altKey || (e.key !== 'V' && e.key !== 'v' && e.code !== 'KeyV')) return;
+    return;   // M/G/S: Shift+V opens the option switcher (options.js)
     var t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
     e.preventDefault();
     if (pauseOnScreen()) setPause((+root.getAttribute('data-pause-look') + 1) % 4, true);
@@ -3553,10 +3937,13 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
 });
 /* task 7a3c013b: the pause's opening sentence leads (mgs.css .is-head): its words, up to the first full stop or question
    mark, in each world. And a voices block with a single quote shows it (engine.js only turns quotes on from two, to rotate) */
-[].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
-  var w = t.querySelectorAll('.wd');
-  for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
-});
+function pauseHead() {      // again after the option switcher swaps the pause back in (options.js "om:swap", task e5325977)
+  [].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
+    var w = t.querySelectorAll('.wd');
+    for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
+  });
+}
+pauseHead(); document.addEventListener('om:swap', pauseHead);
 [].forEach.call(document.querySelectorAll('[data-quotes]'), function (q) { var it = q.querySelectorAll('.q'); if (it.length === 1) it[0].classList.add('is-on'); });
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
@@ -3861,6 +4248,58 @@ html[data-motion="calm"] .av__row::before, html[data-motion="calm"] .av__row:las
   }
   var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
+})();
+
+/* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page, task
+   a78e6208): A's fluted glass, slats of the section's own picture each shifted a little, sliding as you scroll; B's breath,
+   the room opening as you scroll in and the question arriving on the exhale. Found again after every swap. */
+(function () {
+  var rooms = [], breaths = [], queued = false;
+  var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  function find() {
+    rooms = [].slice.call(document.querySelectorAll('.ps--room')).map(function (s) {
+      var lens = s.querySelector('.ps__lens'), img = s.querySelector('.ps__pic img'); if (!lens || !img) return null;
+      if (!lens.children.length) for (var k = 0; k < 14; k++) lens.appendChild(document.createElement('i'));
+      return { s: s, lens: lens, img: img, slats: [].slice.call(lens.children), src: '' };
+    }).filter(Boolean);
+    breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
+      return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
+    });
+    q();
+  }
+  function room(x) {
+    var r = x.s.getBoundingClientRect(); if (r.height === 0 || r.bottom < 0 || r.top > innerHeight) return;
+    var src = x.img.currentSrc || x.img.src;
+    if (src !== x.src) { x.src = src; x.slats.forEach(function (sl) { sl.style.backgroundImage = 'url("' + src + '")'; }); }
+    var lr = x.lens.getBoundingClientRect(), W = r.width, H = r.height, ar = (x.img.naturalWidth / x.img.naturalHeight) || 1.5;
+    var bw = W, bh = W / ar; if (bh < H) { bh = H; bw = H * ar; }
+    var ox = (W - bw) * .6, oy = (H - bh) * .5, shift = calm() ? 0 : (r.top / H) * 26, sw = lr.width / x.slats.length;
+    x.slats.forEach(function (sl, j) {
+      var bend = Math.sin((j / x.slats.length) * Math.PI * 2 + (calm() ? 0 : r.top / 220)) * 14 + shift;
+      sl.style.backgroundSize = (bw * 1.06) + 'px ' + (bh * 1.06) + 'px';
+      sl.style.backgroundPosition = (ox - (lr.left - r.left) - j * sw + bend) + 'px ' + (oy - (lr.top - r.top)) + 'px';
+    });
+  }
+  var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  function breath(x) {
+    var r = x.s.getBoundingClientRect(), span = r.height - innerHeight; if (r.height === 0 || span <= 0) return;
+    var p = Math.min(1, Math.max(0, -r.top / span));
+    if (calm() || document.documentElement.hasAttribute('data-shot')) p = 1;
+    var inh = ease(Math.min(1, p / .5)), exh = ease(Math.min(1, Math.max(0, (p - .5) / .35))), narrow = innerWidth < 760;
+    x.s.style.setProperty('--ct', (48 * (1 - inh)) + '%');
+    x.s.style.setProperty('--cs', ((narrow ? 6 : 18) * (1 - inh)) + '%');
+    x.s.style.setProperty('--cr', (40 * (1 - inh)) + 'px');
+    x.s.style.setProperty('--sc', (1 + .08 * inh - .06 * exh).toFixed(4));
+    x.s.style.setProperty('--dim', (.2 + .35 * inh - .1 * exh).toFixed(3));
+    if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
+    x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
+  }
+  function frame() { queued = false; rooms.forEach(room); breaths.forEach(breath); }
+  function q() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
+  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
+  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG' && e.target.closest('.ps--room')) q(); }, true);
+  find();
 })();
 </script>
 </body>

@@ -26,6 +26,13 @@ EXTRA_CSS = {'2.2': ['next.css']}
 EXTRA_JS = {'2.2': ['next.js']}   # runs before the engine
 # 2.2 next: ?switch=a|b|c picks how the second world is signposted, before first paint (J 18:42); a = today's pill
 PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc123])/.exec(location.search);document.documentElement.setAttribute("data-switch",m?({"1":"a","2":"b","3":"c"}[m[1]]||m[1]):"b");var q=/[?&]pause=([0-3])/.exec(location.search);if(q)document.documentElement.setAttribute("data-pause-look",q[1]);})();</script>\n'}
+# the option switcher (task e5325977, options.js): a page's own options, beside its sections' (section_options.py): the world
+# switch next.js cycled with Shift+V since 19 Oct, its keys and names as next.js has them (?switch= still read by PRE_PAINT)
+PAGE_OPTIONS = {'2.2': [dict(p='switch', attr='data-switch', n='The other world’s door', d='b',
+                             o=[['a', 'The pill'], ['b', 'The bottom anchor to this world’s booking'], ['c', '“Two practices”']])]}
+# M/G/S are J's review pages: the switcher is on. SOM_REVIEW=off builds a client-facing page where it stays off unless the
+# address carries ?review
+REVIEW = os.environ.get('SOM_REVIEW', 'on').lower() != 'off'
 E = html.escape
 
 # THE FILMS SWITCH (J 18 Nov 2026, task 5479dd6c: "videos are lower priority than images; if we have solid, beautiful images,
@@ -570,9 +577,13 @@ def render_world(world, slides, draft, names=None, foot=None):
     other = names[('coaching' if world == 'salon' else 'salon')] if names else ('Coaching with Maggie' if world == 'salon' else 'The salon')
     out, chs = [], [s for s in slides if s[0] == 'ch' and not s[1].get('parked')]
     ci = 0
+    def draw(kind, d):
+        return kind(dict(d, draft=draft), world) if callable(kind) else R[kind](d)
     for kind, d in slides:
         if d.get('parked') and not d.get('looks'): continue      # kept in the copy file, off the page until it returns
-        if callable(kind): out.append(kind(dict(d, draft=draft), world))    # M/G/S: a section drawn by mgs_sections.py
+        if d.get('options'):      # a section with options J switches in the page (task e5325977, section_options.py)
+            import section_options as SO; out.append(SO.render(draw, kind, d, world))
+        elif callable(kind): out.append(kind(dict(d, draft=draft), world))    # M/G/S: a section drawn by mgs_sections.py
         elif kind == 'ch': out.append(chapter(d, ci, len(chs))); ci += 1
         elif kind == 'end': out.append(end(dict(d, draft=draft, other=other, no_other=bool(names), **foot), world))
         else: out.append(R[kind](d))
@@ -582,7 +593,7 @@ def render_world(world, slides, draft, names=None, foot=None):
 SHOT = '<script>if(/[?&]shot\\b/.test(location.search))document.documentElement.setAttribute("data-shot","");</script>\n'
 def css_files(vkey):
     xk = vkey.split('-')[0]
-    return EXTRA_CSS.get(xk, []) + (['mgs.css'] if '-' in vkey else [])
+    return EXTRA_CSS.get(xk, []) + (['mgs.css', 'options.css'] if '-' in vkey else [])
 
 def page(cfg):
     names = cfg.get('worlds')
@@ -607,6 +618,9 @@ def page(cfg):
     js = JS
     if _MGS:      # M/G/S: the scripts 2.2 shares give both worlds the salon's tones and the step rail (task 7a3c013b)
         import mgs_parts as MP; xjs, js = MP.one_design_js(xjs), MP.one_design_js(_mgs_engine())   # the M/G/S engine: its own sound (task 5cb93228), one design
+        # the option switcher runs first, so a remembered or linked option is in place before the engine starts (task e5325977)
+        xjs = (f'<script>window.OM_PAGE_OPTS={json.dumps(PAGE_OPTIONS.get(xk, []), ensure_ascii=False, separators=(",", ":"))};</script>\n'
+               f'<script>\n{open(V + "options.js").read()}</script>\n') + xjs
     if xk in EXTRA_JS:      # a build stamp, so a tweak draft saved against an older build is dropped (next.js)
         import hashlib
         stamp = hashlib.sha1(json.dumps(cfg, sort_keys=True, default=lambda o: getattr(o, '__qualname__', None) or str(o)).encode() + (BASE_CSS + ADD_CSS + ''.join(open(V + f).read() for f in css_files(vkey))).encode()).hexdigest()[:12]
@@ -645,6 +659,9 @@ def page(cfg):
 <script>
 {js}</script>
 ''' + (f'<script>\n{open(V + "mgs.js").read()}</script>\n' if '-' in vkey else '')
+    import section_options as SO
+    store = SO.store()          # the options' templates (task e5325977): outside both worlds, before them; none, no change
+    if store: body = body.replace('<main id="main-salon" data-world="salon">', store + '<main id="main-salon" data-world="salon">', 1)
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     ids = [d['cta']['id'] if 'cta' in d else d['id'] for _, d in cfg['salon']]     # the salon world's section ids
     for f in css_files(vkey):
@@ -661,7 +678,7 @@ def page(cfg):
     # Maggie's own approved lines keep their 'home' ("Carry it home", "recreate your style at home"); any other 'home' is refused
     assert 'home' not in re.sub(r'<[^>]+>', ' ', body).lower().replace('homepage', '').replace('carry it home', '').replace('style at home', '').replace('at-home styling', ''), 'no "home" in copy'
     key = cfg['title'].split()[-1]
-    doc = ('<!doctype html>\n<html lang="en" data-theme="' + cfg['theme'] + '" data-world="salon" data-variant="' + key + '">\n<head>\n<meta charset="utf-8">\n'
+    doc = ('<!doctype html>\n<html lang="en" data-theme="' + cfg['theme'] + '" data-world="salon" data-variant="' + key + '"' + (' data-review' if '-' in vkey and REVIEW else '') + '>\n<head>\n<meta charset="utf-8">\n'
            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + title +
            f'<meta name="description" content="{E(cfg["desc"])}">\n<meta name="theme-color" content="#15100C">\n'
            '<link rel="icon" type="image/svg+xml" href="brand/salon-om-om-small-forest.svg">\n'

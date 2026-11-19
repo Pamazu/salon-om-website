@@ -166,10 +166,13 @@
 });
 /* task 7a3c013b: the pause's opening sentence leads (mgs.css .is-head): its words, up to the first full stop or question
    mark, in each world. And a voices block with a single quote shows it (engine.js only turns quotes on from two, to rotate) */
-[].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
-  var w = t.querySelectorAll('.wd');
-  for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
-});
+function pauseHead() {      // again after the option switcher swaps the pause back in (options.js "om:swap", task e5325977)
+  [].forEach.call(document.querySelectorAll('#pause .mani__text, #c-pause .mani__text'), function (t) {
+    var w = t.querySelectorAll('.wd');
+    for (var i = 0; i < w.length; i++) { w[i].classList.add('is-head'); if (/[.?!]\s*$/.test(w[i].textContent)) { w[i].classList.add('is-head-end'); break; } }
+  });
+}
+pauseHead(); document.addEventListener('om:swap', pauseHead);
 [].forEach.call(document.querySelectorAll('[data-quotes]'), function (q) { var it = q.querySelectorAll('.q'); if (it.length === 1) it[0].classList.add('is-on'); });
 /* round 3 (task a2e5a9d0): the menu's photo panel follows the open row. engine.js opens rows and swaps the panel's <img>s;
    a row whose photo is still to come shows a frame (a <div>), which this keeps in step with the open row too. */
@@ -474,4 +477,56 @@
   }
   var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
+})();
+
+/* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page, task
+   a78e6208): A's fluted glass, slats of the section's own picture each shifted a little, sliding as you scroll; B's breath,
+   the room opening as you scroll in and the question arriving on the exhale. Found again after every swap. */
+(function () {
+  var rooms = [], breaths = [], queued = false;
+  var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  function find() {
+    rooms = [].slice.call(document.querySelectorAll('.ps--room')).map(function (s) {
+      var lens = s.querySelector('.ps__lens'), img = s.querySelector('.ps__pic img'); if (!lens || !img) return null;
+      if (!lens.children.length) for (var k = 0; k < 14; k++) lens.appendChild(document.createElement('i'));
+      return { s: s, lens: lens, img: img, slats: [].slice.call(lens.children), src: '' };
+    }).filter(Boolean);
+    breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
+      return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
+    });
+    q();
+  }
+  function room(x) {
+    var r = x.s.getBoundingClientRect(); if (r.height === 0 || r.bottom < 0 || r.top > innerHeight) return;
+    var src = x.img.currentSrc || x.img.src;
+    if (src !== x.src) { x.src = src; x.slats.forEach(function (sl) { sl.style.backgroundImage = 'url("' + src + '")'; }); }
+    var lr = x.lens.getBoundingClientRect(), W = r.width, H = r.height, ar = (x.img.naturalWidth / x.img.naturalHeight) || 1.5;
+    var bw = W, bh = W / ar; if (bh < H) { bh = H; bw = H * ar; }
+    var ox = (W - bw) * .6, oy = (H - bh) * .5, shift = calm() ? 0 : (r.top / H) * 26, sw = lr.width / x.slats.length;
+    x.slats.forEach(function (sl, j) {
+      var bend = Math.sin((j / x.slats.length) * Math.PI * 2 + (calm() ? 0 : r.top / 220)) * 14 + shift;
+      sl.style.backgroundSize = (bw * 1.06) + 'px ' + (bh * 1.06) + 'px';
+      sl.style.backgroundPosition = (ox - (lr.left - r.left) - j * sw + bend) + 'px ' + (oy - (lr.top - r.top)) + 'px';
+    });
+  }
+  var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  function breath(x) {
+    var r = x.s.getBoundingClientRect(), span = r.height - innerHeight; if (r.height === 0 || span <= 0) return;
+    var p = Math.min(1, Math.max(0, -r.top / span));
+    if (calm() || document.documentElement.hasAttribute('data-shot')) p = 1;
+    var inh = ease(Math.min(1, p / .5)), exh = ease(Math.min(1, Math.max(0, (p - .5) / .35))), narrow = innerWidth < 760;
+    x.s.style.setProperty('--ct', (48 * (1 - inh)) + '%');
+    x.s.style.setProperty('--cs', ((narrow ? 6 : 18) * (1 - inh)) + '%');
+    x.s.style.setProperty('--cr', (40 * (1 - inh)) + 'px');
+    x.s.style.setProperty('--sc', (1 + .08 * inh - .06 * exh).toFixed(4));
+    x.s.style.setProperty('--dim', (.2 + .35 * inh - .1 * exh).toFixed(3));
+    if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
+    x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
+  }
+  function frame() { queued = false; rooms.forEach(room); breaths.forEach(breath); }
+  function q() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
+  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
+  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG' && e.target.closest('.ps--room')) q(); }, true);
+  find();
 })();

@@ -1,0 +1,54 @@
+/* the option switcher (task e5325977, options.js): a small panel in the page's own floating glass (the bottom anchor's,
+   next.css .wdoor), anchored bottom left above the tweak button it sits beside; pill rows, the chosen one filled ivory as the
+   header's chosen world is; no outline on any filled shape. Its colours are fixed, not the theme's, as the tweak button's
+   are, so it reads on every ground. Shown with Shift+V; on a phone, its handle. */
+.opt { position: fixed; z-index: 95; left: 14px; bottom: calc(62px + env(safe-area-inset-bottom, 0px)); width: min(300px, calc(100vw - 28px));
+  max-height: calc(100vh - 140px); max-height: calc(100svh - 140px); overflow: auto; overscroll-behavior: contain; scrollbar-width: none;
+  padding: 14px 10px 10px; border-radius: 22px; color: #F5EEE4; background: rgba(21, 16, 12, .72);
+  backdrop-filter: blur(18px) saturate(130%); -webkit-backdrop-filter: blur(18px) saturate(130%); box-shadow: 0 18px 50px rgba(0, 0, 0, .34);
+  font: 400 14px/1.35 var(--sans); opacity: 0; transform: translate3d(0, 10px, 0) scale(.98); transform-origin: 0 100%;
+  transition: opacity .32s var(--io), transform .32s var(--io); }
+.opt.is-on { opacity: 1; transform: none; }
+.opt[hidden] { display: none; }
+.opt::-webkit-scrollbar { display: none; }
+.opt__head { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.opt__k { margin: 0; font: 500 10.5px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: rgba(245, 238, 228, .62); }
+.opt__kbd { font: 500 10.5px/1 var(--sans); letter-spacing: .08em; padding: 5px 8px; border-radius: 999px; background: rgba(245, 238, 228, .1); color: rgba(245, 238, 228, .72); }
+.opt__sec { margin: 6px 8px 10px; font: 300 22px/1.15 var(--serif); }
+.opt__list { display: grid; gap: 4px; }
+.opt__row { display: flex; align-items: flex-start; gap: 12px; width: 100%; min-height: 44px; padding: 11px 14px 11px 10px; border: 0; border-radius: 18px;
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .32s var(--io), color .32s var(--io); }
+.opt__row:hover { background: rgba(245, 238, 228, .08); }
+.opt__row:focus-visible, .opt__chips button:focus-visible, .opt__go button:focus-visible, .opt-handle:focus-visible { outline: 2px solid rgba(245, 238, 228, .9); outline-offset: 2px; }
+.opt__row b { flex: none; width: 22px; height: 22px; display: grid; place-items: center; margin-top: -1px; border-radius: 50%; background: rgba(245, 238, 228, .1);
+  font: 500 11px/1 var(--sans); color: rgba(245, 238, 228, .72); transition: background-color .32s var(--io), color .32s var(--io); }
+.opt__row span { display: grid; gap: 3px; }
+.opt__row small { font-size: 12.5px; line-height: 1.4; color: rgba(23, 17, 13, .66); }
+.opt__row[aria-checked="true"] { background: #F5EEE4; color: #17110D; }
+.opt__row[aria-checked="true"] b { background: #17110D; color: #F5EEE4; }
+.opt__none { margin: 0 8px 10px; color: rgba(245, 238, 228, .62); }
+.opt__go { display: grid; gap: 4px; }
+.opt__go button { min-height: 44px; padding: 10px 14px; border: 0; border-radius: 18px; background: rgba(245, 238, 228, .08); color: inherit; font: inherit; text-align: left; cursor: pointer;
+  transition: background-color .32s var(--io); }
+.opt__go button:hover { background: rgba(245, 238, 228, .14); }
+.opt__page { margin-top: 12px; padding: 12px 8px 2px; }
+.opt__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.opt__chips button { min-height: 36px; padding: 8px 13px; border: 0; border-radius: 999px; background: rgba(245, 238, 228, .08); color: inherit; font: 400 12.5px/1.2 var(--sans);
+  cursor: pointer; transition: background-color .32s var(--io), color .32s var(--io); }
+.opt__chips button:hover { background: rgba(245, 238, 228, .14); }
+.opt__chips button[aria-checked="true"] { background: #F5EEE4; color: #17110D; }
+/* the phone's handle, beside the tweak button (tweaks.css .tw-btn: 38 px at left 14 px), its tap area 44 px */
+.opt-handle { display: none; position: fixed; z-index: 90; left: 58px; bottom: calc(11px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; padding: 0; border: 0;
+  border-radius: 50%; place-items: center; color: rgba(245, 238, 228, .9); background: rgba(21, 16, 12, .45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  cursor: pointer; transition: background-color .32s var(--io); }
+.opt-handle svg { width: 18px; height: 18px; }
+.opt-open .opt-handle { background: rgba(21, 16, 12, .78); }
+@media (hover: none) and (pointer: coarse) { .opt-handle { display: grid; } }
+@media (max-width: 760px) { .opt { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); } }
+/* a swap: the section's content fades out, the chosen option fades in and plays its own entrance */
+.s.opt-out > * { opacity: 0 !important; transition: opacity .24s var(--io) !important; }
+.s.opt-in > * { animation: opt-in .6s var(--io) both; }
+@keyframes opt-in { from { opacity: 0; } }
+html[data-motion="calm"] .opt, html[data-motion="calm"] .s.opt-in > * { transition: none; animation: none; }
+@media (prefers-reduced-motion: reduce) { .opt { transition: opacity .2s linear; transform: none; } .s.opt-in > * { animation-duration: .2s; } }
+@media print { .opt, .opt-handle { display: none; } }

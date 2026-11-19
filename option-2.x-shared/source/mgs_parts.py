@@ -495,6 +495,10 @@ ONE_DESIGN_JS = [
     ("rail.classList.toggle('is-on', chapter >= 0 && world === 'salon');", "rail.classList.toggle('is-on', chapter >= 0);"),
     # next.js: Inner Work's own header tone over its films (.hdr.is-film) has no look left to switch; it finds no films now
     ("""document.querySelectorAll('main[data-world="coaching"] :is(.s.hero, .s.ch, .s.cta)')""", '[]'),
+    # next.js: Shift+V belongs to the option switcher (options.js, task e5325977); the world switch it cycled is listed there,
+    # as the page's own options, so nothing it did is lost (?switch= links keep working: PRE_PAINT reads them)
+    ("    if (!e.shiftKey || e.metaKey || e.ctrlKey || e.altKey || (e.key !== 'V' && e.key !== 'v' && e.code !== 'KeyV')) return;",
+     "    return;   // M/G/S: Shift+V opens the option switcher (options.js)"),
 ]
 
 
@@ -645,6 +649,8 @@ def srcset(body, v):
                                       f'(max-width: 2000px) {vw(e, "w1440", 1440)}vw' if e.get('w1440') else '',
                                       f'{vw(e, "w3230", 3230)}vw') if x)
         set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
+        if ' sizes=' in tag:      # a place that names how wide it draws the picture keeps it (a full-bleed option, task e5325977)
+            return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}"', 1)
         return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
     return re.sub(r'<img [^>]*?src="img/([^"/]+\.webp)"[^>]*>', one, body)
 
