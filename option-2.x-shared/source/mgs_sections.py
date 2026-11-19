@@ -350,10 +350,14 @@ def pause_scene(d, world):
       cinema  C, Cinema: the room as a wide film frame opening from its centre, the heading set huge above and below it;
       through D2, Step through: the door as the default draws it, growing as you scroll until you stand in the room.
     Every word is the section's own (its label, text, after; d['cue'] the two breath words); the picture is the section's
-    (breath, breath_alt) with its AI label (breath_mark); the letters come into focus as on the live pause (base.css ink)."""
+    (still, still_alt, still_mark when set, else breath, breath_alt, breath_mark: the door's) with its AI label; the letters come into focus as on the live pause (base.css ink)."""
     head, rest = _head_rest(d['text'])
     long = ' is-long' if len(head) > 30 else ''      # a long opening sentence (Inner Work's) is set a size smaller, on its heading
-    sc, f, alt, mark = d['scene'], d['breath'], E(d.get('breath_alt', '')), d.get('breath_mark', '')
+    sc = d['scene']
+    # the pause's own picture (task 69006a72; J 19 Nov 12:01 Z: "For the \"Take a Breath\" section, the picture you're using is
+    # terrible"): d['still'] when the section names one, for every scene but the door's (through), which keeps the door picture
+    k = 'still' if d.get('still') and sc != 'through' else 'breath'
+    f, alt, mark = d[k], E(d.get(k + '_alt', '')), d.get(k + '_mark', '')
     acc = '|'.join(d.get('accents', []))
     pic = f'<img src="img/{f}" alt="{alt}" sizes="{"100vw" if sc in ("room", "breath") else "(max-width: 1023px) 100vw, 86vw" if sc == "through" else "(max-width: 760px) 100vw, 92vw"}" decoding="async">'
     sub = (lambda cls, at: f'<p class="ps__sub{cls}" data-write="letters" style="--at:{at}">{rest}</p>' if rest else '')

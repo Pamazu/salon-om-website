@@ -50,7 +50,8 @@ SOURCE = {
     'real-shampoo-basins.webp': 'm:6-shampoo-basins-25oct.jpg',     # J's 25 Oct picture itself at full size (task 69006a72)
     'real-styling-stations.webp': 'm:11-styling-stations-clean.jpg',
     'om-menu-signature-color.webp': 'm:om-menu-signature-color-clean.png',   # the bin and the vacuum hose removed (task a8c429a3)
-    'om-menu-blonding.webp': 'm:om-menu-blonding-j25.png',     # on J's 25 Oct picture (task 69006a72)
+    'om-menu-blonding.webp': 'm:om-menu-blonding-j25.png',
+    'om-pause-rest.webp': 'm:om-pause-guest-j25.png',     # the pause's own picture, on J's 25 Oct picture (task 69006a72)     # on J's 25 Oct picture (task 69006a72)
     'om-menu-color-correction.webp': 'm:om-menu-color-correction.png',
     'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style-clean.png',
     'om-menu-extensions.webp': 'm:om-menu-extensions.png',
@@ -118,7 +119,7 @@ BASINS_ORIGINALS = {'6-shampoo-basins-5B3A1072.jpg', '12-shampoo-basins-backbar-
 # the bottle zones of J's picture (1280 px x0,y0,x1,y1: left shelf, left basket, right shelf, right basket): what makes it his
 J25_ZONES = [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (888, 232, 1038, 368)]
 # a picture made on J25 and cut from it: the box it was cut from (full-size px), so its pixels can be measured against his
-ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750)}
+ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750), 'om-pause-guest-j25.png': (3100, 300, 8000, 3567)}
 
 # every generated master -> what it was made on: 'o:<original>', 'm:<cleaned master>', or None (no photo: a mood film's frame,
 # the meadow). A picture made on the raw original of a cleaned place and then cleaned itself names what was removed in
@@ -129,6 +130,9 @@ BUILT_ON = {
     # Blonding (task 69006a72): a generated guest seated at the right basin of J's 25 Oct picture, his rows behind her (FLUX.2 Klein
     # 4B, BL69 seed 42; pasted by her own outline, align_paste.py), cut at ROOM_CROP and graded (cine_grade.py)
     'om-menu-blonding-j25.png': 'm:6-shampoo-basins-25oct.jpg',
+    # the pause (task 69006a72): the 19 Nov pause guest (PZ5) with J's 25 Oct room laid under her by her own outline
+    # (salon-om-pictures/tools/room_under_guest.py), cut at ROOM_CROP and graded (cine_grade.py)
+    'om-pause-guest-j25.png': 'm:6-shampoo-basins-25oct.jpg',
     'om-menu-color-correction.png': 'o:15-aveda-plant-artwork-5B3A1081.jpg',
     'om-menu-cut-and-style-clean.png': 'm:11-styling-stations-clean.jpg',
     'om-menu-extensions.png': 'o:2-lounge-fireplace-5B3A1048.jpg',

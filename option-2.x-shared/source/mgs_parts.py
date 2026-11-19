@@ -126,6 +126,13 @@ PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes clos
 # vacuum: photo_sources, clean_master.py 4). A real photo with clutter removed, as the colour bar and the stations: no AI label
 PAUSE_DOOR = 'real-chair-window.webp'
 PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on the leather'
+# the pause's own picture, in every scene but the door's (task 69006a72; J 19 Nov 12:01 Z: "For the \"Take a Breath\" section, the
+# picture you're using is terrible. You're not thinking in that section"): what it asks, "When did you last give yourself time
+# to be cared for?", shown: a generated guest resting at the basin, eyes closed, a towel round her shoulders, in J's 25 Oct
+# picture of the basins room (his rows of bottles behind her; row 23). Her pixels from the 19 Nov pause (Qwen-Image-Edit 2511,
+# PZ5), J's room laid under her by her own outline (salon-om-pictures/tools/room_under_guest.py), cut and graded as before
+PAUSE_STILL = 'om-pause-rest.webp'
+PAUSE_STILL_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles'
 
 
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:
@@ -288,7 +295,7 @@ TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open',
               'proof_line', 'btn', 'reward', 'answer', 'title', 'rows', 'name', 'sub', 'body', 'specs', 'paras', 'quote', 'cite',
               'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
               'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
-TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
+TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'still', 'still_alt', 'still_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
 # lists of cards: each card takes its words, and its picture
 TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}
 
@@ -394,6 +401,7 @@ def iw_entries(v, salon):
             w['aria'] = M.IW_TITLE
         elif kind in ('tease', S.pause_scene) and d.get('breath'):   # the pause, whichever block draws its default (task 95ac520e)
             f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='')
+            if d.get('still'): w.update(still=f, still_alt=alt, still_mark='')
         elif kind == 'ch':
             f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)
         elif kind is S.visit:
