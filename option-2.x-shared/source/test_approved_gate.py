@@ -250,5 +250,74 @@ class TheList(unittest.TestCase):
         self.assertEqual(why, ''); self.assertEqual(sorted(off), [14])    # row 15 is not measured on S (no pause)
 
 
+class Known(unittest.TestCase):
+    """a fault already on the live pages is held only by the open task that fixes it, and is printed on every run"""
+    T = '6328eca1-8fad-414a-9578-8bad78014a8e'
+    OFF = {18: ['M (measured): Salon OM: "unhurried": img/hd/real-lounge-5330.webp (5330 px wide) is enlarged 1.21x on J\'s 6K window, so it is soft']}
+
+    def gate(self, known, off, status=lambda t: 'in-progress'):
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = g.main(['m'], pages={'m': page(LIVE, 'm')}, message='x', rows=list(range(1, 20)), measured_off=off,
+                          known=known, status=status)
+        return code, out.getvalue(), err.getvalue()
+
+    def line(self, **k):
+        return dict({'row': 18, 'pages': 'mg', 'match': 'real-lounge-5330', 'task': self.T}, **k)
+
+    def test_with_no_line_the_fault_is_refused(self):
+        code, _, err = self.gate([], self.OFF)
+        self.assertEqual(code, 1); self.assertIn('qa/gate-known.json', err)
+
+    def test_a_line_with_its_open_task_holds_it_and_says_so(self):
+        code, out, _ = self.gate([self.line()], self.OFF)
+        self.assertEqual(code, 0); self.assertIn('held by its task ' + self.T, out); self.assertIn('real-lounge-5330', out)
+
+    def test_a_closed_task_holds_nothing(self):
+        code, _, err = self.gate([self.line()], self.OFF, status=lambda t: 'done')
+        self.assertEqual(code, 1); self.assertIn('is done', err)
+
+    def test_a_short_task_id_or_match_holds_nothing(self):
+        for bad in (self.line(task='6328eca1'), self.line(match='real'), self.line(pages='x')):
+            code, _, err = self.gate([bad], self.OFF)
+            self.assertEqual(code, 1, bad); self.assertIn('holds nothing', err)
+
+    def test_another_fault_on_the_same_row_is_refused(self):
+        off = {18: self.OFF[18] + ['M (measured): Salon OM: "hosts": img/hd/real-team-640.webp (640 px wide) is enlarged 2.10x on J\'s 6K window, so it is soft']}
+        code, out, err = self.gate([self.line()], off)
+        self.assertEqual(code, 1); self.assertIn('real-team-640', err); self.assertIn('held by its task', out)
+
+    def test_a_page_the_line_does_not_name_is_refused(self):
+        code, _, _ = self.gate([self.line(pages='g')], self.OFF)
+        self.assertEqual(code, 1)
+
+    def test_a_line_whose_fault_is_gone_is_named(self):
+        code, out, _ = self.gate([self.line()], {})
+        self.assertEqual(code, 0); self.assertIn('no longer off: take the line out', out)
+
+    def test_status_unread_still_holds_and_says_it_was_not_read(self):
+        code, out, _ = self.gate([self.line()], self.OFF, status=lambda t: None)
+        self.assertEqual(code, 0); self.assertIn('not read', out)
+
+
+class RedControls(unittest.TestCase):
+    """every measured row goes red in WebKit when it is broken on purpose (qa/gate-red.mjs, run in the pool)"""
+    def test_every_measured_row_went_red_when_broken(self):
+        import hashlib
+        import json
+        h = hashlib.sha256()
+        for f in (g.page_path('m'), *(os.path.join(g.ROOT, 'qa', n) for n in ('gate-rows.mjs', 'lib.mjs', 'gate-red.mjs'))):
+            with open(f, 'rb') as fh:
+                h.update(fh.read())
+        k = h.hexdigest()[:12]
+        f = os.path.join(g.OUT, f'gate-red-{k}.json')
+        if not os.path.exists(f):
+            raise unittest.SkipTest(f'no red-control run for these pages and checks ({k}): run qa/gate-red.mjs in the pool')
+        with open(f, encoding='utf-8') as fh:
+            rows = json.load(fh)['rows']
+        self.assertEqual(sorted(map(int, rows)), sorted(g.MEASURED))
+        self.assertEqual([n for n, r in rows.items() if not r['red']], [])
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

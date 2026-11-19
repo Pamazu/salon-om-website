@@ -66,6 +66,16 @@ async function desktop(p, v, P, W, add, seen) {
     return [s.id, s.getAttribute('data-tone'), c.backgroundColor + ' ' + c.backgroundImage.slice(0, 60), [...s.classList].filter((k) => !['s', 's--auto', 'is-active', 'is-past', 'is-seen', 'is-in'].includes(k)).sort().join(' ')];
   }), P);
   seen[`12 ${W}`] = secs.map((s) => `${s[0]}:${s[1]}:${s[2]}:${s[3]}`);
+  // row 10: each Inner Work section has its salon twin's tone and its computed ground (the salon world is read first)
+  seen[`10 ${W}`] = secs.map((t) => t.slice(0, 3));
+  if (P) {
+    const twin = Object.fromEntries((seen['10 Salon OM'] || []).map(([id, tone, ground]) => [id, [tone, ground]]));
+    for (const [id, tone, ground] of secs) {
+      const t = twin[id.replace(/^c-/, '')];
+      if (!t) continue;
+      if (t[0] !== tone || t[1] !== ground) add(10, `"${id}" is ${tone} on ${ground}; its salon twin is ${t[0]} on ${t[1]}`);
+    }
+  }
   for (let i = 1; i < secs.length; i++) {
     const [a, b] = [secs[i - 1], secs[i]];
     if (a[1] === 'light' && b[1] === 'light' && a[2] === b[2] && a[3] === b[3]) add(12, `light sections "${a[0]}" and "${b[0]}" sit together with one ground and one shape`);
@@ -181,7 +191,7 @@ async function desktop(p, v, P, W, add, seen) {
       const s = document.getElementById(`${P}visit`), path = s.querySelector('.ln__path'), dots = s.querySelectorAll('.ln__dot');
       if (!path || dots.length < 5) return { dots: dots.length };
       const pr = path.getBoundingClientRect(), d = dots[dots.length - 1].getBoundingClientRect(), c = getComputedStyle(path);
-      return { dots: dots.length, morph: s.classList.contains('pv--morph'), right: Math.round(pr.right), last: Math.round(d.left + d.width / 2), dash: c.strokeDashoffset, len: Math.round(path.getTotalLength()) };
+      return { dots: dots.length, morph: s.classList.contains('pv--morph'), right: Math.round(pr.right), last: Math.round(d.left + d.width / 2), dash: c.strokeDashoffset, len: +path.getAttribute('pathLength') || path.getTotalLength() };
     }, P);
     await jump(p, ya); await wait(p, 2600);
     const inRail = await p.evaluate(() => document.querySelectorAll('#rail a.is-landed').length);
@@ -191,8 +201,8 @@ async function desktop(p, v, P, W, add, seen) {
     if (line.dots !== 5) add(4, `the visit preview has ${line.dots} stops, not five`);
     else {
       if (line.right < line.last - 4) add(4, `the line ends at ${line.right} px, short of stop 05 at ${line.last} px`);
-      const off = parseFloat(line.dash) || 0;
-      if (off > 2) add(4, `the line is not drawn in fully 3.6 s after the preview arrives (dash offset ${line.dash} of ${line.len})`);
+      const off = (parseFloat(line.dash) || 0) / (line.len || 1);   // the share of the line still undrawn (pathLength="1" on the page)
+      if (off > 0.01) add(4, `the line is not drawn in fully 3.6 s after the preview arrives (dash offset ${line.dash} of ${line.len})`);
       if (!line.morph) add(4, 'the preview does not morph into the step rail (no pv--morph)');
       if (inRail < 5) add(4, `${inRail} of five stops landed in the step rail at step 01`);
       if (back > 0) add(4, `${back} stops stayed in the rail after scrolling back to the preview (no reverse)`);
@@ -242,38 +252,41 @@ async function sixK(p, v, P, W, add, seen) {
   for (const g of soft) add(18, `"${g.where}": ${String(g.file).replace(/\?v=.*/, '')} (${g.nat[0]} px wide) is enlarged ${(g.scale * 2).toFixed(2)}x on J's 6K window, so it is soft`);
 }
 
-const PASSES = [
+export { desktop, phone, sixK, WORLDS };
+export const PASSES = [
   ['1440', { viewport: { width: 1440, height: 900 } }, desktop],
   ['390', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }, phone],
   ['6K', { viewport: { width: 3230, height: 1319 }, deviceScaleFactor: 2 }, sixK],
 ];
 
-fs.mkdirSync(OUT, { recursive: true });
-const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
-// the pool's pinned WebKit when %WEBKIT% is set (run-at-ref --asset WEBKIT: the job's own home has no Playwright browser), else Playwright's own
-const browser = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
-console.log('webkit', browser.version(), process.env.WEBKIT ? 'from the pool asset' : 'from Playwright');
-let red = 0;
-try {
-  for (const v of VERS) {
-    const off = {}, seen = {};
-    for (const [size, opts, fn] of PASSES) {
-      const ctx = await browser.newContext(opts);
-      const p = await open(ctx, `${base}/${v}/`);
-      for (const [w, P, W] of WORLDS) {
-        if (w === 'coaching') await toWorld(p, 'coaching');
-        await jump(p, 0); await wait(p, 400);
-        await fn(p, v, P, W, (n, m) => (off[n] ||= []).push(`${W}: ${m}`), seen);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  fs.mkdirSync(OUT, { recursive: true });
+  const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
+  // the pool's pinned WebKit when %WEBKIT% is set (run-at-ref --asset WEBKIT: the job's own home has no Playwright browser), else Playwright's own
+  const browser = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
+  console.log('webkit', browser.version(), process.env.WEBKIT ? 'from the pool asset' : 'from Playwright');
+  let red = 0;
+  try {
+    for (const v of VERS) {
+      const off = {}, seen = {};
+      for (const [size, opts, fn] of PASSES) {
+        const ctx = await browser.newContext(opts);
+        const p = await open(ctx, `${base}/${v}/`);
+        for (const [w, P, W] of WORLDS) {
+          if (w === 'coaching') await toWorld(p, 'coaching');
+          await jump(p, 0); await wait(p, 400);
+          await fn(p, v, P, W, (n, m) => (off[n] ||= []).push(`${W}: ${m}`), seen);
+        }
+        await ctx.close();
       }
-      await ctx.close();
+      const k = key(v);
+      fs.writeFileSync(path.join(OUT, `gate-rows-${v}-${k}.json`), JSON.stringify({ v, key: k, off, seen }, null, 1) + '\n');
+      const n = Object.keys(off).length; red += n;
+      console.log(`${v.toUpperCase()} ${k}: ` + (n ? 'OFF ' + Object.entries(off).map(([r, m]) => `row ${r}: ${m.join(' | ')}`).join(' || ') : 'every measured row holds'));
     }
-    const k = key(v);
-    fs.writeFileSync(path.join(OUT, `gate-rows-${v}-${k}.json`), JSON.stringify({ v, key: k, off, seen }, null, 1) + '\n');
-    const n = Object.keys(off).length; red += n;
-    console.log(`${v.toUpperCase()} ${k}: ` + (n ? 'OFF ' + Object.entries(off).map(([r, m]) => `row ${r}: ${m.join(' | ')}`).join(' || ') : 'every measured row holds'));
-  }
-} finally { await browser.close(); srv.close(); }
-// the run measured every page and wrote its result: the gate judges it, so a row that is off is not a failed run (a failed run
-// keeps no result where the gate reads it); exit 1 only when a page could not be measured (thrown above)
-console.log(red ? `${red} row(s) off: the gate (approved_gate.py) refuses on them` : 'every measured row holds');
-process.exit(0);
+  } finally { await browser.close(); srv.close(); }
+  // the run measured every page and wrote its result: the gate judges it, so a row that is off is not a failed run (a failed run
+  // keeps no result where the gate reads it); exit 1 only when a page could not be measured (thrown above)
+  console.log(red ? `${red} row(s) off: the gate (approved_gate.py) refuses on them` : 'every measured row holds');
+  process.exit(0);
+}
