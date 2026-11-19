@@ -383,6 +383,32 @@ def row16(sections, letter, site):     # the film sits in the step's stack with 
     return out
 
 
+DOOR = 'img/real-chair-window'      # the empty styling chair by the window, the door's room (task a78e6208, 0db4254)
+SPREAD = 'om-pause-guest'            # the 17 Nov editorial spread's picture (157192f): never the pause's default
+
+
+def row20(sections, letter, site):     # the pause is the door: its default the arched door on the empty chair by the window
+    """Both worlds open the pause on its door; the salon's door shows the empty chair by the window, the one J approved (17 Nov,
+    4925c43); Inner Work's door shows its own world's picture (its twin changes only words and pictures, 82ca02f; the owner
+    seated in the lounge since then). The 17 Nov editorial spread is never the default in either."""
+    out = []
+    for P, W in (('', 'Salon OM'), ('c-', 'Inner Work')):
+        sec = sections.get(f'{P}pause')
+        if sec is None:
+            out.append(f'{W}: the pause is missing'); continue
+        pics = [(x['attrs'].get('src') or '') for x in sec['pics']]
+        door = [x for x in sec['pics'] if 'br__ph' in x['above'] and (P or (x['attrs'].get('src') or '').startswith(DOOR))]
+        if not door:
+            out.append(f'{W}: the pause\'s default does not show '
+                       + ('its picture' if P else f'the empty chair by the window ({DOOR})')
+                       + ' in its door (.br__ph): ' + (', '.join(pics) or 'no picture'))
+        if any(SPREAD in x for x in pics):
+            out.append(f'{W}: the pause\'s default shows the 17 Nov editorial spread\'s picture ({SPREAD})')
+        if sec['attrs'].get('data-opt', 'live') != 'live':
+            out.append(f'{W}: the pause opens on option "{sec["attrs"].get("data-opt")}", not its default')
+    return out
+
+
 def row18(sections, letter, site):     # every picture's files are staged: its own and its widest size (the pixels: measured)
     out = []
     for w, P, W, ids in worlds(sections):
@@ -423,9 +449,10 @@ ROWS = {
     16: ('the film plays alongside the photo in each step', 'mg', row16),
     18: ('every picture sharp at its display size on J\'s 6K window', 'mgs', row18),
     19: ('the hero film and the Inner Work hero film', 'mgs', row19),
+    20: ('the pause is the door: the arched door on the empty chair by the window, never the 17 Nov spread', 'mg', row20),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
-MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs'}
+MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg'}
 # the rows only measured (no built-page check), by name for the refusal
 NAMES = {5: 'slides snap with a pull; a tall section scrolls freely inside, then pulls into the next',
          9: "option B's forests on buttons and marks, never mint", 17: 'the pause: no rings and no glow around its picture'}

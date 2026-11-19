@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Red/green proof for approved_gate.py (tasks 448f6e27, 6328eca1): python3 option-2.x-shared/source/test_approved_gate.py
 Red = the M page of commit 2fe0c558 (the films switched off); green = the pages of commit 23a1df7 (the films back) for rows 1,
-2, 16 and 19, and the live pages of ea42af6 for every row; each row's red is that live page with the row broken.
+2, 16 and 19, and the pages of 0db4254 (the door pause, shipped to live 19 Nov) for every row; each row's red is that page with
+the row broken.
 A commit that is not in this clone makes its tests skip, loudly, never pass."""
 import contextlib
 import io
@@ -14,8 +15,21 @@ import unittest
 sys.path.insert(0, os.path.dirname(__file__))
 import approved_gate as g
 
-RED, GREEN, LIVE = '2fe0c558', '23a1df7', 'ea42af6'
+RED, GREEN, LIVE = '2fe0c558', '23a1df7', '0db4254'
 FIRST = {1, 2, 16, 19}          # the rows the gate checked before task 6328eca1
+
+
+def span(html, sid):
+    """(start, end) of the <section> whose id is sid, its tag included (the option switcher's templates come earlier in the page
+    and carry the same markup, so a first-match replace would break a template, never the section)"""
+    i = html.index(f' id="{sid}"'); j = html.rindex('<section', 0, i); k = html.index('</section>', i) + len('</section>')
+    return j, k
+
+
+def in_section(html, sid, old, new):
+    j, k = span(html, sid)
+    assert old in html[j:k], f'{old!r} is not in section {sid}'
+    return html[:j] + html[j:k].replace(old, new, 1) + html[k:]
 
 
 def page(commit, letter):
@@ -140,10 +154,10 @@ class EveryRow(unittest.TestCase):
         self.red(4, self.m.replace('id="rail"', 'id="r"', 1), why='step rail')
 
     def test_4_the_preview_moved_away_from_the_steps(self):
-        a = re.search(r'<section class="s lnsec" id="visit".*?</section>\s*', self.m, re.S)
-        html = self.m[:a.start()] + self.m[a.end():]
-        html = html.replace('<section class="s s--auto av" id="aveda"', a.group(0) + '<section class="s s--auto av" id="aveda"', 1)
-        self.red(4, html, why='not step 01')
+        j, k = span(self.m, 'visit')
+        visit, html = self.m[j:k], self.m[:j] + self.m[k:]
+        a, _ = span(html, 'aveda')
+        self.red(4, html[:a] + visit + html[a:], why='not step 01')
 
     def test_6_no_photo_panel(self):
         self.red(6, self.m.replace('<div class="om__ph mn__ph"', '<div class="om__ph"', 1), why='photo panel')
@@ -181,14 +195,26 @@ class EveryRow(unittest.TestCase):
         self.red(14, html, why='closing slide')
 
     def test_15_a_heading_that_no_longer_writes_itself_in(self):
-        self.red(15, self.m.replace('<p class="mani__text" data-write="letters" data-accents="moment.">Take', '<p class="mani__text">Take', 1), why='letter by letter')
+        self.red(15, in_section(self.m, 'pause', '<p class="mani__text" data-write="letters" data-accents="moment.">Take', '<p class="mani__text">Take'), why='letter by letter')
 
     def test_15_the_heading_swapped(self):
-        self.red(15, self.m.replace('data-accents="moment.">Take a breath.', 'data-accents="moment.">Slow down now.', 1), why='Take a breath')
+        self.red(15, in_section(self.m, 'pause', 'data-accents="moment.">Take a breath.', 'data-accents="moment.">Slow down now.'), why='Take a breath')
 
     def test_18_a_picture_whose_widest_file_is_missing(self):
         html = re.sub(r'img/hd/om-menu-blonding-1171\.webp', 'img/hd/om-menu-blonding-9999.webp', self.m, count=1)
         self.red(18, html, why='404')
+
+    def pause(self, old, new):
+        return in_section(self.m, 'pause', old, new)
+
+    def test_20_the_17_nov_spread_back_as_the_default(self):
+        self.red(20, self.pause('src="img/real-chair-window.webp', 'src="img/om-pause-guest.webp'), why='editorial spread')
+
+    def test_20_the_door_frame_gone(self):
+        self.red(20, self.pause('class="br__ph"', 'class="br__pic"'), why='door (.br__ph)')
+
+    def test_20_the_pause_opens_on_another_option(self):
+        self.red(20, self.pause('data-opt="live"', 'data-opt="room"'), why='option "room"')
 
     def test_s_passes_and_breaks_on_its_own_rows(self):
         self.assertEqual(self.off(self.s, 's'), {})
@@ -208,12 +234,12 @@ class TheList(unittest.TestCase):
         rows = g.list_rows()
         if rows is None:
             raise unittest.SkipTest(f'the list is not on this machine: {g.LIST}')
-        self.assertEqual(rows, list(range(1, 20)))
+        self.assertEqual(rows[:19], list(range(1, 20)))
         self.assertEqual(g.unchecked(rows), [])
 
     def test_a_new_row_without_its_check_is_refused(self):
-        code, _, err = self.gate(list(range(1, 21)))
-        self.assertEqual(code, 1); self.assertIn('row(s) 20', err)
+        code, _, err = self.gate(list(range(1, 22)))
+        self.assertEqual(code, 1); self.assertIn('row(s) 21', err)
 
     def test_an_unreadable_list_is_refused(self):
         keep = g.list_rows

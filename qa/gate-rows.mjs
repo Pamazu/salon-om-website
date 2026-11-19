@@ -33,7 +33,7 @@ const WORLDS = [['salon', '', 'Salon OM'], ['coaching', 'c-', 'Inner Work']];
 const topOf = (p, id) => p.evaluate((id) => { const e = document.getElementById(id); return e ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
 const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 
-// 1440 x 900: rows 4, 5, 6, 8, 9, 12, 14, 15, 17
+// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20
 async function desktop(p, v, P, W, add, seen) {
   const vh = 900;
   // row 9: every green on the page is one of option B's forests (a green = its green clearly above its red and blue)
@@ -181,6 +181,7 @@ async function desktop(p, v, P, W, add, seen) {
     if (pause.rings) add(17, `${pause.rings} ring line(s) are drawn in the pause`);
     if (pause.shadow.length) add(17, `a shadow around ${pause.shadow.slice(0, 3).join(', ')} in the pause`);
     if (pause.glow.length) add(17, `a glow (radial gradient) on ${pause.glow.slice(0, 3).join(', ')} in the pause`);
+    await door(p, P, W, add, seen, '1440');
   }
 
   // row 4: the visit preview's line reaches 05, its stops travel into the step rail at step 01, and back in reverse (M, G)
@@ -210,8 +211,30 @@ async function desktop(p, v, P, W, add, seen) {
   }
 }
 
-// 390 x 844 phone: rows 6 and 14
+// row 20: the pause is the door: its picture (the salon's: the empty chair by the window; Inner Work's its own, never the 17 Nov
+// spread's guest), in a frame arched at the top (both top corners
+// rounded to at least 40 % of its width), opened (the door parts from a thin line, clip-path inset 49.6 %, to the full frame)
+async function door(p, P, W, add, seen, size) {
+  const d = await p.evaluate((P) => {
+    const s = document.getElementById(`${P}pause`), f = s && s.querySelector('.br__ph'), i = f && f.querySelector('img');
+    if (!f || !i) return null;
+    const r = f.getBoundingClientRect(), c = getComputedStyle(f);
+    return { w: Math.round(r.width), h: Math.round(r.height), tl: parseFloat(c.borderTopLeftRadius), tr: parseFloat(c.borderTopRightRadius),
+      clip: c.clipPath, src: (i.currentSrc || i.src).replace(/^.*\/img\//, 'img/').replace(/\?.*/, ''), shown: i.complete && i.naturalWidth > 0 };
+  }, P);
+  seen[`20 ${W} ${size}`] = d;
+  if (!d) return add(20, `at ${size} the pause has no door (.br__ph) with its picture`);
+  if (!P && !/real-chair-window/.test(d.src)) add(20, `at ${size} the door shows ${d.src}, not the empty chair by the window`);
+  if (/om-pause-guest/.test(d.src)) add(20, `at ${size} the door shows the 17 Nov editorial spread's picture (${d.src})`);
+  if (!d.shown) add(20, `at ${size} the door's picture did not load`);
+  if (Math.min(d.tl, d.tr) < 0.4 * d.w) add(20, `at ${size} the door is not arched (top corners ${d.tl} and ${d.tr} px on a ${d.w} px frame)`);
+  if (/49\.6%/.test(d.clip || '')) add(20, `at ${size} the door has not opened 5 s after the pause arrived (${d.clip})`);
+}
+
+// 390 x 844 phone: rows 6, 14 and 20
 async function phone(p, v, P, W, add, seen) {
+  const yp = await topOf(p, `${P}pause`);
+  if (yp >= 0) { await jump(p, Math.max(0, yp - 844)); await wait(p, 500); await jump(p, yp); await wait(p, 5200); await door(p, P, W, add, seen, '390'); }
   const ys = await topOf(p, `${P}services`);
   if (ys >= 0) {
     const h = await p.evaluate((P) => document.getElementById(`${P}services`).getBoundingClientRect().height, P);

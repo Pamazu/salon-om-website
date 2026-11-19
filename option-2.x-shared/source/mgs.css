@@ -627,7 +627,9 @@ html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark { background: var
 html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .mani__label { color: var(--ivory-soft); }
 html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .mani__text .acc { color: var(--forest-light); }
 html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .mani__ring circle { stroke: rgba(245, 238, 228, .14); }
-html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .mani__ring circle + circle { stroke: rgba(143, 203, 164, .3); }
+/* its second ring in lifted forest, never mint (approved-features row 9, option B; the client, 19 Oct: "This mint grint is not
+   the one that we want") */
+html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .mani__ring circle + circle { stroke: rgba(63, 148, 101, .3); }
 html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .mani__proof, html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .cy__answer { color: var(--ivory-soft); }
 html[data-variant^="2.2-"] main[data-world="salon"] .mani.dark .cy__reward { color: var(--ivory); }
 /* a section taller than the window scrolls under the header: the header takes that section's ground, so a row never
