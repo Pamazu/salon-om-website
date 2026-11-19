@@ -28,6 +28,11 @@
     return out;
   }
   function gauss(d, w, h, sigma) { var r = Math.max(1, Math.round((Math.sqrt(4 * sigma * sigma + 1) - 1) / 2)); return blurRows(blurRows(blurRows(d, w, h, r), w, h, r), w, h, r); }
+  function turn(d, w, h) {                                            // rows become columns, so the sideways pass also blurs down
+    var o = new Uint8ClampedArray(d.length);
+    for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var i = (y * w + x) * 4, j = (x * h + y) * 4; o[j] = d[i]; o[j + 1] = d[i + 1]; o[j + 2] = d[i + 2]; o[j + 3] = d[i + 3]; }
+    return o;
+  }
   function streakTexture() {          // the ribs, too fine to see one by one: a soft, irregular vertical streak, never a stripe
     if (streak) return streak;
     var sc = document.createElement('canvas'); sc.width = 1024; sc.height = 4; var g = sc.getContext('2d'), im = g.createImageData(1024, 4);
@@ -77,7 +82,7 @@
       var hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 76, f = Math.ceil(hdr + 14 + me.wd.offsetHeight + (el.clientWidth < 700 ? 92 : 40));
       me.set(el, 'mh', 'minHeight', f > innerHeight ? f + 'px' : '');
     };
-    this.fit(); if ('ResizeObserver' in window) new ResizeObserver(function () { me.fit(); }).observe(this.wd); else addEventListener('resize', this.fit);
+    this.fit(); if ('ResizeObserver' in window) new ResizeObserver(function () { me.fit(); me.fz = null; }).observe(this.wd); else addEventListener('resize', function () { me.fit(); me.fz = null; });
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; if (me.vis) start(); }, { rootMargin: '15% 0px' }).observe(el); else this.vis = true;
     // the photo loads a screen and a half ahead, so its smears are made before the section arrives and its entry (the picture
     // settling in, the words appearing: mgs.css) plays on the drawn sheet as it comes on screen (task 4739f125)
@@ -178,6 +183,28 @@
     d.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'; this.wx = x; this.wy = y;
   };
   Stage.prototype.wz = function () { return [this.wx + 10, this.wy, this.wx + this.wd.offsetWidth - 20, this.wy + this.wdH]; };
+  // the frost behind the words, shaped by the words themselves (task 4739f125; J 19 Nov 14:25 Z: "it looks too square ... The
+  // edge is very small and very clear. If you can blend it more so that the edge merges with the surroundings"): each line of
+  // text and each button, widened a little, drawn on a small canvas and blurred far (a Gaussian about a twentieth of the stage
+  // wide), then lifted so every letter stands on the full frost; the frost melts away over a long distance around the lines'
+  // own ragged shape, never a rectangle. Made when the words change size (the stage's ResizeObserver), never per frame.
+  Stage.prototype.shape = function () {
+    var wd = this.wd; if (!wd.offsetHeight) return;
+    var b = wd.getBoundingClientRect(), W = this.el.clientWidth, fs = parseFloat(getComputedStyle(wd).fontSize) || 17;
+    var sg = clamp(W * .05, 50, 180), P = Math.max(26, fs * 1.5), M = Math.ceil(3.2 * sg + P), k = .125;
+    var cw = Math.ceil((b.width + 2 * M) * k), ch = Math.ceil((b.height + 2 * M) * k), cv = document.createElement('canvas'), g = cv.getContext('2d');
+    cv.width = cw; cv.height = ch; g.fillStyle = '#000'; g.fillRect(0, 0, cw, ch); g.fillStyle = '#fff';
+    var add = function (r) { if (r.width >= 1 && r.height >= 1) g.fillRect((r.left - b.left + M - P) * k, (r.top - b.top + M - P) * k, (r.width + 2 * P) * k, (r.height + 2 * P) * k); };
+    var tw = document.createTreeWalker(wd, NodeFilter.SHOW_TEXT), rg = document.createRange(), n;
+    while ((n = tw.nextNode())) { if (!n.nodeValue.trim() || n.parentNode.closest('.btn')) continue; rg.selectNodeContents(n); [].forEach.call(rg.getClientRects(), add); }
+    [].forEach.call(wd.querySelectorAll('.btn'), function (e) { add(e.getBoundingClientRect()); });
+    var d = g.getImageData(0, 0, cw, ch).data, s = sg * k;
+    d = turn(gauss(turn(gauss(d, cw, ch, s), cw, ch), ch, cw, s), ch, cw);
+    var im = g.createImageData(cw, ch);
+    for (var i = 0; i < d.length; i += 4) im.data[i + 3] = Math.min(255, d[i] * 1.9);       // the lines' own area: full frost
+    g.putImageData(im, 0, 0);
+    this.fz = { url: 'url(' + cv.toDataURL('image/png') + ')', M: M, w: (b.width + 2 * M).toFixed(0) + 'px ' + (b.height + 2 * M).toFixed(0) + 'px' };
+  };
   Stage.prototype.draw = function (t) {
     var r = this.el.getBoundingClientRect(), W = r.width, H = r.height, vh = innerHeight, L = this.L;
     this.wdH = this.wd.offsetHeight; this.hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 76;
@@ -202,9 +229,14 @@
     this.el.classList.toggle('sh--glow', !!o.glow);
     this.set(L.streak, 'stx', 'backgroundPosition', (o.ph || 0).toFixed(1) + 'px 0'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
     this.set(L.milk, 'mo', 'opacity', Math.min(.95, o.haze * (.55 + .45 * o.dist) + .05).toFixed(3));
-    var wz = o.wz, fm = soft(wz[0] - 10, wz[2] + 10, wz[1] - 10, wz[3] + 10, 100);      // the frost behind the words fades out on every side
-    this.set(L.frost, 'fm', 'webkitMaskImage', fm); this.set(L.frost, 'fm2', 'maskImage', fm);
-    this.set(L.frost, 'fc', 'webkitMaskComposite', 'source-in'); this.set(L.frost, 'fc2', 'maskComposite', 'intersect');
+    if (!this.fz) this.shape();
+    var fz = this.fz, fp = fz ? (this.wx - fz.M).toFixed(0) + 'px ' + (this.wy - fz.M).toFixed(0) + 'px' : '';   // the frost, shaped by the words (shape())
+    if (fz) {
+      this.set(L.frost, 'fm', 'webkitMaskImage', fz.url); this.set(L.frost, 'fm2', 'maskImage', fz.url);
+      this.set(L.frost, 'fs', 'webkitMaskSize', fz.w); this.set(L.frost, 'fs2', 'maskSize', fz.w);
+      this.set(L.frost, 'fp', 'webkitMaskPosition', fp); this.set(L.frost, 'fp2', 'maskPosition', fp);
+      this.set(L.frost, 'fr', 'webkitMaskRepeat', 'no-repeat'); this.set(L.frost, 'fr2', 'maskRepeat', 'no-repeat');
+    }
     this.set(L.frost, 'fo', 'opacity', o.wzI.toFixed(3));
     this.set(L.rain, 'rb', 'backgroundImage', rainbow(o.rbC[0], o.rbC[1], o.rbC[2])); this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
     if (o.thick > 0) {
