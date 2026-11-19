@@ -10,7 +10,10 @@
      3. A step's sound ready before the step: each section's sound loads a screen before the section arrives, the crossfade
         keeps the level (equal power), and the sound before stays until the new one plays, so a change never dips. */
   var Sound = (function () {
-    var SRC = { bed: 'sound/bed.mp3', earth: 'sound/earth.mp3', water: 'sound/water.mp3', fire: 'sound/fire.mp3', air: 'sound/air.mp3', ether: 'sound/ether.mp3' };
+    // the same sounds 22 % lighter (task 5cb93228): Apple AAC in .m4a, 80 kb/s (water 96, whose loop joins cleanly only there),
+    // each closer to today's MP3 than one more MP3 generation (qa/sound-compare.mjs) and joining where the page loops it as
+    // the MP3 does in WebKit's own decode (qa/sound-seam.mjs); 2.2-2.4 keep the MP3s
+    var SRC = { bed: 'sound/bed.m4a', earth: 'sound/earth.m4a', water: 'sound/water.m4a', fire: 'sound/fire.m4a', air: 'sound/air.m4a', ether: 'sound/ether.m4a' };
     var NEXT = { bed: 'earth', earth: 'water', water: 'fire', fire: 'air', air: 'ether', ether: 'bed' };
     var PAD = 0.5, LOOP = 90, LEVEL = 0.85, XFADE = 3, FIRST = 0.3, HAND = 0.4;
     var ctx = null, master = null, tracks = {}, bytes = {}, bufs = {}, near = {}, on = false, current = null, target = 'bed', heard = false;
