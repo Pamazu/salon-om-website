@@ -20,7 +20,7 @@
   background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .32s var(--io), color .32s var(--io); }
 .opt__row:hover { background: rgba(245, 238, 228, .08); }
 .opt__row:focus-visible, .opt__chips button:focus-visible, .opt__go button:focus-visible, .opt-handle:focus-visible { outline: 2px solid rgba(245, 238, 228, .9); outline-offset: 2px; }
-.opt__row b { flex: none; width: 22px; height: 22px; display: grid; place-items: center; margin-top: -1px; border-radius: 50%; background: rgba(245, 238, 228, .1);
+.opt__row b { flex: none; min-width: 22px; height: 22px; padding: 0 4px; display: grid; place-items: center; margin-top: -1px; border-radius: 50%; background: rgba(245, 238, 228, .1);
   font: 500 11px/1 var(--sans); color: rgba(245, 238, 228, .72); transition: background-color .32s var(--io), color .32s var(--io); }
 .opt__row span { display: grid; gap: 3px; }
 .opt__row small { font-size: 12.5px; line-height: 1.4; color: rgba(23, 17, 13, .66); }
@@ -44,6 +44,8 @@
 .opt-handle svg { width: 18px; height: 18px; }
 .opt-open .opt-handle { background: rgba(21, 16, 12, .78); }
 @media (hover: none) and (pointer: coarse) { .opt-handle { display: grid; } }
+/* with a mouse the rows sit closer, so a section's ten options and the page's own fit a laptop's screen; touch keeps 44 px */
+@media (hover: hover) and (pointer: fine) { .opt__row { min-height: 36px; padding-top: 7px; padding-bottom: 7px; } .opt__list { gap: 2px; } .opt__sec { margin-bottom: 6px; } .opt__page { margin-top: 6px; padding-top: 8px; } }
 @media (max-width: 760px) { .opt { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); } }
 /* a swap: the section's content fades out, the chosen option fades in and plays its own entrance */
 .s.opt-out > * { opacity: 0 !important; transition: opacity .24s var(--io) !important; }

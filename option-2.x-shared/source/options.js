@@ -129,7 +129,7 @@
       menu.forEach(function (o, i) {
         var sel = o.k === on;
         h += '<button type="button" class="opt__row" role="radio" aria-checked="' + sel + '" data-key="' + esc(key) + '" data-k="' + esc(o.k) + '">'
-          + '<b aria-hidden="true">' + (i < 9 ? i + 1 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span></button>';
+          + '<b aria-hidden="true">' + (i < 9 ? i + 1 : i === 9 ? 0 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span></button>';
       });
       h += '</div>';
     } else {
@@ -157,8 +157,8 @@
     if (e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey && (e.code === 'KeyV' || e.key === 'V' || e.key === 'v')) { e.preventDefault(); show(!open); return; }
     if (!open || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === 'Escape') { show(false); return; }
-    if (/^[1-9]$/.test(e.key)) {
-      var b = panel.querySelectorAll('.opt__row')[+e.key - 1]; if (b) { e.preventDefault(); b.click(); }
+    if (/^[0-9]$/.test(e.key)) {      // 1-9 the first nine options, 0 the tenth
+      var b = panel.querySelectorAll('.opt__row')[e.key === '0' ? 9 : +e.key - 1]; if (b) { e.preventDefault(); b.click(); }
     }
   }, true);
   function q() { if (open && !queued) { queued = true; requestAnimationFrame(function () { queued = false; draw(false); }); } }
