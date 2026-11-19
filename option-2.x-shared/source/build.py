@@ -18,7 +18,12 @@ def _mgs_engine():
     js = JS[:a] + open(V + 'mgs_sound.js').read() + JS[b:]
     old = 'if (pendingSound && performance.now() - pendingSince > 350) Sound.go(pendingSound);'
     assert js.count(old) == 1, 'engine.js: the sound debounce line moved'
-    return js.replace(old, old.replace('> 350', '> 120'))
+    js = js.replace(old, old.replace('> 350', '> 120'))
+    # the films are mgs.js's alone (nearest first, task 5cb93228): the engine's frame loop still says which film is wanted, but no
+    # longer starts one itself; it did so for the opening film before mgs.js ran, asking for the H.264 file the twin then replaced
+    film = '        if (r.top < vh * 2 && r.bottom > -vh) attach(v);\n'
+    assert js.count(film) == 1, 'engine.js: the film attach line moved'
+    return js.replace(film, '')
 TW_JS = open(V + 'tweaks.js').read()
 TW_CSS = open(V + 'tweaks.css').read()
 # extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)

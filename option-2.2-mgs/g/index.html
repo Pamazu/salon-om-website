@@ -4132,7 +4132,6 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
       if (Math.abs(q - st.q) > 0.0005) { st.q = q; s.style.setProperty('--q', q.toFixed(4)); }
       var v = films[i];
       if (v) {
-        if (r.top < vh * 2 && r.bottom > -vh) attach(v);
         var want = visible > 0;
         if (want !== v._want) { v._want = want; if (want) play(v); else v.pause(); }
       }
@@ -4658,13 +4657,28 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   // ahead, let go once it is more than two screens away in either direction (or its world is hidden)
   var of = new Map();
   films.forEach(function (v) { var s = v.closest('.s') || v; of.set(s, (of.get(s) || []).concat(v)); });
+  /* nearest first (task 5cb93228, J 18 Nov: "Ensure films, music all is extremely fast so the experience is seamless"):
+     measured on one shared 4G line, coming near the first step attached three step films at once (3.8 + 5.9 + 2.0 MB) and
+     the step's own film moved only after 8.4 s. So of the films within two screens, every film on screen loads at once, and
+     of the others only the nearest, the next one once it can play (or 4 s on, so a stalled film never holds the rest). */
+  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom < 0 ? -r.bottom : r.top > innerHeight ? r.top - innerHeight : 0; }
+  function ready(v) { return !v.paused || v.readyState >= 3 || (v._img && v._img.complete) || performance.now() - v._from > 4000; }
+  function pump() {
+    if (calm) return; var busy = false;
+    films.filter(function (v) { return v._near; }).map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; })
+      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
+  }
   var io = new IntersectionObserver(function (es) {
-    es.forEach(function (e) { of.get(e.target).forEach(e.isIntersecting ? attach : release); });
+    es.forEach(function (e) { of.get(e.target).forEach(function (v) { v._near = e.isIntersecting; if (!v._near) release(v); }); });
+    pump();
   }, { rootMargin: '200% 0px 200% 0px' });
   of.forEach(function (vs, s) { io.observe(s); });
+  films.forEach(function (v) { ['canplay', 'canplaythrough', 'playing'].forEach(function (ev) { v.addEventListener(ev, pump); }); });
+  var pumping = false; addEventListener('scroll', function () { if (!pumping) { pumping = true; requestAnimationFrame(function () { pumping = false; pump(); }); } }, { passive: true });
   ['touchend', 'click', 'keydown'].forEach(function (ev) { addEventListener(ev, function () { films.forEach(go); }, { passive: true }); });
-  // a wanted film that is still paused a moment after it came into view (a refused play, a stalled start) is asked again
-  setInterval(function () { if (!document.hidden) films.forEach(go); }, 1500);
+  // a wanted film that is still paused a moment after it came into view (a refused play, a stalled start) is asked again,
+  // and the next film in line starts loading once the one before it can play
+  setInterval(function () { if (!document.hidden) { pump(); films.forEach(go); } }, 1500);
 })();
 /* Each picture at the size the screen needs (task b1dd24c9): build.py gives M/G/S pictures a srcset, which a browser
    prefers to src. The tweak panel (tweaks.js, shared with 2.2) swaps a picture by setting its src, so while a picture
