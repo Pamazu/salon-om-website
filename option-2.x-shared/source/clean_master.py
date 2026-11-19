@@ -10,7 +10,7 @@ photographer's full-size original, with the clean copy's pixels only where the c
   2. the clean copy, upscaled 4x on SeedVR2 (local), is fitted to the original's colour around each patch and blended in
      with a soft edge; every other pixel is the original's
 
-  ~/StoryForge/ComfyUI/.venv/bin/python option-2.x-shared/source/clean_master.py <key> [--mask-only]   (key: 10, 11, 6, 4)
+  ~/StoryForge/ComfyUI/.venv/bin/python option-2.x-shared/source/clean_master.py <key> [--mask-only]   (key: 10, 11, 6, 6e, 4)
 Masks and previews go to MASTERS/check/, the master to MASTERS/<n>-clean.jpg (read by export_photos.py).
 """
 import os, sys
@@ -29,8 +29,18 @@ PHOTOS = {
     '11': ('11-styling-stations.jpg', '11-styling-stations-clean.png', '11-styling-stations-5B3A1083.jpg', 'sr/11c.png', 55, [], [(50, 735, 250, 1240)]),   # the cart's legs over the black mat
     '6': ('6-shampoo-basins.jpg', '6-shampoo-basins-clean.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6c.png', 55, [(590, 185, 745, 300), (865, 95, 1085, 245)], [(600, 300, 710, 395), (895, 240, 1040, 370), (840, 55, 1060, 118), (995, 245, 1280, 854), (1085, 0, 1280, 245)]),   # KEEP both shelves with their real bottles (the clean copy's 'litre bottles only' wrote fake brand text, ACTEDA, readable at 1:1, 18 Nov); ADD whole blocks (a tight mask left ghosts): the two wire racks, the lamp's arc over the cabinet, and the right side (the lamp's pole, the hair vacuum, the blurred foreground). Where the lamp crosses the real bottles it is removed after this by a local FLUX.2 Klein edit of two 1024 crops (5300,560 and 5900,560; seed 7), pasted with band_paste.py over the lamp band only (cabinet edge kept above y = 2333 - 0.3x; crop B fades in over 400 px); outside the band every pixel is this master's
     '4': ('4-styling-chair-window.jpg', '4-styling-chair-window-clean.png', '4-styling-chair-window-5B3A1068.jpg', 'sr/4c.png', 55, [], [(18, 600, 92, 880)]),   # the pause (task a78e6208): the bin by the window and the hair vacuum's hose, removed in the 20 Oct clean copy; ADD the hose's whole run down the wall (the threshold caught only its ends)
+    # task 69006a72 (J 19 Nov 12:01 Z: "You have not yet used the approved image the one with the organized and cleaned up beauty
+    # products"): J's 25 Oct picture itself at full size. Its edit is the clean copy; the mask is everything it changed (the four
+    # product zones, the lamp's arc and pole, the bin, the eye vac) plus key 6's right-side blocks (the pole's ghosts, 18 Nov); the
+    # poster stays the photographer's (KEEP, then PATCH from key 6's master where the lamp's tip was removed). Its bottles' made-up
+    # words are rewritten after this from the real labels on the same slots (basins_labels, task 69006a72)
+    '6e': ('6-shampoo-basins.jpg', '6-shampoo-basins-edit.png', '6-shampoo-basins-5B3A1072.jpg', 'sr/6e.png', 55, [(735, 140, 884, 395)], [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (888, 232, 1038, 368), (830, 55, 1075, 170), (1030, 150, 1090, 600), (1045, 245, 1280, 854), (955, 570, 1110, 770), (1085, 0, 1280, 245)]),
 }
-OUT = {'10': '10-color-bar-clean.jpg', '11': '11-styling-stations-clean.jpg', '6': '6-shampoo-basins-clean.jpg', '4': '4-styling-chair-window-clean.jpg'}
+# a box (1280 px) whose pixels come from another master after the patch: 6e's poster from key 6's master, the lamp's tip already
+# removed there, so no re-rendered letter lands on the poster
+PATCH = {'6e': ('6-shampoo-basins-clean.jpg', (735, 140, 884, 395))}
+OUT = {'10': '10-color-bar-clean.jpg', '11': '11-styling-stations-clean.jpg', '6': '6-shampoo-basins-clean.jpg', '4': '4-styling-chair-window-clean.jpg',
+       '6e': '6-shampoo-basins-25oct-enlarged.jpg'}
 
 
 def fit(src, ref, w=None):
@@ -94,6 +104,10 @@ def master(key, m):
     S = fit(S, O, np.repeat(np.repeat(ring, 4, 0), 4, 1)[:O.shape[0], :O.shape[1]])   # the patch takes the original's colour
     a = ndimage.gaussian_filter(M, 10)[..., None]                                       # a soft 10 px edge at full size
     out = O * (1 - a) + S * a
+    if key in PATCH:
+        f, (x0, y0, x1, y1) = PATCH[key]; k = O.shape[1] / 1280
+        X0, Y0, X1, Y1 = (round(v * k) for v in (x0, y0, x1, y1))
+        out[Y0:Y1, X0:X1] = np.asarray(Image.open(MASTERS + f).convert('RGB'), dtype=np.float32)[Y0:Y1, X0:X1]
     Image.fromarray(np.clip(out, 0, 255).round().astype(np.uint8)).save(MASTERS + OUT[key], quality=96, subsampling=0)
     print(key, '->', MASTERS + OUT[key], O.shape[1::-1])
 

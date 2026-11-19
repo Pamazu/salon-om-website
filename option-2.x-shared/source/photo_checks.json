@@ -1,0 +1,29 @@
+{
+ "om-menu-blonding.webp": {
+  "bar": 0.6,
+  "files": {
+   "img/hd/om-menu-blonding-1171.webp": "b7e5bc19828114e1d188fcbad2485c94e16fe3aa7fb39f575846e9e8f674afb5",
+   "img/hd/om-menu-blonding-640.webp": "c9a0be122ebad908eb9c35dceb340470542c15499d197aa4925b36342bd64f31",
+   "img/hd/om-menu-blonding-960.webp": "b613c3ebcf24debf15635fed996ebf68162fcd03a68fff32fb310d690ba9509e",
+   "img/om-menu-blonding.webp": "15a357fa32284200b220ec9a2e22762ffdc4ca7e8d9d02f9ed15f77a20a5749f"
+  },
+  "measure": 0.782,
+  "room": "6-shampoo-basins-25oct.jpg"
+ },
+ "real-shampoo-basins.webp": {
+  "bar": 0.6,
+  "files": {
+   "img/hd/real-shampoo-basins-1280.webp": "e0f1c2483c39b88fb60d76872aafc490aac5e004112abc64a049e3d33d1c1a15",
+   "img/hd/real-shampoo-basins-1920.webp": "c6ba6fdb68dad69d5c5ff3e731d0ff6996179dd059703790cc0485ea0662d18a",
+   "img/hd/real-shampoo-basins-2560.webp": "8f6b4fff300b033fc7938e90b01400e063ff5a24e4db0d7d40b838e4b1b4f2bc",
+   "img/hd/real-shampoo-basins-3840.webp": "63f293952f40c932de1dbbf9d243fbb69cf1f82f1a551869b03045c2c9534b79",
+   "img/hd/real-shampoo-basins-5120.webp": "ad8430f79fbf371c794beca5e2b9eb4793701032e35038236032cf5f1908af1d",
+   "img/hd/real-shampoo-basins-640.webp": "15e3cd63bdf8745f3d8b154a20b87802e4c8a7c0972995c734f060d34be8bea9",
+   "img/hd/real-shampoo-basins-6400.webp": "1069edf94943fc1fec69f057e6f4c2a5f9b327dad2f4851345230861dc567dde",
+   "img/hd/real-shampoo-basins-8192.webp": "e7036be88c06934c361f5d79648c55e50a7f766266fafa7389898b811d6e3784",
+   "img/hd/real-shampoo-basins-960.webp": "d3eb71821a8b6eb1c77cf4819fec27dcf5b96fb52960f0349579687464133c48"
+  },
+  "measure": 0.968,
+  "room": "6-shampoo-basins-25oct.jpg"
+ }
+}
