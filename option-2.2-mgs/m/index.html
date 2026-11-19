@@ -2196,6 +2196,12 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--breath .ps__stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; }
 .ps--breath .ps__pic { position: absolute; inset: 0; clip-path: inset(var(--ct) var(--cs) var(--ct) var(--cs) round var(--cr)); transform: scale(var(--sc)); }
 .ps--breath .ps__pic img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 55%; display: block; }
+/* a screen wider than the photos' real pixels stay sharp edge to edge (J's 6K window; approved row 18: "sharp at its display size
+   on J's largest screen ... never upscaled soft"): the room opens to a large rounded frame of the width they hold, never soft */
+@media (min-width: 2401px) {
+  .ps--breath .ps__pic { left: calc(50% - 1200px); right: calc(50% - 1200px); top: 4vh; bottom: 4vh;
+    clip-path: inset(var(--ct) var(--cs) var(--ct) var(--cs) round max(var(--cr), var(--r-photo, 28px))); }
+}
 .ps--breath .ps__dim { position: absolute; inset: 0; background: rgba(21, 16, 12, var(--dim)); }
 .ps--breath .ps__words { position: relative; z-index: 2; text-align: center; display: grid; gap: 22px; justify-items: center; padding: 0 6vw; }
 .ps--breath .ps__sub { opacity: 0; transform: translate3d(0, 14px, 0); transition: opacity 1.4s var(--io), transform 1.4s var(--io); }
@@ -3251,7 +3257,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="9bbc2529ea86";</script>
+<script>window.OM_BUILD="ec343d4a572e";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v

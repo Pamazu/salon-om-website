@@ -224,14 +224,15 @@ async function door(p, P, W, add, seen, size) {
   }, P);
   const d0 = await read();
   if (!d0) { seen[`20 ${W} ${size}`] = null; return add(20, `at ${size} the pause is not B · The breath (.ps--breath) with its room picture`); }
-  await jump(p, d0.y + Math.round(d0.span * 0.6)); await wait(p, 900);
-  const d1 = await read();
-  seen[`20 ${W} ${size}`] = { ...d0, open: d1 && d1.top };
+  const want = d0.y + Math.round(d0.span * 0.6);
+  await jump(p, want); await wait(p, 900);
+  const d1 = await read(), at = await p.evaluate(() => Math.round(scrollY));     // where the page really stands: a pull would show here
+  seen[`20 ${W} ${size}`] = { ...d0, open: d1 && d1.top, want, at };
   if (!P && !/real-chair-window/.test(d0.src)) add(20, `at ${size} the breath opens on ${d0.src}, not the empty chair by the window`);
   if (/om-pause-guest/.test(d0.src)) add(20, `at ${size} the breath shows the 17 Nov editorial spread's picture (${d0.src})`);
   if (!d0.shown) add(20, `at ${size} the breath's picture did not load`);
   if (!(d0.top > 40)) add(20, `at ${size} the room does not start as a thin line as the pause arrives (clip inset ${d0.top} %)`);
-  if (!(d1 && d1.top !== null && d1.top < 5)) add(20, `at ${size} the room has not opened 60 % of the way through the pause (clip inset ${d1 && d1.top} %)`);
+  if (!(d1 && d1.top !== null && d1.top < 5)) add(20, `at ${size} the room has not opened 60 % of the way through the pause (clip inset ${d1 && d1.top} %; the page at ${at} px, asked ${want})`);
   await jump(p, d0.y); await wait(p, 300);
 }
 
