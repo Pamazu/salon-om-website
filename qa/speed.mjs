@@ -17,8 +17,13 @@ const PAGES = process.env.PAGES || path.join(REPO, 'option-2.2-mgs');
 // H2=1: HTTP/2 over TLS as the live Firebase sites serve (every file on one connection, so a film never queues for one
 // of HTTP/1.1's six); the key and certificate are a local self-signed pair (H2_DIR, default ~/tmp/12ad020c/speed)
 const H2 = process.env.H2 === '1', H2_DIR = process.env.H2_DIR || path.join(os.homedir(), 'tmp/12ad020c/speed');
+// LOG=1: each case's row also lists every request (file, range, when it was asked and finished, bytes sent, ms from the
+// case's start) and the moments of the case (page asked, click, near the step, at the step), to see what holds the line
+const LOG = process.env.LOG === '1'; let reqs = [], tCase = 0;
 const handler = (req, res) => {
   const u = decodeURIComponent(new URL(req.url, 'http://x').pathname); const m = u.match(/^\/([mgs])\/(.*)$/);
+  const rec = LOG ? { f: m ? (m[2] || 'index.html') : u, range: req.headers.range || '', ask: Date.now() - tCase, sent: 0 } : null;
+  if (rec) { reqs.push(rec); res.on('close', () => { rec.end = Date.now() - tCase; }); }
   if (!m) { res.writeHead(404); return res.end(); }
   const file = !m[2] || m[2] === 'index.html' ? path.join(PAGES, m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
   fs.stat(file, (err, st) => {
@@ -31,7 +36,7 @@ const handler = (req, res) => {
       res.writeHead(code, h); const s = fs.createReadStream(file, { start: a, end: z, highWaterMark: 16384 });
       if (!BPS) return s.pipe(res);
       // one line shared by every file at once, as a phone's 4G is: each chunk waits for the line to be free
-      s.on('data', (c) => { s.pause(); const now = Date.now(); line = Math.max(line, now) + c.length / BPS * 1000; setTimeout(() => { res.write(c); s.resume(); }, line - now); });
+      s.on('data', (c) => { if (rec) rec.sent += c.length; s.pause(); const now = Date.now(); line = Math.max(line, now) + c.length / BPS * 1000; setTimeout(() => { res.write(c); s.resume(); }, line - now); });
       // the end goes after the last chunk, which waits for the line too
       s.on('end', () => setTimeout(() => res.end(), Math.max(0, line - Date.now()) + 1)); res.on('close', () => s.destroy());
     }, LAT);
@@ -70,6 +75,7 @@ const rows = [];
 // hangs (the pool's WebKit sometimes stops answering mid-run, 19 Nov) can be closed and tried again
 async function one(v, w, box) {
   line = 0;      // the shared line starts free for each case
+  reqs = []; tCase = Date.now(); const marks = {};
   const b = box.b = await pw.webkit.launch();
   const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
   await ctx.addInitScript(PROBE);
@@ -79,7 +85,7 @@ async function one(v, w, box) {
   let heroMs = null;
   for (let i = 0; i < 300 && heroMs === null; i++) { if (await p.evaluate(() => { const x = document.querySelector('#top video'); return !!x && x.currentTime > 0.05 && !x.paused; })) heroMs = Date.now() - t0; else await p.waitForTimeout(50); }
   await p.waitForTimeout(Math.max(0, 3000 - (Date.now() - t0)));      // a visitor reads the opening for about 3 s, then clicks
-  const tc = Date.now(); await p.mouse.click(w / 2, 300);
+  const tc = Date.now(); marks.click = tc - tCase; await p.mouse.click(w / 2, 300);
   let soundMs = null;
   for (let i = 0; i < 300 && soundMs === null; i++) { if (await p.evaluate(() => window.__perf.level() >= 0.1)) soundMs = Date.now() - tc; else await p.waitForTimeout(20); }
   await p.waitForTimeout(1500);      // the opening's sound fully up, so the lowest level below belongs to the step change
@@ -91,8 +97,8 @@ async function one(v, w, box) {
     // the sources playing loudest now are the opening's; the step's own sound is a source that rises from quiet after the jump
     await p.evaluate(() => { const P = window.__perf; P.before = new Set(P.srcs.filter((q) => q._g && P.chain(q) > 0.05)); });
     // as a person arrives: near the step first (its film is attached two screens ahead), a moment there, then the step
-    await jump(p, Math.max(0, top - 1.5 * (w < 700 ? 844 : 900))); await p.waitForTimeout(2500);
-    await jump(p, top); const ts = Date.now();
+    marks.near = Date.now() - tCase; await jump(p, Math.max(0, top - 1.5 * (w < 700 ? 844 : 900))); await p.waitForTimeout(2500);
+    await jump(p, top); const ts = Date.now(); marks.step = ts - tCase;
     for (let i = 0; i < 600 && (stepFilmMs === null || stepSoundMs === null); i++) {
       const s = await p.evaluate((id) => { const x = document.querySelector(`#${id} video`); const P = window.__perf; const m = P.gains.length ? P.gains[0].gain.value : 0;
         const fresh = P.srcs.filter((q) => !P.before.has(q) && q._g && (q._el ? !q._el.paused : q._on)).reduce((a, q) => Math.max(a, P.chain(q)), 0);
@@ -105,7 +111,7 @@ async function one(v, w, box) {
     }
   }
   await ctx.close(); await b.close();
-  return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2) };
+  return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2), ...(LOG ? { marks, requests: reqs } : {}) };
 }
 // a case gets 150 s (a full case takes some 25-40 s); one that runs out is closed and tried once more, then written as hung
 for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
@@ -117,7 +123,7 @@ for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
     clearTimeout(timer);
     if (!row || row.error) { if (box.b) box.b.close().catch(() => {}); if (attempt === 1) { console.log(`${v} ${w}: ${row ? row.error : 'hung 150 s'}; trying once more`); row = null; } }
   }
-  rows.push(row || { v, w, net: NET, hung: true }); console.log(JSON.stringify(rows[rows.length - 1]));
+  rows.push(row || { v, w, net: NET, hung: true }); const { requests, ...brief } = rows[rows.length - 1]; console.log(JSON.stringify(brief));
 }
 srv.close();
 fs.writeFileSync(OUT, JSON.stringify(rows, null, 1));
