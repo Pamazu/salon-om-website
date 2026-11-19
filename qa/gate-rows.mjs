@@ -16,7 +16,11 @@ import { serve, open, wait, jump, toWorld, pictures } from './lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url)), REPO = path.resolve(HERE, '..');
 const OUT = path.resolve(process.argv[2] || 'gate-out'), VERS = (process.argv[3] || 'm,g,s').split(',');
-const FOREST = 'rgb(39, 107, 69)';   // option B's forest, #276B45 (row 9: J, 19 Oct, "this is much better ?accent=b")
+// row 9 (J, 19 Oct, "this is much better ?accent=b"; option-2.2/design.md "Look"): every green a page shows is one of option B's
+// forests: the fill #276B45 and its hover #1F5A39, lifted forest #3F9465 where a dark ground remains, deep forest #1E5A3A on
+// light clay. Never mint (the client, 19 Oct: "This mint grint is not the one that we want"). On a dark ground the buttons are
+// ivory by design, so the row is read on the marks and fills that carry a green, never on one button.
+const FORESTS = { 'rgb(39, 107, 69)': '#276B45', 'rgb(31, 90, 57)': '#1F5A39', 'rgb(63, 148, 101)': '#3F9465', 'rgb(30, 90, 58)': '#1E5A3A' };
 const SHARP = 1.0;                   // row 18: device pixels per file pixel at J's 6K window; over 1 = the file is enlarged = soft
 
 export function key(v) {
@@ -32,10 +36,29 @@ const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(
 // 1440 x 900: rows 4, 5, 6, 8, 9, 12, 14, 15, 17
 async function desktop(p, v, P, W, add, seen) {
   const vh = 900;
-  // row 9: the buttons wear option B's forest
-  const btn = await p.evaluate((P) => { const b = document.querySelector(`#${P}top .btn`); return b && getComputedStyle(b).backgroundColor; }, P);
-  seen[`9 ${W}`] = btn;
-  if (btn !== FOREST) add(9, `the opening's button is ${btn}, not option B's forest ${FOREST}`);
+  // row 9: every green on the page is one of option B's forests (a green = its green clearly above its red and blue)
+  const greens = await p.evaluate((P) => {
+    const found = {};
+    for (const el of document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} *`)) {
+      if (!el.getClientRects().length) continue;
+      const c = getComputedStyle(el);
+      if (c.visibility === 'hidden') continue;
+      const props = [c.color, c.backgroundColor, c.fill, c.stroke];
+      if (parseFloat(c.borderTopWidth) > 0) props.push(c.borderTopColor);
+      for (const val of props) {
+        const m = /rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?/.exec(val || '');
+        if (!m || m[4] === '0') continue;
+        const [R, G, B] = [+m[1], +m[2], +m[3]];
+        if (!(G > R + 25 && G > B + 10)) continue;
+        const k = `rgb(${R}, ${G}, ${B})`;
+        (found[k] ||= new Set()).add(`${el.closest('section[id]')?.id || ''} ${el.tagName.toLowerCase()}${el.classList[0] ? '.' + el.classList[0] : ''}`);
+      }
+    }
+    return Object.fromEntries(Object.entries(found).map(([k, v]) => [k, [...v].slice(0, 4)]));
+  }, P);
+  seen[`9 ${W}`] = greens;
+  for (const [c, where] of Object.entries(greens)) if (!FORESTS[c]) add(9, `${c} is not one of option B's forests (on ${where.join(', ')})`);
+  if (!Object.keys(greens).some((c) => FORESTS[c])) add(9, "no mark or fill wears option B's forest");
 
   // row 12: no two neighbouring light sections share a ground and a shape
   const secs = await p.evaluate((P) => [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} > section.s`)].map((s) => {
@@ -48,28 +71,38 @@ async function desktop(p, v, P, W, add, seen) {
     if (a[1] === 'light' && b[1] === 'light' && a[2] === b[2] && a[3] === b[3]) add(12, `light sections "${a[0]}" and "${b[0]}" sit together with one ground and one shape`);
   }
 
-  // row 6: the menu's photo panel stays under the header while the list scrolls
+  // row 6: the menu's photo panel stays under the header while the list scrolls (read while the list still runs on below the
+  // panel: past the list's end a sticky panel leaves with it, as it should; Inner Work's list is shorter than the salon's)
   const ys = await topOf(p, `${P}services`);
   if (ys >= 0) {
-    const at = [];
-    for (const dy of [160, 460]) {
-      await jump(p, ys + dy); await wait(p, 600);
-      at.push(await p.evaluate((P) => { const e = document.querySelector(`#${P}services .mn__ph`); if (!e) return null; const r = e.getBoundingClientRect(); return [Math.round(r.top), Math.round(r.height), getComputedStyle(e).position]; }, P));
-    }
-    seen[`6 ${W} 1440`] = at;
+    const panel = (P) => p.evaluate((P) => {
+      const e = document.querySelector(`#${P}services .mn__ph`); if (!e) return null;
+      const r = e.getBoundingClientRect(), box = e.parentElement.getBoundingClientRect();
+      return [Math.round(r.top), Math.round(r.height), getComputedStyle(e).position, Math.round(box.bottom - r.bottom)];
+    }, P);
+    await jump(p, ys + 160); await wait(p, 600);
+    const at = [await panel(P)];
+    const room = at[0] ? Math.min(300, at[0][3] - 8) : 0;
+    if (at[0] && room >= 40) { await jump(p, ys + 160 + room); await wait(p, 600); at.push(await panel(P)); }
+    seen[`6 ${W} 1440`] = { at, room };
     if (!at[0]) add(6, 'the menu has no photo panel (.mn__ph)');
-    else if (at[0][2] !== 'sticky' || Math.abs(at[0][0] - at[1][0]) > 2) add(6, `the menu's photo panel does not stay while the list scrolls (position ${at[0][2]}, top ${at[0][0]} then ${at[1][0]})`);
+    else if (at[0][2] !== 'sticky') add(6, `the menu's photo panel is not sticky (position ${at[0][2]})`);
+    else if (at[1] && Math.abs(at[0][0] - at[1][0]) > 2) add(6, `the menu's photo panel does not stay while the list scrolls (top ${at[0][0]} then ${at[1][0]}, ${room} px further down the list)`);
   }
 
-  // row 5: a slow wheel through the tall menu never jumps back to its top, and the same in reverse
-  if (ys >= 0) {
+  // row 5: a slow wheel through the tall menu never jumps back to its top, and the same in reverse; read inside the menu's free
+  // scroll (until its bottom meets the window's), since past its end the bottom aligns and the next slide pulls in by design
+  const hs = ys >= 0 ? await p.evaluate((id) => Math.round(document.getElementById(id).getBoundingClientRect().height), `${P}services`) : 0;
+  const steps = Math.min(10, Math.floor((hs - vh - 30) / 90));
+  if (ys >= 0 && steps < 3) seen[`5 ${W}`] = { top: ys, height: hs, note: 'the menu is not taller than the window, so it has no free scroll to read' };
+  if (ys >= 0 && steps >= 3) {
     await jump(p, ys); await wait(p, 900);
     await p.mouse.move(720, 450);
     const down = [], up = [];
-    for (let i = 0; i < 10; i++) { await p.mouse.wheel(0, 90); await wait(p, 180); down.push(await p.evaluate(() => Math.round(scrollY))); }
+    for (let i = 0; i < steps; i++) { await p.mouse.wheel(0, 90); await wait(p, 180); down.push(await p.evaluate(() => Math.round(scrollY))); }
     await wait(p, 1400);
-    for (let i = 0; i < 6; i++) { await p.mouse.wheel(0, -90); await wait(p, 180); up.push(await p.evaluate(() => Math.round(scrollY))); }
-    seen[`5 ${W}`] = { top: ys, down, up };
+    for (let i = 0; i < steps - 1; i++) { await p.mouse.wheel(0, -90); await wait(p, 180); up.push(await p.evaluate(() => Math.round(scrollY))); }
+    seen[`5 ${W}`] = { top: ys, height: hs, down, up };
     const back = down.findIndex((y, i) => i && y < down[i - 1] - 4);
     if (back > 0) add(5, `wheeling down through the menu jumped back from ${down[back - 1]} to ${down[back]}`);
     const fwd = up.findIndex((y, i) => i && y > up[i - 1] + 4);
@@ -198,10 +231,14 @@ async function sixK(p, v, P, W, add, seen) {
   for (let y = 0; y < total; y += 1100) { await jump(p, y); await wait(p, 160); }
   await wait(p, 900);
   const main = P ? 'main-coaching' : 'main-salon';
-  const got = (await pictures(p)).filter((g) => !g.film);
   const mine = await p.evaluate((main) => [...document.querySelectorAll(`#${main} section[id]`)].map((s) => s.id), main);
-  const soft = got.filter((g) => mine.includes(g.where) && g.scale * 2 > SHARP + 0.005);
-  seen[`18 ${W}`] = { pictures: got.filter((g) => mine.includes(g.where)).length, soft: soft.map((g) => `${g.where} ${g.file} ${g.nat} drawn ${g.box} = ${(g.scale * 2).toFixed(2)}x`) };
+  // at rest: each picture's own laid-out size (an entry zoom or the step's leaving zoom is motion, not its display size); a film's
+  // still is the film's first frame until it plays, so it is judged with its film (no row covers the films' pixels: kept in seen)
+  const all = (await pictures(p, { rest: true })).filter((g) => mine.includes(g.where));
+  seen[`18 ${W} film stills`] = all.filter((g) => g.film).map((g) => `${g.where} ${String(g.file || g.src).replace(/\?v=.*/, '')} ${(g.scale * 2).toFixed(2)}x`);
+  const got = all.filter((g) => !g.film);
+  const soft = got.filter((g) => g.scale * 2 > SHARP + 0.005);
+  seen[`18 ${W}`] = { pictures: got.length, soft: soft.map((g) => `${g.where} ${g.file} ${g.nat} drawn ${g.box} = ${(g.scale * 2).toFixed(2)}x`) };
   for (const g of soft) add(18, `"${g.where}": ${String(g.file).replace(/\?v=.*/, '')} (${g.nat[0]} px wide) is enlarged ${(g.scale * 2).toFixed(2)}x on J's 6K window, so it is soft`);
 }
 
@@ -236,4 +273,7 @@ try {
     console.log(`${v.toUpperCase()} ${k}: ` + (n ? 'OFF ' + Object.entries(off).map(([r, m]) => `row ${r}: ${m.join(' | ')}`).join(' || ') : 'every measured row holds'));
   }
 } finally { await browser.close(); srv.close(); }
-process.exit(red ? 1 : 0);
+// the run measured every page and wrote its result: the gate judges it, so a row that is off is not a failed run (a failed run
+// keeps no result where the gate reads it); exit 1 only when a page could not be measured (thrown above)
+console.log(red ? `${red} row(s) off: the gate (approved_gate.py) refuses on them` : 'every measured row holds');
+process.exit(0);
