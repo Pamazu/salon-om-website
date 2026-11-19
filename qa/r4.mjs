@@ -106,7 +106,9 @@ async function snap(b, base) {
   // round 5 QA: the hosts letter (M, G) grows with its words on a laptop, so it is a tall section there too; IDS narrows the cases
   const ids = (process.env.IDS || '').split(',').filter(Boolean);
   const cases = [['g', 'salon', 'services'], ['m', 'salon', 'services'], ['g', 'coaching', 'c-how'], ['s', 'coaching', 'c-deeper'],
-    ['g', 'salon', 'hosts'], ['m', 'salon', 'hosts']].filter(([v, , id]) => VERS.includes(v) && (!ids.length || ids.includes(id)));
+    ['g', 'salon', 'hosts'], ['m', 'salon', 'hosts'],
+    // task 95e37a41: the sections under the sheet, tall where their words outgrow the screen (the list goes when task 58855053 finds every tall section itself)
+    ['m', 'salon', 'aveda'], ['g', 'salon', 'aveda'], ['m', 'coaching', 'c-aveda'], ['g', 'coaching', 'c-aveda'], ['m', 'salon', 'deeper'], ['g', 'coaching', 'c-deeper']].filter(([v, , id]) => VERS.includes(v) && (!ids.length || ids.includes(id)));
   for (const [v, world, id] of cases) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
     try {
