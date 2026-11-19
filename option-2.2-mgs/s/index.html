@@ -2246,6 +2246,10 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .sh__sheet2 { display: none; }
 .sh__streak, .sh__milk, .sh__rain, .sh__frost { position: absolute; inset: 0; opacity: 0; }
 .sh__streak { background-repeat: repeat; background-size: 1024px 4px; mix-blend-mode: soft-light; }
+/* the ribs and the rainbow move by transform (sheet.js, task 4739f125): the ribs a tile wider than the stage, the rainbow half a
+   stage past each side, so a slide or shift never shows an edge */
+.sh__streak { inset: 0 auto 0 -1024px; width: calc(100% + 1024px); will-change: transform; }
+.sh__rain { inset: 0 auto 0 -50%; width: 200%; will-change: transform; }
 .sh__milk { background: rgb(236, 237, 240); }
 .sh__frost { background: rgb(244, 238, 231); }
 .sh__rain { mix-blend-mode: screen; }
@@ -2699,7 +2703,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="30158890ad93";</script>
+<script>window.OM_BUILD="920b266c5abe";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4495,18 +4499,25 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
         haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * (.15 + .3 * br), H * 1.3, H * 1.0], wz: s.wz(), wzI: .42,
         mask: (function (wz, p, f) { return soft(wz[0] - p, wz[2] + p, wz[1] - p, wz[3] + p, f); })(s.wz(), (phone ? 18 : 40) + 16 * br, phone ? 70 : 140), maskAnd: 1 };
     },
-    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clear window around the picture's subject, away from the words
+    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clear window around the picture's subject, moving with the scroll
       var phone = W < 700;
       s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .48);   // .4 -> .48: the larger words' column (task 4739f125)
-      var w = s.subject(W, H), drift = -clamp(r.top, -H, H) * .06;
-      if (w) { w.x += W * .012 * Math.sin(t * .35); w.y += H * .015 * Math.sin(t * .5) + drift; }
+      // with the scroll, like the pause's B · The breath (task 4739f125; J 19 Nov 14:25 Z: "if in all sections in which you have the
+      // effect, can you synchronize it with scroll just like in the take a breath section"): as the section rises into view the
+      // clear window opens around the subject (fully open once its top is near the window's top), it and the rainbow travel a
+      // little with the page and the ribs slide with it; still while the page is still; calm motion holds it open and still.
+      // k: how far the section has come through the window (0 entering below, 1 gone above); the contrast check sweeps it.
+      var still = calm(), k = window.__lensT != null ? .5 + .5 * Math.sin(window.__lensT * 2 * Math.PI / 36) : still ? .5 : clamp((vh - r.top) / (vh + H), 0, 1);
+      var open = still || window.__lensT != null ? 1 : ease((vh - r.top) / (vh * .85)), top = still ? 0 : clamp(r.top, -H, H);
+      var w = s.subject(W, H);
+      if (w) { var g = .45 + .55 * open; w.x += W * .024 * (k - .5); w.y -= top * .06; w.rx *= g; w.ry *= g; }
       else {                                                                                // no subject named: the window drifts on the right, as before
         var R0 = Math.min(W, H) * (phone ? .16 : .15);
         w = { x: phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), y: (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12, rx: R0 * 2.8, ry: R0 * 2.8, c: 1 / 2.8 };
       }
       s.win = w;                                                                            // read by qa/lens-contrast.mjs (the worst moment)
       var at = w.rx.toFixed(0) + 'px ' + w.ry.toFixed(0) + 'px at ' + w.x.toFixed(0) + 'px ' + w.y.toFixed(0) + 'px', c = w.c * 100, f = 100 - c;
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
+      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: -top * .35, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * (.15 + .3 * k), H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
         // its edge eases out over the outer two fifths of the oval, so the window melts into the sheet (J 19 Nov 14:25 Z)
         mask: 'radial-gradient(ellipse ' + at + ', transparent ' + c.toFixed(1) + '%, rgba(0,0,0,.18) ' + (c + f * .3).toFixed(1) + '%, rgba(0,0,0,.6) ' + (c + f * .62).toFixed(1) + '%, #000 100%)' };
     },
@@ -4594,7 +4605,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       this.set(L.sheet2, 'k4', 'webkitMaskComposite', 'source-in'); this.set(L.sheet2, 'k5', 'maskComposite', 'intersect');
     }
     this.el.classList.toggle('sh--glow', !!o.glow);
-    this.set(L.streak, 'stx', 'backgroundPosition', (o.ph || 0).toFixed(1) + 'px 0'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
+    // the ribs and the rainbow move on the compositor (task 4739f125): a strip a tile wider slides, a wider rainbow layer shifts;
+    // neither is repainted while the page scrolls (at 3230 x 2 their repaint each frame cost WebKit p95 52-66 ms against 22-25 held)
+    var sx = (((o.ph || 0) % 1024) + 1024) % 1024;
+    this.set(L.streak, 'stx', 'transform', 'translate3d(' + sx.toFixed(1) + 'px,0,0)'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
     this.set(L.milk, 'mo', 'opacity', Math.min(.95, o.haze * (.55 + .45 * o.dist) + .05).toFixed(3));
     if (!this.fz) this.shape();
     var fz = this.fz, fp = fz ? (this.wx - fz.M).toFixed(0) + 'px ' + (this.wy - fz.M).toFixed(0) + 'px' : '';   // the frost, shaped by the words (shape())
@@ -4605,7 +4619,9 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       this.set(L.frost, 'fr', 'webkitMaskRepeat', 'no-repeat'); this.set(L.frost, 'fr2', 'maskRepeat', 'no-repeat');
     }
     this.set(L.frost, 'fo', 'opacity', o.wzI.toFixed(3));
-    this.set(L.rain, 'rb', 'backgroundImage', rainbow(o.rbC[0], o.rbC[1], o.rbC[2])); this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
+    var rp = W * .5;                                                  // the rain layer reaches half a stage past each side (mgs.css)
+    this.set(L.rain, 'rb', 'backgroundImage', rainbow(W * .5 + rp, o.rbC[1], o.rbC[2])); this.set(L.rain, 'rbx', 'transform', 'translate3d(' + (o.rbC[0] - W * .5).toFixed(1) + 'px,0,0)');
+    this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
     if (o.thick > 0) {
       var box = 'display:block;transform:translate(' + x0.toFixed(1) + 'px,' + y0.toFixed(1) + 'px);width:' + (x1 - x0).toFixed(1) + 'px;height:' + (y1 - y0).toFixed(1) + 'px;';
       this.set(L.rim, 'rim', 'cssText', box + 'box-shadow:inset 0 0 0 1px rgba(255,255,255,.62),inset 0 0 0 ' + o.thick + 'px rgba(255,255,255,.10),inset 0 0 ' + (o.thick * 2.5) + 'px rgba(70,60,50,.10)');
