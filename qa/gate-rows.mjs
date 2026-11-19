@@ -184,12 +184,13 @@ async function desktop(p, v, P, W, add, seen) {
     await door(p, P, W, add, seen, '1440');
   }
 
-  // rows 24 and 25: each sheet's clear window on its subject; every section heading at the one heading size
-  await subjects(p, P, W, add, seen, '1440');
-  await heads(p, P, W, add, seen, '1440');
   // rows 21 and 22: the second door's and Why Aveda's entries
   await entry(p, 21, `${P}deeper`, 'the second door', W, add, seen, '1440', vh);
   await entry(p, 22, `${P}aveda`, 'Why Aveda', W, add, seen, '1440', vh);
+  // rows 24 and 25, after the entries (a visit to a sheet section just before its entry left the page on it, and the entry's step
+  // back a screen was snapped back into it on G and S: 23c60cf): each sheet's clear window on its subject; one heading size
+  await subjects(p, P, W, add, seen, '1440');
+  await heads(p, P, W, add, seen, '1440');
 
   // row 4: the visit preview's line reaches 05, its stops travel into the step rail at step 01, and back in reverse (M, G)
   const yv = await topOf(p, `${P}visit`), ya = await topOf(p, `${P}arrive`);
@@ -230,7 +231,7 @@ async function subjects(p, P, W, add, seen, size) {
     await p.waitForFunction((id) => !!document.querySelector(`#${id} .sh--on`), id, { timeout: 8000 }).catch(() => {}); await wait(p, 600);
     const m = await p.evaluate((id) => {
       const st = document.querySelector(`#${id} [data-sheet]`), im = st.querySelector('.sh__ph img'), sh = st.querySelector('.sh__sheet');
-      const k = String(sh.style.webkitMaskImage || sh.style.maskImage || '').match(/ellipse (-?[\d.]+)px (-?[\d.]+)px at (-?[\d.]+)px (-?[\d.]+)px, transparent (-?[\d.]+)%/);
+      const k = String(sh.style.webkitMaskImage || sh.style.maskImage || '').match(/radial-gradient\((?:ellipse )?(-?[\d.]+)px (-?[\d.]+)px at (-?[\d.]+)px (-?[\d.]+)px, (?:transparent|rgba\(0, 0, 0, 0\)) (-?[\d.]+)%/);
       const b = st.getAttribute('data-subject').split(/\s+/).map(Number), Wd = st.clientWidth, Hd = st.clientHeight, nw = im.naturalWidth, nh = im.naturalHeight;
       if (!k || !nw) return { id, mask: k ? 'read' : 'no oval window', loaded: !!nw };
       const op = getComputedStyle(im).objectPosition.split(' ').map(parseFloat), s = Math.max(Wd / nw, Hd / nh), ox = (Wd - nw * s) * op[0] / 100, oy = (Hd - nh * s) * op[1] / 100;
