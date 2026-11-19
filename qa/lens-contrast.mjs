@@ -69,14 +69,18 @@ for (const w of ws.split(',').map(Number)) {
             const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
             const lin = (x) => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); };
             const L = (r, gg, bb) => .2126 * lin(r) + .7152 * lin(gg) + .0722 * lin(bb);
-            const hdr = innerWidth < 700 ? (document.getElementById('hdr')?.getBoundingClientRect().bottom || 64) : 0;
+            // whatever floats over the page (the header, the door bar, the round buttons) covers any text scrolling past it: what is
+            // behind a line there is that part, not the glass, so a line box under one is not read (the 19 Nov run read them as 1:1)
+            const covers = [...document.querySelectorAll('body *')].filter((x) => { const k = getComputedStyle(x); return k.position === 'fixed' && k.visibility !== 'hidden' && k.display !== 'none' && +k.opacity > 0.05; })
+              .map((x) => x.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && r.width * r.height < innerWidth * innerHeight * .5);   // a full-screen layer is not a cover: it would hide every line
+            const under = (r) => covers.some((c) => r.left < c.right && r.right > c.left && r.top < c.bottom && r.bottom > c.top);
             const out = [];
             for (const e of document.getElementById(id).querySelectorAll(sel)) {
               // the glass behind the letters: the text's own line boxes (a Range), never the element's whole box, which also covers
               // whatever sits beside a short line (the picture's AI label beside the eyebrow on a phone read 2.08 that way)
               const rg = document.createRange(); rg.selectNodeContents(e);
-              const boxes = [...rg.getClientRects()].filter((r) => r.width >= 4 && r.height >= 4 && r.bottom > 0 && r.top < innerHeight && r.top >= hdr);   // under a phone's fixed header its own bar is the background
-              if (!boxes.length) continue;
+              const boxes = [...rg.getClientRects()].filter((r) => r.width >= 4 && r.height >= 4 && r.bottom > 0 && r.top < innerHeight && !under(r));
+              if (!boxes.length) { if ([...rg.getClientRects()].some((r) => r.width >= 4 && r.bottom > 0 && r.top < innerHeight)) out.push({ line: (e.textContent || '').trim().slice(0, 30), skipped: 'under a fixed part of the page' }); continue; }
               const cs = getComputedStyle(e), col = cs.color.match(/[\d.]+/g).map(Number), li = L(col[0], col[1], col[2]);
               const ls = [];
               for (const r of boxes) {
@@ -95,6 +99,7 @@ for (const w of ws.split(',').map(Number)) {
             return out;
           }, { dataUrl: 'data:image/png;base64,' + png.toString('base64'), sel: LINES, id });
           for (const r of rows) {
+            if (r.skipped) { all.push({ v, w, world, id, part: k, moment, t, ...r }); continue; }
             const need = r.large ? 4.5 : 7, ok = r.worst >= need; if (!ok) red++;
             all.push({ v, w, world, id, part: k, moment, t, ...r, need, ok });
             console.log(ok ? 'ok ' : 'LOW', v, w, id, k, moment, `t=${t}`, JSON.stringify(r));
@@ -114,7 +119,7 @@ for (const w of ws.split(',').map(Number)) {
   await ctx.close();
 }
 fs.writeFileSync(path.join(OUT, 'contrast.json'), JSON.stringify(all, null, 1) + '\n');
-const low = all.filter((r) => !r.ok);
-console.log(`${all.length} lines measured, ${low.length} under their need (7:1 body, 4.5:1 large)`);
+const low = all.filter((r) => !r.skipped && !r.ok), skip = all.filter((r) => r.skipped);
+console.log(`${all.length - skip.length} lines measured, ${low.length} under their need (7:1 body, 4.5:1 large); ${skip.length} not read, wholly under a fixed part of the page`);
 await b.close(); srv.close();
 process.exit(0);
