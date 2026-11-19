@@ -16,6 +16,7 @@ for(var i=0;i<FILES.length;i++){var row=await new Promise(function(ok){var el=ne
 el.muted=true;el.preload='auto';el.loop=true;
 ['loadedmetadata','canplay','canplaythrough','playing','waiting','stalled','error'].forEach(function(e){el.addEventListener(e,function(){R.ev.push([e,Math.round(performance.now()-t0)])})});
 var c0=null;el.addEventListener('playing',function(){c0=el.currentTime});
+R.snap=[];var sn=setInterval(function(){var b=el.buffered;R.snap.push([Math.round(performance.now()-t0),+el.currentTime.toFixed(2),el.readyState,el.paused,b.length?+b.end(b.length-1).toFixed(1):0,isFinite(el.duration)?+el.duration.toFixed(1):String(el.duration)]);if(R.snap.length>=6)clearInterval(sn)},700);
 var iv=setInterval(function(){if(c0!==null&&el.currentTime>c0+0.1&&!el.paused&&!R.moving){R.moving=Math.round(performance.now()-t0);clearInterval(iv);setTimeout(end,200)}},20);
 setTimeout(function(){clearInterval(iv);end()},15000);
 el.src=FILES[i]+'?r='+Date.now();t0=performance.now();el.play().catch(function(e){R.ev.push(['play-refused '+e.name,Math.round(performance.now()-t0)])})});
