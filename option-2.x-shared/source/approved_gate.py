@@ -426,6 +426,9 @@ ROWS = {
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
 MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs'}
+# the rows only measured (no built-page check), by name for the refusal
+NAMES = {5: 'slides snap with a pull; a tall section scrolls freely inside, then pulls into the next',
+         9: "option B's forests on buttons and marks, never mint", 17: 'the pause: no rings and no glow around its picture'}
 # a machine cannot judge these; each stays a QA step, and says why
 QA_ONLY = {
     11: 'it is about what the words do (a hook in result, objection and time form, its proof, its reward); M carries only '
@@ -661,7 +664,7 @@ def main(argv, pages=None, message=None, rows=None, measured_off=None, known=Non
     if refused:
         print('REFUSED: this deploy turns off or changes a feature J approved (reference/approved-features.md).', file=sys.stderr)
         for n, msgs in sorted(refused.items()):
-            what = ROWS[n][0] if n in ROWS else f'row {n}'
+            what = ROWS[n][0] if n in ROWS else NAMES.get(n, f'row {n}')
             print(f'\n  Row {n}, {what}:', file=sys.stderr)
             for m in msgs:
                 print(f'    - {m}', file=sys.stderr)
