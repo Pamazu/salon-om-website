@@ -19,8 +19,8 @@ const PAGE = path.join(REPO, 'option-2.2-mgs', 'm', 'index.html');
 // row: [what breaks, what is added before </body>, the pass that reads it, the worlds it needs]
 export const BREAKS = {
   4: ['the visit preview line stays undrawn', '<style>#visit .ln__path{animation:none!important;transition:none!important;stroke-dashoffset:.6!important}</style>', '1440', ['salon']],
-  5: ['a wheel inside the menu jumps back to its top',
-    "<script>addEventListener('wheel',function f(){setTimeout(function(){var s=document.getElementById('services');if(!s)return;var t=Math.round(s.getBoundingClientRect().top+scrollY);if(scrollY>t+150&&scrollY<t+500){removeEventListener('wheel',f);scrollTo(0,t);}},60);},{passive:true});</script>", '1440', ['salon']],
+  5: ['a wheel inside the menu jumps back to its top (held there 0.4 s, over the page\'s own scrolling)',
+    "<script>(function(){var at=0;function f(){var s=document.getElementById('services');if(s){var t=Math.round(s.getBoundingClientRect().top+scrollY);if(!at&&scrollY>t+150&&scrollY<t+500)at=performance.now();if(at&&performance.now()-at<400)scrollTo(0,t);}requestAnimationFrame(f);}requestAnimationFrame(f);})();</script>", '1440', ['salon']],
   6: ['the menu photo panel scrolls away with the list', '<style>.mn__ph{position:relative!important}</style>', '1440', ['salon']],
   8: ['the voices on another ground', '<style>section.voices{background:#6B3A2A!important;background-image:none!important}</style>', '1440', ['salon']],
   9: ['a step number in mint', '<style>.ch__num{color:#8FCBA4!important}</style>', '1440', ['salon']],
@@ -28,9 +28,9 @@ export const BREAKS = {
   12: ['two light neighbours in one shape',
     "<script>document.addEventListener('DOMContentLoaded',function(){var a=document.getElementById('aveda'),h=document.getElementById('hosts');if(a&&h)h.className=a.className;});</script>", '1440', ['salon']],
   14: ['an empty band under the footer', '<style>#begin{padding-bottom:160px!important}</style>', '1440', ['salon']],
-  15: ['the pause heading arrives already in focus', '<style>#pause .mani__text .l{filter:none!important;animation:none!important;transition:none!important}</style>', '1440', ['salon']],
-  17: ['a glow around the pause picture', '<style>#pause .br__ph{box-shadow:0 0 80px rgba(245,238,228,.6)!important}</style>', '1440', ['salon']],
-  20: ['the pause\'s door made a plain rectangle, never opened', '<style>#pause .br__ph{border-radius:24px!important;clip-path:inset(0 49.6% 0 49.6%)!important;transition:none!important}</style>', '1440', ['salon']],
+  15: ['the pause heading arrives already in focus', '<style>#pause :is(.mani__text, .ps__head) .l{filter:none!important;animation:none!important;transition:none!important}</style>', '1440', ['salon']],
+  17: ['a glow around the pause picture', '<style>#pause :is(.br__ph, .ps__pic){box-shadow:0 0 80px rgba(245,238,228,.6)!important}</style>', '1440', ['salon']],
+  20: ['the pause\'s room never opens from a thin line (its clip taken off)', '<style>#pause .ps__pic{clip-path:none!important;-webkit-clip-path:none!important;transition:none!important;animation:none!important}</style>', '1440', ['salon']],
   21: ['the second door\'s picture held still as it arrives', '<style>#deeper :is(.sh__ph,.sh__sheet,.sh__sheet2,.ph-bg) img{scale:1!important;transform:none!important;transition:none!important}</style>', '1440', ['salon']],
   22: ['Why Aveda\'s heading already there as it arrives', '<style>#aveda .mask__in{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}</style>', '1440', ['salon']],
   18: ['the menu photos from their smallest file',
