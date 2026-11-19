@@ -417,27 +417,41 @@ PAUSE_OPTIONS = [
 PAUSE_LIVE_LABEL = 'The door, standing in the room'
 
 
+def sheet_stage(img, alt, preset, words, mark=''):
+    """ONE block for words on a picture (task 95e37a41; J 18 Nov: "never have cards that are simple on top like that, use the
+    lenticular sheet and glass effects if you need something on top"): the picture fills the screen under the lenticular sheet
+    (sheet.js draws the sheet, preset `preset`), the words ride on its frost. Any section that puts words on a picture draws
+    them through this; mark is the picture's AI label (ai_mark), kept on the picture above the sheet."""
+    return f'''<div class="sh" data-sheet="{preset}">
+      <div class="sh__ph"><img src="img/{img}" alt="{E(alt)}" sizes="100vw" decoding="async" loading="lazy"></div>{mark}
+      <div class="sh__words">
+        {words}
+      </div>
+    </div>'''
+
+
+def _on_light(btns):
+    """buttons made for a dark photo (ivory fill, white outline) on the sheet's light frost: the forest fill and the ink line"""
+    return btns.replace('class="btn btn--light"', 'class="btn"').replace('class="btn btn--ghost"', 'class="btn btn--line"')
+
+
 def aveda_sheet(d, world):
-    """Why Aveda under the lenticular sheet (task e5325977; Designer 3's options r6 A-E and r7 F-I, task 9b13c4b2; J 18 Nov:
-    "never have cards that are simple on top like that, use the lenticular sheet and glass effects if you need something on
-    top"): the section's own photo fills the screen, a milky ribbed sheet over it (sheet.js, preset d['sheet']), the heading
-    and the label's rows riding on a soft frost instead of a card; below, her quote as the letter, the reward and the button,
-    as on the live section. Every word and the photo are the section's own (aveda()'s d)."""
+    """Why Aveda under the lenticular sheet (task e5325977; Designer 3's options r6 A-E and r7 F-I, task 9b13c4b2): the
+    section's own photo fills the screen under the sheet (sheet_stage, preset d['sheet']), the heading and the label's rows
+    riding on its frost instead of a card; below, her quote as the letter, the reward and the button, on the ground the
+    sheet melts into (J 19 Nov: "I don't like having such a strong separation between the image with the lenticular effect and
+    the text below it"; mgs.css). Every word and the photo are the section's own (aveda()'s d)."""
     f, alt = d['photo']
     rows = ''.join(f'<div class="av__row a-up" style="--d:{0.55 + k * .14:.2f}s"><dt>{x[0]}</dt><dd>{x[1]}</dd></div>' for k, x in enumerate(d['facts']))
     sub = ''.join(f'<p class="av__sub a-up" style="--d:{0.45 + k * .1:.2f}s">{p}</p>' for k, p in enumerate(d.get('paras', [])))
     btn = f'<div class="av__btn a-up" style="--d:.5s">{d["btn"]}</div>' if d.get('btn') else ''
     words = any(not re.match(r'^[\d$]', re.sub(r'<[^>]+>', '', x[0])) and len(re.sub(r'<[^>]+>', '', x[0])) > 7 for x in d['facts'])
-    return f'''<section class="s s--auto av av--sheet" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
-    <div class="sh" data-sheet="{d['sheet']}">
-      <div class="sh__ph"><img src="img/{f}" alt="{E(alt)}" sizes="100vw" decoding="async" loading="lazy"></div>
-      <div class="sh__words">
-        <p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+    stage = sheet_stage(f, alt, d['sheet'], f'''<p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
         {sub}<dl class="av__rows{' av__rows--words' if words else ''}">{rows}</dl>
-        <small class="av__src a-fade" style="--d:1.4s">{d['src']}</small>
-      </div>
-    </div>
+        <small class="av__src a-fade" style="--d:1.4s">{d['src']}</small>''')
+    return f'''<section class="s s--auto av av--sheet" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    {stage}
     <div class="av__letter">
       <blockquote class="a-up" style="--d:.2s">“{d['quote']}”<cite>{d['cite']}</cite></blockquote>
       {cycle(d, .35)}{btn}
@@ -456,5 +470,29 @@ SHEET_NAMES = [('F', 'A clear window drifts', 'The sheet covers the whole sectio
                ('C', 'Half a sheet', 'A thick sheet over the words’ half, sliding in and out; its glass edge and the sharp photo beside it.'),
                ('D', 'A sheet in the hand', 'A smaller sheet drifts by itself and follows your pointer; the words ride on it.'),
                ('E', 'Only behind the words', 'The sheet shows only where the words are and fades softly into the sharp photo.')]
-AVEDA_OPTIONS = [dict(key='sheet-' + k.lower(), label=f'{k} · {n}', note=note, kind=aveda_sheet, sheet=k) for k, n, note in SHEET_NAMES]
-AVEDA_LIVE_LABEL = 'The label card beside the photo (today’s)'
+# J's pick, 19 Nov 11:50 Z (task 95e37a41, his screenshot 12.47.37, "Options that I choose"): F is the section on the page; the
+# label card it replaced and the other sheets stay in the switcher (their keys unchanged, so a choice J saved still opens)
+AVEDA_SHEET = 'F'
+AVEDA_LIVE_LABEL = next(f'{k} · {n}' for k, n, _ in SHEET_NAMES if k == AVEDA_SHEET)
+AVEDA_OPTIONS = ([dict(key='label', label='The label card beside the photo (before 19 Nov)', note='The photo on the right, the facts on an ivory card over its left edge.', kind=aveda)]
+                 + [dict(key='sheet-' + k.lower(), label=f'{k} · {n}', note=note, kind=aveda_sheet, sheet=k) for k, n, note in SHEET_NAMES if k != AVEDA_SHEET])
+
+
+def door_sheet(d, world):
+    """The second door under the same sheet as Why Aveda (task 95e37a41; J 18 Nov 17:24 Z: "It's very hard to read the text.
+    The same section is very hard to read also in the Salon Om variation or Otherworld. Maybe the thing we're doing of lenticular
+    sheet could help here."; CEO MA 19 Nov: the same F sheet). The door's own picture fills the screen under the sheet
+    (sheet_stage), its words in ink on the frost, its buttons the light-ground pair. Words and picture are the door's own
+    (mgs_parts.door(), Inner Work's through the twin); the words straight on the photo stay in the switcher (DOOR_OPTIONS)."""
+    more = ''.join(f'<p class="sh__more a-up" style="--d:{.75 + k * .1:.2f}s">{t}</p>' for k, t in enumerate(d.get('more', [])))
+    return f'''<section class="s dr" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    {sheet_stage(d['img'], d.get('alt', ''), d.get('sheet', AVEDA_SHEET), f"""<p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+        <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
+        <p class="sh__text a-up" style="--d:.6s">{d['text']}</p>{more}
+        <div class="sh__btns a-up" style="--d:.95s">{_on_light(d['btn'])}</div>""", d.get('mark', ''))}
+    <div class="s__shade"></div>
+  </section>'''
+
+
+DOOR_OPTIONS = [dict(key='photo', label='The words on the photo (before 19 Nov)', note='White words straight on the photo under a dark shade.', kind='bridge')]
+DOOR_LIVE_LABEL = AVEDA_LIVE_LABEL

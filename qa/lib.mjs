@@ -82,6 +82,7 @@ export function pictures(p, { rest = false } = {}) {
       return { box: [Math.round(r.width), Math.round(r.height)], scale: s };
     };
     for (const el of document.querySelectorAll('img')) {
+      if (el.closest('.sh__sheet, .sh__sheet2')) continue;   // the lenticular sheet's smeared copies of its photo are the glass, not pictures (the photo itself is measured)
       const [nw, nh] = el.hasAttribute('srcset') && real[el.currentSrc] ? real[el.currentSrc] : [el.naturalWidth, el.naturalHeight];
       const m = fit(el, nw, nh); if (!m) continue;
       const file = el.hasAttribute('srcset') ? el.currentSrc.replace(/^.*\/img\//, 'img/') : el.getAttribute('src');

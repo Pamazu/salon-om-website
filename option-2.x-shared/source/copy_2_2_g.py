@@ -149,7 +149,7 @@ SALON = [
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
   ('voices', dict(id='kind', title=M.VOICES_EYEBROW, quotes=[q for i, q in enumerate(M.QUOTES) if i not in (2, 3)], reward=draft(G['voices_reward']),
                   btn=btn(BOOK, BOOK_URL, arrow=True))),
-  (S.aveda, dict(id='aveda', eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
+  (S.aveda_sheet, dict(id='aveda', sheet=S.AVEDA_SHEET, eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE, facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
                  photo=AVEDA_PHOTO, reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True),
                  options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # the label (task a749167b)
