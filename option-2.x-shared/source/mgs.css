@@ -1082,9 +1082,10 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 /* the words on the sheet read comfortably at every width, in proportion to their heading (task 4739f125; J 19 Nov 14:26 Z:
    "the text is way to small here and here", the second door and Why Aveda at his window): one size for the body that grows
    with the window (18 px at 1440, 28 px at 3230), and the eyebrow, the facts, the source line and the buttons from it; the
-   column grows with them (its measure is in ch); the heading grows on wide windows too. A phone keeps its own sizes below. */
+   column grows with them (its measure is in ch, the column 48 % of the stage); the heading grows less, so the body
+   gains on it (J's complaint was the body next to the heading). A phone keeps its own sizes below. */
 .sh__words { --sh-body: clamp(17px, calc(.55vw + 10px), 30px); }
-.sh__words .mid { font-size: clamp(30px, calc(2.4vw + 14px), 92px); }
+.sh__words .mid { font-size: clamp(30px, calc(1.4vw + 26px), 72px); text-wrap: balance; }   /* grows less than the body: 46 px at 1440, 71 at 3230 */
 .sh__words .eyebrow { font-size: max(12px, calc(var(--sh-body) * .68)); }
 .sh__words :is(.sh__text, .sh__more, .av__sub), .sh__words .av__row dd { font-size: var(--sh-body); line-height: 1.55; }
 .sh__words .av__row dd { line-height: 1.4; }

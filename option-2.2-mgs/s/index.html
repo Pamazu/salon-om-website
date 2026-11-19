@@ -2278,9 +2278,10 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 /* the words on the sheet read comfortably at every width, in proportion to their heading (task 4739f125; J 19 Nov 14:26 Z:
    "the text is way to small here and here", the second door and Why Aveda at his window): one size for the body that grows
    with the window (18 px at 1440, 28 px at 3230), and the eyebrow, the facts, the source line and the buttons from it; the
-   column grows with them (its measure is in ch); the heading grows on wide windows too. A phone keeps its own sizes below. */
+   column grows with them (its measure is in ch, the column 48 % of the stage); the heading grows less, so the body
+   gains on it (J's complaint was the body next to the heading). A phone keeps its own sizes below. */
 .sh__words { --sh-body: clamp(17px, calc(.55vw + 10px), 30px); }
-.sh__words .mid { font-size: clamp(30px, calc(2.4vw + 14px), 92px); }
+.sh__words .mid { font-size: clamp(30px, calc(1.4vw + 26px), 72px); text-wrap: balance; }   /* grows less than the body: 46 px at 1440, 71 at 3230 */
 .sh__words .eyebrow { font-size: max(12px, calc(var(--sh-body) * .68)); }
 .sh__words :is(.sh__text, .sh__more, .av__sub), .sh__words .av__row dd { font-size: var(--sh-body); line-height: 1.55; }
 .sh__words .av__row dd { line-height: 1.4; }
@@ -2695,7 +2696,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="6327fdd86cc5";</script>
+<script>window.OM_BUILD="d2bdc4952e01";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4493,7 +4494,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     },
     F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clearer window drifts over the photo, away from the words
       var phone = W < 700;
-      s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
+      s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .48);   // .4 -> .48: the larger words' column (task 4739f125)
       var wx = phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), wy = (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12;
       var R0 = Math.min(W, H) * (phone ? .16 : .15), R1 = R0 * 2.8;
       return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
