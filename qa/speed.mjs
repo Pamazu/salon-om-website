@@ -20,6 +20,11 @@ const H2 = process.env.H2 === '1', H2_DIR = process.env.H2_DIR || path.join(os.h
 // LOG=1: each case's row also lists every request (file, range, when it was asked and finished, bytes sent, ms from the
 // case's start) and the moments of the case (page asked, click, near the step, at the step), to see what holds the line
 const LOG = process.env.LOG === '1'; let reqs = [], tCase = 0;
+// the browser's cache, as live has it: WebKit here keeps nothing it got over the self-signed certificate (measured 19 Nov: the
+// opening's and the first step's sounds asked for again over the line, with live's cache headers sent), while on live a
+// file under its versioned address is kept a week. So a file this case already received whole is answered at once, off
+// the line, as a cache answers (CACHE=0 turns this off); each case starts with an empty one (a fresh browser)
+const CACHE = process.env.CACHE !== '0'; let held = new Set();
 const handler = (req, res) => {
   const u = decodeURIComponent(new URL(req.url, 'http://x').pathname); const m = u.match(/^\/([mgs])\/(.*)$/);
   const rec = LOG ? { f: m ? (m[2] || 'index.html') : u, range: req.headers.range || '', ask: Date.now() - tCase, sent: 0 } : null;
@@ -35,13 +40,15 @@ const handler = (req, res) => {
       'Cache-Control': type.startsWith('text/html') ? 'no-cache, max-age=0, must-revalidate' : 'public, max-age=604800' };
     if (r) { a = r[1] ? +r[1] : 0; z = r[2] ? Math.min(+r[2], st.size - 1) : st.size - 1; code = 206; h['Content-Range'] = `bytes ${a}-${z}/${st.size}`; }
     h['Content-Length'] = z - a + 1;
+    if (CACHE && held.has(file) && !type.startsWith('text/html')) { if (rec) { rec.cache = true; rec.sent = z - a + 1; } res.writeHead(code, h); return fs.createReadStream(file, { start: a, end: z }).pipe(res); }
+    const whole = a === 0 && z === st.size - 1;
     setTimeout(() => {
       res.writeHead(code, h); const s = fs.createReadStream(file, { start: a, end: z, highWaterMark: 16384 });
-      if (!BPS) return s.pipe(res);
+      if (!BPS) { if (whole) s.on('end', () => held.add(file)); return s.pipe(res); }
       // one line shared by every file at once, as a phone's 4G is: each chunk waits for the line to be free
       s.on('data', (c) => { if (rec) rec.sent += c.length; s.pause(); const now = Date.now(); line = Math.max(line, now) + c.length / BPS * 1000; setTimeout(() => { res.write(c); s.resume(); }, line - now); });
       // the end goes after the last chunk, which waits for the line too
-      s.on('end', () => setTimeout(() => res.end(), Math.max(0, line - Date.now()) + 1)); res.on('close', () => s.destroy());
+      s.on('end', () => setTimeout(() => { res.end(); if (whole) held.add(file); }, Math.max(0, line - Date.now()) + 1)); res.on('close', () => s.destroy());
     }, LAT);
   });
 };
@@ -58,8 +65,12 @@ const PROBE = () => {
   const r0 = AC.prototype.resume; AC.prototype.resume = function () { return window.__gest ? r0.call(this) : Promise.resolve(); };
   const Wrapped = function (o) { const c = new AC(o); c.suspend(); return c; }; Wrapped.prototype = AC.prototype;
   window.AudioContext = Wrapped; if (window.webkitAudioContext) window.webkitAudioContext = Wrapped;
+  // each decode (bytes in, when asked, when done) and each loop's start, as moments from the page's start (LOG=1 rows carry them)
+  const d0 = AC.prototype.decodeAudioData; AC.prototype.decodeAudioData = function (buf, ok, bad) { const t = performance.now(), n = buf.byteLength;
+    const done = (x) => { P.t.push(['dec', Math.round(t), Math.round(performance.now()), n, x && x.duration ? +x.duration.toFixed(1) : 0]); return x; };
+    const r = d0.call(this, buf, (x) => { done(x); ok && ok(x); }, (e) => { P.t.push(['decfail', Math.round(t), n]); bad && bad(e); }); return r && r.then ? r.then(done) : r; };
   const g0 = AC.prototype.createGain; AC.prototype.createGain = function () { const g = g0.call(this); P.gains.push(g); return g; };
-  const b0 = AC.prototype.createBufferSource; AC.prototype.createBufferSource = function () { const s = b0.call(this); const st = s.start; s.start = function () { s._on = true; P.t.push(['buf', performance.now()]); return st.apply(this, arguments); }; P.srcs.push(s); return s; };
+  const b0 = AC.prototype.createBufferSource; AC.prototype.createBufferSource = function () { const s = b0.call(this); const st = s.start; s.start = function () { s._on = true; P.t.push(['buf', Math.round(performance.now()), s.buffer ? +s.buffer.duration.toFixed(1) : 0]); return st.apply(this, arguments); }; P.srcs.push(s); return s; };
   if (AC.prototype.createMediaElementSource) { const e0 = AC.prototype.createMediaElementSource; AC.prototype.createMediaElementSource = function (el) { const s = e0.call(this, el); s._el = el; P.srcs.push(s); return s; }; }
   // the level heard now: master gain x the loudest playing track's gain (a track = a gain node fed by a playing source)
   P.level = () => {
@@ -78,11 +89,11 @@ const rows = [];
 // hangs (the pool's WebKit sometimes stops answering mid-run, 19 Nov) can be closed and tried again
 async function one(v, w, box) {
   line = 0;      // the shared line starts free for each case
-  reqs = []; tCase = Date.now(); const marks = {};
+  reqs = []; held = new Set(); tCase = Date.now(); const marks = {};
   const b = box.b = await pw.webkit.launch();
   const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
   await ctx.addInitScript(PROBE);
-  const p = await ctx.newPage(); const t0 = Date.now();
+  const p = await ctx.newPage(); const t0 = Date.now(); marks.page = t0 - tCase;      // the sound moments count from about here
   await p.goto(`${BASE}/${v}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
   // hero film: from the page opening to moving
   let heroMs = null;
@@ -113,8 +124,9 @@ async function one(v, w, box) {
       if (Date.now() - ts > 15000) break;
     }
   }
+  const sound = LOG ? await p.evaluate(() => window.__perf.t).catch(() => null) : null;
   await ctx.close(); await b.close();
-  return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2), ...(LOG ? { marks, requests: reqs } : {}) };
+  return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2), ...(LOG ? { marks, sound, requests: reqs } : {}) };
 }
 // a case gets 150 s (a full case takes some 25-40 s); one that runs out is closed and tried once more, then written as hung
 for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
