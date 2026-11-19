@@ -271,7 +271,8 @@ class TheList(unittest.TestCase):
     def test_a_new_row_without_its_check_is_refused(self):
         n = max(set(g.ROWS) | set(g.MEASURED) | set(g.QA_ONLY)) + 1   # the next row, which no check covers yet
         code, _, err = self.gate(list(range(1, n + 1)))
-        self.assertEqual(code, 1); self.assertIn(f'row(s) {n}', err)
+        # the refusal names it, beside any row reserved for a check still on its way (26, task 4739f125, while 27 is in)
+        self.assertEqual(code, 1); self.assertRegex(err, rf'row\(s\) [0-9, ]*\b{n}\b')
 
     def test_an_unreadable_list_is_refused(self):
         keep = g.list_rows
@@ -489,6 +490,64 @@ class Row23(unittest.TestCase):
         finally:
             g.CHECKS = saved; os.unlink(t.name)
         self.assertIn(f'{f} is not the file measured against J\'s 25 Oct picture', off)
+
+
+class Row27(unittest.TestCase):
+    """Row 27 (task 279db527): a generated picture is on the page only once J picked it in Shift+V. Green = this commit's pages
+    (today's generated pictures as they were before the row, the pause's candidate A only in the templates); red = A made the
+    pause's picture without his pick, then with a pick whose files differ, then with a line carrying no words of his."""
+    def setUp(self):
+        import tempfile
+        with open(g.page_path('m'), encoding='utf-8') as fh:
+            self.m = fh.read()
+        self.picks, self.saved = tempfile.mktemp(suffix='.json'), g.PICKS
+        g.PICKS = self.picks
+        self.a = in_section(self.m, 'pause', 'src="img/real-chair-window.webp', 'src="img/om-pause-rest.webp')
+
+    def tearDown(self):
+        g.PICKS = self.saved
+        if os.path.exists(self.picks):
+            os.unlink(self.picks)
+
+    def off(self, html):
+        return '\n'.join(g.row27(g.parse(html), 'm', g.SITE))
+
+    def write(self, picks):
+        import json
+        with open(self.picks, 'w') as fh:
+            json.dump(picks, fh)
+
+    def test_27_green_this_commit(self):
+        for letter in 'mgs':
+            with open(g.page_path(letter), encoding='utf-8') as fh:
+                self.assertEqual(g.row27(g.parse(fh.read()), letter, g.SITE), [], letter)
+        self.assertIn('data-pic-for="real-chair-window.webp" data-opt="rest"', self.m)      # A waits in Shift+V, never refused there
+
+    def test_27_red_a_generated_picture_he_did_not_pick(self):
+        self.assertIn('om-pause-rest.webp is a generated picture J has not picked', self.off(self.a))
+
+    def test_27_red_a_picture_changed_after_his_pick(self):
+        self.write({'om-pause-rest.webp': {'sha256': '0' * 64, 'j': 'J picks A, the guest resting at the basin', 'at': 'x'}})
+        self.assertIn('om-pause-rest.webp changed since J picked it', self.off(self.a))
+
+    def test_27_red_a_line_without_his_words(self):
+        self.write({'om-pause-rest.webp': {'sha256': g.picture_sha('om-pause-rest.webp'), 'j': '', 'at': 'x'}})
+        self.assertIn('carries no words of J', self.off(self.a))
+
+    def test_27_red_a_picture_live_before_the_row_once_changed(self):
+        saved = dict(g.BEFORE_27)
+        g.BEFORE_27['meadow.webp'] = '0' * 64
+        try:
+            self.assertIn('meadow.webp is a generated picture J has not picked', self.off(self.m))
+        finally:
+            g.BEFORE_27.clear(); g.BEFORE_27.update(saved)
+
+    def test_27_green_once_picked_with_his_words(self):
+        with contextlib.redirect_stderr(io.StringIO()), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(g.pick(['om-pause-rest.webp', '--j', 'short'], path=self.picks), 2)
+            self.assertEqual(g.pick(['om-pause-rest.webp', '--j', '<his words, at least 15 characters>'], path=self.picks), 2)
+            self.assertEqual(g.pick(['om-pause-rest.webp', '--j', 'A, the guest resting at the basin, that one'], path=self.picks), 0)
+        self.assertEqual(self.off(self.a), '')
 
 
 if __name__ == '__main__':

@@ -7,7 +7,12 @@
    kept per section in this browser and in the address (?opt-<section>=<option>), so a link shows it. The page's own options
    (window.OM_PAGE_OPTS: an attribute on <html>, e.g. the world switch) are listed under the section's. On a phone a small
    handle opens it. Only on review pages (<html data-review>, or ?review in the address). Runs before the engine, so a
-   remembered option is in place before anything is drawn. A section that sets itself up at load listens for "om:swap". */
+   remembered option is in place before anything is drawn. A section that sets itself up at load listens for "om:swap".
+   A PICTURE's options too (task 279db527; J 19 Nov 18:15 Z: "shift v to shift between options of all images that are in view
+   also please"): every copy of a picture that declares candidates carries data-pic (section_options.pictures), its candidates
+   wait in <template data-pic-for> in the same store. The panel lists the pictures of the section on screen under its options,
+   each with a small thumbnail; a choice swaps the picture in place on every copy (its files, words, focus and AI label), in a
+   section's option too, and is kept per picture the same way (?pic-<picture>=<option>). */
 (function () {
   'use strict';
   var root = document.documentElement;
@@ -19,6 +24,12 @@
   var tpl = {}, live = {};
   [].forEach.call(document.querySelectorAll('#opt-store template[data-opt-for]'), function (t) {
     var id = t.getAttribute('data-opt-for'); (tpl[id] = tpl[id] || {})[t.getAttribute('data-opt')] = t;
+  });
+  var ptpl = {}, pon = {};      // a picture -> its options (today's first), and the one chosen
+  [].forEach.call(document.querySelectorAll('#opt-store template[data-pic-for]'), function (t) {
+    var p = t.getAttribute('data-pic-for');
+    (ptpl[p] = ptpl[p] || []).push({ k: t.getAttribute('data-opt'), n: t.getAttribute('data-n'), d: t.getAttribute('data-d'),
+      name: t.getAttribute('data-name'), ai: t.getAttribute('data-ai'), img: t.content.querySelector('img') });
   });
   function attrsOf(el) { var o = {}; [].forEach.call(el.attributes, function (a) { o[a.name] = a.value; }); return o; }
   secs.forEach(function (s) { live[s.id] = { attrs: attrsOf(s), html: s.innerHTML }; });    // the live default, as drawn
@@ -54,7 +65,60 @@
     s.setAttribute('data-opt', k);
     s.innerHTML = src.html;
     if (window.OMEngine) [].forEach.call(s.querySelectorAll('[data-write]'), function (el) { window.OMEngine.writeIn(el); });
+    [].forEach.call(s.querySelectorAll('img[data-pic]'), function (im) { var o = optOf(im.getAttribute('data-pic'), pon[im.getAttribute('data-pic')]); if (o && o.k !== LIVE) picSwap(im, o); });
     s.dispatchEvent(new CustomEvent('om:swap', { bubbles: true, detail: { key: keyOf(s), option: k } }));
+  }
+
+  /* ---- a picture's swap: the candidate's files, words and focus into every copy, and its AI label with it */
+  function optOf(p, k) { return (ptpl[p] || []).filter(function (o) { return o.k === k; })[0]; }
+  function picsOf(p) { return [].slice.call(document.querySelectorAll('img[data-pic="' + p + '"]')); }
+  function frameOf(im) {      // the picture's own AI label: in a box holding no other picture (the menu's panel labels its open one by is-ai)
+    for (var el = im.parentElement, sec = im.closest('section'); el && el !== sec; el = el.parentElement) {
+      if (el.querySelectorAll('img').length > 1) return { shared: true };
+      var m = el.querySelector(':scope > .ai-mark'); if (m) return { mark: m, text: m.textContent };
+    }
+    return {};
+  }
+  function picSwap(im, o) {
+    var L = im._pl || (im._pl = { src: im.getAttribute('src'), srcset: im.getAttribute('srcset'), alt: im.getAttribute('alt'),
+      style: im.getAttribute('style'), ai: im.classList.contains('is-ai'), f: frameOf(im) });
+    var on = o.k === LIVE, c = o.img;
+    function set(a, v) { if (v == null) im.removeAttribute(a); else im.setAttribute(a, v); }
+    set('src', on ? L.src : c.getAttribute('src')); set('srcset', on ? L.srcset : c.getAttribute('srcset')); set('alt', on ? L.alt : c.getAttribute('alt'));
+    set('style', L.style); if (!on && c.style.getPropertyValue('--pos')) im.style.setProperty('--pos', c.style.getPropertyValue('--pos'));
+    im.classList.toggle('is-ai', on ? L.ai : !!o.ai);
+    im.setAttribute('data-pic-opt', o.k);
+    var f = L.f; if (f.shared) return;
+    if (f.mark) { f.mark.hidden = !on && !o.ai; f.mark.textContent = on ? f.text : (o.ai || f.text); return; }
+    if (!on && o.ai && !im._pm) { im._pm = document.createElement('p'); im._pm.className = 'ai-mark'; im.parentElement.appendChild(im._pm); }
+    if (im._pm) { im._pm.hidden = on || !o.ai; im._pm.textContent = o.ai || ''; }
+  }
+  function seen(im) { var r = im.getBoundingClientRect(); return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(im).opacity) > .05; }
+  function reveal(p) {      // a chosen picture out of sight: a picture opened by its row (the menu) opens with it, any other comes into view
+    var ims = picsOf(p).filter(function (im) { return !im.closest('[hidden]') && im.getClientRects().length; });
+    if (!ims.length || ims.some(seen)) return;
+    var im = ims[0], n = im.getAttribute('data-i'), sec = im.closest('section'), row = n != null && sec && sec.querySelector('[data-i="' + n + '"]:not(img)');
+    if (row) row.click(); else im.scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' });
+  }
+  function choosePic(p, k, animate) {
+    var o = optOf(p, k); if (!o || (pon[p] || LIVE) === k) return;
+    pon[p] = k; keep('pic-' + p.replace(/\.webp$/, ''), k, LIVE);
+    var ims = picsOf(p), shown = animate && !calm() ? ims.filter(seen) : [];
+    function go() {
+      ims.forEach(function (im) {
+        picSwap(im, o);
+        if (shown.indexOf(im) < 0) return;      // on screen: the chosen picture fades in once it is decoded
+        var back = function () { im.classList.remove('opt-pic-out'); im.classList.add('opt-pic-in'); setTimeout(function () { im.classList.remove('opt-pic-in'); }, 700); };
+        if (im.decode) im.decode().then(back, back); else back();
+      });
+      [].forEach.call(document.querySelectorAll('section'), function (s) {
+        if (s.querySelector('img[data-pic="' + p + '"]')) s.dispatchEvent(new CustomEvent('om:swap', { bubbles: true, detail: { key: keyOf(s) || s.id, picture: p, option: k } }));
+      });
+      reveal(p); draw(true);
+    }
+    if (!shown.length) return go();
+    shown.forEach(function (im) { im.classList.add('opt-pic-out'); });
+    setTimeout(go, 260);
   }
   function choose(key, k, animate) {
     var ts = twinsOf(key); if (!ts.length || !has(menuOf(ts[0]), k) || ts[0].getAttribute('data-opt') === k) return;
@@ -86,6 +150,10 @@
     var k = param('opt-' + key) || saved('opt-' + key);
     if (k && k !== LIVE && has(menuOf(s), k)) twinsOf(key).forEach(function (t) { swapOne(t, k); });
   });
+  Object.keys(ptpl).forEach(function (p) {
+    var n = 'pic-' + p.replace(/\.webp$/, ''), k = param(n) || saved(n), o = k && k !== LIVE && optOf(p, k);
+    if (o) { pon[p] = k; picsOf(p).forEach(function (im) { picSwap(im, o); }); }
+  });
   PAGE.forEach(function (p) {
     var v = param(p.p) || saved(p.p);
     if (v && p.o.some(function (o) { return o[0] === v; })) root.setAttribute(p.attr, v);
@@ -110,7 +178,8 @@
     panel.hidden = true;
     panel.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
-      if (b.hasAttribute('data-k')) choose(b.getAttribute('data-key'), b.getAttribute('data-k'), true);
+      if (b.hasAttribute('data-pic')) choosePic(b.getAttribute('data-pic'), b.getAttribute('data-k'), true);
+      else if (b.hasAttribute('data-k')) choose(b.getAttribute('data-key'), b.getAttribute('data-k'), true);
       else if (b.hasAttribute('data-v')) choosePage(PAGE[+b.getAttribute('data-p')], b.getAttribute('data-v'));
       else if (b.hasAttribute('data-go')) { var t = twinsOf(b.getAttribute('data-go')).filter(function (s) { return !s.closest('[hidden]'); })[0]; if (t) t.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth' }); }
     });
@@ -118,7 +187,10 @@
   }
   function draw(force) {
     if (!open) return;
-    var s = onScreen(), sig = (s ? s.id + ':' + (s.getAttribute('data-opt') || '') : '-') + '|' + PAGE.map(function (p) { return root.getAttribute(p.attr); }).join(',');
+    var s = onScreen(), seenP = {}, pics = s ? [].slice.call(s.querySelectorAll('img[data-pic]')).map(function (im) { return im.getAttribute('data-pic'); })
+      .filter(function (p) { if (seenP[p] || !ptpl[p] || ptpl[p].length < 2) return false; seenP[p] = 1; return true; }) : [];
+    var sig = (s ? s.id + ':' + (s.getAttribute('data-opt') || '') : '-') + '|' + PAGE.map(function (p) { return root.getAttribute(p.attr); }).join(',')
+      + '|' + pics.map(function (p) { return p + '=' + (pon[p] || LIVE); }).join(',');
     if (!force && sig === cur) return; cur = sig;
     var h = '<div class="opt__head"><p class="opt__k">Options</p><kbd class="opt__kbd" aria-label="Shift V">⇧V</kbd></div>';
     h += '<p class="opt__sec">' + esc(s ? nameOf(s) : 'This part of the page') + '</p>';
@@ -132,10 +204,27 @@
           + '<b aria-hidden="true">' + (i < 9 ? i + 1 : i === 9 ? 0 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span></button>';
       });
       h += '</div>';
-    } else {
+    } else if (!pics.length) {
       var seen = {}, more = secs.filter(function (x) { var k = keyOf(x); if (seen[k] || x.closest('[hidden]')) return false; seen[k] = 1; return true; });
       h += '<p class="opt__none">No options in this section.</p>';
       if (more.length) h += '<div class="opt__go">' + more.map(function (x) { return '<button type="button" data-go="' + esc(keyOf(x)) + '">' + esc(nameOf(x)) + ' <span aria-hidden="true">→</span></button>'; }).join('') + '</div>';
+    }
+    var nRow = menu.length;
+    if (pics.length) {
+      h += '<div class="opt__pics"><p class="opt__k">Pictures</p>';
+      pics.forEach(function (p) {
+        var list = ptpl[p], on = pon[p] || LIVE, nm = list[0].name || p, first = picsOf(p)[0];
+        h += '<p class="opt__pic">' + esc(nm) + '</p><div class="opt__list" role="radiogroup" aria-label="' + esc(nm) + '">';
+        list.forEach(function (o) {
+          var sel = o.k === on, i = nRow++, L = first && first._pl, src = o.k === LIVE ? (L ? L.src : first.getAttribute('src')) : o.img.getAttribute('src'),
+            set = o.k === LIVE ? (L ? L.srcset : first.getAttribute('srcset')) : o.img.getAttribute('srcset');
+          h += '<button type="button" class="opt__row opt__row--pic" role="radio" aria-checked="' + sel + '" data-pic="' + esc(p) + '" data-k="' + esc(o.k) + '">'
+            + '<b aria-hidden="true">' + (i < 9 ? i + 1 : i === 9 ? 0 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span>'
+            + '<i class="opt__th" aria-hidden="true"><img src="' + esc(src) + '"' + (set ? ' srcset="' + esc(set) + '" sizes="64px"' : '') + ' alt="" decoding="async"></i></button>';
+        });
+        h += '</div>';
+      });
+      h += '</div>';
     }
     PAGE.forEach(function (p, pi) {
       var on = root.getAttribute(p.attr) || p.d;
@@ -175,5 +264,5 @@
     document.body.appendChild(handle);
   }
   if (document.body) addHandle(); else addEventListener('DOMContentLoaded', addHandle);
-  window.OMOptions = { show: show, choose: choose };
+  window.OMOptions = { show: show, choose: choose, choosePic: choosePic };
 })();

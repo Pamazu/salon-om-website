@@ -128,6 +128,24 @@ PAUSE_DOOR = 'real-chair-window.webp'
 PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on the leather'
 
 
+# THE PICTURES J SWITCHES WITH SHIFT+V (task 279db527; J 19 Nov 18:15 Z: "shift v to shift between options of all images that
+# are in view also please"): {the picture on the page today: its name in the panel, today's label, its candidates}, drawn by
+# section_options.pictures. A candidate becomes the picture on the page only once J picks it there: the deploy gate's row 27
+# refuses a generated picture he has not picked (qa/j-picks.json, written by `approved_gate.py pick` from his words). A service
+# picture's candidates (task b1dd24c9) join here, one line each, under its file.
+PICTURE_OPTIONS = {
+    PAUSE_DOOR: dict(name='The pause’s picture', live='Today’s: the empty chair by the window', options=[
+        # (task 69006a72, 5e79645): the 19 Nov pause guest with J's 25 Oct basins room laid under her by her own outline
+        dict(key='rest', label='A guest resting at the basin', img='om-pause-rest.webp', ai=AI_GUEST,
+             alt='A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles',
+             note='Eyes closed, a towel round her shoulders, in your 25 Oct picture of the basins room.'),
+        # (msg 3d46766e to the CEO MA): the salon's own photo 2, no one in it
+        dict(key='lounge', label='The lounge by the fire', img='real-lounge.webp', alt=STEP_ALT[3],
+             note='The real lounge by the fireplace, no one in it.'),
+    ]),
+}
+
+
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:
 # a step shows its own real photo (build.chapter drops the film layer, the photo stays whole); the two heroes show the
 # sharpest frame of their film (a mood film: no person, no salon), upscaled x4 on the Mac Studio and drawn like any picture here
@@ -657,15 +675,18 @@ def srcset(body, v):
 
     def one(m):
         tag, name = m.group(0), m.group(1)
-        if name not in ex or name not in sz or ' srcset=' in tag:
+        if name not in ex or ' srcset=' in tag or (name not in sz and ' data-cand' not in tag):
             return tag
-        e, stem = sz[name], name[:-5]
+        stem = name[:-5]
+        set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
+        # a place that names how wide it draws the picture keeps it (a full-bleed option, task e5325977); a picture's candidate
+        # (section_options.pictures, task 279db527) is drawn at the size of the picture it stands in for, so it takes only its files
+        if ' sizes=' in tag or ' data-cand' in tag:
+            return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}"', 1)
+        e = sz[name]
         sizes = ', '.join(x for x in (f'(max-width: 700px) {vw(e, "w390", 390)}vw' if e.get('w390') else '',
                                       f'(max-width: 2000px) {vw(e, "w1440", 1440)}vw' if e.get('w1440') else '',
                                       f'{vw(e, "w3230", 3230)}vw') if x)
-        set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
-        if ' sizes=' in tag:      # a place that names how wide it draws the picture keeps it (a full-bleed option, task e5325977)
-            return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}"', 1)
         return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
     return re.sub(r'<img [^>]*?src="img/([^"/]+\.webp)"[^>]*>', one, body)
 
