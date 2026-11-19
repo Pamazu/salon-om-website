@@ -105,8 +105,10 @@ SERVICE_PHOTO = [
   # round 5 (task 2846db82): Finishing Touches was a pasted cut-out (a hard edge under the sweater, no shadow, front light
   # against the window); now the salon's photo 8 with the guest standing at the glo display, three-quarter profile, brows
   # shown, a tube in her hands, lit from the window like the room (Qwen-Image-Edit 2511, FT5 seed 4, whole frame; the display
-  # and its products checked against photo 8, none invented)
-  ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows holding a glo tube at the skincare display at Salon OM', '33% 32%'),
+  # and its products checked against photo 8, none invented). J, 19 Nov 2026 12:01 Z, liked it: "the one on finishing
+  # touches is cropping too much the subject": the same picture, its focus moved to her side so the tall desktop panel
+  # (about 40% of its width at 1440x900) holds her whole head, bun, hands and the tube (task b1dd24c9)
+  ('om-menu-finishing-touches.webp', 'A generated guest with softly shaped brows holding a glo tube at the skincare display at Salon OM', '14% 32%'),
 ]
 # every menu picture is a real salon photo with one generated guest, so each says so in its corner, as text on the page
 # (StoryLegal, 17 Nov 2026, msg 7d0dc68d: "\"Guest made with AI\" in a corner of the picture ... as text on the page";
