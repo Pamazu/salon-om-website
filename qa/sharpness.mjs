@@ -74,7 +74,7 @@ if (MANIFEST) {
   // the widest each picture is drawn on each page, per viewport (img/ files only; the films' posters are not exported here)
   const man = {};
   for (const r of rows) {
-    const f = (r.src || '').match(/^img\/([^ ]+\.webp)$/); if (!f) continue;
+    const f = (r.src || '').replace(/\?v=[0-9a-f]+$/, '').match(/^img\/([^ ]+\.webp)$/); if (!f) continue;   // the address without its content version (task 01849ea5)
     const e = ((man[r.v] ||= {})[f[1]] ||= {});
     e['w' + r.W] = Math.max(e['w' + r.W] || 0, r.rw);
   }

@@ -689,3 +689,37 @@ def hevc_twins(body, media_dir):
         if not os.path.exists(os.path.join(media_dir, stem + '-hevc.mp4')): return m.group(0)
         return m.group(0) + f' data-src-hevc="media/{stem}-hevc.mp4"'
     return re.sub(r'<video data-src="media/([\w-]+)\.mp4"', one, body)
+
+
+# Every file a page names, at an address that changes with its content (task 01849ea5; J 19 Nov 08:01 Z, his Safari showing the
+# pause's old picture after it was replaced: "someone brought back this section"). Firebase gives pictures, films and sounds a
+# week's cache (fonts a month) under the same address while their bytes change, so a returning visitor keeps the old copy.
+ASSET_REF = re.compile(r'(?<![\w/.:-])((?:[a-z0-9_-]+/)+[\w.%-]+\.(?:webp|jpe?g|png|svg|gif|avif|mp4|webm|mp3|m4a|wav|woff2?|ttf|otf|css|js|json|vtt))(?![\w/?])')
+_HASHES = {}
+
+
+def asset_hash(path):
+    """The first 10 hex of a file's sha-256, kept per (path, size, mtime) so a build hashes each file once."""
+    import hashlib
+    st = os.stat(path); key = (path, st.st_size, st.st_mtime_ns)
+    if key not in _HASHES:
+        h = hashlib.sha256()
+        with open(path, 'rb') as f:
+            for b in iter(lambda: f.read(1 << 20), b''): h.update(b)
+        _HASHES[key] = h.hexdigest()[:10]
+    return _HASHES[key]
+
+
+def hash_assets(doc, site):
+    """Each picture, film, sound, font and icon the finished document names (in an attribute, a srcset, a CSS url() or a
+    script's string) gets ?v=<its content's hash>: a changed file is a new address, so every browser fetches it at once,
+    and an unchanged one keeps its address and its cached copy. A name with no file behind it stops the build (a broken
+    picture). Firebase and the QA servers serve the file whatever the query, so nothing is renamed or staged differently.
+    A CSS selector that matches an address's ending ([src$="name.webp"]) would no longer match, so it matches the name
+    followed by its version instead. Only M, G and S call this; 2.2-2.4 never do."""
+    def one(m):
+        rel = m.group(1); f = os.path.join(site, rel)
+        assert os.path.isfile(f), f'hash_assets: the page names {rel}, which is not in {site}'
+        return f'{rel}?v={asset_hash(f)}'
+    doc = ASSET_REF.sub(one, doc)
+    return re.sub(r'\[src\$="([\w.%-]+)"\]', r'[src*="\1?v="]', doc)

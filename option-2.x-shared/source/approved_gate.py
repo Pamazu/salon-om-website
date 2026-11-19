@@ -58,7 +58,7 @@ def parse(html):
 
 def film_ok(f, site):
     """A film tag with a data-src to an .mp4 that is in the staged site folder (a missing file is a film that 404s)."""
-    src = f['attrs'].get('data-src') or ''
+    src = (f['attrs'].get('data-src') or '').split('?')[0]     # the address without its content version (?v=, task 01849ea5)
     return src.endswith('.mp4') and (site is None or os.path.exists(os.path.join(site, src)))
 
 
