@@ -68,6 +68,16 @@
     this.last = {}; this.px = .5; this.py = .5; this.pointerAt = -1e9; this.vis = false; this.frames = 0; this.dx = null; this.dy = null; this.nat = [1500, 1000];
     el.addEventListener('pointermove', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointerAt = performance.now(); });
     el.addEventListener('pointerdown', function (e) { var r = el.getBoundingClientRect(); me.px = (e.clientX - r.left) / r.width; me.py = (e.clientY - r.top) / r.height; me.pointerAt = performance.now(); });
+    // the stage grows to hold its words when they are taller than the screen (Inner Work's long list on a phone), so no word is
+    // ever cut off at its foot (task 95e37a41). Sized whenever its words change size (the page loading, a resize, the fonts
+    // arriving, the other world's page shown), never first when it comes on screen: a section that grows under the reader moves
+    // the page (the tall-section pull measured it, qa/r4 snap). The room it keeps is place()'s: the header above, the door bar below.
+    this.fit = function () {
+      if (!me.wd.offsetHeight) return;                                  // its world's page is hidden: sized when it is shown
+      var hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 76, f = Math.ceil(hdr + 14 + me.wd.offsetHeight + (el.clientWidth < 700 ? 92 : 40));
+      me.set(el, 'mh', 'minHeight', f > innerHeight ? f + 'px' : '');
+    };
+    this.fit(); if ('ResizeObserver' in window) new ResizeObserver(function () { me.fit(); }).observe(this.wd); else addEventListener('resize', this.fit);
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { me.vis = es[0].isIntersecting; if (me.vis) start(); }, { rootMargin: '15% 0px' }).observe(el); else this.vis = true;
     function load() {
       copiesOf(ph.currentSrc || ph.src, function (urls, nat, err) {
@@ -135,7 +145,7 @@
       s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
       var wx = phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), wy = (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12;
       var R0 = Math.min(W, H) * (phone ? .16 : .15), R1 = R0 * 2.8;
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .5,
+      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
         mask: 'radial-gradient(circle at ' + wx.toFixed(0) + 'px ' + wy.toFixed(0) + 'px, transparent ' + R0.toFixed(0) + 'px, #000 ' + R1.toFixed(0) + 'px)' };
     },
     G: function (s, W, H, t, r, vh) {                                                         // deepest behind the words, lighter further out
@@ -168,6 +178,7 @@
   Stage.prototype.draw = function (t) {
     var r = this.el.getBoundingClientRect(), W = r.width, H = r.height, vh = innerHeight, L = this.L;
     this.wdH = this.wd.offsetHeight; this.hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 76;
+    this.fit();
     var o = OPT[this.id](this, W, H, t, r, vh), x0 = o.rect[0], x1 = o.rect[1], y0 = o.rect[2], y1 = o.rect[3];
     var clip = 'inset(' + Math.max(0, y0).toFixed(1) + 'px ' + Math.max(0, W - x1).toFixed(1) + 'px ' + Math.max(0, H - y1).toFixed(1) + 'px ' + Math.max(0, x0).toFixed(1) + 'px)';
     this.set(L.sheet, 'clip', 'clipPath', clip); this.set(L.sheet, 'wclip', 'webkitClipPath', clip);

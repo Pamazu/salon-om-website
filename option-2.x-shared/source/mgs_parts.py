@@ -234,11 +234,13 @@ def door(short=False, exact=False):
     d = M.DOOR
     b = btn(d['btns'][0], '#coaching', 'light', arrow=True, world='coaching')
     call = btn(d['btns'][1], CALL_URL, 'ghost')
+    # J 18 Nov: "It's very hard to read the text ... Maybe the thing we're doing of lenticular sheet could help here" (task 95e37a41)
+    sheet = dict(sheet=S.AVEDA_SHEET, options=S.DOOR_OPTIONS, option_label=S.DOOR_LIVE_LABEL)
     if short:
-        return ('bridge', dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b))
+        return (S.door_sheet, dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b, **sheet))
     b += call
-    return ('bridge', dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][0],
-                           more=([d['paras'][1]] if exact else [d['paras'][1] + ' ' + draft(A11['call'])]) + d['paras'][2:], btn=b))
+    return (S.door_sheet, dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][0],
+                               more=([d['paras'][1]] if exact else [d['paras'][1] + ' ' + draft(A11['call'])]) + d['paras'][2:], btn=b, **sheet))
 
 
 def begin(summary=False, online=False):
@@ -388,7 +390,7 @@ def iw_entries(v, salon):
             f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)
         elif kind is S.visit:
             w['steps'] = [tuple(x) + IW_PHOTO[IW_STEP_PICS[i][0]] for i, x in enumerate(w['steps'])]
-        elif kind is S.aveda:
+        elif kind in (S.aveda, S.aveda_sheet):
             w['photo'] = _iw_pic('outdoor_chin')
         elif kind in ('team', 'proof'):
             w['people'] = [dict(c, img=_iw_pic('outdoor_portrait')[0], alt=_iw_pic('outdoor_portrait')[1]) for c in w['people']]
@@ -396,7 +398,7 @@ def iw_entries(v, salon):
         elif kind is S.menu:
             w['tiles'] = [dict(t, img=IW_PHOTO[IW_PATH_PICS[i][0]][0], alt=IW_PHOTO[IW_PATH_PICS[i][0]][1], pos=IW_PATH_PICS[i][1], ai=None,
                                missing=f'Photo to come: {re.sub("<[^>]+>", "", t["title"])}') for i, t in enumerate(w['tiles'])]
-        elif kind == 'bridge':
+        elif kind in ('bridge', S.door_sheet):
             w.update(img=_iw_pic('basins')[0], mark='')     # landscape, so its full-bleed frame stays sharp at 3230 (the chair drew at 1.42x)
         elif kind == 'cta':
             w['close_img'] = (_iw_pic('fireside_close')[0], '50% 30%')

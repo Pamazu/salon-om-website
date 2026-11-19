@@ -21,7 +21,8 @@ const DPR = { 3230: 2, 1440: 2, 390: 3 };
 const MANIFEST = process.argv.includes('--manifest');
 const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
-const browser = await pw.chromium.launch();
+// WebKit, J's rule for every browser check (task 79e9b12b); the pool's pinned build when %WEBKIT% is set (run-at-ref --asset WEBKIT)
+const browser = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
 const rows = [];
 try {
   for (const v of VERS) for (const W of WIDTHS) {
@@ -66,6 +67,7 @@ try {
 const seen = new Set();
 const uniq = rows.filter((r) => { const k = `${r.v}|${r.W}|${r.src}|${r.where}`; if (seen.has(k)) return false; seen.add(k); return true; })
   .sort((a, b) => b.dpx - a.dpx);
+fs.mkdirSync(path.join(REPO, 'qa', 'out-chromium'), { recursive: true });
 fs.writeFileSync(path.join(REPO, 'qa', 'out-chromium', 'sharpness.json'), JSON.stringify(uniq, null, 1));
 if (MANIFEST) {
   // the widest each picture is drawn on each page, per viewport (img/ files only; the films' posters are not exported here)
