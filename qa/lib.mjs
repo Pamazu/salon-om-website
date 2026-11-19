@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml',
-  '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4',
+  '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.aac': 'audio/aac',
   '.woff2': 'font/woff2', '.json': 'application/json' };
 
 // /m/, /g/, /s/ serve option-2.2-mgs/<v>/index.html; every other path under them comes from option-2.2/site (the shared

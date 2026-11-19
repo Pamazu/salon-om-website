@@ -29,11 +29,20 @@
         ]
       },
       {
-        "source": "**/*.@(mp4|mp3|webp|jpg|png)",
+        "source": "**/*.@(mp4|mp3|aac|webp|jpg|png)",
         "headers": [
           {
             "key": "Cache-Control",
             "value": "public, max-age=604800"
+          }
+        ]
+      },
+      {
+        "source": "**/*.aac",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "audio/aac"
           }
         ]
       },
