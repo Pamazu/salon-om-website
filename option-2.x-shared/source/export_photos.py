@@ -41,7 +41,8 @@ DPR = {'w3230': 2, 'w1440': 2, 'w390': 3}
 def needed(name):
     """the widest file the pages need: the widest drawn CSS width on any page and viewport, times that screen's ratio"""
     sizes = json.load(open(V + 'photo_sizes.json'))
-    return max((e[k] * DPR[k] for v in sizes.values() for n, e in v.items() if n == name for k in DPR if k in e), default=0)
+    # a section's other options count too (o3230 ...: sharpness.mjs measures each option the switcher offers, task a78e6208)
+    return max((e[p + k[1:]] * DPR[k] for v in sizes.values() for n, e in v.items() if n == name for k in DPR for p in 'wo' if p + k[1:] in e), default=0)
 
 
 def widths(need, have):

@@ -4,7 +4,8 @@
 // device pixels per file pixel. Over 1.0 = the browser enlarges the file = soft on screen.
 //   node sharpness.mjs [m,g,s] [3230,1440,390]   -> prints one line per picture, worst first; qa/out-chromium/sharpness.json
 //   ... --manifest   also writes option-2.x-shared/source/photo_sizes.json: per page and picture, the widest it is drawn
-//   (CSS px) at 3230, 1440 and 390, which build.py turns into each <img>'s sizes and export_photos.py into file widths
+//   (CSS px) at 3230, 1440 and 390, which build.py turns into each <img>'s sizes and export_photos.py into file widths;
+//   a section's other options (the option switcher) are measured too, as o3230 / o1440 / o390: file widths only
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -62,6 +63,29 @@ try {
         return out;
       });
       for (const g of got) rows.push({ v, W, world: w, ...g, dpx: +(g.scale * (DPR[W] || 2)).toFixed(2), rw: Math.round(g.nat[0] * g.scale) });
+      // each section's options (the option switcher, task e5325977): every option is chosen in turn and its pictures measured
+      // where it draws them, so a full-screen option gets files sharp enough too (task a78e6208); they count for the files'
+      // widths only ('o' keys), never for the default's sizes ('w' keys)
+      const opts = await p.evaluate(() => [...document.querySelectorAll('section[data-opt-key][data-opts]')]
+        .filter((s) => s.getBoundingClientRect().height > 0)
+        .map((s) => ({ id: s.id, key: s.dataset.optKey, ks: JSON.parse(s.dataset.opts).map((o) => o.k).filter((k) => k !== 'live') })));
+      for (const o of opts) for (const k of o.ks) {
+        await p.evaluate(({ key, k, id }) => { window.OMOptions.choose(key, k, false); document.getElementById(id).scrollIntoView(); }, { key: o.key, k, id: o.id });
+        await wait(p, 1400);
+        const og = await p.evaluate(async (id) => {
+          const out = [], s = document.getElementById(id);
+          for (const el of s.querySelectorAll('img')) {
+            const t = new Image(); t.src = el.currentSrc || el.src; try { await t.decode(); } catch (e) {}
+            const r = el.getBoundingClientRect(), cs = getComputedStyle(el), nw = t.naturalWidth, nh = t.naturalHeight;
+            if (!r.width || !r.height || !nw) continue;
+            const sc = cs.objectFit === 'contain' ? Math.min(r.width / nw, r.height / nh) : Math.max(r.width / nw, r.height / nh);
+            out.push({ src: el.getAttribute('src'), file: (el.currentSrc || '').replace(/^.*\/img\//, 'img/'), nat: [nw, nh], box: [Math.round(r.width), Math.round(r.height)], scale: sc });
+          }
+          return out;
+        }, o.id);
+        for (const g of og) rows.push({ v, W, world: w, ...g, where: `${o.id}:${k}`, opt: true, dpx: +(g.scale * (DPR[W] || 2)).toFixed(2), rw: Math.round(g.nat[0] * g.scale) });
+        await p.evaluate(({ key }) => window.OMOptions.choose(key, 'live', false), { key: o.key });
+      }
     }
     await ctx.close();
   }
@@ -75,8 +99,8 @@ if (MANIFEST) {
   const man = {};
   for (const r of rows) {
     const f = (r.src || '').replace(/\?v=[0-9a-f]+$/, '').match(/^img\/([^ ]+\.webp)$/); if (!f) continue;   // the address without its content version (task 01849ea5)
-    const e = ((man[r.v] ||= {})[f[1]] ||= {});
-    e['w' + r.W] = Math.max(e['w' + r.W] || 0, r.rw);
+    const e = ((man[r.v] ||= {})[f[1]] ||= {}), k = (r.opt ? 'o' : 'w') + r.W;
+    e[k] = Math.max(e[k] || 0, r.rw);
   }
   fs.writeFileSync(path.join(REPO, 'option-2.x-shared', 'source', 'photo_sizes.json'), JSON.stringify(man, null, 1) + '\n');
 }

@@ -60,6 +60,9 @@ SOURCE = {
     'film-hero-forest.webp': 'm:film-hero-forest.png',
     'film-air-curtains.webp': 'm:film-air-curtains.png',
     'om-pause-guest.webp': 'm:om-pause-guest-25oct.png',      # the pause (task a8c429a3): a guest in J's 25 Oct basins room
+    # the pause's door (task a78e6208, J 19 Nov: "I need the one I approved"): the empty styling chair by the window, photo 4 with
+    # the bin and the hair vacuum's hose removed (the 20 Oct clean copy's pixels only there; clean_master.py 4)
+    'real-chair-window.webp': 'm:4-styling-chair-window-clean.jpg',
 }
 
 # every photographer's original a picture may come from, and the place question answered: None = it shows no place on the
@@ -69,7 +72,7 @@ ORIGINALS = {
     '1-portrait-standing-product-wall-5B3A1307-2.jpg': None,
     '2-lounge-fireplace-5B3A1048.jpg': None,
     '3-portrait-arms-crossed-5B3A1343.jpg': None,
-    '4-styling-chair-window-5B3A1068.jpg': '',                  # the bin by the window, the hair vacuum's hose
+    '4-styling-chair-window-5B3A1068.jpg': '4-styling-chair-window-clean.jpg',   # the bin by the window, the hair vacuum's hose (clean_master.py 4, task a78e6208)
     '5-portrait-seated-fireplace-5B3A1413.jpg': None,
     '6-shampoo-basins-5B3A1072.jpg': '6-shampoo-basins-25oct-clean.jpg',   # the halo lamp, bin, hair vacuum; J's 25 Oct edit
     '7-aveda-product-shelves-5B3A1050.jpg': None,
