@@ -474,22 +474,13 @@ def aveda_sheet(d, world):
   </section>'''
 
 
-# Why Aveda's options (task e5325977): r7's four full-section sheets first (J 19 Nov 03:38 Z asked for those), then r6's five
-SHEET_NAMES = [('F', 'A clear window drifts', 'The sheet covers the whole section; a clearer patch drifts over the photo, away from the words.'),
-               ('G', 'Deepest behind the words', 'Heaviest behind the words, clearing away from them; it breathes slowly.'),
-               ('H', 'A focus pull', 'The sheet softens and sharpens with the scroll while the photo drifts behind it.'),
-               ('I', 'A glow around the letters', 'A lighter sheet; it gathers only into a soft glow around each letter.'),
-               ('A', 'The sheet is lowered', 'It lowers and rises by itself; above its clean top edge the photo is sharp.'),
-               ('B', 'The sheet breathes', 'Over the whole photo, drifting closer and away; a faint rainbow travels across it.'),
-               ('C', 'Half a sheet', 'A thick sheet over the words’ half, sliding in and out; its glass edge and the sharp photo beside it.'),
-               ('D', 'A sheet in the hand', 'A smaller sheet drifts by itself and follows your pointer; the words ride on it.'),
-               ('E', 'Only behind the words', 'The sheet shows only where the words are and fades softly into the sharp photo.')]
-# J's pick, 19 Nov 11:50 Z (task 95e37a41, his screenshot 12.47.37, "Options that I choose"): F is the section on the page; the
-# label card it replaced and the other sheets stay in the switcher (their keys unchanged, so a choice J saved still opens)
+# Why Aveda's list (J 19 Nov 18:06 Z via the CEO MA, msg 09802a6b, task 4739f125): F, its clear window drifting around the shelves
+# of Aveda products (J's pick of 19 Nov 11:50 Z, screenshot 12.47.37), is the section on the page; its ONE option is F synced with the
+# scroll (FS). The label card and the sheets G, H, I and A to E are gone from the list; gate row 26 keeps them out.
 AVEDA_SHEET = 'F'
-AVEDA_LIVE_LABEL = next(f'{k} · {n}' for k, n, _ in SHEET_NAMES if k == AVEDA_SHEET)
-AVEDA_OPTIONS = ([dict(key='label', label='The label card beside the photo (before 19 Nov)', note='The photo on the right, the facts on an ivory card over its left edge.', kind=aveda)]
-                 + [dict(key='sheet-' + k.lower(), label=f'{k} · {n}', note=note, kind=aveda_sheet, sheet=k) for k, n, note in SHEET_NAMES if k != AVEDA_SHEET])
+AVEDA_LIVE_LABEL = 'F · A clear window drifts'
+SYNCED = dict(label='F · synced with the scroll', note='The clear window opens around its subject as the section rises into view and moves with the page; still while the page is still.')
+AVEDA_OPTIONS = [dict(key='sheet-fs', kind=aveda_sheet, sheet='FS', **SYNCED)]
 
 
 def door_sheet(d, world):
@@ -500,7 +491,7 @@ def door_sheet(d, world):
     (mgs_parts.door(), Inner Work's through the twin); the words straight on the photo stay in the switcher (DOOR_OPTIONS)."""
     more = ''.join(f'<p class="sh__more a-up" style="--d:{.75 + k * .1:.2f}s">{t}</p>' for k, t in enumerate(d.get('more', [])))
     return f'''<section class="s s--auto dr" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
-    {sheet_stage(d['img'], d.get('alt', ''), d.get('sheet', AVEDA_SHEET), f"""<p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
+    {sheet_stage(d['img'], d.get('alt', ''), d.get('sheet', DOOR_SHEET), f"""<p class="eyebrow a-left" style="--d:.15s">{d['eyebrow']}</p>
         <h2 class="mid" id="{d['id']}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d['title']}</span></span></h2>
         <p class="sh__text a-up" style="--d:.6s">{d['text']}</p>{more}
         <div class="sh__btns a-up" style="--d:.95s">{_on_light(d['btn'])}</div>""", d.get('mark', ''))}
@@ -508,5 +499,7 @@ def door_sheet(d, world):
   </section>'''
 
 
+# the second door opens on FS (J 19 Nov 14:25 Z: every section with the effect synced with the scroll, like the pause's breath)
+DOOR_SHEET = 'FS'
 DOOR_OPTIONS = [dict(key='photo', label='The words on the photo (before 19 Nov)', note='White words straight on the photo under a dark shade.', kind='bridge')]
-DOOR_LIVE_LABEL = AVEDA_LIVE_LABEL
+DOOR_LIVE_LABEL = SYNCED['label']

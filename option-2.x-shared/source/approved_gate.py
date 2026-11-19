@@ -528,6 +528,30 @@ def row23(sections, letter, site):     # every picture of the basins room is bui
     return out
 
 
+def row26(sections, letter, site):     # Why Aveda's list: F, and one option, F synced with the scroll; the door synced
+    """J 19 Nov 18:06 Z (via the CEO MA, msg 09802a6b, task 4739f125): Why Aveda's Shift+V list is F, its default (the clear
+    window drifting around the shelves of Aveda products), and ONE option, "F synced with the scroll"; the label card, G, H, I
+    and A to E are removed. The second door opens synced with the scroll (J 14:25 Z: every section with the effect)."""
+    out = []
+    for P, W in (('', 'Salon OM'), ('c-', 'Inner Work')):
+        av, door = sections.get(f'{P}aveda'), sections.get(f'{P}deeper')
+        if av is None and letter in 'mg':
+            out.append(f'{W}: Why Aveda is missing')
+        if av is not None:
+            try:
+                keys = [o.get('k') for o in json.loads(av['attrs'].get('data-opts') or '[]')]
+            except ValueError:
+                keys = 'unreadable'
+            if keys != ['live', 'sheet-fs']:
+                out.append(f'{W}: Why Aveda\'s list is {keys}, not F and F synced with the scroll (live, sheet-fs)')
+            if av['attrs'].get('data-opt', 'live') != 'live' or [st.get('data-sheet') for st in av.get('sheets', [])] != ['F']:
+                out.append(f'{W}: Why Aveda does not open on F (option "{av["attrs"].get("data-opt")}", sheet '
+                           f'{[st.get("data-sheet") for st in av.get("sheets", [])]})')
+        if door is not None and [st.get('data-sheet') for st in door.get('sheets', [])] != ['FS']:
+            out.append(f'{W}: the second door\'s sheet is {[st.get("data-sheet") for st in door.get("sheets", [])]}, not F synced with the scroll (FS)')
+    return out
+
+
 ROWS = {
     1: ('each step has its own film, moving, with its own sound', 'mg', row1),
     2: ('each step shows its own real photo', 'mg', row2),
@@ -549,6 +573,7 @@ ROWS = {
     22: ('Why Aveda\'s entry: its picture settles in from close and its words come in as it arrives', 'mg', entry_row('aveda', 'Why Aveda')),
     23: ('every picture of the basins room is built on J\'s 25 Oct picture, its organised bottles', 'mgs', row23),
     24: ('each sheet picture\'s clear window opens on its subject; Why Aveda\'s on the shelves of Aveda products', 'mgs', row24),
+    26: ('Why Aveda\'s list is F and one option, F synced with the scroll; the second door synced with the scroll', 'mgs', row26),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
 MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg', 24: 'mgs', 25: 'mgs'}

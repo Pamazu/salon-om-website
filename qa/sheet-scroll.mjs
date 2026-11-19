@@ -1,5 +1,5 @@
 // The sheet moves with the scroll (task 4739f125; J 19 Nov 14:25 Z: "if in all sections in which you have the effect, can you
-// synchronize it with scroll just like in the take a breath section"). For each sheet section of a page (both worlds), from a
+// synchronize it with scroll just like in the take a breath section"). For each sheet synced with the scroll (FS; both worlds), from a
 // screen above it, a person's slow mouse wheel (60 px every 60 ms, through the page's own snapping and pulls) carries it up to the
 // window's top; on every step the section's top, the sheet's clear window (sheet.js win) and its ribs' offset are read.
 // Pass: the window is a function of where the section stands (the higher it has risen, the more open: never less open at a
@@ -39,7 +39,8 @@ const res = {}; let bad = 0;
 for (const [world, P] of [['salon', ''], ['coaching', 'c-']]) {
   if (world === 'coaching') await toWorld(p, 'coaching');
   for (const id of [`${P}deeper`, `${P}aveda`]) {
-    const y0 = await p.evaluate((id) => { const e = document.getElementById(id); return e && e.querySelector('[data-sheet]') ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
+    // only a sheet synced with the scroll (FS: the door by default; Why Aveda's default F drifts by itself, J 19 Nov 18:06 Z)
+    const y0 = await p.evaluate((id) => { const e = document.getElementById(id); return e && e.querySelector('[data-sheet="FS"]') ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
     if (y0 < 0) continue;
     const shots = { '60': 0.6, '25': 0.25, 'top': 0 };
     const steps = await wheel(id, y0, async () => {

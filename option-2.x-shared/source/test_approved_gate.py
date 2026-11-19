@@ -247,6 +247,18 @@ class EveryRow(Before21, unittest.TestCase):
     def test_20_the_pause_opens_on_another_option(self):
         self.red(20, self.pause('data-opt="live"', 'data-opt="room"'), why='option "room"')
 
+    def test_26_a_removed_option_back_in_why_aveda(self):
+        self.red(26, in_section(self.m, 'aveda', '&quot;k&quot;:&quot;sheet-fs&quot;', '&quot;k&quot;:&quot;sheet-g&quot;'), why="'sheet-g'")
+
+    def test_26_the_label_card_back_in_inner_work_s_why_aveda(self):
+        self.red(26, in_section(self.m, 'c-aveda', '&quot;k&quot;:&quot;sheet-fs&quot;', '&quot;k&quot;:&quot;label&quot;'), why='Inner Work')
+
+    def test_26_why_aveda_opens_synced(self):
+        self.red(26, in_section(self.m, 'aveda', 'data-sheet="F"', 'data-sheet="FS"'), why='does not open on F')
+
+    def test_26_the_door_drifts(self):
+        self.red(26, in_section(self.s, 'deeper', 'data-sheet="FS"', 'data-sheet="F"'), letter='s', why='second door')
+
     def test_s_passes_and_breaks_on_its_own_rows(self):
         self.assertEqual(self.off(self.s, 's'), {})
         self.red(13, in_section(self.s, 'deeper', 'Explore Inner Work', 'Go elsewhere'), letter='s')   # the section's, not its option's template
