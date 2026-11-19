@@ -317,6 +317,11 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
    its end, its bottom lines up with the bottom of the window; the next section comes in only once a third of it is showing
    in the direction of travel (the same on the way up). Safari has no rule for sections taller than the window, which is why
    it pulled the reader back to the top of the menu. */
+/* the glass under the header (mgs.css .hdr-glass, task 95ac520e): its own layer, just before the header */
+(function () {
+  var h = document.getElementById('hdr'); if (!h || document.querySelector('.hdr-glass')) return;
+  var g = document.createElement('div'); g.className = 'hdr-glass'; g.setAttribute('aria-hidden', 'true'); h.parentNode.insertBefore(g, h);
+})();
 (function () {
   var root = document.documentElement;
   if (root.hasAttribute('data-shot')) return;
@@ -340,7 +345,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (r.bottom > -vh * .95 && r.top < vh * 1.95 && r.height > vh + 2) tall = true;
       if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
     });
-    if (ground) {      // the glass header's veil (mgs.css .hdr::before): the section's ground, or its tone's when it paints none
+    if (ground) {      // the glass header's veil (mgs.css .hdr-glass): the section's ground, or its tone's when it paints none
       var bg = getComputedStyle(ground).backgroundColor;
       if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
       root.style.setProperty('--hdr-ground', bg);

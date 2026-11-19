@@ -1833,13 +1833,16 @@ html[data-variant^="2.2-"] main[data-world] .mani.dark .cy__reward { color: var(
    the header turns to GLASS, never a solid band (task 95ac520e; J 19 Nov 11:50 Z: "I also don't like the navigation bar having
    a hard background. It doesn't look clean or have the glass effect the navigation bar usually has"). The page behind it
    frosted, as the worlds pill and the booking bar are (blur and saturation), under a light veil of that section's own ground,
-   fading out at its lower edge: no band, no line. mgs.js sets the class and the ground */
-.hdr::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; bottom: -32px; pointer-events: none; opacity: 0;
+   fading out at its lower edge: no band, no line. Its own layer just under the header (mgs.js adds it): inside the header,
+   whose intro animation makes it a layer of its own, WebKit frosted nothing behind it (seen at 1440, 40289e3). mgs.js sets the
+   class and the ground */
+.hdr-glass { position: fixed; z-index: 49; left: 0; right: 0; top: 0; height: calc(var(--hdr) + env(safe-area-inset-top, 0px) + 32px); pointer-events: none; opacity: 0;
   background: linear-gradient(to bottom, color-mix(in srgb, var(--hdr-ground, #15100C) 58%, transparent), color-mix(in srgb, var(--hdr-ground, #15100C) 30%, transparent) 72%, transparent);
   -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%);
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
   transition: opacity .6s var(--io); }
-html.hdr-ground .hdr::before { opacity: 1; }
+html.hdr-ground .hdr-glass { opacity: 1; }
+html.menu-open .hdr-glass, html[data-shot] .hdr-glass { opacity: 0; }   /* the phone menu is its own ground */
 /* voices: the quote fills its card; the card hugs its words */
 .vo__card { min-height: 0; padding: var(--sp-5) var(--sp-5) var(--sp-4); gap: var(--sp-4); }
 .vo__card blockquote { font-size: clamp(30px, 3vw, 52px); line-height: 1.14; }
@@ -2199,7 +2202,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 /* a screen wider than the photos' real pixels stay sharp edge to edge (J's 6K window; approved row 18: "sharp at its display size
    on J's largest screen ... never upscaled soft"): the room opens to a large rounded frame of the width they hold, never soft */
 @media (min-width: 2401px) {
-  .ps--breath .ps__pic { left: calc(50% - 1200px); right: calc(50% - 1200px); top: 4vh; bottom: 4vh;
+  .ps--breath .ps__pic { left: calc(50% - 1200px); right: calc(50% - 1200px); top: 7vh; bottom: 7vh;   /* clear of the edges at its breath's 8 % */
     clip-path: inset(var(--ct) var(--cs) var(--ct) var(--cs) round max(var(--cr), var(--r-photo, 28px))); }
 }
 .ps--breath .ps__dim { position: absolute; inset: 0; background: rgba(21, 16, 12, var(--dim)); }
@@ -2663,7 +2666,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="9f30247e3abf";</script>
+<script>window.OM_BUILD="09fad274d5b0";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -3977,6 +3980,11 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
    its end, its bottom lines up with the bottom of the window; the next section comes in only once a third of it is showing
    in the direction of travel (the same on the way up). Safari has no rule for sections taller than the window, which is why
    it pulled the reader back to the top of the menu. */
+/* the glass under the header (mgs.css .hdr-glass, task 95ac520e): its own layer, just before the header */
+(function () {
+  var h = document.getElementById('hdr'); if (!h || document.querySelector('.hdr-glass')) return;
+  var g = document.createElement('div'); g.className = 'hdr-glass'; g.setAttribute('aria-hidden', 'true'); h.parentNode.insertBefore(g, h);
+})();
 (function () {
   var root = document.documentElement;
   if (root.hasAttribute('data-shot')) return;
@@ -4000,7 +4008,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (r.bottom > -vh * .95 && r.top < vh * 1.95 && r.height > vh + 2) tall = true;
       if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
     });
-    if (ground) {      // the glass header's veil (mgs.css .hdr::before): the section's ground, or its tone's when it paints none
+    if (ground) {      // the glass header's veil (mgs.css .hdr-glass): the section's ground, or its tone's when it paints none
       var bg = getComputedStyle(ground).backgroundColor;
       if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
       root.style.setProperty('--hdr-ground', bg);
