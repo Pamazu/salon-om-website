@@ -334,7 +334,17 @@ class RedControls(unittest.TestCase):
         with open(f, encoding='utf-8') as fh:
             rows = json.load(fh)['rows']
         self.assertEqual(sorted(map(int, rows)), sorted(g.MEASURED))
-        self.assertEqual([n for n, r in rows.items() if not r['red']], [])
+        # the green control: the unbroken M page, measured by the same checks (the gate's own run); a break counts only for what it
+        # adds, since rows 9 and 18 are off on the live pages already
+        with open(g.page_path('m'), 'rb') as fh:
+            gk = g.measure_key(fh.read())
+        gf = os.path.join(g.OUT, f'gate-rows-m-{gk}.json')
+        if not os.path.exists(gf):
+            raise unittest.SkipTest(f'no green control for these pages and checks ({gk}): run the gate, which measures in the pool')
+        with open(gf, encoding='utf-8') as fh:
+            green = json.load(fh)['off']
+        new = {n: sorted(set(r['off']) - set(green.get(n, []))) for n, r in rows.items()}
+        self.assertEqual([n for n, lines in new.items() if not lines], [], 'a break that adds nothing off on its row')
 
 
 if __name__ == '__main__':
