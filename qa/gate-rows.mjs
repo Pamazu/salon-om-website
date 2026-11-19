@@ -213,7 +213,9 @@ const PASSES = [
 
 fs.mkdirSync(OUT, { recursive: true });
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
-const browser = await pw.webkit.launch();
+// the pool's pinned WebKit when %WEBKIT% is set (run-at-ref --asset WEBKIT: the job's own home has no Playwright browser), else Playwright's own
+const browser = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
+console.log('webkit', browser.version(), process.env.WEBKIT ? 'from the pool asset' : 'from Playwright');
 let red = 0;
 try {
   for (const v of VERS) {
