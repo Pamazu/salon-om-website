@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
-import { serve, open, toWorld, wait } from './lib.mjs';
+import { serve, open, toWorld, wait, pictures } from './lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ARGS = process.argv.slice(2).filter((a) => !a.startsWith('--'));
@@ -34,34 +34,7 @@ try {
       const total = await p.evaluate(() => document.documentElement.scrollHeight);
       for (let y = 0; y < total; y += 900) { await p.evaluate((y) => scrollTo(0, y), y); await wait(p, 120); }
       await wait(p, 800);
-      const got = await p.evaluate(async () => {
-        const out = [];
-        // with a srcset, naturalWidth is density-corrected: read the chosen file's own pixels from a plain Image
-        const real = {};
-        for (const el of document.querySelectorAll('img[srcset]')) {
-          const u = el.currentSrc; if (!u || real[u]) continue;
-          const t = new Image(); t.src = u; try { await t.decode(); } catch (e) {}
-          real[u] = [t.naturalWidth, t.naturalHeight];
-        }
-        const fit = (el, nw, nh) => {
-          const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
-          if (!r.width || !r.height || !nw) return null;
-          const f = cs.objectFit || 'fill';
-          const s = f === 'cover' ? Math.max(r.width / nw, r.height / nh) : f === 'contain' ? Math.min(r.width / nw, r.height / nh) : Math.max(r.width / nw, r.height / nh);
-          return { box: [Math.round(r.width), Math.round(r.height)], scale: s };
-        };
-        for (const el of document.querySelectorAll('img')) {
-          const [nw, nh] = el.hasAttribute('srcset') && real[el.currentSrc] ? real[el.currentSrc] : [el.naturalWidth, el.naturalHeight];
-          const m = fit(el, nw, nh); if (!m) continue;
-          const file = el.hasAttribute('srcset') ? el.currentSrc.replace(/^.*\/img\//, 'img/') : el.getAttribute('src');
-          out.push({ src: el.getAttribute('src'), file, nat: [nw, nh], ...m, where: el.closest('section,[id]')?.id || '' });
-        }
-        for (const el of document.querySelectorAll('video[poster]')) {
-          const m = fit(el, el.videoWidth || 1600, el.videoHeight || 900); if (!m) continue;
-          out.push({ src: el.getAttribute('poster') + ' (film ' + el.currentSrc.split('/').pop() + ', ' + (el.videoWidth || '?') + 'x' + (el.videoHeight || '?') + ')', nat: [el.videoWidth, el.videoHeight], ...m, where: el.closest('section,[id]')?.id || '' });
-        }
-        return out;
-      });
+      const got = await pictures(p);
       for (const g of got) rows.push({ v, W, world: w, ...g, dpx: +(g.scale * (DPR[W] || 2)).toFixed(2), rw: Math.round(g.nat[0] * g.scale) });
       // each section's options (the option switcher, task e5325977): every option is chosen in turn and its pictures measured
       // where it draws them, so a full-screen option gets files sharp enough too (task a78e6208); they count for the files'
