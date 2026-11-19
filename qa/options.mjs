@@ -54,7 +54,9 @@ for (const v of ['m', 'g', 's']) {
   }
   // from the hero, the panel offers to go to the sections that have options
   await p.click('#opt-panel [data-go="pause"]'); await wait(p, 2200); s = await state(p);
-  ok(`${v}: it follows the section on screen`, s.sec === 'The pause' && s.rows.length === 5, { sec: s.sec, rows: s.rows });
+  // as many rows as the section declares options (task a78e6208: the pause's list grew from 5 to 7; a fixed count went red)
+  const nOpts = (id) => p.evaluate((id) => JSON.parse(document.getElementById(id).dataset.opts).length, id);
+  ok(`${v}: it follows the section on screen`, s.sec === 'The pause' && s.rows.length === await nOpts('pause'), { sec: s.sec, rows: s.rows });
   await shot(p, `${v}-1440-pause-live`);
   for (const k of ['door', 'room', 'breath', 'cinema']) {
     await toPause(p);
@@ -97,7 +99,7 @@ for (const v of ['m', 'g', 's']) {
   await p3.close();
   // Inner Work: the same options in its own words
   await toWorld(p, 'coaching'); await toPause(p, 'c-pause'); s = await state(p);
-  ok(`${v}: Inner Work's pause lists the same options`, s.open && s.rows.length === 5, { sec: s.sec });
+  ok(`${v}: Inner Work's pause lists the same options`, s.open && s.rows.length === await nOpts('c-pause') && s.rows.length === await nOpts('pause'), { sec: s.sec, rows: s.rows.length });
   await p.click('#opt-panel [data-k="door"]'); await wait(p, 4200); await shot(p, `${v}-1440-iw-pause-door`);
   await p.click('#opt-panel [data-k="room"]'); await wait(p, 4200); await shot(p, `${v}-1440-iw-pause-room`);
   await p.click('#opt-panel [data-k="live"]'); await wait(p, 1200);
