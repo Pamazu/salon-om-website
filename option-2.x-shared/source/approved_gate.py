@@ -31,6 +31,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tarfile
 from html.parser import HTMLParser
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -560,12 +561,29 @@ def fetch_measured(letters, keys):
                '--', 'node', 'qa/gate-rows.mjs', 'gate-out', ','.join(letters)]
     print(f'approved-features gate: measuring {" ".join(letters)} in WebKit ({" ".join(cmd[:2])} at {sha[:10]}) ...', flush=True)
     r = subprocess.run(cmd, capture_output=True, text=True)
-    for f in glob.glob(os.path.join(OUT, '**', 'gate-rows-*.json'), recursive=True):
-        if os.path.dirname(f) != OUT:
-            shutil.copy(f, OUT)
+    take_results(OUT, 'gate-rows')
     if not all(os.path.exists(os.path.join(OUT, f'gate-rows-{l}-{keys[l]}.json')) for l in letters):
         return f'the measuring run left no result for every page (exit {r.returncode}):\n' + (r.stdout + r.stderr)[-1500:]
     return ''
+
+
+def take_results(out, prefix):
+    """put every <prefix>-*.json a run left under out (loose, or in the pool's output.tar, read member by member, never extracted
+    whole) straight in out"""
+    name = re.compile(rf'(?:\./)?(?:gate-out/)?({re.escape(prefix)}-[a-z0-9-]+\.json)')
+    for f in glob.glob(os.path.join(out, '**', f'{prefix}-*.json'), recursive=True):
+        if os.path.dirname(f) != out:
+            shutil.copy(f, out)
+    for t in glob.glob(os.path.join(out, '**', 'output.tar'), recursive=True):
+        try:
+            with tarfile.open(t) as tf:
+                for m in tf.getmembers():
+                    hit = name.fullmatch(m.name)
+                    if hit and m.isfile():
+                        with open(os.path.join(out, hit.group(1)), 'wb') as w:
+                            w.write(tf.extractfile(m).read())
+        except (OSError, tarfile.TarError):
+            continue
 
 
 def measured(letters, pages_bytes):

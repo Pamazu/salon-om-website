@@ -235,6 +235,24 @@ class TheList(unittest.TestCase):
         a = g.measure_key(b'<html>1</html>'); b = g.measure_key(b'<html>2</html>')
         self.assertNotEqual(a, b); self.assertEqual(len(a), 12); self.assertEqual(a, g.measure_key(b'<html>1</html>'))
 
+    def test_results_are_read_from_the_pool_archive_and_nothing_else(self):
+        import tarfile
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            src = os.path.join(d, 'src'); os.makedirs(src)
+            for n, body in (('gate-rows-m-abcdef012345.json', '{"ok": 1}'), ('evil.json', '{}')):
+                open(os.path.join(src, n), 'w').write(body)
+            os.makedirs(os.path.join(d, 'pool-x'))
+            with tarfile.open(os.path.join(d, 'pool-x', 'output.tar'), 'w') as tf:
+                tf.add(os.path.join(src, 'gate-rows-m-abcdef012345.json'), arcname='./gate-rows-m-abcdef012345.json')
+                tf.add(os.path.join(src, 'evil.json'), arcname='../gate-rows-m-000000000000.json')
+            out = os.path.join(d, 'out'); os.makedirs(out)
+            os.rename(os.path.join(d, 'pool-x'), os.path.join(out, 'pool-x'))
+            g.take_results(out, 'gate-rows')
+            self.assertTrue(os.path.exists(os.path.join(out, 'gate-rows-m-abcdef012345.json')))
+            self.assertFalse(os.path.exists(os.path.join(d, 'gate-rows-m-000000000000.json')))
+            self.assertFalse(os.path.exists(os.path.join(out, 'gate-rows-m-000000000000.json')))
+
     def test_the_measured_result_is_read_for_its_own_rows_only(self):
         import tempfile
         html = b'<html>k</html>'
