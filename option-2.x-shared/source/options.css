@@ -45,7 +45,7 @@
 .opt-open .opt-handle { background: rgba(21, 16, 12, .78); }
 @media (hover: none) and (pointer: coarse) { .opt-handle { display: grid; } }
 /* with a mouse the rows sit closer, so a section's ten options and the page's own fit a laptop's screen; touch keeps 44 px */
-@media (hover: hover) and (pointer: fine) { .opt__row { min-height: 36px; padding-top: 7px; padding-bottom: 7px; } .opt__list { gap: 2px; } .opt__sec { margin-bottom: 6px; } .opt__page { margin-top: 6px; padding-top: 8px; } }
+@media (hover: hover) and (pointer: fine) { .opt__row { min-height: 32px; padding-top: 6px; padding-bottom: 6px; } .opt__list { gap: 2px; } .opt__sec { margin-bottom: 6px; } .opt__page { margin-top: 6px; padding-top: 8px; } }
 @media (max-width: 760px) { .opt { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); } }
 /* a swap: the section's content fades out, the chosen option fades in and plays its own entrance */
 .s.opt-out > * { opacity: 0 !important; transition: opacity .24s var(--io) !important; }

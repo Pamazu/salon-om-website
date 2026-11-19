@@ -29,7 +29,7 @@ PRE_PAINT = {'2.2': '<script>(function(){var m=/[?&]switch=([abc123])/.exec(loca
 # the option switcher (task e5325977, options.js): a page's own options, beside its sections' (section_options.py): the world
 # switch next.js cycled with Shift+V since 19 Oct, its keys and names as next.js has them (?switch= still read by PRE_PAINT)
 PAGE_OPTIONS = {'2.2': [dict(p='switch', attr='data-switch', n='The other world’s door', d='b',
-                             o=[['a', 'The pill'], ['b', 'The bottom anchor to this world’s booking'], ['c', '“Two practices”']])]}
+                             o=[['a', 'The pill'], ['b', 'The bottom anchor'], ['c', '“Two practices”']])]}
 # M/G/S are J's review pages: the switcher is on. SOM_REVIEW=off builds a client-facing page where it stays off unless the
 # address carries ?review
 REVIEW = os.environ.get('SOM_REVIEW', 'on').lower() != 'off'
