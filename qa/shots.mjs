@@ -2,7 +2,7 @@
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url'; import * as pw from 'playwright';
 import { serve, open, wait, jump, toWorld } from './lib.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const [v, size, out, ids] = process.argv.slice(2); const [W, H, D = '1'] = size.split('x').map(Number);
+const [v, size, out, ids] = process.argv.slice(2); const [W, H, D = 1] = size.split('x').map(Number);
 const dwell = +(process.argv.includes('--wait') ? process.argv[process.argv.indexOf('--wait') + 1] : 2600);
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().port}`;
