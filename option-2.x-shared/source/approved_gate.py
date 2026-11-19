@@ -288,11 +288,12 @@ def row8(sections, letter, site):      # the voices are there with their testimo
     for w, P, W, ids in worlds(sections):
         for sid in ids:
             sec = sections[sid]
-            if 'voices' in (sec['attrs'].get('class') or '').split() and sid.endswith('kind') and not sec['classes'].get('q', 0):
+            if 'voices' in (sec['attrs'].get('class') or '').split() and not sec['classes'].get('q', 0):
                 out.append(f'{W}: the voices ("{sid}") hold no testimonial')
-        if not any(sid.endswith('kind') for sid in ids if 'voices' in (sections[sid]['attrs'].get('class') or '')):
+        # any id: G's guests' words show once, early, after the pause (task db175534); M's after the team
+        if not any('voices' in (sections[sid]['attrs'].get('class') or '').split() for sid in ids):
             if letter in 'mg':
-                out.append(f'{W}: no voices section ("{P}kind")')
+                out.append(f'{W}: no voices section')
     return out
 
 

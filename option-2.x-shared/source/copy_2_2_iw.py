@@ -177,7 +177,6 @@ IW_G = {
                    note='', beneath=None, reward=draft(G_IW['path_reward']), btn=B(CALL, 'call')),
   'hosts': dict(eyebrow='Credentials', title=draft(G_IW['cred_hook']), intro=draft(G_IW['story_open']) + ' ' + GUIDE,
                 people=CRED_PEOPLE, with_label='', note=draft(TEAM_NOTE), sign='Maggie', btn=B(CALL, 'call')),
-  'kind': dict(title=draft('Words from our clients'), quotes=VOICES_TO_COME, reward='', btn=B(CALL, 'call')),
   'aveda': dict(eyebrow=H['eyebrow'], title=draft(G_IW['how_hook']), paras=[H['title'] + ' ' + T1[1]],
                 quote=H['cred_line'], cite='Maggie', facts=PRACTICES, src='', reward=H['close'], btn=B(CALL, 'call')),
   'om': dict(label=draft('Inner Work · Becoming'), text=P1 + ' ' + D['close'], accents=['again.'], btn=B(CALL, 'call')),

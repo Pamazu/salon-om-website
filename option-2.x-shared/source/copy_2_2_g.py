@@ -23,7 +23,7 @@ import copy_2_2_iw as IW
 #  (round 6, task b9a04e51, each part judged against real conversion pages: the hero's line cut to three so the ROT is
 #   read; early proof = "Lighter, inside and out." / C.M. and A.G. / two quotes / "A great haircut, and a lighter
 #   spirit ..." / none, by design; the preview's stops name what happens; menu reward "Choose yours, knowing the price
-#   first."; voices reward "Skilled hands, and someone who listens ..."; Begin's one action in its two ways, call and
+#   first."; Begin's one action in its two ways, call and
 #   email; How we work together and the path each close on one reward)
 #  preview   "Your visit, from the first sip to the last look, in five steps." / the five real steps / a list that
 #            becomes the rail / "You know what happens, and in what order, before you book." / none, by design (the steps follow)
@@ -33,8 +33,7 @@ import copy_2_2_iw as IW
 #            none inside a step, by design (the menu's button came just before, Team's comes after)
 #  team      "The people who listen first." / Maggie's story (28 years, a place to be seen, heard and cared for, the
 #            team in black) + three cards / cards / Maggie: "I'm the backdrop ... your time, your space." / Book your visit
-#  voices    "Lighter, inside and out." / her eight guest quotes / quotes / "A great haircut, and a lighter spirit ..." /
-#            Book your visit
+#  (task db175534: the voices after the team are gone; her eight guest quotes are all in the early proof, after the pause)
 #  aveda     "What is in your color?" / her line, her quote and her four facts / the facts / "Care for your hair and
 #            care for the earth, in the same visit." / Book your visit
 #  om        "OM · Oneness" / her quiet version, "A sacred sound and a gift for all ..." / story / her own last line,
@@ -51,7 +50,6 @@ import copy_2_2_iw as IW
 #            round 3 cut the overclaim) / none, by design (the path follows with its button)
 #  path      "Four steps, and the first is a conversation." / her four steps + pricing line / steps / "The first step is
 #            complimentary, and every step after it is your choice." / Book a Connection Call
-#  voices    her placeholder, client words still being gathered / none yet / none yet / none yet / none, by design
 #  begin     "Change begins with you." / one complimentary call / summary / "You leave the call knowing your next step
 #            ..." / Book a Connection Call
 
@@ -74,7 +72,6 @@ G = dict(
   # round 6 (task b9a04e51): "Lighter, inside and out." is made of C.M.'s and A.G.'s words, so those two quotes prove it
   # early, and this reward moves there with them; Voices keeps the six about her skill and her listening, and pays that off
   early_reward='A great haircut, and a lighter spirit. Both are part of the visit.',
-  voices_reward='Skilled hands, and someone who listens. Guests come back for both.',
   # round 6: the preview's reward says "You know what happens", so each stop names what happens there, from her own
   # step details (What happens, Included), not only the step's one word
   visit_rows=['Tea, and a real conversation.', 'A scalp and shoulder ritual.', 'Your service, designed for you alone.',
@@ -120,6 +117,9 @@ def _with(sec, **kw):
 # first words pointed at the other world; its button already does), "Leave held, seen and beautifully cared for." (a
 # reward before any proof; the page pays it off at Begin) and "where artistry is mastered and time is yours" (the ROT
 # line under it says the time part better)
+# C.M., A.G., S., N.W., G.A., K.S., L.T., T.C.: the heading's two, then the results and loyalty, then the warmth
+EARLY_ORDER = (2, 3, 4, 7, 5, 6, 1, 0)
+
 HERO_LINE = M.SALON_OPEN['title'] + ' An Avila Beach salon. ' + draft(D['proof'])
 
 SALON = [
@@ -134,7 +134,10 @@ SALON = [
   # task 6e4ee413 (J 17 Nov: "The lighter inside and out can be replaced by the section words from our guests, is the one
   # I like in terms of layout and animation"): the same words on the voices block, as M's voices lays out its eyebrow and
   # heading: the forest ground, one centred quote at a time with its ink-in, the reward line under it
-  ('voices', dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[2], M.QUOTES[3]],
+  # task db175534 (J 19 Nov: "I think that just having them at the top is fine"): the guests' words show once, here;
+  # the later "Words from our guests" section after the team is gone and its six quotes join these two, so no guest's
+  # words are lost: C.M. and A.G. first (the heading is made of their words), then the most specific (EARLY_ORDER)
+  ('voices', dict(id='early', eyebrow='Kind words', title=M.VOICES_LINE, quotes=[M.QUOTES[k] for k in EARLY_ORDER],
                   reward=draft(G['early_reward']))),
   (S.preview_line, dict(id='visit', eyebrow='The visit', title=draft(G['preview']), reward=draft(G['preview_reward']),
                    rows=[(f'0{k + 1}', s[0], draft(G['visit_rows'][k])) for k, s in enumerate(M.STEPS)])),
@@ -147,8 +150,6 @@ SALON = [
         reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
   _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
-  ('voices', dict(id='kind', title=M.VOICES_EYEBROW, quotes=[q for i, q in enumerate(M.QUOTES) if i not in (2, 3)], reward=draft(G['voices_reward']),
-                  btn=btn(BOOK, BOOK_URL, arrow=True))),
   (S.aveda_sheet, dict(id='aveda', sheet=S.AVEDA_SHEET, eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE, facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
                  photo=AVEDA_PHOTO, reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True),
