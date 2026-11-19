@@ -5129,7 +5129,9 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   Stage.prototype.shape = function () {
     var wd = this.wd; if (!wd.offsetHeight) return;
     var b = wd.getBoundingClientRect(), W = this.el.clientWidth, fs = parseFloat(getComputedStyle(wd).fontSize) || 17;
-    var sg = clamp(W * .05, 50, 180), P = Math.max(26, fs * 1.5), M = Math.ceil(3.2 * sg + P), k = .125;
+    // P, how far each line is widened before the blur, is about the blur itself, so even a lone line's end stands on the full frost
+    // (at 5d135c1 P was 26 px under a 72 px blur: the end of Why Aveda's longest fact line read 5.3:1 over the fig's leaves)
+    var sg = clamp(W * .05, 50, 180), P = Math.max(26, fs * 1.5, sg * .9), M = Math.ceil(3.2 * sg + P), k = .125;
     var cw = Math.ceil((b.width + 2 * M) * k), ch = Math.ceil((b.height + 2 * M) * k), cv = document.createElement('canvas'), g = cv.getContext('2d');
     cv.width = cw; cv.height = ch; g.fillStyle = '#000'; g.fillRect(0, 0, cw, ch); g.fillStyle = '#fff';
     var add = function (r) { if (r.width >= 1 && r.height >= 1) g.fillRect((r.left - b.left + M - P) * k, (r.top - b.top + M - P) * k, (r.width + 2 * P) * k, (r.height + 2 * P) * k); };
@@ -5139,7 +5141,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     var d = g.getImageData(0, 0, cw, ch).data, s = sg * k;
     d = turn(gauss(turn(gauss(d, cw, ch, s), cw, ch), ch, cw, s), ch, cw);
     var im = g.createImageData(cw, ch);
-    for (var i = 0; i < d.length; i += 4) im.data[i + 3] = Math.min(255, d[i] * 1.9);       // the lines' own area: full frost
+    for (var i = 0; i < d.length; i += 4) im.data[i + 3] = Math.min(255, d[i] * 1.75);      // the lines' own area: full frost
     g.putImageData(im, 0, 0);
     this.fz = { url: 'url(' + cv.toDataURL('image/png') + ')', M: M, w: (b.width + 2 * M).toFixed(0) + 'px ' + (b.height + 2 * M).toFixed(0) + 'px' };
   };

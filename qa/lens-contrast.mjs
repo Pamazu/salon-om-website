@@ -78,9 +78,12 @@ for (const w of ws.split(',').map(Number)) {
             for (const e of document.getElementById(id).querySelectorAll(sel)) {
               // the glass behind the letters: the text's own line boxes (a Range), never the element's whole box, which also covers
               // whatever sits beside a short line (the picture's AI label beside the eyebrow on a phone read 2.08 that way)
-              const rg = document.createRange(); rg.selectNodeContents(e);
-              const boxes = [...rg.getClientRects()].filter((r) => r.width >= 4 && r.height >= 4 && r.bottom > 0 && r.top < innerHeight && !under(r));
-              if (!boxes.length) { if ([...rg.getClientRects()].some((r) => r.width >= 4 && r.bottom > 0 && r.top < innerHeight)) out.push({ line: (e.textContent || '').trim().slice(0, 30), skipped: 'under a fixed part of the page' }); continue; }
+              // (only its text: a Range over an element also returns its inner blocks' whole boxes, which made a balanced heading's
+              // empty right side a "line" over the picture at 5d135c1)
+              const rg = document.createRange(), tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), rects = [];
+              for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (!n.nodeValue.trim()) continue; rg.selectNodeContents(n); rects.push(...rg.getClientRects()); }
+              const boxes = rects.filter((r) => r.width >= 4 && r.height >= 4 && r.bottom > 0 && r.top < innerHeight && !under(r));
+              if (!boxes.length) { if (rects.some((r) => r.width >= 4 && r.bottom > 0 && r.top < innerHeight)) out.push({ line: (e.textContent || '').trim().slice(0, 30), skipped: 'under a fixed part of the page' }); continue; }
               const cs = getComputedStyle(e), col = cs.color.match(/[\d.]+/g).map(Number), li = L(col[0], col[1], col[2]);
               const ls = [];
               for (const r of boxes) {
