@@ -18,7 +18,7 @@ for (const [W, H] of [[1440, 900], [1280, 800], [3230, 1319]]) {
   for (const v of ['m', 'g']) {
     const go = async (q, id, f = 0, ms = 6500) => {
       const p = await ctx.newPage(); await p.addInitScript(() => { try { localStorage.setItem('om-sound', 'off'); } catch (e) {} });
-      await p.goto(`${base}/${v}/?${q}`, { waitUntil: 'load' }); await wait(p, 1500);
+      await p.goto(`${base}/${v}/?${q}`, { waitUntil: 'load', timeout: 120000 }); await wait(p, 1500);   // a busy pool machine took over 30 s once
       await jump(p, await p.evaluate(([id, f]) => { const s = document.getElementById(id); return s.getBoundingClientRect().top + scrollY + (s.offsetHeight - innerHeight) * f; }, [id, f]));
       await wait(p, ms); return p;
     };
