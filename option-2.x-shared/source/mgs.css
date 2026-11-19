@@ -550,10 +550,12 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
 /* "Take a breath." on its own line: the engine writes one span per word; the first sentence's words lead (mgs.js marks them
    .is-head; task 7a3c013b, so any world's opening sentence leads, not a fixed three words) and an empty flex item breaks the
    line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
-#pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: 23em; margin: 0; text-wrap: wrap;
+#pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0; max-width: 23em; margin: 0; text-wrap: wrap;
   font-size: clamp(21px, 1.75vw, 36px); line-height: 1.28; }
 #pause .mani__text::before { content: ""; flex-basis: 100%; height: 0; order: 1; }
-#pause .mani__text .wd { order: 2; }
+/* the space after each word in its own size (a flex line drops the spaces between words; a gap set on the line was the small
+   text's, so the large heading's words ran together: "Takeabreath.", CEO MA 19 Nov) */
+#pause .mani__text .wd { order: 2; margin-right: .26em; }
 #pause .mani__text .wd.is-head { order: 0; font-size: 3.3em; line-height: .98; letter-spacing: -.02em; }
 #pause .mani__text .wd.is-head-end { margin-bottom: .42em; }
 #pause .mani__text.has-long-head .wd.is-head { font-size: 2.15em; line-height: 1.04; }   /* a long opening sentence (Inner Work's) */

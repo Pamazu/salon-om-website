@@ -1745,10 +1745,12 @@ html[data-motion="calm"] .ln__dot {transform: none; transition: none;}
 /* "Take a breath." on its own line: the engine writes one span per word; the first sentence's words lead (mgs.js marks them
    .is-head; task 7a3c013b, so any world's opening sentence leads, not a fixed three words) and an empty flex item breaks the
    line; the question's letters start one breath later (the ink itself is base.css's, unchanged) */
-#pause .mani__text, #c-pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .26em; max-width: 23em; margin: 0; text-wrap: wrap;
+#pause .mani__text, #c-pause .mani__text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0; max-width: 23em; margin: 0; text-wrap: wrap;
   font-size: clamp(21px, 1.75vw, 36px); line-height: 1.28; }
 #pause .mani__text::before, #c-pause .mani__text::before { content: ""; flex-basis: 100%; height: 0; order: 1; }
-#pause .mani__text .wd, #c-pause .mani__text .wd { order: 2; }
+/* the space after each word in its own size (a flex line drops the spaces between words; a gap set on the line was the small
+   text's, so the large heading's words ran together: "Takeabreath.", CEO MA 19 Nov) */
+#pause .mani__text .wd, #c-pause .mani__text .wd { order: 2; margin-right: .26em; }
 #pause .mani__text .wd.is-head, #c-pause .mani__text .wd.is-head { order: 0; font-size: 3.3em; line-height: .98; letter-spacing: -.02em; }
 #pause .mani__text .wd.is-head-end, #c-pause .mani__text .wd.is-head-end { margin-bottom: .42em; }
 #pause .mani__text.has-long-head .wd.is-head, #c-pause .mani__text.has-long-head .wd.is-head { font-size: 2.15em; line-height: 1.04; }   /* a long opening sentence (Inner Work's) */
@@ -3167,7 +3169,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="56c6473273cd";</script>
+<script>window.OM_BUILD="a81c79f880b7";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4336,6 +4338,29 @@ function pauseHead() {      // again after the option switcher swaps the pause b
   });
 }
 pauseHead(); document.addEventListener('om:swap', pauseHead);
+/* letters written in one by one keep the font's own kerning (task a78e6208, CEO MA 19 Nov: the e and the a of "breath" stood
+   apart): each letter is its own box for the ink animation (base.css .l), which drops the kerning the word set whole would have.
+   Each pair is measured in the letter's own font on a canvas (which kerns) and the second letter takes the pair's kerning as a
+   margin, in em, so it holds at every size. Every element the engine writes letter by letter; again once the fonts have loaded
+   and after the option switcher swaps a section in. */
+(function () {
+  var cv = document.createElement('canvas').getContext('2d'), cache = {};
+  function kern() {
+    [].forEach.call(document.querySelectorAll('[data-write="letters"] .wd'), function (w) {
+      var ls = w.querySelectorAll('.l'); if (ls.length < 2) return;
+      for (var i = 1; i < ls.length; i++) {
+        var ca = getComputedStyle(ls[i - 1]), cb = getComputedStyle(ls[i]);
+        if (ca.fontFamily !== cb.fontFamily || ca.fontStyle !== cb.fontStyle || ca.fontWeight !== cb.fontWeight) { ls[i].style.marginLeft = ''; continue; }
+        var font = cb.fontStyle + ' ' + cb.fontWeight + ' 100px ' + cb.fontFamily, a = ls[i - 1].textContent, b = ls[i].textContent, k = font + '|' + a + b;
+        if (!(k in cache)) { cv.font = font; cache[k] = (cv.measureText(a + b).width - cv.measureText(a).width - cv.measureText(b).width) / 100; }
+        ls[i].style.marginLeft = Math.abs(cache[k]) > .001 ? cache[k].toFixed(4) + 'em' : '';
+      }
+    });
+  }
+  kern();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { cache = {}; kern(); });
+  document.addEventListener('om:swap', function () { setTimeout(kern, 0); });
+})();
 /* task a78e6208: what keeps clear of the floating booking bar (.wdoor; the pause's door, nothing sits on a picture) reads the
    bar's real half width, plus a 40 px gap, as --bar-half on <html>: each world's bar has its own words and width */
 (function () {

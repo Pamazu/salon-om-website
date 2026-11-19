@@ -174,6 +174,29 @@ function pauseHead() {      // again after the option switcher swaps the pause b
   });
 }
 pauseHead(); document.addEventListener('om:swap', pauseHead);
+/* letters written in one by one keep the font's own kerning (task a78e6208, CEO MA 19 Nov: the e and the a of "breath" stood
+   apart): each letter is its own box for the ink animation (base.css .l), which drops the kerning the word set whole would have.
+   Each pair is measured in the letter's own font on a canvas (which kerns) and the second letter takes the pair's kerning as a
+   margin, in em, so it holds at every size. Every element the engine writes letter by letter; again once the fonts have loaded
+   and after the option switcher swaps a section in. */
+(function () {
+  var cv = document.createElement('canvas').getContext('2d'), cache = {};
+  function kern() {
+    [].forEach.call(document.querySelectorAll('[data-write="letters"] .wd'), function (w) {
+      var ls = w.querySelectorAll('.l'); if (ls.length < 2) return;
+      for (var i = 1; i < ls.length; i++) {
+        var ca = getComputedStyle(ls[i - 1]), cb = getComputedStyle(ls[i]);
+        if (ca.fontFamily !== cb.fontFamily || ca.fontStyle !== cb.fontStyle || ca.fontWeight !== cb.fontWeight) { ls[i].style.marginLeft = ''; continue; }
+        var font = cb.fontStyle + ' ' + cb.fontWeight + ' 100px ' + cb.fontFamily, a = ls[i - 1].textContent, b = ls[i].textContent, k = font + '|' + a + b;
+        if (!(k in cache)) { cv.font = font; cache[k] = (cv.measureText(a + b).width - cv.measureText(a).width - cv.measureText(b).width) / 100; }
+        ls[i].style.marginLeft = Math.abs(cache[k]) > .001 ? cache[k].toFixed(4) + 'em' : '';
+      }
+    });
+  }
+  kern();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { cache = {}; kern(); });
+  document.addEventListener('om:swap', function () { setTimeout(kern, 0); });
+})();
 /* task a78e6208: what keeps clear of the floating booking bar (.wdoor; the pause's door, nothing sits on a picture) reads the
    bar's real half width, plus a 40 px gap, as --bar-half on <html>: each world's bar has its own words and width */
 (function () {
