@@ -340,7 +340,11 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (r.bottom > -vh * .95 && r.top < vh * 1.95 && r.height > vh + 2) tall = true;
       if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
     });
-    if (ground) root.style.setProperty('--hdr-ground', getComputedStyle(ground).backgroundColor);
+    if (ground) {      // the glass header's veil (mgs.css .hdr::before): the section's ground, or its tone's when it paints none
+      var bg = getComputedStyle(ground).backgroundColor;
+      if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
+      root.style.setProperty('--hdr-ground', bg);
+    }
     root.classList.toggle('hdr-ground', !!ground);
     snap(!tall);
   }

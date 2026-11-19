@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Red/green proof for approved_gate.py (tasks 448f6e27, 6328eca1): python3 option-2.x-shared/source/test_approved_gate.py
 Red = the M page of commit 2fe0c558 (the films switched off); green = the pages of commit 23a1df7 (the films back) for rows 1,
-2, 16 and 19, and the pages of 0db4254 (the door pause, shipped to live 19 Nov) for every row; each row's red is that page with
-the row broken.
+2, 16 and 19, and the pages this tree builds (build.py 2.2-m 2.2-g 2.2-s first; since task 95ac520e the pause opens on J's pick
+B · The breath, which no earlier commit's page shows) for every row; each row's red is that page with the row broken.
 A commit that is not in this clone makes its tests skip, loudly, never pass."""
 import contextlib
 import io
@@ -15,7 +15,8 @@ import unittest
 sys.path.insert(0, os.path.dirname(__file__))
 import approved_gate as g
 
-RED, GREEN, LIVE = '2fe0c558', '23a1df7', '0db4254'
+BUILT = 'the pages this tree builds'
+RED, GREEN, LIVE = '2fe0c558', '23a1df7', BUILT
 FIRST = {1, 2, 16, 19}          # the rows the gate checked before task 6328eca1
 
 
@@ -33,6 +34,9 @@ def in_section(html, sid, old, new):
 
 
 def page(commit, letter):
+    if commit is BUILT:
+        with open(os.path.join(g.ROOT, f'option-2.2-mgs/{letter}/index.html'), encoding='utf-8') as f:
+            return f.read()
     r = subprocess.run(['git', '-C', g.ROOT, 'show', f'{commit}:option-2.2-mgs/{letter}/index.html'], capture_output=True, text=True)
     if r.returncode:
         raise unittest.SkipTest(f'commit {commit} is not in this clone: {r.stderr.strip()}')
@@ -176,7 +180,7 @@ class EveryRow(unittest.TestCase):
         self.red(10, self.m.replace('id="c-aveda" data-tone="light"', 'id="c-aveda" data-tone="dark"', 1), why='"aveda"')
 
     def test_12_two_light_neighbours_in_one_shape(self):
-        html = self.m.replace('class="s team-letter" id="hosts"', 'class="s s--auto av" id="hosts"', 1)
+        html = self.m.replace('class="s team-letter" id="hosts"', 'class="s s--auto av av--sheet" id="hosts"', 1)   # Why Aveda's shape since the sheet
         self.red(12, html, why='"aveda" and "hosts"')
 
     def test_13_a_button_with_another_action(self):
@@ -195,10 +199,10 @@ class EveryRow(unittest.TestCase):
         self.red(14, html, why='closing slide')
 
     def test_15_a_heading_that_no_longer_writes_itself_in(self):
-        self.red(15, in_section(self.m, 'pause', '<p class="mani__text" data-write="letters" data-accents="moment.">Take', '<p class="mani__text">Take'), why='letter by letter')
+        self.red(15, in_section(self.m, 'pause', '<p class="ps__head" data-write="letters" style="--at:.3s">', '<p class="ps__head" style="--at:.3s">'), why='letter by letter')
 
     def test_15_the_heading_swapped(self):
-        self.red(15, in_section(self.m, 'pause', 'data-accents="moment.">Take a breath.', 'data-accents="moment.">Slow down now.'), why='Take a breath')
+        self.red(15, in_section(self.m, 'pause', 'style="--at:.3s">Take a breath.', 'style="--at:.3s">Slow down now.'), why='Take a breath')
 
     def test_18_a_picture_whose_widest_file_is_missing(self):
         html = re.sub(r'img/hd/om-menu-blonding-1171\.webp', 'img/hd/om-menu-blonding-9999.webp', self.m, count=1)
@@ -210,15 +214,18 @@ class EveryRow(unittest.TestCase):
     def test_20_the_17_nov_spread_back_as_the_default(self):
         self.red(20, self.pause('src="img/real-chair-window.webp', 'src="img/om-pause-guest.webp'), why='editorial spread')
 
-    def test_20_the_door_frame_gone(self):
-        self.red(20, self.pause('class="br__ph"', 'class="br__pic"'), why='door (.br__ph)')
+    def test_20_the_door_back_as_the_default(self):
+        self.red(20, self.pause('class="s ps ps--breath"', 'class="s mani"'), why='B · The breath')
+
+    def test_20_the_room_picture_gone(self):
+        self.red(20, self.pause('class="ps__pic"', 'class="ps__room"'), why='room picture (.ps__pic)')
 
     def test_20_the_pause_opens_on_another_option(self):
         self.red(20, self.pause('data-opt="live"', 'data-opt="room"'), why='option "room"')
 
     def test_s_passes_and_breaks_on_its_own_rows(self):
         self.assertEqual(self.off(self.s, 's'), {})
-        self.red(13, self.s.replace('Explore Inner Work', 'Go elsewhere', 1), letter='s')
+        self.red(13, in_section(self.s, 'deeper', 'Explore Inner Work', 'Go elsewhere'), letter='s')   # the section's, not its option's template
 
 
 class TheList(unittest.TestCase):

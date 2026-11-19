@@ -153,10 +153,10 @@ async function desktop(p, v, P, W, add, seen) {
   if (yp >= 0) {
     await jump(p, Math.max(0, yp - vh)); await wait(p, 700);
     await jump(p, yp); await frames(p);
-    const blur0 = await p.evaluate((P) => { const l = document.querySelector(`#${P}pause .mani__text .l`); return l && getComputedStyle(l).filter; }, P);
+    const blur0 = await p.evaluate((P) => { const l = document.querySelector(`#${P}pause :is(.mani__text, .ps__head) .l`); return l && getComputedStyle(l).filter; }, P);
     await wait(p, 5200);
     const pause = await p.evaluate((P) => {
-      const s = document.getElementById(`${P}pause`), ls = s.querySelectorAll('.mani__text .l');
+      const s = document.getElementById(`${P}pause`), hd = s.querySelector('.mani__text, .ps__head'), ls = hd ? hd.querySelectorAll('.l') : [];   // the pause's heading, whichever block draws it
       const vis = (e) => e.checkVisibility ? e.checkVisibility({ opacityProperty: true, visibilityProperty: true }) : !!e.getClientRects().length;
       const rings = [...s.querySelectorAll('circle, ellipse')].filter((c) => vis(c) && c.getBoundingClientRect().width > 4).length;
       const shadow = [], glow = [];
@@ -172,7 +172,7 @@ async function desktop(p, v, P, W, add, seen) {
         }
         if (e !== s && /radial-gradient/.test(c.backgroundImage)) glow.push(name);
       }
-      return { text: (s.querySelector('.mani__text') || {}).textContent?.trim().slice(0, 40), last: ls.length ? getComputedStyle(ls[ls.length - 1]).filter : null, rings, shadow, glow };
+      return { text: (hd || {}).textContent?.trim().slice(0, 40), last: ls.length ? getComputedStyle(ls[ls.length - 1]).filter : null, rings, shadow, glow };
     }, P);
     seen[`15/17 ${W}`] = { blur0, ...pause };
     if (!/blur\((?!0px)/.test(blur0 || '')) add(15, `the pause's heading is not out of focus as it arrives (first letter: ${blur0})`);
@@ -211,24 +211,28 @@ async function desktop(p, v, P, W, add, seen) {
   }
 }
 
-// row 20: the pause is the door: its picture (the salon's: the empty chair by the window; Inner Work's its own, never the 17 Nov
-// spread's guest), in a frame arched at the top (both top corners
-// rounded to at least 40 % of its width), opened (the door parts from a thin line, clip-path inset 49.6 %, to the full frame)
+// row 20: the pause is J's pick, B · The breath (task 95ac520e): its room picture (the salon's: the empty chair by the window;
+// Inner Work's its own, never the 17 Nov spread's guest) loads, starts as a thin line (clip-path inset 48 % top and bottom) and
+// opens as you scroll through it: half way through the section the room is open (inset under 5 %) and the question has come
 async function door(p, P, W, add, seen, size) {
-  const d = await p.evaluate((P) => {
-    const s = document.getElementById(`${P}pause`), f = s && s.querySelector('.br__ph'), i = f && f.querySelector('img');
-    if (!f || !i) return null;
-    const r = f.getBoundingClientRect(), c = getComputedStyle(f);
-    return { w: Math.round(r.width), h: Math.round(r.height), tl: parseFloat(c.borderTopLeftRadius), tr: parseFloat(c.borderTopRightRadius),
-      clip: c.clipPath, src: (i.currentSrc || i.src).replace(/^.*\/img\//, 'img/').replace(/\?.*/, ''), shown: i.complete && i.naturalWidth > 0 };
+  const read = () => p.evaluate((P) => {
+    const s = document.getElementById(`${P}pause`), f = s && s.querySelector('.ps__pic'), i = f && f.querySelector('img');
+    if (!s || !s.classList.contains('ps--breath') || !f || !i) return null;
+    const r = s.getBoundingClientRect(), c = getComputedStyle(f), top = parseFloat((c.clipPath.match(/inset\(([\d.]+)%/) || [])[1]);
+    return { y: Math.round(scrollY + r.top), span: Math.round(r.height - innerHeight), top: isNaN(top) ? (c.clipPath === 'none' ? 0 : null) : top,
+      src: (i.currentSrc || i.src).replace(/^.*\/img\//, 'img/').replace(/\?.*/, ''), shown: i.complete && i.naturalWidth > 0 };
   }, P);
-  seen[`20 ${W} ${size}`] = d;
-  if (!d) return add(20, `at ${size} the pause has no door (.br__ph) with its picture`);
-  if (!P && !/real-chair-window/.test(d.src)) add(20, `at ${size} the door shows ${d.src}, not the empty chair by the window`);
-  if (/om-pause-guest/.test(d.src)) add(20, `at ${size} the door shows the 17 Nov editorial spread's picture (${d.src})`);
-  if (!d.shown) add(20, `at ${size} the door's picture did not load`);
-  if (Math.min(d.tl, d.tr) < 0.4 * d.w) add(20, `at ${size} the door is not arched (top corners ${d.tl} and ${d.tr} px on a ${d.w} px frame)`);
-  if (/49\.6%/.test(d.clip || '')) add(20, `at ${size} the door has not opened 5 s after the pause arrived (${d.clip})`);
+  const d0 = await read();
+  if (!d0) { seen[`20 ${W} ${size}`] = null; return add(20, `at ${size} the pause is not B · The breath (.ps--breath) with its room picture`); }
+  await jump(p, d0.y + Math.round(d0.span * 0.6)); await wait(p, 900);
+  const d1 = await read();
+  seen[`20 ${W} ${size}`] = { ...d0, open: d1 && d1.top };
+  if (!P && !/real-chair-window/.test(d0.src)) add(20, `at ${size} the breath opens on ${d0.src}, not the empty chair by the window`);
+  if (/om-pause-guest/.test(d0.src)) add(20, `at ${size} the breath shows the 17 Nov editorial spread's picture (${d0.src})`);
+  if (!d0.shown) add(20, `at ${size} the breath's picture did not load`);
+  if (!(d0.top > 40)) add(20, `at ${size} the room does not start as a thin line as the pause arrives (clip inset ${d0.top} %)`);
+  if (!(d1 && d1.top !== null && d1.top < 5)) add(20, `at ${size} the room has not opened 60 % of the way through the pause (clip inset ${d1 && d1.top} %)`);
+  await jump(p, d0.y); await wait(p, 300);
 }
 
 // 390 x 844 phone: rows 6, 14 and 20

@@ -352,6 +352,7 @@ def pause_scene(d, world):
     Every word is the section's own (its label, text, after; d['cue'] the two breath words); the picture is the section's
     (breath, breath_alt) with its AI label (breath_mark); the letters come into focus as on the live pause (base.css ink)."""
     head, rest = _head_rest(d['text'])
+    long = ' is-long' if len(head) > 30 else ''      # a long opening sentence (Inner Work's) is set a size smaller, on its heading
     sc, f, alt, mark = d['scene'], d['breath'], E(d.get('breath_alt', '')), d.get('breath_mark', '')
     acc = '|'.join(d.get('accents', []))
     pic = f'<img src="img/{f}" alt="{alt}" sizes="{"100vw" if sc in ("room", "breath") else "(max-width: 1023px) 100vw, 86vw" if sc == "through" else "(max-width: 760px) 100vw, 92vw"}" decoding="async">'
@@ -361,7 +362,7 @@ def pause_scene(d, world):
         inner = f'''<div class="ps__pic">{pic}</div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true" data-flute="14"></div>
     <div class="ps__words s__leave">
       <p class="ps__eyebrow label a-left" style="--d:.1s">{d['label']}</p>
-      <p class="ps__head" data-write="letters" style="--at:.3s">{head}</p>
+      <p class="ps__head{long}" data-write="letters" style="--at:.3s">{head}</p>
       {sub('', '1.6s')}{coda('', '3.2s')}
     </div>{mark}'''
     elif sc == 'breath':
@@ -370,7 +371,7 @@ def pause_scene(d, world):
       <div class="ps__pic">{pic}</div><div class="ps__dim" aria-hidden="true"></div>
       <p class="ps__cue label" aria-hidden="true" data-in="{E(a)}" data-out="{E(b)}">{a}</p>
       <div class="ps__words">
-        <p class="ps__head" data-write="letters" style="--at:.3s">{head}</p>
+        <p class="ps__head{long}" data-write="letters" style="--at:.3s">{head}</p>
         {f'<p class="ps__sub">{rest}</p>' if rest else ''}
       </div>
       {f'<p class="ps__coda">{d["after"]}</p>' if d.get('after') else ''}{mark}
@@ -379,9 +380,9 @@ def pause_scene(d, world):
         w = head.split(' ')
         top, low = ' '.join(w[:max(1, len(w) // 2)]), ' '.join(w[max(1, len(w) // 2):])
         inner = f'''<div class="ps__cine s__leave">
-      <p class="ps__take" data-write="letters" style="--at:.3s">{top}</p>
+      <p class="ps__take{long}" data-write="letters" style="--at:.3s">{top}</p>
       <figure class="ps__band">{pic}{mark}</figure>
-      <p class="ps__breath" data-write="letters" style="--at:1.2s">{low}</p>
+      <p class="ps__breath{long}" data-write="letters" style="--at:1.2s">{low}</p>
       <div class="ps__side">{f'<p class="ps__sub a-fade" style="--d:2.2s">{rest}</p>' if rest else ''}{f'<p class="ps__coda a-fade" style="--d:3.2s">{d["after"]}</p>' if d.get('after') else ''}</div>
     </div>'''
     elif sc == 'through':
@@ -391,30 +392,33 @@ def pause_scene(d, world):
       <div class="ps__door"><div class="ps__pic">{pic}</div>{f'<div class="ps__strip" aria-hidden="true" data-flute="16"></div><p class="ps__coda" aria-hidden="true">{d["after"]}</p>' if d.get('after') else ''}</div>
       <div class="ps__words">
         <p class="ps__eyebrow label">{d['label']}</p>
-        <p class="ps__head" data-write="letters" style="--at:.3s">{head}</p>
+        <p class="ps__head{long}" data-write="letters" style="--at:.3s">{head}</p>
         {sub('', '1.6s')}{f'<p class="ps__last">{d["after"]}</p>' if d.get('after') else ''}
       </div>{mark}
     </div>'''
     else:
         raise AssertionError(f'pause_scene: no scene "{sc}"')
-    long = ' ps--long' if len(head) > 30 else ''
-    return f'''<section class="s ps ps--{sc}{long}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
+    return f'''<section class="s ps ps--{sc}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
     {inner}
     <div class="s__shade"></div>
   </section>'''
 
 
-# the pause's options (task e5325977): the door stays the default (task a78e6208); J's words for each are in the notes. One list for
-# every page that has the pause (M, G); Inner Work's twin draws the same options in its own words and picture.
+# the pause's options (task e5325977). Its default is J's pick, B · The breath (task 95ac520e; J 19 Nov 11:50 Z: "Options that I
+# choose", screenshot 12.46.46 on "B · The breath"): the copy draws the pause with pause_scene and PAUSE_DEFAULT; the door versions
+# and the rest stay under Shift+V, J's words for each in the notes. One list for every page that has the pause (M, G); Inner
+# Work's twin draws the same options in its own words and picture.
+PAUSE_DEFAULT = dict(scene='breath', cue=('breathe in', 'breathe out'))
 PAUSE_OPTIONS = [
-    dict(key='glass', label='D1 · The glass door', note='The door again, behind two leaves of fluted glass that slide apart as it arrives.', glass=True),
-    dict(key='through', label='D2 · Step through', note='Scroll slowly: you walk up to the door until it fills the screen and you stand in the room.', kind=pause_scene, scene='through'),
-    dict(key='door', label='The door, centred', note='Her words either side of a tall arched door in the middle, as on 18 Nov.'),
-    dict(key='room', label='A · Into the room', note='The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.', kind=pause_scene, scene='room'),
-    dict(key='breath', label='B · The breath', note='Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.', kind=pause_scene, scene='breath', cue=('breathe in', 'breathe out')),
-    dict(key='cinema', label='C · Cinema', note='The room as a wide film frame; the heading huge above and below it.', kind=pause_scene, scene='cinema'),
+    dict(key='standing', label='The door, standing in the room', note='Her words beside a tall arched door on the empty chair by the window (before 19 Nov).', kind='tease'),
+    dict(key='glass', label='D1 · The glass door', note='The door again, behind two leaves of fluted glass that slide apart as it arrives.', kind='tease', glass=True),
+    dict(key='through', label='D2 · Step through', note='Scroll slowly: you walk up to the door until it fills the screen and you stand in the room.', scene='through'),
+    dict(key='door', label='The door, centred', note='Her words either side of a tall arched door in the middle, as on 18 Nov.', kind='tease'),
+    dict(key='room', label='A · Into the room', note='The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.', scene='room'),
+    dict(key='cinema', label='C · Cinema', note='The room as a wide film frame; the heading huge above and below it.', scene='cinema'),
 ]
-PAUSE_LIVE_LABEL = 'The door, standing in the room'
+PAUSE_LIVE_LABEL = 'B · The breath'
+PAUSE_LIVE_NOTE = 'Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.'
 
 
 def sheet_stage(img, alt, preset, words, mark=''):

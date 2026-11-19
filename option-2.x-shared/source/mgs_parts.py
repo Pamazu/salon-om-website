@@ -384,7 +384,7 @@ def iw_entries(v, salon):
             w['open'] = dict(w['open'], btns=''.join(_iw_btn(b) for b in w['open']['btns']))
         if kind == 'hero_mark':
             w['aria'] = M.IW_TITLE
-        elif kind == 'tease' and d.get('breath'):
+        elif kind in ('tease', S.pause_scene) and d.get('breath'):   # the pause, whichever block draws its default (task 95ac520e)
             f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='')
         elif kind == 'ch':
             f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)

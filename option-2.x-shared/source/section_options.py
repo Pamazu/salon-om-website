@@ -4,7 +4,8 @@ and see a option switcher, shift v again hides it. The option swicher changes ba
 ONE block for every section, naming none. A section declares its options in its copy dict:
 
     options=[dict(key='door', label='The door', note='...', **changed keys), dict(key='a', label='...', kind=other_renderer, ...)]
-    option_label='...'   the live default's name in the panel; option_name='...' the section's (else its label or eyebrow)
+    option_label='...'   the live default's name in the panel; option_note='...' its line there; option_name='...' the section's
+                         (else its label or eyebrow)
 
 Each option is a named variant of that section (its layout, its picture, its effect): the SAME section drawn again by its own
 renderer (or the renderer the option names in `kind`) with the option's keys changed, so its words and pictures stay the
@@ -42,13 +43,13 @@ def render(draw, kind_of, d, world):
     keys = [o['key'] for o in opts]
     assert DEFAULT['key'] not in keys and len(set(keys)) == len(keys) and all(re.fullmatch(r'[a-z0-9-]+', k) for k in keys), \
         f'section_options: "{d["id"]}" option keys must be unique, lowercase, and never "{DEFAULT["key"]}": {keys}'
-    base = {k: v for k, v in d.items() if k not in ('options', 'option_label', 'option_name')}
+    base = {k: v for k, v in d.items() if k not in ('options', 'option_label', 'option_note', 'option_name')}
     live = draw(kind_of, base)
     attrs, inner = _split(live)
     sid = attrs.get('id')
     assert sid, 'section_options: a section with options needs an id'
     key = sid[len(world_prefix(world)):] if world_prefix(world) and sid.startswith(world_prefix(world)) else sid
-    menu = [dict(k=DEFAULT['key'], n=d.get('option_label') or DEFAULT['label'])]
+    menu = [dict(k=DEFAULT['key'], n=d.get('option_label') or DEFAULT['label'], **({'d': d['option_note']} if d.get('option_note') else {}))]
     for o in opts:
         changed = {k: v for k, v in o.items() if k not in OPTION_KEYS}
         if world == 'coaching':      # the twin copies the salon's options: a picture named there would be the salon's own
