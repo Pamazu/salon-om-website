@@ -81,6 +81,8 @@ class Page(HTMLParser):
                 self.cur['footer'] = True
             if tag == 'a':
                 self.link = {'href': a.get('href') or '', 'cls': a.get('class') or '', 'text': ''}
+            if 'data-sheet' in a:                                         # a lenticular sheet stage and the subject its window opens on
+                self.cur.setdefault('sheets', []).append(a)
             if {'mani__text', 'ps__head'} & set((a.get('class') or '').split()):      # the pause's heading, whichever block draws it
                 self.cur['heads'].append(a)
         if tag not in VOID:
@@ -461,6 +463,33 @@ def entry_row(sid, name):
     return row
 
 
+AVEDA_PRODUCTS = (.55, .25, .88, .92)   # where the shelves of Aveda products stand in real-aveda-shelves.webp (left top right bottom)
+
+
+def row24(sections, letter, site):     # each sheet picture's clear window opens on its subject; Why Aveda's is the products
+    """J 19 Nov 14:25 Z: "place the subject more toward the visible area"; 18:05 Z, of Why Aveda: "is not highlighting the
+    products, is highlighting something at the center, this is another regression" (task 4739f125). Every sheet stage names its
+    picture's subject (data-subject: left top right bottom, fractions of the picture), so sheet.js opens the clear window there
+    (measured: qa/gate-rows.mjs); Why Aveda's, in the salon world, is the shelves of Aveda products, never the fig alone."""
+    out = []
+    for sid, sec in sections.items():
+        if sid.startswith('__') or not isinstance(sec, dict):
+            continue
+        for st in sec.get('sheets', []):
+            b = (st.get('data-subject') or '').split()
+            try:
+                b = [float(x) for x in b]
+            except ValueError:
+                b = []
+            if len(b) != 4 or not all(0 <= x <= 1 for x in b) or b[0] >= b[2] or b[1] >= b[3]:
+                out.append(f'"{sid}": its sheet names no subject for its clear window (data-subject="{st.get("data-subject", "")}")')
+            elif sid == 'aveda':
+                x0, y0, x1, y1 = AVEDA_PRODUCTS
+                if not (b[0] >= x0 - .01 and b[2] <= x1 + .01 and b[1] >= y0 - .01 and b[3] <= y1 + .01 and (b[0] + b[2]) / 2 >= .62):
+                    out.append(f'Why Aveda\'s clear window opens on {st.get("data-subject")}, not the shelves of Aveda products ({x0} {y0} {x1} {y1})')
+    return out
+
+
 # number: (what it keeps, the pages it applies to, the check over the built page). M and G have the pause, the visit preview,
 # the five steps and the voices; S is the short version (the opening, the visit, the team, the menu, the second door, the close).
 CHECKS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'photo_checks.json')
@@ -519,11 +548,13 @@ ROWS = {
     21: ('the second door\'s entry: its picture settles in from close and its words come in as it arrives', 'mgs', entry_row('deeper', 'the second door')),
     22: ('Why Aveda\'s entry: its picture settles in from close and its words come in as it arrives', 'mg', entry_row('aveda', 'Why Aveda')),
     23: ('every picture of the basins room is built on J\'s 25 Oct picture, its organised bottles', 'mgs', row23),
+    24: ('each sheet picture\'s clear window opens on its subject; Why Aveda\'s on the shelves of Aveda products', 'mgs', row24),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
-MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg'}
+MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg', 24: 'mgs', 25: 'mgs'}
 # the rows only measured (no built-page check), by name for the refusal
 NAMES = {5: 'slides snap with a pull; a tall section scrolls freely inside, then pulls into the next',
+         25: 'every section heading at the one heading size (--t-h2), the sheet sections too',
          9: "option B's forests on buttons and marks, never mint", 17: 'the pause: no rings and no glow around its picture'}
 # a machine cannot judge these; each stays a QA step, and says why
 QA_ONLY = {

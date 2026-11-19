@@ -425,7 +425,7 @@ PAUSE_LIVE_NOTE = 'Scroll slowly: the room opens as you breathe in; the question
 # (task 4739f125; J 19 Nov 14:25 Z: "you can actually place the subject more toward the visible area, the one that doesn't have
 # the effect"): sheet.js opens the clear window around it, wherever the picture's crop puts it on the screen
 SUBJECTS = {'meadow.webp': '.44 .31 .56 .93',                     # the woman in linen, walking into the meadow
-            'real-aveda-shelves.webp': '.42 .26 .60 .95',         # the fiddle-leaf fig between the shelves
+            'real-aveda-shelves.webp': '.58 .30 .82 .86',         # the shelves of Aveda products (J 19 Nov 18:05 Z: "is not highlighting the products"), the fig at its edge as at cd23c7c
             'real-maggie-outdoor-chin.webp': '.44 .08 .70 .80',   # Maggie, her face and shoulders
             'real-stylist-mirror.webp': '.42 .12 .68 .80'}        # the stylist, her face and shoulders (Inner Work's second door, task 69006a72)
 

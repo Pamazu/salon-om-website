@@ -33,7 +33,7 @@ const WORLDS = [['salon', '', 'Salon OM'], ['coaching', 'c-', 'Inner Work']];
 const topOf = (p, id) => p.evaluate((id) => { const e = document.getElementById(id); return e ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
 const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 
-// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22
+// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22, 24, 25
 async function desktop(p, v, P, W, add, seen) {
   const vh = 900;
   // row 9: every green on the page is one of option B's forests (a green = its green clearly above its red and blue)
@@ -184,6 +184,9 @@ async function desktop(p, v, P, W, add, seen) {
     await door(p, P, W, add, seen, '1440');
   }
 
+  // rows 24 and 25: each sheet's clear window on its subject; every section heading at the one heading size
+  await subjects(p, P, W, add, seen, '1440');
+  await heads(p, P, W, add, seen, '1440');
   // rows 21 and 22: the second door's and Why Aveda's entries
   await entry(p, 21, `${P}deeper`, 'the second door', W, add, seen, '1440', vh);
   await entry(p, 22, `${P}aveda`, 'Why Aveda', W, add, seen, '1440', vh);
@@ -213,6 +216,48 @@ async function desktop(p, v, P, W, add, seen) {
       if (back > 0) add(4, `${back} stops stayed in the rail after scrolling back to the preview (no reverse)`);
     }
   }
+}
+
+// row 24 (task 4739f125; J 19 Nov 18:05 Z, Why Aveda: "is not highlighting the products, is highlighting something at the
+// center"): at rest, each sheet section's clear window covers the subject its stage names. The subject (data-subject, fractions of
+// the picture) is put on the screen here through the photo's own crop (object-fit cover at its object-position), independently
+// of sheet.js; the window is read from the sheet's own mask (its oval and the clear inner part). Pass: the subject's centre and
+// the middle of each of its sides lie in the clear part (inside 1.1 of it).
+async function subjects(p, P, W, add, seen, size) {
+  const ids = await p.evaluate((P) => [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} section[id] [data-sheet][data-subject]`)].map((e) => e.closest('section[id]').id), P);
+  for (const id of ids) {
+    const y = await topOf(p, id); await jump(p, y);
+    await p.waitForFunction((id) => !!document.querySelector(`#${id} .sh--on`), id, { timeout: 8000 }).catch(() => {}); await wait(p, 600);
+    const m = await p.evaluate((id) => {
+      const st = document.querySelector(`#${id} [data-sheet]`), im = st.querySelector('.sh__ph img'), sh = st.querySelector('.sh__sheet');
+      const k = String(sh.style.webkitMaskImage || sh.style.maskImage || '').match(/ellipse (-?[\d.]+)px (-?[\d.]+)px at (-?[\d.]+)px (-?[\d.]+)px, transparent (-?[\d.]+)%/);
+      const b = st.getAttribute('data-subject').split(/\s+/).map(Number), Wd = st.clientWidth, Hd = st.clientHeight, nw = im.naturalWidth, nh = im.naturalHeight;
+      if (!k || !nw) return { id, mask: k ? 'read' : 'no oval window', loaded: !!nw };
+      const op = getComputedStyle(im).objectPosition.split(' ').map(parseFloat), s = Math.max(Wd / nw, Hd / nh), ox = (Wd - nw * s) * op[0] / 100, oy = (Hd - nh * s) * op[1] / 100;
+      const x0 = ox + b[0] * nw * s, x1 = ox + b[2] * nw * s, y0 = Math.max(0, oy + b[1] * nh * s), y1 = Math.min(Hd, oy + b[3] * nh * s), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+      const rx = +k[1] * +k[5] / 100, ry = +k[2] * +k[5] / 100, X = +k[3], Y = +k[4], v = (x, y) => ((x - X) / rx) ** 2 + ((y - Y) / ry) ** 2;
+      const pts = [[cx, cy], [x0, cy], [x1, cy], [cx, y0], [cx, y1]], worst = Math.max(...pts.map(([x, y]) => v(x, y)));
+      return { id, subject: b.join(' '), box: [x0, y0, x1, y1].map(Math.round), clear: [X, Y, rx, ry].map(Math.round), worst: +worst.toFixed(2) };
+    }, id);
+    seen[`24 ${W} ${size} ${id}`] = m;
+    if (m.mask) add(24, `at ${size} "${id}": ${m.mask}${m.loaded === false ? ', its photo not loaded' : ''}`);
+    else if (!(m.worst <= 1.1)) add(24, `at ${size} "${id}": its clear window (centre ${m.clear[0]}, ${m.clear[1]}) does not hold its subject ${m.subject} (box ${m.box.join(', ')}; the farthest point at ${m.worst} of the clear part)`);
+  }
+}
+
+// row 25 (J 19 Nov 18:05 Z, Why Aveda: "the heading is still not big as the other ones"; M/G's one type scale, mgs.css --t-*):
+// every section's heading (its first h2: the visit, the menu, the team, Why Aveda, the second door; never the step titles or the
+// closing words, which take the display size) is drawn at --t-h2, read in the page at this size.
+async function heads(p, P, W, add, seen, size) {
+  const r = await p.evaluate((P) => {
+    const main = document.getElementById(`main-${P ? 'coaching' : 'salon'}`), pr = document.createElement('span');
+    pr.style.fontSize = 'var(--t-h2)'; main.appendChild(pr); const want = parseFloat(getComputedStyle(pr).fontSize); pr.remove();
+    const got = [...main.querySelectorAll(':scope > section[id]')].map((s) => [s.id, s.querySelector('h2')])
+      .filter(([, h]) => h && !h.matches('.ch__title, .cl__words h2, h1')).map(([id, h]) => [id, +parseFloat(getComputedStyle(h).fontSize).toFixed(1)]);
+    return { want, got };
+  }, P);
+  seen[`25 ${W} ${size}`] = r;
+  for (const [id, fs] of r.got) if (Math.abs(fs - r.want) > .6) add(25, `at ${size} "${id}"'s heading is ${fs} px, not the one heading size ${r.want} px`);
 }
 
 // rows 21 and 22: a section's entry J kept (task 4739f125; J 19 Nov 14:25 Z: "you broke the intro text and image animation, zoom
@@ -271,8 +316,9 @@ async function door(p, P, W, add, seen, size) {
   await jump(p, d0.y); await wait(p, 300);
 }
 
-// 390 x 844 phone: rows 6, 14 and 20
+// 390 x 844 phone: rows 6, 14, 20 and 25
 async function phone(p, v, P, W, add, seen) {
+  await heads(p, P, W, add, seen, '390');
   const yp = await topOf(p, `${P}pause`);
   if (yp >= 0) { await jump(p, Math.max(0, yp - 844)); await wait(p, 500); await jump(p, yp); await wait(p, 5200); await door(p, P, W, add, seen, '390'); }
   const ys = await topOf(p, `${P}services`);
@@ -300,6 +346,7 @@ async function phone(p, v, P, W, add, seen) {
 
 // 3230 x 1319 at 2x (J's 6K window): row 18, every picture drawn from at least as many pixels as the screen shows
 async function sixK(p, v, P, W, add, seen) {
+  await heads(p, P, W, add, seen, '3230');
   const total = await p.evaluate(() => document.documentElement.scrollHeight);
   for (let y = 0; y < total; y += 1100) { await jump(p, y); await wait(p, 160); }
   await wait(p, 900);

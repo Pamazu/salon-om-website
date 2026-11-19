@@ -33,6 +33,9 @@ export const BREAKS = {
   20: ['the pause\'s room never opens from a thin line (its clip taken off)', '<style>#pause .ps__pic{clip-path:none!important;-webkit-clip-path:none!important;transition:none!important;animation:none!important}</style>', '1440', ['salon']],
   21: ['the second door\'s picture held still as it arrives', '<style>#deeper :is(.sh__ph,.sh__sheet,.sh__sheet2,.ph-bg) img{scale:1!important;transform:none!important;transition:none!important}</style>', '1440', ['salon']],
   22: ['Why Aveda\'s heading already there as it arrives', '<style>#aveda .mask__in{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}</style>', '1440', ['salon']],
+  24: ['Why Aveda\'s clear window moved off its subject (to the top left)',
+    "<script>addEventListener('load',function(){setTimeout(function(){var e=document.querySelector('#aveda [data-sheet]');if(e&&e._sheet)e._sheet.subject=function(){return{x:160,y:160,rx:220,ry:220,c:.58};};},50);});</script>", '1440', ['salon']],
+  25: ['Why Aveda\'s heading at a smaller size', '<style>#aveda .sh__words .mid{font-size:40px!important}</style>', '1440', ['salon']],
   18: ['the menu photos from their smallest file',
     "<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('#services .mn__ph img[srcset]').forEach(function(i){var f=i.getAttribute('srcset').split(',')[0].trim().split(' ')[0];i.removeAttribute('srcset');i.src=f;});});</script>", '6K', ['salon']],
 };

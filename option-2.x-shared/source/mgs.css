@@ -240,7 +240,8 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
   --t-body: clamp(16px, 1.08vw, 18px);
   --t-lead: clamp(19px, 1.5vw, 25px);                    /* italic serif lines: triplets, leads, rewards */
   --t-h3: clamp(28px, 2.3vw, 40px);
-  --t-h2: clamp(40px, 4.4vw, 80px);
+  --t-h2: clamp(40px, 5.2vw, 96px);                     /* the one section heading size: 2.2's .mid, which the visit and the team already use (task 4739f125) */
+  --t-quote: clamp(40px, 4.4vw, 80px);                   /* a guest's words in the voices (was --t-h2's old value) */
   --r-photo: 4px;
 }
 .eyebrow, .pr__head .eyebrow, .pv__head .eyebrow, .pf__in .eyebrow, .om__head .label, .mn__head .label { margin-bottom: var(--sp-3); }
@@ -490,7 +491,7 @@ html[data-shot] .ln__dot { transform: none !important; transition: none !importa
 .vo__in { width: 100%; max-width: 1680px; margin: 0 auto; display: grid; gap: var(--sp-5); }
 .vo__head { padding: 0 var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--sp-3) var(--sp-4); }
 .vo__head .label { grid-column: 1 / -1; margin: 0; color: var(--ivory-soft); }
-.vo__t { margin: 0; font: italic 300 var(--t-h2)/1.02 var(--serif); letter-spacing: -.01em; }
+.vo__t { margin: 0; font: italic 300 var(--t-quote)/1.02 var(--serif); letter-spacing: -.01em; }
 .vo__nav { display: flex; align-items: center; gap: var(--sp-2); }
 .vo__arr { width: 50px; height: 50px; border-radius: 50%; border: 0; background: rgba(245, 238, 228, .1); color: var(--ivory); font: 400 18px/1 var(--sans); cursor: pointer; transition: background-color var(--t-ui) var(--io), opacity var(--t-ui) var(--io); }
 .vo__arr:hover { background: rgba(245, 238, 228, .2); }
@@ -1085,7 +1086,9 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
    column grows with them (its measure is in ch, the column 48 % of the stage); the heading grows less, so the body
    gains on it (J's complaint was the body next to the heading). A phone keeps its own sizes below. */
 .sh__words { --sh-body: clamp(17px, calc(.55vw + 10px), 30px); }
-.sh__words .mid { font-size: clamp(30px, calc(1.4vw + 26px), 72px); text-wrap: balance; }   /* grows less than the body: 46 px at 1440, 71 at 3230 */
+.sh__words .mid { font-size: var(--t-h2); text-wrap: balance; }   /* the site's one heading size (J 19 Nov 18:05 Z: "the heading is still not big as the other ones") */
+/* Why Aveda's column no wider than at cd23c7c (J 19 Nov 18:05 Z: "the text box seems a bit too wide"); the words keep their size */
+@media (min-width: 701px) { .av--sheet .sh__words { max-width: 42%; } }
 .sh__words .eyebrow { font-size: max(12px, calc(var(--sh-body) * .68)); }
 .sh__words :is(.sh__text, .sh__more, .av__sub), .sh__words .av__row dd { font-size: var(--sh-body); line-height: 1.55; }
 .sh__words .av__row dd { line-height: 1.4; }
@@ -1107,7 +1110,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .av--sheet .av__letter { max-width: 1560px; margin: 0 auto; padding: var(--sp-5) var(--gutter) 0; }
 @media (max-width: 700px) {
   .sh__words { width: 88%; }
-  .sh__words .mid { font-size: 32px; }
+  .sh__words .mid { font-size: var(--t-h2); }
   .sh__words .av__row dd { font-size: 14px; }
 }
 
