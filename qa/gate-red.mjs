@@ -19,8 +19,8 @@ const PAGE = path.join(REPO, 'option-2.2-mgs', 'm', 'index.html');
 // row: [what breaks, what is added before </body>, the pass that reads it, the worlds it needs]
 export const BREAKS = {
   4: ['the visit preview line stays undrawn', '<style>#visit .ln__path{animation:none!important;transition:none!important;stroke-dashoffset:.6!important}</style>', '1440', ['salon']],
-  5: ['a wheel inside the menu jumps back to its top (held there 0.4 s, over the page\'s own scrolling)',
-    "<script>(function(){var at=0;function f(){var s=document.getElementById('services');if(s){var t=Math.round(s.getBoundingClientRect().top+scrollY);if(!at&&scrollY>t+150&&scrollY<t+500)at=performance.now();if(at&&performance.now()-at<400)scrollTo(0,t);}requestAnimationFrame(f);}requestAnimationFrame(f);})();</script>", '1440', ['salon']],
+  5: ['a wheel inside the menu jumps back to its top (held there 0.4 s, over the page\'s own scrolling; armed by a wheel only, so row 6\'s jump into the menu does not spend it)',
+    "<script>(function(){var at=0,wh=-1e9;addEventListener('wheel',function(){wh=performance.now();},{passive:true,capture:true});function f(){var s=document.getElementById('services');if(s){var t=Math.round(s.getBoundingClientRect().top+scrollY);if(!at&&performance.now()-wh<400&&scrollY>t+150&&scrollY<t+500)at=performance.now();if(at&&performance.now()-at<400)scrollTo(0,t);}requestAnimationFrame(f);}requestAnimationFrame(f);})();</script>", '1440', ['salon']],
   6: ['the menu photo panel scrolls away with the list', '<style>.mn__ph{position:relative!important}</style>', '1440', ['salon']],
   8: ['the voices on another ground', '<style>section.voices{background:#6B3A2A!important;background-image:none!important}</style>', '1440', ['salon']],
   9: ['a step number in mint', '<style>.ch__num{color:#8FCBA4!important}</style>', '1440', ['salon']],
