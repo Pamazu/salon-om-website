@@ -236,7 +236,7 @@ class EveryRow(Before21, unittest.TestCase):
         return in_section(self.m, 'pause', old, new)
 
     def test_20_the_17_nov_spread_back_as_the_default(self):
-        self.red(20, self.pause('src="img/real-chair-window.webp', 'src="img/om-pause-guest.webp'), why='editorial spread')
+        self.red(20, self.pause('src="img/om-pause-rest.webp', 'src="img/om-pause-guest.webp'), why='editorial spread')
 
     def test_20_the_door_back_as_the_default(self):
         self.red(20, self.pause('class="s ps ps--breath"', 'class="s mani"'), why='B · The breath')
