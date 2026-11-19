@@ -4,6 +4,7 @@ and see a option switcher, shift v again hides it. The option swicher changes ba
 ONE block for every section, naming none. A section declares its options in its copy dict:
 
     options=[dict(key='door', label='The door', note='...', **changed keys), dict(key='a', label='...', kind=other_renderer, ...)]
+    option_label='...'   the live default's name in the panel; option_name='...' the section's (else its label or eyebrow)
 
 Each option is a named variant of that section (its layout, its picture, its effect): the SAME section drawn again by its own
 renderer (or the renderer the option names in `kind`) with the option's keys changed, so its words and pictures stay the
@@ -41,7 +42,7 @@ def render(draw, kind_of, d, world):
     keys = [o['key'] for o in opts]
     assert DEFAULT['key'] not in keys and len(set(keys)) == len(keys) and all(re.fullmatch(r'[a-z0-9-]+', k) for k in keys), \
         f'section_options: "{d["id"]}" option keys must be unique, lowercase, and never "{DEFAULT["key"]}": {keys}'
-    base = {k: v for k, v in d.items() if k not in ('options', 'option_label')}
+    base = {k: v for k, v in d.items() if k not in ('options', 'option_label', 'option_name')}
     live = draw(kind_of, base)
     attrs, inner = _split(live)
     sid = attrs.get('id')
@@ -57,7 +58,9 @@ def render(draw, kind_of, d, world):
         assert a.get('id') == sid, f'section_options: option "{o["key"]}" of "{sid}" draws a section with another id'
         _STORE.append((sid, o['key'], world, a, None if (a == attrs and i == inner) else i))
         menu.append(dict(k=o['key'], n=o['label'], **({'d': o['note']} if o.get('note') else {})))
-    extra = f' data-opt-key="{E(key)}" data-opt="{DEFAULT["key"]}" data-opts="{E(json.dumps(menu, ensure_ascii=False, separators=(",", ":")))}"'
+    name = re.sub(r'<[^>]+>|\[|\]', '', str(d.get('option_name') or d.get('label') or d.get('eyebrow') or '')).strip()   # the panel's short name for it
+    extra = (f' data-opt-key="{E(key)}" data-opt="{DEFAULT["key"]}" data-opts="{E(json.dumps(menu, ensure_ascii=False, separators=(",", ":")))}"'
+             + (f' data-opt-name="{E(name)}"' if name else ''))
     return re.sub(r'<section\b', '<section' + extra, live, count=1)
 
 
