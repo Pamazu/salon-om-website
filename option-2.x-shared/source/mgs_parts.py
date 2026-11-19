@@ -715,7 +715,7 @@ def hevc_twins(body, media_dir):
 # Every file a page names, at an address that changes with its content (task 01849ea5; J 19 Nov 08:01 Z, his Safari showing the
 # pause's old picture after it was replaced: "someone brought back this section"). Firebase gives pictures, films and sounds a
 # week's cache (fonts a month) under the same address while their bytes change, so a returning visitor keeps the old copy.
-ASSET_REF = re.compile(r'(?<![\w/.:-])((?:[a-z0-9_-]+/)+[\w.%-]+\.(?:webp|jpe?g|png|svg|gif|avif|mp4|webm|mp3|m4a|wav|woff2?|ttf|otf|css|js|json|vtt))(?![\w/?])')
+ASSET_REF = re.compile(r'(?<![\w/.:-])((?:[a-z0-9_-]+/)+[\w.%-]+\.(?:webp|jpe?g|png|svg|gif|avif|mp4|webm|mp3|m4a|aac|wav|woff2?|ttf|otf|css|js|json|vtt))(?![\w/?])')
 _HASHES = {}
 
 
