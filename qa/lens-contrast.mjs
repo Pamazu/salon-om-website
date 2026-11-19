@@ -36,7 +36,13 @@ for (const w of ws.split(',').map(Number)) {
         const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
         await jump(p, Math.max(0, top - H * .6)); await wait(p, 500);
         await jump(p, top);
-        await p.waitForFunction((id) => document.querySelector(`#${id} [data-sheet]`).classList.contains('sh--on'), id, { timeout: 30000 }).catch(() => {});
+        // the sheet turns on (sh--on) once it has built its glass; on a cold page in a loaded pool that can pass 30 s, and a
+        // sheet that is not on has no glass and no words drawn yet, so it is entered again once, then reported NOT READ
+        // (never measured: the letters are not on screen; task 4739f125, r14's 20 false lows at m 1440 aveda)
+        const on = () => p.waitForFunction((id) => document.querySelector(`#${id} [data-sheet]`).classList.contains('sh--on'), id, { timeout: 60000 }).then(() => true, () => false);
+        let ready = await on();
+        if (!ready) { await jump(p, Math.max(0, top - H)); await wait(p, 1500); await jump(p, top); ready = await on(); }
+        if (!ready) { all.push({ v, w, world, id, notReady: true }); console.log('NOT READY', v, w, id, 'the sheet did not turn on in 2 x 60 s: not measured'); continue; }
         await wait(p, 3200);                                                  // the words arrive (their last entrance starts at 1.4 s)
         const worst = await p.evaluate(async (id) => {                        // the moment the clear window comes nearest the words
           const st = document.querySelector(`#${id} [data-sheet]`), sh = st.querySelector('.sh__sheet'), wd = st.querySelector('.sh__words');
@@ -122,7 +128,9 @@ for (const w of ws.split(',').map(Number)) {
   await ctx.close();
 }
 fs.writeFileSync(path.join(OUT, 'contrast.json'), JSON.stringify(all, null, 1) + '\n');
-const low = all.filter((r) => !r.skipped && !r.ok), skip = all.filter((r) => r.skipped);
-console.log(`${all.length - skip.length} lines measured, ${low.length} under their need (7:1 body, 4.5:1 large); ${skip.length} not read, wholly under a fixed part of the page`);
+const nr = all.filter((r) => r.notReady), lines = all.filter((r) => !r.notReady);
+const low = lines.filter((r) => !r.skipped && !r.ok), skip = lines.filter((r) => r.skipped);
+console.log(`${lines.length - skip.length} lines measured, ${low.length} under their need (7:1 body, 4.5:1 large); ${skip.length} not read, wholly under a fixed part of the page` +
+  (nr.length ? `; ${nr.length} section(s) NOT READY, not measured: ${nr.map((r) => `${r.v} ${r.w} ${r.id}`).join(', ')}` : ''));
 await b.close(); srv.close();
 process.exit(0);
