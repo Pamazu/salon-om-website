@@ -246,7 +246,8 @@ async function entry(p, n, id, name, W, add, seen, size, vh) {
   await jump(p, y); await wait(p, 200);
 }
 
-// row 20: the pause is J's pick, B · The breath (task 95ac520e): its room picture (the salon's: the empty chair by the window;
+// row 20: the pause is J's pick, B · The breath (task 95ac520e): its room picture (the salon's: the guest resting at the basin in
+// J's 25 Oct room, J 19 Nov 12:01 Z on the empty chair: "the picture you're using is terrible", task 69006a72;
 // Inner Work's its own, never the 17 Nov spread's guest) loads, starts as a thin line (clip-path inset 48 % top and bottom) and
 // opens as you scroll through it: half way through the section the room is open (inset under 5 %) and the question has come
 async function door(p, P, W, add, seen, size) {
@@ -263,7 +264,7 @@ async function door(p, P, W, add, seen, size) {
   await jump(p, want); await wait(p, 900);
   const d1 = await read(), at = await p.evaluate(() => Math.round(scrollY));     // where the page really stands: a pull would show here
   seen[`20 ${W} ${size}`] = { ...d0, open: d1 && d1.top, want, at };
-  if (!P && !/real-chair-window/.test(d0.src)) add(20, `at ${size} the breath opens on ${d0.src}, not the empty chair by the window`);
+  if (!P && !/om-pause-rest/.test(d0.src)) add(20, `at ${size} the breath opens on ${d0.src}, not the guest resting at the basin (om-pause-rest)`);
   if (/om-pause-guest/.test(d0.src)) add(20, `at ${size} the breath shows the 17 Nov editorial spread's picture (${d0.src})`);
   if (!d0.shown) add(20, `at ${size} the breath's picture did not load`);
   if (!(d0.top > 40)) add(20, `at ${size} the room does not start as a thin line as the pause arrives (clip inset ${d0.top} %)`);
