@@ -4060,7 +4060,16 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     }
     // a sound's file is fetched once (no audio context needed, so the opening's starts with the page) and decoded once
     // a context exists; decoding hands the bytes over, so a dropped sound is fetched again (from the browser's cache)
-    function fetchBytes(name) { return bytes[name] || (bytes[name] = fetch(SRC[name]).then(function (r) { if (!r.ok) throw r.status; return r.arrayBuffer(); })); }
+    // the opening film first (task 5cb93228): measured on one shared 4G line, the opening's and the first step's sound files
+    // (1.9 MB) shared the line with the opening film from the page's start. So a sound's file is fetched once the shown
+    // world's opening film moves (or 6 s on, or at once when there is none or the films are off); the first tap is heard
+    // at once all the same, its sound streaming (stream() below)
+    var filmFirst = new Promise(function (go) {
+      var m = document.querySelector('main[data-world]:not([hidden])'), v = m && m.querySelector('.s.hero video[data-src]');
+      if (!v || document.documentElement.getAttribute('data-motion') === 'calm' || (!v.paused && v.currentTime > 0)) return go();
+      v.addEventListener('playing', function () { go(); }, { once: true }); setTimeout(go, 6000);
+    });
+    function fetchBytes(name) { return bytes[name] || (bytes[name] = filmFirst.then(function () { return fetch(SRC[name]); }).then(function (r) { if (!r.ok) throw r.status; return r.arrayBuffer(); })); }
     function decode(buf) { return new Promise(function (res, rej) { var p = ctx.decodeAudioData(buf, res, rej); if (p && p.then) p.then(res, rej); }); }
     function buffer(name) {
       if (bufs[name]) return bufs[name];
