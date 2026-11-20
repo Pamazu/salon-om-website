@@ -267,6 +267,10 @@ class EveryRow(Before21, unittest.TestCase):
         html = in_section(page(LIVE, 'g'), 'deeper', '<footer class="foot cl__foot" id="letters">', '<div class="foot cl__foot" id="letters">')
         self.red(14, html, letter='g', why='"deeper"')
 
+    def test_13_g_a_button_in_om_outside_begin_s_part(self):     # G: Begin's call and email count only inside Begin's part in OM (task b623ab76)
+        html = in_section(page(LIVE, 'g'), 'om', '<div class="mani__begin cl"', '<a class="btn" href="tel:+0">Call the salon</a><div class="mani__begin cl"')
+        self.red(13, html, letter='g', why='"Call the salon"')
+
     def test_s_passes_and_breaks_on_its_own_rows(self):
         self.assertEqual(self.off(self.s, 's'), {})
         self.red(13, in_section(self.s, 'deeper', 'Explore Inner Work', 'Go elsewhere'), letter='s')   # the section's, not its option's template
@@ -489,6 +493,16 @@ class Row28(unittest.TestCase):
         j, k = span(html, 'hosts'); sec = html[j:k]; html = html[:j] + html[k:]
         j, k = span(html, 'deeper')
         self.assertTrue(any('"deeper"' in m and 'last section' in m for m in self.off(html[:k] + sec + html[k:], 's')))
+
+    def test_28_red_g_s_om_with_begin_after_the_door(self):     # G draws Begin inside OM · Oneness (task cde7849b): read there
+        html = page(BUILT, 'g')
+        j, k = span(html, 'om'); sec = html[j:k]; html = html[:j] + html[k:]
+        j, k = span(html, 'deeper')
+        self.assertTrue(any('comes before' in m for m in self.off(html[:k] + sec + html[k:], 'g')))
+
+    def test_28_red_g_without_begin_s_part(self):
+        html = page(BUILT, 'g').replace('class="mani__begin cl" id="begin"', 'class="mani__begin cl" id="begun"', 1)
+        self.assertTrue(any('no "begin"' in m for m in self.off(html, 'g')))
 
     def test_28_red_a_world_without_its_door(self):
         html = page(BUILT, 's')

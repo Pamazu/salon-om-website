@@ -60,12 +60,17 @@ DOORS = {'salon': ('Inner Work with Maggie', 'Explore Inner Work', 'Book a Conne
          'coaching': ('Salon OM', 'Explore Salon OM', 'Book your visit')}     # the other world, allowed at the top and in its own section
 
 
+PART = re.compile(r'^(c-)?begin$')        # Begin, the world's last call to action, as a part inside another section (G: inside OM)
+
+
 class Page(HTMLParser):
     """Per section id: its attributes, films, pictures (with the classes above each), every class in it (counted), its words,
-    its links (text, href, class), whether a footer sits in it; and per world (<main>) the order of its sections."""
+    its links (text, href, class, the part it sits in), whether a footer sits in it, the parts drawn inside it (Begin's inside
+    OM · Oneness on G, task cde7849b); and per world (<main>) the order of its sections."""
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.sections, self.order, self.stack, self.cur, self.main, self.link = {}, {}, [], None, None, None
+        self.part = None          # (id, depth) of a part with its own id inside the section: Begin's, wherever it is drawn
         self.every = []           # every section in page order, the option switcher's templates too (an id there repeats)
 
     def handle_starttag(self, tag, attrs):
@@ -85,8 +90,11 @@ class Page(HTMLParser):
                 self.cur['films' if tag == 'video' else 'pics'].append({'attrs': a, 'above': above})
             if tag == 'footer':
                 self.cur['footer'] = True
+            if tag != 'section' and PART.match(a.get('id') or '') and self.part is None:
+                self.part = (a['id'], len(self.stack))
+                self.cur.setdefault('parts', []).append(a['id'])
             if tag == 'a':
-                self.link = {'href': a.get('href') or '', 'cls': a.get('class') or '', 'text': ''}
+                self.link = {'href': a.get('href') or '', 'cls': a.get('class') or '', 'text': '', 'part': self.part and self.part[0]}
             if 'data-sheet' in a:                                         # a lenticular sheet stage and the subject its window opens on
                 self.cur.setdefault('sheets', []).append(a)
             if {'mani__text', 'ps__head'} & set((a.get('class') or '').split()):      # the pause's heading, whichever block draws it
@@ -116,6 +124,8 @@ class Page(HTMLParser):
             if self.stack[i][0] == tag:
                 del self.stack[i:]
                 break
+        if self.part and len(self.stack) <= self.part[1]:
+            self.part = None
 
 
 def parse(html):
@@ -353,7 +363,7 @@ def row13(sections, letter, site):     # one call to action per world, throughou
                     if h != f'#{P}begin':
                         out.append(f'{W}: the footer\'s "Begin" goes to {h}, not this world\'s close #{P}begin')
                     continue
-                if bare == 'begin':
+                if bare == 'begin' or l['part'] == P + 'begin':     # Begin's own buttons (call, email: the one action's two ways), wherever Begin is drawn
                     continue
                 if 'btn' not in l['cls'].split() and t != own:
                     continue
@@ -371,6 +381,15 @@ def row13(sections, letter, site):     # one call to action per world, throughou
     return out
 
 
+def begin_at(sections, P, ids):
+    """where the world's Begin stands among its sections: its own section, or the section it is drawn inside (G: OM · Oneness,
+    task cde7849b; J 20 Nov 13:3x Z: "MAKE THE LAST CTA SECTION PART OF THE OM BROWN SECTION"); None when the world has none"""
+    for i, sid in enumerate(ids):
+        if sid == P + 'begin' or P + 'begin' in sections[sid].get('parts', []):
+            return i
+    return None
+
+
 def row14(sections, letter, site):     # the footer sits inside the closing slide: the world's last (Begin on M, the second door on G and S)
     return [f'{W}: the footer is not inside the closing slide ("{ids[-1]}")' for w, P, W, ids in worlds(sections)
             if not (sections.get(ids[-1]) or {}).get('footer')]
@@ -384,9 +403,10 @@ def row28(sections, letter, site):     # G and S: each world's last call to acti
     out = []
     for w, P, W, ids in worlds(sections):
         b, d = P + 'begin', P + 'deeper'
-        if b not in ids or d not in ids:
-            out.append(f'{W}: the page has no "{b if b not in ids else d}"')
-        elif ids.index(b) > ids.index(d):
+        at = begin_at(sections, P, ids)
+        if at is None or d not in ids:
+            out.append(f'{W}: the page has no "{b if at is None else d}"')
+        elif at > ids.index(d):
             out.append(f'{W}: the second door ("{d}") comes before the world\'s last call to action ("{b}")')
         elif ids[-1] != d:
             out.append(f'{W}: the second door ("{d}") is not the world\'s last section ("{ids[-1]}" is)')
