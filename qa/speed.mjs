@@ -148,7 +148,7 @@ async function at(p, id, t0) {
   for (let i = 0; i < 2000 && (o.photoMs === null || o.filmMs === null); i++) {
     const s = await p.evaluate((id) => { const sec = document.getElementById(id), T = sec._t;
       const top = sec.querySelector('.ch__top img'), v = sec.querySelector('video[data-src]'), poster = sec.querySelector('.s__zoom > img');
-      const pics = top ? [top] : [...sec.querySelectorAll('img')].filter((im) => im.getBoundingClientRect().width > 40);
+      const pics = top ? [top] : [...sec.querySelectorAll('img')].filter((im) => { const r = im.getBoundingClientRect(); return r.width > 40 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight; });
       const dec = (im) => im && im._dec != null ? im._dec - T : null;
       const photo = pics.length && pics.every((im) => im._dec != null) ? Math.max(...pics.map(dec)) : null;
       const firstPic = [poster, ...pics].map(dec).filter((x) => x !== null);
@@ -190,6 +190,7 @@ async function steps(v, w, box) {
     await p.waitForTimeout(Math.max(0, READ - (Date.now() - t0)));
     const fr = await p.evaluate((n) => window.__frames.slice(n).map((x) => x[1]), f0);
     walk.push({ ...o, longFrames: fr.length, worstFrameMs: fr.length ? Math.max(...fr) : 0 });
+    if (LOG) console.error(`  ${v} ${w} ${id}: ${JSON.stringify(walk[walk.length - 1])}`);
   }
   await ctx.close(); await b.close();
   let direct = null;
@@ -208,7 +209,7 @@ for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
   for (let attempt = 1; attempt <= 2 && !row; attempt++) {
     const box = {}; let timer;
     row = await Promise.race([(STEPS ? steps : one)(v, w, box).catch((e) => ({ v, w, net: NET, error: String(e.message || e).slice(0, 160) })),
-      new Promise((ok) => { timer = setTimeout(() => ok(null), STEPS ? 300000 : 150000); })]);
+      new Promise((ok) => { timer = setTimeout(() => ok(null), STEPS ? 200000 : 150000); })]);
     clearTimeout(timer);
     if (!row || row.error) { if (box.b) box.b.close().catch(() => {}); if (attempt === 1) { console.log(`${v} ${w}: ${row ? row.error : 'hung 150 s'}; trying once more`); row = null; } }
   }

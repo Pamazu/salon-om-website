@@ -1033,9 +1033,8 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ch--scroll-breath { --cs0: 18%; }
 .ch--scroll-breath .s__zoom > :not(.ch__top) { z-index: 1; clip-path: inset(calc(50% * (1 - var(--e, 0))) calc(var(--cs0) * (1 - var(--e, 0))) round calc(40px * (1 - var(--e, 0)))); }
 @media (max-width: 759px) { .ch--scroll-breath { --cs0: 6%; } }
-/* C · Crossfade: the photo dissolves into the film, the film settling from a slight push-in */
+/* C · Crossfade: the photo dissolves into the film (the step's own arrival zoom unchanged) */
 .ch--scroll-fade.ch--stack .ch__top, .ch--scroll-fade.ch--stack.is-active .ch__top { opacity: calc(1 - var(--e, 0)); transition: none; }
-.ch--scroll-fade .s__zoom { transform: scale(calc(var(--m-film, 1) * (1.05 - .05 * var(--e, 0)))); }
 /* D · The sheet: the photo becomes ribbed glass (the fluted glass, mgs.js data-flute), then rib by rib, left to right, the
    ribs clear and the film shows through */
 .ch--scroll-sheet .ch__top img { opacity: calc(1 - min(1, var(--e, 0) * 7)); }

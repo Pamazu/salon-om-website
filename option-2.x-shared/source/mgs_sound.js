@@ -160,12 +160,13 @@
         var left = false;
         es.forEach(function (e) {
           var n = e.target.getAttribute('data-sound'); if (!SRC[n]) return;
-          var was = !!e.target._near; e.target._near = e.isIntersecting;
-          if (e.isIntersecting && !was) { near[n] = (near[n] || 0) + 1; if (on) { if (ctx) buffer(n); else fetchBytes(n); } }
-          else if (!e.isIntersecting && was) { near[n] = Math.max(0, near[n] - 1); left = true; }
+          // a section only touching the margin's edge is not near (task 5cf1107e: a jump to a step asked for four steps' sounds at once)
+          var was = !!e.target._near, now = e.isIntersecting && e.intersectionRatio > 0; e.target._near = now;
+          if (now && !was) { near[n] = (near[n] || 0) + 1; if (on) { if (ctx) buffer(n); else fetchBytes(n); } }
+          else if (!now && was) { near[n] = Math.max(0, near[n] - 1); left = true; }
         });
         if (left) setTimeout(tidy, (XFADE + 1.5) * 1000);
-      }, { rootMargin: '100% 0px 100% 0px' });
+      }, { rootMargin: '100% 0px 100% 0px', threshold: [0, 0.0001] });   // the second step reports a section leaving the margin's edge for inside it
       $all('[data-sound]').forEach(function (s) { io.observe(s); });
     }
     var pref = null; try { pref = localStorage.getItem('om-sound'); } catch (e) {}

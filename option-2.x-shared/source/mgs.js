@@ -510,12 +510,28 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      measured on one shared 4G line, coming near the first step attached three step films at once (3.8 + 5.9 + 2.0 MB) and
      the step's own film moved only after 8.4 s. So of the films within two screens, every film on screen loads at once, and
      of the others only the nearest, the next one once it can play (or 4 s on, so a stalled film never holds the rest). */
-  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom < 0 ? -r.bottom : r.top > innerHeight ? r.top - innerHeight : 0; }
+  /* a step's own photo first, then its film (task 5cf1107e, J 19 Nov: "It takes to long to load all images especially in the
+     5 steps sections, brakes the user experience"): measured on one shared 4G line, a jump to the fourth step waited 12 s for
+     its photo and 9.5 s for its film, behind all five steps' photos (asked from the page's start), three films and four
+     sounds; the sections just above and below the screen counted as on it, so their films loaded at once too. So a step's
+     photo loads only as its step comes near (build.chapter: loading="lazy"), in this same nearest-first line: its photo,
+     decoded ahead so painting it never holds a frame, then its film, then the next step's. A section beside the screen is
+     not on it. */
+  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom <= 0 ? 1 - r.bottom : r.top >= innerHeight ? 1 + r.top - innerHeight : 0; }
   function ready(v) { return !v.paused || v.readyState >= 3 || (v._img && v._img.complete) || performance.now() - v._from > 4000; }
+  function photo(v) { if (v._ph === undefined) { var s = v.closest('.s'); v._ph = (s && s.querySelector('.ch__top img')) || null; } return v._ph; }
+  function photoReady(v) { var im = photo(v); return !im || (im.complete && im.naturalWidth > 0 && v._dec) || performance.now() - v._pfrom > 4000; }
+  function ask(v) {
+    var im = photo(v); if (!im || v._pfrom) return; v._pfrom = performance.now();
+    var done = function () { v._dec = true; pump(); };
+    if (im.loading === 'lazy') im.loading = 'eager';
+    if (im.decode) im.decode().then(done, done); else if (im.complete) done(); else { im.addEventListener('load', done); im.addEventListener('error', done); }
+  }
   function pump() {
     if (calm) return; var busy = false;
     films.filter(function (v) { return v._near; }).map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; })
-      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
+      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; ask(v); if (!photoReady(v)) { busy = true; return; }
+        if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
   }
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { of.get(e.target).forEach(function (v) { v._near = e.isIntersecting; if (!v._near) release(v); }); });

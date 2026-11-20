@@ -2229,9 +2229,8 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ch--scroll-breath { --cs0: 18%; }
 .ch--scroll-breath .s__zoom > :not(.ch__top) { z-index: 1; clip-path: inset(calc(50% * (1 - var(--e, 0))) calc(var(--cs0) * (1 - var(--e, 0))) round calc(40px * (1 - var(--e, 0)))); }
 @media (max-width: 759px) { .ch--scroll-breath { --cs0: 6%; } }
-/* C · Crossfade: the photo dissolves into the film, the film settling from a slight push-in */
+/* C · Crossfade: the photo dissolves into the film (the step's own arrival zoom unchanged) */
 .ch--scroll-fade.ch--stack .ch__top, .ch--scroll-fade.ch--stack.is-active .ch__top { opacity: calc(1 - var(--e, 0)); transition: none; }
-.ch--scroll-fade .s__zoom { transform: scale(calc(var(--m-film, 1) * (1.05 - .05 * var(--e, 0)))); }
 /* D · The sheet: the photo becomes ribbed glass (the fluted glass, mgs.js data-flute), then rib by rib, left to right, the
    ribs clear and the film shows through */
 .ch--scroll-sheet .ch__top img { opacity: calc(1 - min(1, var(--e, 0) * 7)); }
@@ -2739,7 +2738,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="f73fc7a9dc6a";</script>
+<script>window.OM_BUILD="c11a1f98de59";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -3731,12 +3730,13 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
         var left = false;
         es.forEach(function (e) {
           var n = e.target.getAttribute('data-sound'); if (!SRC[n]) return;
-          var was = !!e.target._near; e.target._near = e.isIntersecting;
-          if (e.isIntersecting && !was) { near[n] = (near[n] || 0) + 1; if (on) { if (ctx) buffer(n); else fetchBytes(n); } }
-          else if (!e.isIntersecting && was) { near[n] = Math.max(0, near[n] - 1); left = true; }
+          // a section only touching the margin's edge is not near (task 5cf1107e: a jump to a step asked for four steps' sounds at once)
+          var was = !!e.target._near, now = e.isIntersecting && e.intersectionRatio > 0; e.target._near = now;
+          if (now && !was) { near[n] = (near[n] || 0) + 1; if (on) { if (ctx) buffer(n); else fetchBytes(n); } }
+          else if (!now && was) { near[n] = Math.max(0, near[n] - 1); left = true; }
         });
         if (left) setTimeout(tidy, (XFADE + 1.5) * 1000);
-      }, { rootMargin: '100% 0px 100% 0px' });
+      }, { rootMargin: '100% 0px 100% 0px', threshold: [0, 0.0001] });   // the second step reports a section leaving the margin's edge for inside it
       $all('[data-sound]').forEach(function (s) { io.observe(s); });
     }
     var pref = null; try { pref = localStorage.getItem('om-sound'); } catch (e) {}
@@ -4345,12 +4345,28 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      measured on one shared 4G line, coming near the first step attached three step films at once (3.8 + 5.9 + 2.0 MB) and
      the step's own film moved only after 8.4 s. So of the films within two screens, every film on screen loads at once, and
      of the others only the nearest, the next one once it can play (or 4 s on, so a stalled film never holds the rest). */
-  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom < 0 ? -r.bottom : r.top > innerHeight ? r.top - innerHeight : 0; }
+  /* a step's own photo first, then its film (task 5cf1107e, J 19 Nov: "It takes to long to load all images especially in the
+     5 steps sections, brakes the user experience"): measured on one shared 4G line, a jump to the fourth step waited 12 s for
+     its photo and 9.5 s for its film, behind all five steps' photos (asked from the page's start), three films and four
+     sounds; the sections just above and below the screen counted as on it, so their films loaded at once too. So a step's
+     photo loads only as its step comes near (build.chapter: loading="lazy"), in this same nearest-first line: its photo,
+     decoded ahead so painting it never holds a frame, then its film, then the next step's. A section beside the screen is
+     not on it. */
+  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom <= 0 ? 1 - r.bottom : r.top >= innerHeight ? 1 + r.top - innerHeight : 0; }
   function ready(v) { return !v.paused || v.readyState >= 3 || (v._img && v._img.complete) || performance.now() - v._from > 4000; }
+  function photo(v) { if (v._ph === undefined) { var s = v.closest('.s'); v._ph = (s && s.querySelector('.ch__top img')) || null; } return v._ph; }
+  function photoReady(v) { var im = photo(v); return !im || (im.complete && im.naturalWidth > 0 && v._dec) || performance.now() - v._pfrom > 4000; }
+  function ask(v) {
+    var im = photo(v); if (!im || v._pfrom) return; v._pfrom = performance.now();
+    var done = function () { v._dec = true; pump(); };
+    if (im.loading === 'lazy') im.loading = 'eager';
+    if (im.decode) im.decode().then(done, done); else if (im.complete) done(); else { im.addEventListener('load', done); im.addEventListener('error', done); }
+  }
   function pump() {
     if (calm) return; var busy = false;
     films.filter(function (v) { return v._near; }).map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; })
-      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
+      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; ask(v); if (!photoReady(v)) { busy = true; return; }
+        if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
   }
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { of.get(e.target).forEach(function (v) { v._near = e.isIntersecting; if (!v._near) release(v); }); });

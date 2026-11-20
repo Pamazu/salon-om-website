@@ -189,7 +189,9 @@ def chapter(d, i, n):
     if d.get('film_top'):     # 2.2 next: two films stacked, the top one fading into the bottom one through a soft mask
         t = d['film_top']
         pos = f' style="object-position:{t["pos"]}"' if t.get('pos') else ''     # M/G/S: a portrait's own focus point (task 7a3c013b)
-        top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async"{pos}>'
+        # M/G/S (task 5cf1107e): a step's photo loads as its step comes near, in mgs.js's nearest-first line with the films
+        lazy = ' loading="lazy"' if _MGS else ''
+        top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async"{lazy}{pos}>'
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
                + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + _picture_mark(t['poster']) + '</div>')
         media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
