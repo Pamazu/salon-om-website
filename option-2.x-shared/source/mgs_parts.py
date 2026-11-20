@@ -269,13 +269,15 @@ def salon_hero(proof=False, visit='arrive', line=None):
 STEP_OPTIONS = [
     dict(key='breath', label='B · The breath', scroll='breath',
          note='Scroll slowly: the nature film opens from a thin line across the photo until it fills the screen, as the pause’s room opens. About two screens.'),
-    dict(key='fade', label='C · Crossfade', scroll='fade',
-         note='Scroll: the photo dissolves into the nature film. About one screen.'),
+    # J 20 Nov 13:14 Z: "make the crossfade option for the 5 steps the default for now (don't remove the other options, just the
+    # default)": C · Crossfade is the default (step() sets scroll='fade'); the photo-then-film steps stay as an option
+    dict(key='photo', label='The photo, then its film', scroll='',
+         note='Each step’s photo, giving way to its nature film a few seconds after it arrives.'),
     dict(key='sheet', label='D · The sheet', scroll='sheet',
          note='Scroll: the photo turns to ribbed glass and, rib by rib, gives way to the nature film. About a screen and a half.'),
 ]
-STEP_OPTION_WORDS = dict(option_key='steps', option_name='The five steps', option_label='Today’s: the photo, then its film',
-                         option_note='Each step’s photo, giving way to its nature film a few seconds after it arrives.')
+STEP_OPTION_WORDS = dict(option_key='steps', option_name='The five steps', option_label='Today’s: C · Crossfade',
+                         option_note='Scroll: the photo dissolves into the nature film. About one screen.')
 
 
 def step(k, extra=None, cta=False, specs_more=None):
@@ -283,7 +285,7 @@ def step(k, extra=None, cta=False, specs_more=None):
     body = what + ((' ' + draft(extra)) if extra else '')
     d = dict(id=STEP_ID[k], chapter=k, sound=STEP_FILM[k], film=STEP_FILM[k], acc=STEP_FILM[k], num=f'0{k + 1}', of='/ 05',
              name=rail, sub=name.split(' · ')[-1], title=line, body=body, specs=M.STEP_DETAILS[k] + (specs_more or []),
-             film_top=dict(poster='img/' + STEP_IMG[k]), options=STEP_OPTIONS, **STEP_OPTION_WORDS)
+             film_top=dict(poster='img/' + STEP_IMG[k]), scroll='fade', options=STEP_OPTIONS, **STEP_OPTION_WORDS)
     if cta: d['btn'] = btn(BOOK, BOOK_URL, 'light', arrow=True)
     return ('ch', d)
 
