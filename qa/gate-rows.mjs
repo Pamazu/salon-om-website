@@ -326,6 +326,9 @@ async function phone(p, v, P, W, add, seen) {
   if (ys >= 0) {
     const h = await p.evaluate((P) => document.getElementById(`${P}services`).getBoundingClientRect().height, P);
     for (let y = ys; y < ys + h; y += 600) { await jump(p, y); await wait(p, 250); }
+    // the rows' photos load as they come near (lazy): read once they have, up to 8 s (a fixed 250 ms read 0 of 4 under a loaded
+    // pool at 2a643dd, 4 of 4 on the same menu before and after: task 4739f125); a photo that never loads still reads as missing
+    await p.waitForFunction((P) => [...document.querySelectorAll(`#${P}services .mn__rph img`)].every((i) => i.complete && i.naturalWidth > 0), P, { timeout: 8000 }).catch(() => {});
     const m = await p.evaluate((P) => {
       const s = document.getElementById(`${P}services`), panel = s.querySelector('.mn__ph');
       const rows = [...s.querySelectorAll('.mn__rph')];

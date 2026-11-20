@@ -1077,6 +1077,10 @@ html[data-motion="calm"] .s.ch--scroll, html[data-shot] .s.ch--scroll { height: 
 .sh__sheet2 { display: none; }
 .sh__streak, .sh__milk, .sh__rain, .sh__frost { position: absolute; inset: 0; opacity: 0; }
 .sh__streak { background-repeat: repeat; background-size: 1024px 4px; mix-blend-mode: soft-light; }
+/* the ribs and the rainbow move by transform (sheet.js, task 4739f125): the ribs a tile wider than the stage, the rainbow half a
+   stage past each side, so a slide or shift never shows an edge */
+.sh__streak { inset: 0 auto 0 -1024px; width: calc(100% + 1024px); will-change: transform; }
+.sh__rain { inset: 0 auto 0 -50%; width: 200%; will-change: transform; }
 .sh__milk { background: rgb(236, 237, 240); }
 .sh__frost { background: rgb(244, 238, 231); }
 .sh__rain { mix-blend-mode: screen; }

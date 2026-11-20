@@ -293,7 +293,7 @@ def door(short=False, exact=False):
     b = btn(d['btns'][0], '#coaching', 'light', arrow=True, world='coaching')
     call = btn(d['btns'][1], CALL_URL, 'ghost')
     # J 18 Nov: "It's very hard to read the text ... Maybe the thing we're doing of lenticular sheet could help here" (task 95e37a41)
-    sheet = dict(sheet=S.AVEDA_SHEET, options=S.DOOR_OPTIONS, option_label=S.DOOR_LIVE_LABEL)
+    sheet = dict(sheet=S.DOOR_SHEET, options=S.DOOR_OPTIONS, option_label=S.DOOR_LIVE_LABEL)
     if short:
         return (S.door_sheet, dict(id='deeper', img='meadow.webp', mark=S.ai_mark(AI_MADE), eyebrow='The second door', title=d['title'], text=d['paras'][2], btn=b, **sheet))
     b += call

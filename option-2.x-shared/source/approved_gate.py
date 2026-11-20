@@ -529,6 +529,30 @@ def row23(sections, letter, site):     # every picture of the basins room is bui
     return out
 
 
+def row26(sections, letter, site):     # Why Aveda's list: F, and one option, F synced with the scroll; the door synced
+    """J 19 Nov 18:06 Z (via the CEO MA, msg 09802a6b, task 4739f125): Why Aveda's Shift+V list is F, its default (the clear
+    window drifting around the shelves of Aveda products), and ONE option, "F synced with the scroll"; the label card, G, H, I
+    and A to E are removed. The second door opens synced with the scroll (J 14:25 Z: every section with the effect)."""
+    out = []
+    for P, W in (('', 'Salon OM'), ('c-', 'Inner Work')):
+        av, door = sections.get(f'{P}aveda'), sections.get(f'{P}deeper')
+        if av is None and letter in 'mg':
+            out.append(f'{W}: Why Aveda is missing')
+        if av is not None:
+            try:
+                keys = [o.get('k') for o in json.loads(av['attrs'].get('data-opts') or '[]')]
+            except ValueError:
+                keys = 'unreadable'
+            if keys != ['live', 'sheet-fs']:
+                out.append(f'{W}: Why Aveda\'s list is {keys}, not F and F synced with the scroll (live, sheet-fs)')
+            if av['attrs'].get('data-opt', 'live') != 'live' or [st.get('data-sheet') for st in av.get('sheets', [])] != ['F']:
+                out.append(f'{W}: Why Aveda does not open on F (option "{av["attrs"].get("data-opt")}", sheet '
+                           f'{[st.get("data-sheet") for st in av.get("sheets", [])]})')
+        if door is not None and [st.get('data-sheet') for st in door.get('sheets', [])] != ['FS']:
+            out.append(f'{W}: the second door\'s sheet is {[st.get("data-sheet") for st in door.get("sheets", [])]}, not F synced with the scroll (FS)')
+    return out
+
+
 PICKS = os.path.join(ROOT, 'qa', 'j-picks.json')
 # the generated pictures on the pages before row 27 (19 Nov 2026, 7fdb392), each as its files were then: NEVER J's pick, only not
 # refused while unchanged. J, 18:15 Z, judged Blonding, Color Correction, Cut and Style and Extensions bad (task b1dd24c9 replaces
@@ -628,6 +652,7 @@ ROWS = {
     22: ('Why Aveda\'s entry: its picture settles in from close and its words come in as it arrives', 'mg', entry_row('aveda', 'Why Aveda')),
     23: ('every picture of the basins room is built on J\'s 25 Oct picture, its organised bottles', 'mgs', row23),
     24: ('each sheet picture\'s clear window opens on its subject; Why Aveda\'s on the shelves of Aveda products', 'mgs', row24),
+    26: ('Why Aveda\'s list is F and one option, F synced with the scroll; the second door synced with the scroll', 'mgs', row26),
     27: ('a generated picture is on the page only once J picked it in Shift+V', 'mgs', row27),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)

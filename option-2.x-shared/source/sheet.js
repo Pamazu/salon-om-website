@@ -107,80 +107,37 @@
     st.push('rgba(0,0,0,0) ' + (R + 46).toFixed(1) + 'px');
     return 'radial-gradient(circle at ' + cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px, ' + st.join(', ') + ')';
   }
+  function clearWindow(s, W, H, t, r, vh, sync) {
+    var phone = W < 700;
+    s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .48);   // .4 -> .48: the larger words' column (task 4739f125)
+    // synced (FS), like the pause's B · The breath: as the section rises into view the clear window opens around the subject
+    // (fully open once its top is near the window's top), it and the rainbow travel a little with the page and the ribs slide
+    // with it; still while the page is still; calm motion holds it open and still. k: how far the section has come through the
+    // window (0 entering below, 1 gone above); the contrast check sweeps it. F: the window drifts by itself, as before 19 Nov.
+    var still = calm(), k = window.__lensT != null ? .5 + .5 * Math.sin(window.__lensT * 2 * Math.PI / 36) : still ? .5 : clamp((vh - r.top) / (vh + H), 0, 1);
+    var open = still || window.__lensT != null ? 1 : ease((vh - r.top) / (vh * .85)), top = still ? 0 : clamp(r.top, -H, H);
+    var w = s.subject(W, H);
+    if (w && sync) { var g = .45 + .55 * open; w.x += W * .024 * (k - .5); w.y -= top * .06; w.rx *= g; w.ry *= g; }
+    else if (w) { w.x += W * .012 * Math.sin(t * .35); w.y += H * .015 * Math.sin(t * .5) - clamp(r.top, -H, H) * .06; }
+    else {                                                                                  // no subject named: the window drifts on the right, as before
+      var R0 = Math.min(W, H) * (phone ? .16 : .15);
+      w = { x: phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), y: (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12, rx: R0 * 2.8, ry: R0 * 2.8, c: 1 / 2.8 };
+    }
+    s.win = w;                                                                              // read by qa/lens-contrast.mjs (the worst moment)
+    var at = w.rx.toFixed(0) + 'px ' + w.ry.toFixed(0) + 'px at ' + w.x.toFixed(0) + 'px ' + w.y.toFixed(0) + 'px', c = w.c * 100, f = 100 - c;
+    return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: sync ? -top * .35 : t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08,
+      rbC: [sync ? W * (.15 + .3 * k) : W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the worst moment)
+      // its edge eases out over the outer two fifths of the oval, so the window melts into the sheet (J 19 Nov 14:25 Z)
+      mask: 'radial-gradient(ellipse ' + at + ', transparent ' + c.toFixed(1) + '%, rgba(0,0,0,.18) ' + (c + f * .3).toFixed(1) + '%, rgba(0,0,0,.6) ' + (c + f * .62).toFixed(1) + '%, #000 100%)' };
+  }
   // each preset: where the sheet is, its lenses, how far it is held from the photo, the light (t = seconds, r = the stage's box)
   var OPT = {
-    A: function (s, W, H, t, r, vh) {                                                         // lowers and rises, 6.5 s; scrolling lowers it further
-      var phone = W < 700, auto = .5 - .5 * Math.cos(t * 2 * Math.PI / 6.5), sc = ease((vh * .55 - r.top) / (vh * .9)) * .12;
-      var topY = H * (-.04 + (phone ? .26 : .36) * auto + sc), sway = Math.sin(t * .9) * 5;
-      s.place(phone ? 18 : W * .045, H - s.wdH - (phone ? 36 : H * .08));
-      return { rect: [-40 + sway, W + 40 + sway, topY, H + 60], bow: 9, ph: t * 6, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: phone ? 22 : 30,
-        haze: .48, disp: .05, thick: 4, rbI: .10, rbC: [W * .7, topY + H * 1.05, H * .9], wz: s.wz(), wzI: .42 };
-    },
-    B: function (s, W, H, t, r, vh) {                                                         // breathes, 5 s
-      var phone = W < 700, br = .5 - .5 * Math.cos(t * 2 * Math.PI / 5), sc = clamp(Math.abs(scrollV) * .01, 0, .25);
-      s.place(phone ? 18 : W * .045, phone ? 40 : (H - s.wdH) * .5);
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 4, dist: clamp(.15 + .85 * br + sc, 0, 1), blur: phone ? 60 : 100, jit: 8, rib: phone ? 20 : 28,
-        haze: .46, disp: .06, thick: 0, rbI: .10, rbC: [W * (.2 + .6 * (.5 + .5 * Math.sin(t * .45))), H * 1.55, H * 1.25], wz: s.wz(), wzI: .42 };
-    },
-    C: function (s, W, H, t, r, vh) {                                                         // its edge slides in and out by itself; scrolling too
-      var phone = W < 700, edge = W * (phone ? .82 + .05 * Math.sin(t * .6) : .54 + .06 * Math.sin(t * .6)) - r.top * .04;
-      edge = clamp(edge, W * (phone ? .76 : .47), W * (phone ? .9 : .64));
-      s.place(phone ? 16 : W * .045, (H - s.wdH) * .5, phone ? W * .7 : 0);
-      return { rect: [-40, edge, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 50 : 80, jit: 7, rib: phone ? 22 : 28,
-        haze: .44, disp: .06, thick: 7, rbI: .09, rbC: [edge + 260, H * .35, 520], wz: s.wz(), wzI: .42 };
-    },
-    D: function (s, W, H, t, r, vh) {                                                         // drifts by itself, follows the pointer
-      var phone = W < 700, sw = phone ? W * .86 : Math.min(W * .44, 620), shh = phone ? H * .72 : H * .78;
-      var tx = W * (.5 + (phone ? .04 : .26) * Math.sin(t * .55)), ty = H * (.5 + .04 * Math.sin(t * .9));
-      if (performance.now() - s.pointerAt < 2500) { tx = s.px * W; ty = s.py * H; }
-      tx = clamp(tx, sw * .5 + 8, W - sw * .5 - 8); ty = clamp(ty, shh * .5 + 8, H - shh * .5 - 8);
-      if (s.dx === null || window.__lensT != null) { s.dx = tx; s.dy = ty; }
-      s.dx += (tx - s.dx) * .08; s.dy += (ty - s.dy) * .08;
-      var L = s.dx - sw * .5, T = s.dy - shh * .5;
-      s.place(L + (phone ? 14 : 30), T + (shh - s.wdH) * .5, sw - (phone ? 28 : 60));
-      return { rect: [L, L + sw, T, T + shh], bow: 7, ph: t * 5, dist: 1, blur: phone ? 50 : 70, jit: 7, rib: 28,
-        haze: .42, disp: .06, thick: 6, rbI: .10, rbC: [L + sw * 1.1, T + shh * 1.6, shh * 1.25], wz: s.wz(), wzI: .40 };
-    },
-    E: function (s, W, H, t, r, vh) {                                                         // only behind the words, a soft gradient mask; it breathes
-      var phone = W < 700, br = .5 + .5 * Math.sin(t * 2 * Math.PI / 6);
-      s.place(phone ? 18 : W * .06, (H - s.wdH) * .5, phone ? 0 : W * .36);
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 8, dist: .8 + .2 * br, blur: phone ? 50 : 80, jit: 7, rib: 28,
-        haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * (.15 + .3 * br), H * 1.3, H * 1.0], wz: s.wz(), wzI: .42,
-        mask: (function (wz, p, f) { return soft(wz[0] - p, wz[2] + p, wz[1] - p, wz[3] + p, f); })(s.wz(), (phone ? 18 : 40) + 16 * br, phone ? 70 : 140), maskAnd: 1 };
-    },
-    F: function (s, W, H, t, r, vh) {                                                         // the whole section under the sheet; a clear window around the picture's subject, away from the words
-      var phone = W < 700;
-      s.place(phone ? 18 : W * .045, phone ? H - s.wdH - 40 : (H - s.wdH) * .5, phone ? 0 : W * .48);   // .4 -> .48: the larger words' column (task 4739f125)
-      var w = s.subject(W, H), drift = -clamp(r.top, -H, H) * .06;
-      if (w) { w.x += W * .012 * Math.sin(t * .35); w.y += H * .015 * Math.sin(t * .5) + drift; }
-      else {                                                                                // no subject named: the window drifts on the right, as before
-        var R0 = Math.min(W, H) * (phone ? .16 : .15);
-        w = { x: phone ? W * (.5 + .28 * Math.sin(t * .4)) : W * (.7 + .15 * Math.sin(t * .35)), y: (phone ? H * (.2 + .06 * Math.sin(t * .5)) : H * (.45 + .14 * Math.sin(t * .5))) - clamp(r.top, -H, H) * .12, rx: R0 * 2.8, ry: R0 * 2.8, c: 1 / 2.8 };
-      }
-      s.win = w;                                                                            // read by qa/lens-contrast.mjs (the worst moment)
-      var at = w.rx.toFixed(0) + 'px ' + w.ry.toFixed(0) + 'px at ' + w.x.toFixed(0) + 'px ' + w.y.toFixed(0) + 'px', c = w.c * 100, f = 100 - c;
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5, dist: 1, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .46, disp: .05, thick: 0, rbI: .08, rbC: [W * .3, H * 1.4, H * 1.1], wz: s.wz(), wzI: .7,   // the frost .5 -> .7 (task 95e37a41: J 19 Nov "I need more contrast with the text on the left"; 7:1 at the drift's worst moment)
-        // its edge eases out over the outer two fifths of the oval, so the window melts into the sheet (J 19 Nov 14:25 Z)
-        mask: 'radial-gradient(ellipse ' + at + ', transparent ' + c.toFixed(1) + '%, rgba(0,0,0,.18) ' + (c + f * .3).toFixed(1) + '%, rgba(0,0,0,.6) ' + (c + f * .62).toFixed(1) + '%, #000 100%)' };
-    },
-    G: function (s, W, H, t, r, vh) {                                                         // deepest behind the words, lighter further out
-      var phone = W < 700, br = .5 + .5 * Math.sin(t * 2 * Math.PI / 7);
-      s.place(phone ? 18 : W * .045, phone ? 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 4, dist: .32 + .14 * br, blur: phone ? 60 : 100, jit: 6, rib: 28, haze: .22, disp: .04, thick: 0, rbI: .07, rbC: [W * (.55 + .2 * br), H * 1.5, H * 1.2], wz: s.wz(), wzI: .5,
-        inner: { dist: 1, blur: phone ? 60 : 100, haze: .48, pad: (phone ? 10 : 30) + 22 * br, fe: phone ? 140 : 340 } };
-    },
-    H: function (s, W, H, t, r, vh) {                                                         // a focus pull with the scroll, the photo moving behind the sheet
-      var phone = W < 700, k = clamp(1 - Math.abs((r.top + H / 2) - vh / 2) / (vh * .9), 0, 1), br = .5 + .5 * Math.sin(t * 2 * Math.PI / 6);
-      s.place(phone ? 18 : W * .045, phone ? 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 5 + r.top * .3, dist: clamp(.5 + .3 * k + .2 * br, 0, 1), blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .44, disp: .05, thick: 0, rbI: .08,
-        rbC: [W * (.4 + .3 * br), H * 1.45, H * 1.15], wz: s.wz(), wzI: .5, par: clamp(-r.top * .12, -60, 60) + 18 * Math.sin(t * .5) };
-    },
-    I: function (s, W, H, t, r, vh) {                                                         // a lighter sheet over everything; the frost only a glow around each letter
-      var phone = W < 700, br = .5 + .5 * Math.sin(t * 2 * Math.PI / 6.5);
-      s.place(phone ? 18 : W * .045, phone ? 40 : (H - s.wdH) * .5, phone ? 0 : W * .4);
-      return { rect: [-40, W + 40, -60, H + 60], bow: 0, ph: t * 6, dist: .55 + .2 * br, blur: phone ? 60 : 100, jit: 7, rib: 28, haze: .34, disp: .05, thick: 0, rbI: .08,
-        rbC: [W * (.2 + .5 * br), H * 1.5, H * 1.2], wz: s.wz(), wzI: .28, glow: 1 };
-    }
+    // F and FS: the whole section under the sheet, a clear window around the picture's subject (task 4739f125). J 19 Nov 18:06 Z
+    // (Why Aveda's list): F, the window drifting slowly around its subject (Why Aveda's default), and ONE option, "F synced with the
+    // scroll" (FS), which the second door takes by default (J 14:25 Z: "if in all sections in which you have the effect, can you
+    // synchronize it with scroll just like in the take a breath section").
+    F: function (s, W, H, t, r, vh) { return clearWindow(s, W, H, t, r, vh, false); },
+    FS: function (s, W, H, t, r, vh) { return clearWindow(s, W, H, t, r, vh, true); },
   };
   // the words stay clear of the page's header above and its floating door below (the presets were drawn for a bare page)
   Stage.prototype.place = function (x, y, w) {
@@ -247,7 +204,10 @@
       this.set(L.sheet2, 'k4', 'webkitMaskComposite', 'source-in'); this.set(L.sheet2, 'k5', 'maskComposite', 'intersect');
     }
     this.el.classList.toggle('sh--glow', !!o.glow);
-    this.set(L.streak, 'stx', 'backgroundPosition', (o.ph || 0).toFixed(1) + 'px 0'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
+    // the ribs and the rainbow move on the compositor (task 4739f125): a strip a tile wider slides, a wider rainbow layer shifts;
+    // neither is repainted while the page scrolls (at 3230 x 2 their repaint each frame cost WebKit p95 52-66 ms against 22-25 held)
+    var sx = (((o.ph || 0) % 1024) + 1024) % 1024;
+    this.set(L.streak, 'stx', 'transform', 'translate3d(' + sx.toFixed(1) + 'px,0,0)'); this.set(L.streak, 'sto', 'opacity', (clamp(o.jit / 10, 0, 1) * .45 * o.dist).toFixed(3));
     this.set(L.milk, 'mo', 'opacity', Math.min(.95, o.haze * (.55 + .45 * o.dist) + .05).toFixed(3));
     if (!this.fz) this.shape();
     var fz = this.fz, fp = fz ? (this.wx - fz.M).toFixed(0) + 'px ' + (this.wy - fz.M).toFixed(0) + 'px' : '';   // the frost, shaped by the words (shape())
@@ -258,7 +218,9 @@
       this.set(L.frost, 'fr', 'webkitMaskRepeat', 'no-repeat'); this.set(L.frost, 'fr2', 'maskRepeat', 'no-repeat');
     }
     this.set(L.frost, 'fo', 'opacity', o.wzI.toFixed(3));
-    this.set(L.rain, 'rb', 'backgroundImage', rainbow(o.rbC[0], o.rbC[1], o.rbC[2])); this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
+    var rp = W * .5;                                                  // the rain layer reaches half a stage past each side (mgs.css)
+    this.set(L.rain, 'rb', 'backgroundImage', rainbow(W * .5 + rp, o.rbC[1], o.rbC[2])); this.set(L.rain, 'rbx', 'transform', 'translate3d(' + (o.rbC[0] - W * .5).toFixed(1) + 'px,0,0)');
+    this.set(L.rain, 'ro', 'opacity', clamp(o.rbI * 2.4, 0, 1).toFixed(3));
     if (o.thick > 0) {
       var box = 'display:block;transform:translate(' + x0.toFixed(1) + 'px,' + y0.toFixed(1) + 'px);width:' + (x1 - x0).toFixed(1) + 'px;height:' + (y1 - y0).toFixed(1) + 'px;';
       this.set(L.rim, 'rim', 'cssText', box + 'box-shadow:inset 0 0 0 1px rgba(255,255,255,.62),inset 0 0 0 ' + o.thick + 'px rgba(255,255,255,.10),inset 0 0 ' + (o.thick * 2.5) + 'px rgba(70,60,50,.10)');
