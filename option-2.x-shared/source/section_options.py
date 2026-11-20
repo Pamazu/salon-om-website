@@ -94,10 +94,8 @@ def store():
 
 
 def _hints(o):
-    """a candidate's drawing hints on its <img>: its focus (pos) and, for a picture that carries its own light (a re-lit one),
-    how much light the page still lays on it (light, 0-1; mgs.css .ps__light, task e1a1e009)"""
-    h = ([f'--pos:{o["pos"]}'] if o.get('pos') else []) + ([f'--light:{o["light"]}'] if o.get('light') is not None else [])
-    return f' style="{";".join(h)}"' if h else ''
+    """a candidate's drawing hint on its <img>: its focus (pos), where its subject is, kept in view by the frame"""
+    return f' style="--pos:{o["pos"]}"' if o.get('pos') else ''
 
 
 def pictures(body, declared):

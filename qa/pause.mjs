@@ -34,7 +34,7 @@ for (const w of ws.split(',').map(Number)) {
         const r = e.getBoundingClientRect(), c = getComputedStyle(e);
         return { k: e.className.split(' ')[0], text: e.textContent.trim().slice(0, 60), box: [r.left, r.top, r.right, r.bottom].map(Math.round), color: c.color, px: parseFloat(c.fontSize), weight: c.fontWeight };
       }), LINES);
-      const vars = await p.evaluate(() => { const s = document.getElementById('pause'), c = getComputedStyle(s); return Object.fromEntries(['--lx', '--ly', '--lr', '--ld', '--lk', '--sc', '--ws', '--ct'].map((k) => [k, c.getPropertyValue(k).trim()])); });
+      const vars = await p.evaluate(() => { const s = document.getElementById('pause'), c = getComputedStyle(s); return Object.fromEntries(['--sc', '--ws', '--ct', '--cs'].map((k) => [k, c.getPropertyValue(k).trim()])); });
       const hide = await p.addStyleTag({ content: '#pause .ps__cue, #pause .ps__words, #pause .ps__coda { visibility: hidden !important; }' });
       await wait(p, 150);
       await p.screenshot({ path: `${out}/${v}-${w}-p${t}-bare.png`, timeout: 180000 });

@@ -129,7 +129,7 @@ PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on
 # the pause's picture is J's pick (task e1a1e009; J 20 Nov 07:12 Z, on A in his screenshot StoryShot 2026-11-20 at 08.00.20: "This
 # image, I think, is the best, but you can use cinematic lighting to stage it better so that the focal point is the relaxed woman";
 # qa/j-picks.json): A, the guest at the basin in his 25 Oct picture of the room. PAUSE_PICK_POS is where she is (her face and the
-# towel, read from her outline): the frame keeps her in view there and the page's light falls on her there (mgs.css .ps__light)
+# towel, read from her outline): the frame keeps her in view there, the words beside her (mgs.css data-split)
 PAUSE_PICK = 'om-pause-rest.webp'
 PAUSE_PICK_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles'
 PAUSE_PICK_POS = '51% 60%'
@@ -144,8 +144,8 @@ PICTURE_OPTIONS = {
     # today's is J's pick, A (task 69006a72, 5e79645: the 19 Nov pause guest with his 25 Oct basins room laid under her by her outline)
     PAUSE_PICK: dict(name='The pause’s picture', live='Today’s: A · The guest at the basin, your pick', options=[
         # (task e1a1e009; J 20 Nov 07:12 Z: "use cinematic lighting to stage it better so that the focal point is the relaxed woman"):
-        # A's own pixels, the light staged on her and the room flagged down in the picture itself; the page's shade eases (light)
-        dict(key='lit', label='A, re-lit', img='om-pause-rest-lit.webp', ai=AI_GUEST, pos=PAUSE_PICK_POS, light=.4,
+        # A's own pixels, the light staged on her and the room flagged down in the picture itself
+        dict(key='lit', label='A, re-lit', img='om-pause-rest-lit.webp', ai=AI_GUEST, pos=PAUSE_PICK_POS,
              alt='A generated guest resting at a shampoo basin at Salon OM, eyes closed, warm light on her face and towel, the room in shade',
              note='Your pick, lit like a film still: the light on her face and the towel, the room falling into shade.'),
         # (task e1a1e009, every try on record ac8238bb): at the model's 1248 px, sharpened only once J picks (J 18 Nov); pos = her face
