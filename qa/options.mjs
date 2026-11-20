@@ -124,36 +124,40 @@ for (const v of ['m', 'g', 's']) {
   await p3.evaluate(() => window.OMOptions.choose('pause', 'live', false)); await wait(p3, 300); s = await state(p3);
   ok(`${v}: today's version again, address and memory clean`, s.pause === 'live' && !s.url.includes('opt-pause') && !s.ls.some((x) => x.includes('opt-pause')), s);
   await p3.close();
-  // the pause's picture (task 279db527): today's, A and B under the section's options, each with its thumbnail
+  // the pause's picture (tasks 279db527, e1a1e009): J's pick, A, today; A re-lit, S1, S2, the lounge and the chair by the window under it
   await toPause(p); await p.click('#opt-panel [data-k="live"]:not([data-pic])'); await wait(p, 3600); s = await state(p);
-  ok(`${v}: the pause lists its picture's options, thumbnails drawn`, s.pics.join() === 'live*,rest,exhale,window,lounge' && s.thumbs.length === 5 && s.thumbs.every(Boolean), { pics: s.pics, thumbs: s.thumbs });
-  await p.click('#opt-panel [data-pic][data-k="rest"]'); await wait(p, 1600); s = await state(p);
-  ok(`${v}: A swaps the picture in place, labelled, kept in the address and this browser`,
-    s.picImgs.length && s.picImgs.every((x) => x.endsWith('om-pause-rest.webp')) && s.picMark === 'Guest made with AI' && /pic-real-chair-window=rest/.test(s.url) && s.ls.some((x) => x.includes('pic-real-chair-window=rest')) && s.pics.includes('rest*'),
-    { imgs: s.picImgs, mark: s.picMark, url: s.url, pics: s.pics });
+  ok(`${v}: the pause lists its picture's options, thumbnails drawn`, s.pics.join() === 'live*,lit,exhale,window,lounge,chair' && s.thumbs.length === 6 && s.thumbs.every(Boolean), { pics: s.pics, thumbs: s.thumbs });
+  ok(`${v}: today's picture is J's pick, A, labelled`, s.picImgs.length && s.picImgs.every((x) => x.endsWith('om-pause-rest.webp')) && s.picMark === 'Guest made with AI', { imgs: s.picImgs, mark: s.picMark });
+  await p.click('#opt-panel [data-pic][data-k="lit"]'); await wait(p, 1600); s = await state(p);
+  ok(`${v}: A re-lit swaps the picture in place, labelled, on its focus, kept in the address and this browser`,
+    s.picImgs.length && s.picImgs.every((x) => x.endsWith('om-pause-rest-lit.webp')) && s.picMark === 'Guest made with AI' && s.pos.includes('51% 60%') && /pic-om-pause-rest=lit/.test(s.url) && s.ls.some((x) => x.includes('pic-om-pause-rest=lit')) && s.pics.includes('lit*'),
+    { imgs: s.picImgs, mark: s.picMark, pos: s.pos, url: s.url, pics: s.pics });
   { const top = await p.evaluate(() => document.getElementById('pause').offsetTop), h = await p.evaluate(() => document.getElementById('pause').offsetHeight);
-    await jump(p, top + (h - 900) * .97); await wait(p, 1500); await shot(p, `${v}-1440-pause-picture-rest`); await toPause(p); }
+    await jump(p, top + (h - 900) * .97); await wait(p, 1500); await shot(p, `${v}-1440-pause-picture-lit`); await toPause(p); }
   await p.click('#opt-panel [data-k="room"]'); await wait(p, 3600); s = await state(p);
-  ok(`${v}: A stays through a section option (room)`, s.pause === 'room' && s.picImgs.every((x) => x.endsWith('om-pause-rest.webp')) && s.picMark === 'Guest made with AI', { pause: s.pause, imgs: s.picImgs, mark: s.picMark });
-  await shot(p, `${v}-1440-pause-room-picture-rest`);
+  ok(`${v}: the re-lit A stays through a section option (room)`, s.pause === 'room' && s.picImgs.every((x) => x.endsWith('om-pause-rest-lit.webp')) && s.picMark === 'Guest made with AI', { pause: s.pause, imgs: s.picImgs, mark: s.picMark });
+  await shot(p, `${v}-1440-pause-room-picture-lit`);
   await p.click('#opt-panel [data-k="live"]:not([data-pic])'); await wait(p, 3600);
   // the pause's other candidates (task e1a1e009): each swaps in labelled, drawn on its own focus
   for (const [k, f, pos] of [['exhale', 'om-pause-exhale.webp', '46.2% 49.9%'], ['window', 'om-pause-window.webp', '61.1% 23.9%']]) {
     await toPause(p); await p.click(`#opt-panel [data-pic][data-k="${k}"]`); await wait(p, 1600); s = await state(p);
-    ok(`${v}: ${k} swaps the picture in place, labelled, on its focus`, s.picImgs.every((x) => x.endsWith(f)) && s.picMark === 'Guest made with AI' && s.pos.includes(pos) && new RegExp('pic-real-chair-window=' + k).test(s.url), { imgs: s.picImgs, mark: s.picMark, pos: s.pos, url: s.url });
+    ok(`${v}: ${k} swaps the picture in place, labelled, on its focus`, s.picImgs.every((x) => x.endsWith(f)) && s.picMark === 'Guest made with AI' && s.pos.includes(pos) && new RegExp('pic-om-pause-rest=' + k).test(s.url), { imgs: s.picImgs, mark: s.picMark, pos: s.pos, url: s.url });
     const top = await p.evaluate(() => document.getElementById('pause').offsetTop), h = await p.evaluate(() => document.getElementById('pause').offsetHeight);
     await jump(p, top + (h - 900) * .97); await wait(p, 1500); await shot(p, `${v}-1440-pause-picture-${k}`); await toPause(p);
   }
-  await p.click('#opt-panel [data-pic][data-k="lounge"]'); await wait(p, 1600); s = await state(p);
-  ok(`${v}: B, a real photo, carries no AI label`, s.pause === 'live' && s.picImgs.every((x) => x.endsWith('real-lounge.webp')) && s.picMark === null && /pic-real-chair-window=lounge/.test(s.url), { imgs: s.picImgs, mark: s.picMark, url: s.url });
-  { const top = await p.evaluate(() => document.getElementById('pause').offsetTop), h = await p.evaluate(() => document.getElementById('pause').offsetHeight);
-    await jump(p, top + (h - 900) * .97); await wait(p, 1500); await shot(p, `${v}-1440-pause-picture-lounge`); await toPause(p); }
-  { const q = await page(ctx, `${base}/${v}/?pic-real-chair-window=rest`, `${v}-piclink`), t = await state(q);
-    ok(`${v}: a link opens on the picture's option`, t.picImgs.every((x) => x.endsWith('om-pause-rest.webp')), t.picImgs); await q.close(); }
+  // the real photos carry no AI label: the lounge, and the chair by the window (the pause before J's pick)
+  for (const [k, f] of [['chair', 'real-chair-window.webp'], ['lounge', 'real-lounge.webp']]) {
+    await toPause(p); await p.click(`#opt-panel [data-pic][data-k="${k}"]`); await wait(p, 1600); s = await state(p);
+    ok(`${v}: ${k}, a real photo, carries no AI label`, s.pause === 'live' && s.picImgs.every((x) => x.endsWith(f)) && s.picMark === null && new RegExp('pic-om-pause-rest=' + k).test(s.url), { imgs: s.picImgs, mark: s.picMark, url: s.url });
+    const top = await p.evaluate(() => document.getElementById('pause').offsetTop), h = await p.evaluate(() => document.getElementById('pause').offsetHeight);
+    await jump(p, top + (h - 900) * .97); await wait(p, 1500); await shot(p, `${v}-1440-pause-picture-${k}`); await toPause(p);
+  }
+  { const q = await page(ctx, `${base}/${v}/?pic-om-pause-rest=lit`, `${v}-piclink`), t = await state(q);
+    ok(`${v}: a link opens on the picture's option`, t.picImgs.every((x) => x.endsWith('om-pause-rest-lit.webp')), t.picImgs); await q.close(); }
   { const q = await page(ctx, `${base}/${v}/`, `${v}-picmemory`), t = await state(q);
     ok(`${v}: this browser remembers the picture's option`, t.picImgs.every((x) => x.endsWith('real-lounge.webp')), t.picImgs); await q.close(); }
   await p.click('#opt-panel [data-pic][data-k="live"]'); await wait(p, 1600); s = await state(p);
-  ok(`${v}: today's picture again, address clean`, s.picImgs.every((x) => x.endsWith('real-chair-window.webp')) && s.picMark === null && !/pic-/.test(s.url), { imgs: s.picImgs, url: s.url });
+  ok(`${v}: today's picture again, labelled, address clean`, s.picImgs.every((x) => x.endsWith('om-pause-rest.webp')) && s.picMark === 'Guest made with AI' && !/pic-/.test(s.url), { imgs: s.picImgs, mark: s.picMark, url: s.url });
   // Inner Work: the same options in its own words
   await toWorld(p, 'coaching'); await toPause(p, 'c-pause'); s = await state(p);
   ok(`${v}: Inner Work's pause lists the same options`, s.open && s.rows.length === await nOpts('c-pause') && s.rows.length === await nOpts('pause'), { sec: s.sec, rows: s.rows.length });
@@ -161,7 +165,7 @@ for (const v of ['m', 'g', 's']) {
   for (const [k, f, ai, pos] of [['fire-tea', 'iw-pause-fire-tea.webp', 'Guest made with AI', '38.4% 19%'], ['coach-fire', 'iw-pause-coach-fire.webp', null, '47% 28%'], ['shelves', 'iw-pause-shelves.webp', 'Guest made with AI', '18.5% 22.6%']]) {
     await toPause(p, 'c-pause'); await p.click(`#opt-panel [data-pic][data-k="${k}"]`); await wait(p, 1600); s = await state(p);
     ok(`${v}: Inner Work ${k} swaps its picture in place, ${ai ? 'labelled' : 'no AI label (her own photo)'}, on its focus, the salon's untouched`,
-      s.iwImgs.length && s.iwImgs.every((x) => x.endsWith(f)) && s.iwMark === ai && s.pos.includes(pos) && s.picImgs.every((x) => x.endsWith('real-chair-window.webp')) && new RegExp('pic-real-maggie-lounge-seated=' + k).test(s.url), { imgs: s.iwImgs, mark: s.iwMark, pos: s.pos, url: s.url });
+      s.iwImgs.length && s.iwImgs.every((x) => x.endsWith(f)) && s.iwMark === ai && s.pos.includes(pos) && s.picImgs.every((x) => x.endsWith('om-pause-rest.webp')) && new RegExp('pic-real-maggie-lounge-seated=' + k).test(s.url), { imgs: s.iwImgs, mark: s.iwMark, pos: s.pos, url: s.url });
     const top = await p.evaluate(() => document.getElementById('c-pause').offsetTop), h = await p.evaluate(() => document.getElementById('c-pause').offsetHeight);
     await jump(p, top + (h - 900) * .97); await wait(p, 1500); await shot(p, `${v}-1440-iw-pause-picture-${k}`);
   }
@@ -225,11 +229,11 @@ const menu = (p) => p.evaluate(() => {
   ok('m 390: the handle opens the panel', s.open, s.sec);
   await toPause(p); s = await state(p); ok('m 390: the panel follows to the pause', s.sec === 'The pause', s.sec);
   await shot(p, 'm-390-pause-live-panel');
-  await p.tap('#opt-panel [data-pic][data-k="rest"]'); await wait(p, 1600); s = await state(p);
-  ok('m 390: the pause\'s picture A from the handle', s.picImgs.every((x) => x.endsWith('om-pause-rest.webp')) && s.picMark === 'Guest made with AI', { imgs: s.picImgs, mark: s.picMark });
+  await p.tap('#opt-panel [data-pic][data-k="lit"]'); await wait(p, 1600); s = await state(p);
+  ok('m 390: the pause\'s picture A re-lit from the handle', s.picImgs.every((x) => x.endsWith('om-pause-rest-lit.webp')) && s.picMark === 'Guest made with AI', { imgs: s.picImgs, mark: s.picMark });
   await p.tap('.opt-handle'); await wait(p, 400);
   { const h = await p.evaluate(() => document.getElementById('pause').offsetHeight), top = await p.evaluate(() => document.getElementById('pause').offsetTop); await jump(p, top + (h - 844) * .97); await wait(p, 1400); }
-  await shot(p, 'm-390-pause-picture-rest'); await toPause(p); await p.tap('.opt-handle'); await wait(p, 500);
+  await shot(p, 'm-390-pause-picture-lit'); await toPause(p); await p.tap('.opt-handle'); await wait(p, 500);
   await p.tap('#opt-panel [data-pic][data-k="live"]'); await wait(p, 1200);
   await p.tap('.opt-handle'); await wait(p, 400);      // the panel closed: each step below opens it on its section
   // on a phone only a narrow column of the picture shows: each candidate's face (its focus) lands inside it (task e1a1e009)
@@ -237,7 +241,7 @@ const menu = (p) => p.evaluate(() => {
     const r = i.getBoundingClientRect(), k = Math.max(r.width / i.naturalWidth, r.height / i.naturalHeight), dw = i.naturalWidth * k, dh = i.naturalHeight * k, [ox, oy] = getComputedStyle(i).objectPosition.split(' ').map((x) => parseFloat(x) / 100);
     const x = (r.width - dw) * ox + fx * dw, y = (r.height - dh) * oy + fy * dh; return { x: Math.round(x), y: Math.round(y), w: Math.round(r.width), h: Math.round(r.height), inside: x > 24 && x < r.width - 24 && y > 24 && y < r.height - 24 }; }, [id, fx, fy]);
   const open = async (id) => { const h = await p.evaluate((id) => document.getElementById(id).offsetHeight, id), top = await p.evaluate((id) => document.getElementById(id).offsetTop, id); await jump(p, top + (h - 844) * .97); await wait(p, 1400); };
-  for (const [id, k, fx, fy] of [['pause', 'rest', .54, .55], ['pause', 'exhale', .462, .499], ['pause', 'window', .611, .239], ['c-pause', 'fire-tea', .384, .19], ['c-pause', 'coach-fire', .47, .28], ['c-pause', 'shelves', .185, .226]]) {
+  for (const [id, k, fx, fy] of [['pause', 'lit', .51, .60], ['pause', 'exhale', .462, .499], ['pause', 'window', .611, .239], ['c-pause', 'fire-tea', .384, .19], ['c-pause', 'coach-fire', .47, .28], ['c-pause', 'shelves', .185, .226]]) {
     if (id === 'c-pause') await toWorld(p, 'coaching'); else await toWorld(p, 'salon');
     await toPause(p, id); await p.tap('.opt-handle'); await wait(p, 500); await p.tap(`#opt-panel [data-pic][data-k="${k}"]`); await wait(p, 1600); await p.tap('.opt-handle'); await wait(p, 400);
     await open(id); const f = await focusIn(id, fx, fy);

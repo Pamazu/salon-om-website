@@ -2248,6 +2248,8 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--breath[data-light] .ps__words { text-align: left; justify-items: start; padding: 0; margin-top: 20px; max-width: min(34vw, 640px);
   transform: scale(var(--ws, 1)); transform-origin: 0 50%; }
 .ps--breath[data-light] .ps__coda { margin-top: 30px; max-width: min(34vw, 640px); }
+.ps--breath[data-light] .ps__sub, .ps--breath[data-light] .ps__coda { text-wrap: balance; }
+@media (min-width: 2401px) { .ps--breath[data-light] .ps__stick { --pl: calc(50% - 1200px + 4vw); } }   /* inside the framed picture, off the poster */
 @media (max-width: 759px) {
   .ps__light::after { background: linear-gradient(180deg, rgba(14, 10, 8, .82), rgba(14, 10, 8, .72) 34%, rgba(14, 10, 8, .3) 48%, rgba(14, 10, 8, 0) 56%); }
   .ps--breath[data-light] .ps__stick { align-items: center; padding: calc(var(--hdr) + 54px) var(--gutter) 0; }   /* under the AI label */
@@ -3133,7 +3135,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="4d9a7c9741a0";</script>
+<script>window.OM_BUILD="06c74e2366ea";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
