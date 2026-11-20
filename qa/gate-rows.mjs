@@ -154,6 +154,10 @@ async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs
       const vis = (e) => e.checkVisibility ? e.checkVisibility({ opacityProperty: true, visibilityProperty: true }) : !!e.getClientRects().length;
       const rings = [...s.querySelectorAll('circle, ellipse')].filter((c) => vis(c) && c.getBoundingClientRect().width > 4).length;
       const shadow = [], glow = [];
+      // a glow is light laid round the picture: a radial gradient with a light colour in it; shade that only darkens (the room
+      // flagged down around the guest, task e1a1e009) is none
+      const lightIn = (bg) => (bg.match(/radial-gradient\((?:[^()]|\([^()]*\))*\)/g) || []).some((g) => (g.match(/rgba?\([^)]*\)/g) || []).some((c) => {
+        const [r, gr, b, a = 1] = c.match(/[\d.]+/g).map(Number); return a > 0.05 && (0.2126 * r + 0.7152 * gr + 0.0722 * b) / 255 > 0.3; }));
       for (const e of [s, ...s.querySelectorAll('*')]) {
         if (!vis(e)) continue;
         const name = e.tagName.toLowerCase() + (e.classList.length ? '.' + [...e.classList].join('.') : '');
@@ -162,9 +166,9 @@ async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs
         if (/drop-shadow/.test(c.filter)) shadow.push(name + ' (drop-shadow)');
         for (const pe of ['::before', '::after']) {
           const q = getComputedStyle(e, pe);
-          if (q.content !== 'none' && q.display !== 'none' && /radial-gradient/.test(q.backgroundImage) && +q.opacity > 0.05) glow.push(name + pe);
+          if (q.content !== 'none' && q.display !== 'none' && lightIn(q.backgroundImage) && +q.opacity > 0.05) glow.push(name + pe);
         }
-        if (e !== s && /radial-gradient/.test(c.backgroundImage)) glow.push(name);
+        if (e !== s && lightIn(c.backgroundImage)) glow.push(name);
       }
       return { text: (hd || {}).textContent?.trim().slice(0, 40), last: ls.length ? getComputedStyle(ls[ls.length - 1]).filter : null, rings, shadow, glow };
     }, P);
@@ -298,7 +302,7 @@ async function entry(p, n, id, name, W, add, seen, size, vh) {
   await jump(p, y); await wait(p, 200);
 }
 
-// row 20: the pause is J's pick, B · The breath (task 95ac520e): its room picture (the salon's: the empty chair by the window;
+// row 20: the pause is J's pick, B · The breath (task 95ac520e): its room picture (the salon's: his pick, A, task e1a1e009;
 // Inner Work's its own, never the 17 Nov spread's guest) loads, starts as a thin line (clip-path inset 48 % top and bottom) and
 // opens as you scroll through it: half way through the section the room is open (inset under 5 %) and the question has come
 async function door(p, P, W, add, seen, size) {
@@ -315,7 +319,7 @@ async function door(p, P, W, add, seen, size) {
   await jump(p, want); await wait(p, 900);
   const d1 = await read(), at = await p.evaluate(() => Math.round(scrollY));     // where the page really stands: a pull would show here
   seen[`20 ${W} ${size}`] = { ...d0, open: d1 && d1.top, want, at };
-  if (!P && !/real-chair-window/.test(d0.src)) add(20, `at ${size} the breath opens on ${d0.src}, not the empty chair by the window`);
+  if (!P && !/om-pause-rest/.test(d0.src)) add(20, `at ${size} the breath opens on ${d0.src}, not J's pick, A · The guest at the basin`);
   if (/om-pause-guest/.test(d0.src)) add(20, `at ${size} the breath shows the 17 Nov editorial spread's picture (${d0.src})`);
   if (!d0.shown) add(20, `at ${size} the breath's picture did not load`);
   if (!(d0.top > 40)) add(20, `at ${size} the room does not start as a thin line as the pause arrives (clip inset ${d0.top} %)`);

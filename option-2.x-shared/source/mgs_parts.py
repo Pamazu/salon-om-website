@@ -126,6 +126,13 @@ PAUSE_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes clos
 # vacuum: photo_sources, clean_master.py 4). A real photo with clutter removed, as the colour bar and the stations: no AI label
 PAUSE_DOOR = 'real-chair-window.webp'
 PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on the leather'
+# the pause's picture is J's pick (task e1a1e009; J 20 Nov 07:12 Z, on A in his screenshot StoryShot 2026-11-20 at 08.00.20: "This
+# image, I think, is the best, but you can use cinematic lighting to stage it better so that the focal point is the relaxed woman";
+# qa/j-picks.json): A, the guest at the basin in his 25 Oct picture of the room. PAUSE_PICK_POS is where she is (her face and the
+# towel, read from her outline): the frame keeps her in view there and the page's light falls on her there (mgs.css .ps__light)
+PAUSE_PICK = 'om-pause-rest.webp'
+PAUSE_PICK_ALT = 'A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles'
+PAUSE_PICK_POS = '51% 60%'
 
 
 # THE PICTURES J SWITCHES WITH SHIFT+V (task 279db527; J 19 Nov 18:15 Z: "shift v to shift between options of all images that
@@ -134,11 +141,8 @@ PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on
 # refuses a generated picture he has not picked (qa/j-picks.json, written by `approved_gate.py pick` from his words). A service
 # picture's candidates (task b1dd24c9) join here, one line each, under its file.
 PICTURE_OPTIONS = {
-    PAUSE_DOOR: dict(name='The pause’s picture', live='Today’s: the empty chair by the window', options=[
-        # (task 69006a72, 5e79645): the 19 Nov pause guest with J's 25 Oct basins room laid under her by her own outline
-        dict(key='rest', label='A · The guest at the basin', img='om-pause-rest.webp', ai=AI_GUEST, pos='54% 55%',
-             alt='A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles',
-             note='Eyes closed, a towel round her shoulders, in your 25 Oct picture of the basins room.'),
+    # today's is J's pick, A (task 69006a72, 5e79645: the 19 Nov pause guest with his 25 Oct basins room laid under her by her outline)
+    PAUSE_PICK: dict(name='The pause’s picture', live='Today’s: A · The guest at the basin, your pick', options=[
         # (task e1a1e009, every try on record ac8238bb): at the model's 1248 px, sharpened only once J picks (J 18 Nov); pos = her face
         dict(key='exhale', label='S1 · The exhale at the basin', img='om-pause-exhale.webp', ai=AI_GUEST, pos='46.2% 49.9%',
              alt='A generated guest lying back at a shampoo basin at Salon OM, eyes closed, a towel over her black cape, her hair falling to the bowl',
@@ -147,8 +151,11 @@ PICTURE_OPTIONS = {
              alt='A generated guest sitting back in a styling chair by the window at Salon OM, her face lifted to the daylight, eyes closed',
              note='Sitting back in the chair by the window, her face lifted to the daylight.'),
         # (msg 3d46766e to the CEO MA): the salon's own photo 2, no one in it
-        dict(key='lounge', label='The lounge by the fire', img='real-lounge.webp', alt=STEP_ALT[3],
+        dict(key='lounge', label='The lounge by the fire', img='real-lounge.webp', alt=STEP_ALT[3], pos='55% 55%',
              note='The real lounge by the fireplace, no one in it.'),
+        # the pause's picture before J's pick (task a78e6208): the salon's photo 4, cleaned as the client asked
+        dict(key='chair', label='The empty chair by the window', img=PAUSE_DOOR, alt=PAUSE_DOOR_ALT, pos='55% 55%',
+             note='The empty styling chair by the window, daylight on the leather: the pause before your pick.'),
     ]),
     # Inner Work's pause (task e1a1e009): its picture today is her photo by the fire (IW_PHOTO lounge_seated)
     'real-maggie-lounge-seated.webp': dict(name='The pause’s picture', live='Today’s: the coach seated by the fire', options=[
@@ -379,7 +386,7 @@ TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open',
               'proof_line', 'btn', 'reward', 'answer', 'title', 'rows', 'name', 'sub', 'body', 'specs', 'paras', 'quote', 'cite',
               'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
               'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
-TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
+TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'breath_pos', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
 # lists of cards: each card takes its words, and its picture
 TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}
 
@@ -485,7 +492,7 @@ def iw_entries(v, salon):
         if kind == 'hero_mark':
             w['aria'] = M.IW_TITLE
         elif kind in ('tease', S.pause_scene) and d.get('breath'):   # the pause, whichever block draws its default (task 95ac520e)
-            f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='')
+            f, alt = _iw_pic('lounge_seated'); w.update(breath=f, breath_alt=alt, breath_mark='', breath_pos='')
         elif kind == 'ch':
             f, pos = IW_STEP_PICS[k]; k += 1; w['film_top'] = dict(d.get('film_top') or {}, poster='img/' + IW_PHOTO[f][0], pos=pos)
         elif kind is S.visit:
@@ -749,7 +756,9 @@ def srcset(body, v):
 
     def one(m):
         tag, name = m.group(0), m.group(1)
-        if name not in ex or ' srcset=' in tag or (name not in sz and ' data-cand' not in tag):
+        # a picture with no measured size still gets its files where its place names how wide it draws it (sizes=: the pause's
+        # full-bleed picture, J's pick A, task e1a1e009) or where it is a candidate
+        if name not in ex or ' srcset=' in tag or (name not in sz and ' data-cand' not in tag and ' sizes=' not in tag):
             return tag
         stem = name[:-5]
         set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])

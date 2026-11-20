@@ -90,7 +90,8 @@
     var on = o.k === LIVE, c = o.img;
     function set(a, v) { if (v == null) im.removeAttribute(a); else im.setAttribute(a, v); }
     set('src', on ? L.src : c.getAttribute('src')); set('srcset', on ? L.srcset : c.getAttribute('srcset')); set('alt', on ? L.alt : c.getAttribute('alt'));
-    set('style', L.style); if (!on && c.style.getPropertyValue('--pos')) im.style.setProperty('--pos', c.style.getPropertyValue('--pos'));
+    set('style', L.style);      // the candidate's own drawing hints (its focus --pos, its own light --light) over today's
+    if (!on) for (var i = 0; i < c.style.length; i++) if (c.style[i].indexOf('--') === 0) im.style.setProperty(c.style[i], c.style.getPropertyValue(c.style[i]));
     im.classList.toggle('is-ai', on ? L.ai : !!o.ai);
     im.setAttribute('data-pic-opt', o.k);
     var f = L.f; if (f.shared) return;

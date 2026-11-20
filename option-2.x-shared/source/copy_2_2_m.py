@@ -12,7 +12,7 @@ import copy_2_2_iw as IW
 
 SALON = [
   salon_hero(proof=False),
-  (S.pause_scene, dict(id='pause', label='The pause', **S.PAUSE_DEFAULT, accents=['moment.'], breath=PAUSE_DOOR, breath_alt=PAUSE_DOOR_ALT, text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='4.4s',
+  (S.pause_scene, dict(id='pause', label='The pause', **S.PAUSE_DEFAULT, accents=['moment.'], breath=PAUSE_PICK, breath_alt=PAUSE_PICK_ALT, breath_mark=S.ai_mark(AI_GUEST), breath_pos=PAUSE_PICK_POS, text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='4.4s',
                  options=S.PAUSE_OPTIONS, option_label=S.PAUSE_LIVE_LABEL, option_note=S.PAUSE_LIVE_NOTE)),
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM)),   # her quiet version
   # task 59b17d9c (J 17 Nov): her visit opens with the same preview as G, so its five stops can fly into the step rail;

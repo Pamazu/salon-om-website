@@ -236,7 +236,7 @@ class EveryRow(Before21, unittest.TestCase):
         return in_section(self.m, 'pause', old, new)
 
     def test_20_the_17_nov_spread_back_as_the_default(self):
-        self.red(20, self.pause('src="img/real-chair-window.webp', 'src="img/om-pause-guest.webp'), why='editorial spread')
+        self.red(20, self.pause('src="img/om-pause-rest.webp', 'src="img/om-pause-guest.webp'), why='editorial spread')
 
     def test_20_the_door_back_as_the_default(self):
         self.red(20, self.pause('class="s ps ps--breath"', 'class="s mani"'), why='B · The breath')
@@ -551,15 +551,15 @@ class Row23(unittest.TestCase):
 
 class Row27(unittest.TestCase):
     """Row 27 (task 279db527): a generated picture is on the page only once J picked it in Shift+V. Green = this commit's pages
-    (today's generated pictures as they were before the row, the pause's candidate A only in the templates); red = A made the
-    pause's picture without his pick, then with a pick whose files differ, then with a line carrying no words of his."""
+    (today's generated pictures as they were before the row, and A, the pause's picture since J picked it on 20 Nov, task
+    e1a1e009); red = A on the page without his pick, then with a pick whose files differ, then with a line carrying no words of his."""
     def setUp(self):
         import tempfile
         with open(g.page_path('m'), encoding='utf-8') as fh:
             self.m = fh.read()
         self.picks, self.saved = tempfile.mktemp(suffix='.json'), g.PICKS
         g.PICKS = self.picks
-        self.a = in_section(self.m, 'pause', 'src="img/real-chair-window.webp', 'src="img/om-pause-rest.webp')
+        self.a = self.m      # A is the pause's picture: picked (qa/j-picks.json); the tests below run it against other picks
 
     def tearDown(self):
         g.PICKS = self.saved
@@ -575,10 +575,11 @@ class Row27(unittest.TestCase):
             json.dump(picks, fh)
 
     def test_27_green_this_commit(self):
+        g.PICKS = self.saved
         for letter in 'mgs':
             with open(g.page_path(letter), encoding='utf-8') as fh:
                 self.assertEqual(g.row27(g.parse(fh.read()), letter, g.SITE), [], letter)
-        self.assertIn('data-pic-for="real-chair-window.webp" data-opt="rest"', self.m)      # A waits in Shift+V, never refused there
+        self.assertIn('data-pic-for="om-pause-rest.webp" data-opt="exhale"', self.m)      # S1 waits in Shift+V, never refused there
 
     def test_27_red_a_generated_picture_he_did_not_pick(self):
         self.assertIn('om-pause-rest.webp is a generated picture J has not picked', self.off(self.a))

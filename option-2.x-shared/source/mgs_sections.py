@@ -371,7 +371,10 @@ def pause_scene(d, world):
     long = ' is-long' if len(head) > 30 else ''      # a long opening sentence (Inner Work's) is set a size smaller, on its heading
     sc, f, alt, mark = d['scene'], d['breath'], E(d.get('breath_alt', '')), d.get('breath_mark', '')
     acc = '|'.join(d.get('accents', []))
-    pic = f'<img src="img/{f}" alt="{alt}" sizes="{"100vw" if sc in ("room", "breath") else "(max-width: 1023px) 100vw, 86vw" if sc == "through" else "(max-width: 760px) 100vw, 92vw"}" decoding="async">'
+    # where the picture's subject is (breath_pos, task e1a1e009): the frame keeps her there, and B stages its light on her there
+    pos = d.get('breath_pos', '')
+    at = f' style="--pos:{pos}"' if pos else ''
+    pic = f'<img src="img/{f}" alt="{alt}"{at} sizes="{"100vw" if sc in ("room", "breath") else "(max-width: 1023px) 100vw, 86vw" if sc == "through" else "(max-width: 760px) 100vw, 92vw"}" decoding="async">'
     sub = (lambda cls, at: f'<p class="ps__sub{cls}" data-write="letters" style="--at:{at}">{rest}</p>' if rest else '')
     coda = (lambda cls, at: f'<p class="ps__coda{cls}" data-write="letters" data-accents="{acc}" style="--at:{at}">{d["after"]}</p>' if d.get('after') else '')
     if sc == 'room':
@@ -384,7 +387,7 @@ def pause_scene(d, world):
     elif sc == 'breath':
         a, b = d.get('cue', ('', ''))
         inner = f'''<div class="ps__stick">
-      <div class="ps__pic">{pic}</div><div class="ps__dim" aria-hidden="true"></div>
+      <div class="ps__pic">{pic}{'<div class="ps__light" aria-hidden="true"></div>' if pos else ''}</div><div class="ps__dim" aria-hidden="true"></div>
       <p class="ps__cue label" aria-hidden="true" data-in="{E(a)}" data-out="{E(b)}">{a}</p>
       <div class="ps__words">
         <p class="ps__head{long}" data-write="letters" style="--at:.3s">{head}</p>
@@ -414,7 +417,8 @@ def pause_scene(d, world):
     </div>'''
     else:
         raise AssertionError(f'pause_scene: no scene "{sc}"')
-    return f'''<section class="s ps ps--{sc}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
+    lit = ' data-light' if sc == 'breath' and pos else ''
+    return f'''<section class="s ps ps--{sc}" id="{d['id']}"{lit} data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
     {inner}
     <div class="s__shade"></div>
   </section>'''

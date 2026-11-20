@@ -93,6 +93,13 @@ def store():
     return '<div id="opt-store" hidden>' + ''.join(rows) + '</div>\n'
 
 
+def _hints(o):
+    """a candidate's drawing hints on its <img>: its focus (pos) and, for a picture that carries its own light (a re-lit one),
+    how much light the page still lays on it (light, 0-1; mgs.css .ps__light, task e1a1e009)"""
+    h = ([f'--pos:{o["pos"]}'] if o.get('pos') else []) + ([f'--light:{o["light"]}'] if o.get('light') is not None else [])
+    return f' style="{";".join(h)}"' if h else ''
+
+
 def pictures(body, declared):
     """The page with its pictures' options (task 279db527). declared: {the picture on the page today (its file): dict(name=its
     name in the panel, live=today's label, options=[dict(key, label, img, alt, note=, pos=, ai=)])}, where ai is the words its
@@ -127,7 +134,7 @@ def pictures(body, declared):
         for o in opts:
             rows.append(f'<template data-pic-for="{E(name)}" data-opt="{E(o["key"])}" data-n="{E(o["label"])}"'
                         + (f' data-d="{E(o["note"])}"' if o.get('note') else '') + (f' data-ai="{E(o["ai"])}"' if o.get('ai') else '')
-                        + f'><img src="img/{o["img"]}" alt="{E(o["alt"])}" data-cand' + (f' style="--pos:{o["pos"]}"' if o.get('pos') else '')
+                        + f'><img src="img/{o["img"]}" alt="{E(o["alt"])}" data-cand' + _hints(o)
                         + '></template>')
     if not rows:
         return body

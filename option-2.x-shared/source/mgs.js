@@ -649,7 +649,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
-      return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
+      return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue'), lit: s.hasAttribute('data-light') };
     });
     throughs = [].slice.call(document.querySelectorAll('.ps--through'));
     var ribbed = false;
@@ -682,6 +682,18 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     x.s.style.setProperty('--cr', (40 * (1 - inh)) + 'px');
     x.s.style.setProperty('--sc', (1 + .08 * inh - .06 * exh).toFixed(4));
     x.s.style.setProperty('--dim', (.2 + .35 * inh - .1 * exh).toFixed(3));
+    // the light breathes with her (task e1a1e009; J 20 Nov: "add a smooth animation of breathing in and out so that as you scroll
+    // it feels like you are breathing"): on the in-breath the pool of light widens and the room lifts as it opens; on the
+    // out-breath the light gathers back on her and the room settles into shade, the question arriving in it; the words swell and
+    // settle with the picture. Her focus is the shown picture's own (--pos; a Shift+V swap moves it), and a picture that carries
+    // its own light (--light) asks the page for less
+    if (x.lit) {
+      var im = x.pic && x.pic.querySelector('img'), f = ((im && im.style.getPropertyValue('--pos')) || '').trim().split(/\s+/), k = parseFloat(im && im.style.getPropertyValue('--light'));
+      x.s.style.setProperty('--lx', f[0] || '50%'); x.s.style.setProperty('--ly', f[1] || '55%'); x.s.style.setProperty('--lk', isNaN(k) ? 1 : k);
+      x.s.style.setProperty('--lr', (1 + .32 * inh - .4 * exh).toFixed(4));
+      x.s.style.setProperty('--ld', (1 - .32 * inh + .32 * exh).toFixed(4));
+      x.s.style.setProperty('--ws', (1 + .03 * inh - .03 * exh).toFixed(4));
+    }
     if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
     x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
   }

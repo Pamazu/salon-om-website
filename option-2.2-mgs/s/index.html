@@ -2224,6 +2224,36 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
     clip-path: inset(var(--ct) var(--cs) var(--ct) var(--cs) round max(var(--cr), var(--r-photo, 28px))); }
 }
 .ps--breath .ps__dim { position: absolute; inset: 0; background: rgba(21, 16, 12, var(--dim)); }
+/* the light (task e1a1e009; J 20 Nov 07:12 Z: "use cinematic lighting to stage it better so that the focal point is the relaxed
+   woman. The lighting is too even, causing the person to blend with the background. Also consider text readability: use lighting
+   to enhance readability and avoid placing text on the woman's face"). On a picture that names where its subject is (data-light;
+   mgs.js copies her focus, the picture's --pos, to --lx --ly) the flat dim gives way to the room flagged down around her, as a
+   cinematographer flags a lamp off the walls: she keeps the picture's own light, the room falls into shade with distance from
+   her (::before; --lr its reach, --ld its depth, both breathing with the scroll), deepest where the words stand (::after: the
+   left on a wide screen, the top band on a phone), so they read with no box behind them. A picture with its own light (a
+   re-lit one, --light on its img) asks for less (--lk). Only shade is laid on, never light: no glow (row 17). */
+.ps--breath[data-light] .ps__dim { display: none; }
+.ps__light { position: absolute; inset: 0; pointer-events: none; }
+.ps__light::before, .ps__light::after { content: ''; position: absolute; inset: 0; }
+.ps__light::before { opacity: calc(var(--ld, 1) * var(--lk, 1));
+  background: radial-gradient(calc(var(--lr, 1) * 38%) calc(var(--lr, 1) * 50%) at var(--lx, 50%) var(--ly, 55%),
+    rgba(14, 10, 8, 0), rgba(14, 10, 8, .2) 45%, rgba(14, 10, 8, .64) 82%, rgba(14, 10, 8, .82)); }
+.ps__light::after { background: linear-gradient(98deg, rgba(14, 10, 8, .8), rgba(14, 10, 8, .7) 24%, rgba(14, 10, 8, .4) 38%, rgba(14, 10, 8, 0) 50%); }
+/* her words stand in that shade, never on her (J: "Think carefully about text placement"): one column from the top, the cue,
+   "Take a breath.", the question on the out-breath, the last line at rest; at the left on a wide screen, where her eyes turn,
+   and in the top band above her on a phone. They breathe with the picture (--ws) */
+.ps--breath[data-light] .ps__stick { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+  --pl: max(var(--gutter), calc((100% - 2000px) / 2 + var(--gutter))); padding: calc(var(--hdr) + 7vh) 0 0 var(--pl); }
+.ps--breath[data-light] .ps__cue, .ps--breath[data-light] .ps__coda { position: relative; z-index: 2; inset: auto; text-align: left; }
+.ps--breath[data-light] .ps__words { text-align: left; justify-items: start; padding: 0; margin-top: 20px; max-width: min(34vw, 640px);
+  transform: scale(var(--ws, 1)); transform-origin: 0 50%; }
+.ps--breath[data-light] .ps__coda { margin-top: 30px; max-width: min(34vw, 640px); }
+@media (max-width: 759px) {
+  .ps__light::after { background: linear-gradient(180deg, rgba(14, 10, 8, .82), rgba(14, 10, 8, .72) 34%, rgba(14, 10, 8, .3) 48%, rgba(14, 10, 8, 0) 56%); }
+  .ps--breath[data-light] .ps__stick { align-items: center; padding: calc(var(--hdr) + 54px) var(--gutter) 0; }   /* under the AI label */
+  .ps--breath[data-light] .ps__cue, .ps--breath[data-light] .ps__coda, .ps--breath[data-light] .ps__words { text-align: center; justify-items: center; max-width: none; transform-origin: 50% 0; }
+  .ps--breath[data-light] .ps__coda { margin-top: 20px; }
+}
 .ps--breath .ps__words { position: relative; z-index: 2; text-align: center; display: grid; gap: 22px; justify-items: center; padding: 0 6vw; }
 .ps--breath .ps__sub { opacity: 0; transform: translate3d(0, 14px, 0); transition: opacity 1.4s var(--io), transform 1.4s var(--io); }
 .ps--breath .ps__coda { position: absolute; z-index: 2; bottom: max(9vh, 116px); left: 0; right: 0; text-align: center; opacity: 0; transition: opacity 1.6s var(--io); }
@@ -2777,7 +2807,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="9d6b484b8b57";</script>
+<script>window.OM_BUILD="d0285b33e937";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -2872,7 +2902,8 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     var on = o.k === LIVE, c = o.img;
     function set(a, v) { if (v == null) im.removeAttribute(a); else im.setAttribute(a, v); }
     set('src', on ? L.src : c.getAttribute('src')); set('srcset', on ? L.srcset : c.getAttribute('srcset')); set('alt', on ? L.alt : c.getAttribute('alt'));
-    set('style', L.style); if (!on && c.style.getPropertyValue('--pos')) im.style.setProperty('--pos', c.style.getPropertyValue('--pos'));
+    set('style', L.style);      // the candidate's own drawing hints (its focus --pos, its own light --light) over today's
+    if (!on) for (var i = 0; i < c.style.length; i++) if (c.style[i].indexOf('--') === 0) im.style.setProperty(c.style[i], c.style.getPropertyValue(c.style[i]));
     im.classList.toggle('is-ai', on ? L.ai : !!o.ai);
     im.setAttribute('data-pic-opt', o.k);
     var f = L.f; if (f.shared) return;
@@ -4523,7 +4554,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
-      return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
+      return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue'), lit: s.hasAttribute('data-light') };
     });
     throughs = [].slice.call(document.querySelectorAll('.ps--through'));
     var ribbed = false;
@@ -4556,6 +4587,18 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     x.s.style.setProperty('--cr', (40 * (1 - inh)) + 'px');
     x.s.style.setProperty('--sc', (1 + .08 * inh - .06 * exh).toFixed(4));
     x.s.style.setProperty('--dim', (.2 + .35 * inh - .1 * exh).toFixed(3));
+    // the light breathes with her (task e1a1e009; J 20 Nov: "add a smooth animation of breathing in and out so that as you scroll
+    // it feels like you are breathing"): on the in-breath the pool of light widens and the room lifts as it opens; on the
+    // out-breath the light gathers back on her and the room settles into shade, the question arriving in it; the words swell and
+    // settle with the picture. Her focus is the shown picture's own (--pos; a Shift+V swap moves it), and a picture that carries
+    // its own light (--light) asks the page for less
+    if (x.lit) {
+      var im = x.pic && x.pic.querySelector('img'), f = ((im && im.style.getPropertyValue('--pos')) || '').trim().split(/\s+/), k = parseFloat(im && im.style.getPropertyValue('--light'));
+      x.s.style.setProperty('--lx', f[0] || '50%'); x.s.style.setProperty('--ly', f[1] || '55%'); x.s.style.setProperty('--lk', isNaN(k) ? 1 : k);
+      x.s.style.setProperty('--lr', (1 + .32 * inh - .4 * exh).toFixed(4));
+      x.s.style.setProperty('--ld', (1 - .32 * inh + .32 * exh).toFixed(4));
+      x.s.style.setProperty('--ws', (1 + .03 * inh - .03 * exh).toFixed(4));
+    }
     if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
     x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
   }

@@ -412,14 +412,14 @@ def row16(sections, letter, site):     # the film sits in the step's stack with 
     return out
 
 
-ROOM = 'img/real-chair-window'      # the salon's room in the pause: the empty chair by the window (task a78e6208, 0db4254)
+ROOM = 'img/om-pause-rest'          # the salon's pause picture: J's pick, A · The guest at the basin (task e1a1e009, qa/j-picks.json)
 SPREAD = 'om-pause-guest'            # the 17 Nov editorial spread's picture (157192f): never the pause's default
 
 
 def row20(sections, letter, site):     # the pause is J's pick, B · The breath (J 19 Nov 11:50 Z, task 95ac520e)
     """Both worlds open the pause on B · The breath (.ps--breath: the room opens from a thin line as you breathe in, the
-    question arrives on the exhale), J's pick of 19 Nov ("Options that I choose", screenshot 12.46.46); the salon's room is
-    the empty chair by the window, Inner Work's its own world's picture (its twin changes only words and pictures). The door
+    question arrives on the exhale), J's pick of 19 Nov ("Options that I choose", screenshot 12.46.46); the salon's picture is
+    his pick of 20 Nov, A · The guest at the basin (task e1a1e009), Inner Work's its own world's picture (its twin changes only words and pictures). The door
     versions stay under Shift+V. The 17 Nov editorial spread is never the default in either."""
     out = []
     for P, W in (('', 'Salon OM'), ('c-', 'Inner Work')):
@@ -434,7 +434,7 @@ def row20(sections, letter, site):     # the pause is J's pick, B · The breath 
         if not room:
             out.append(f'{W}: the breath has no room picture (.ps__pic): ' + (', '.join(pics) or 'no picture'))
         elif not P and not (room[0]['attrs'].get('src') or '').startswith(ROOM):
-            out.append(f'{W}: the breath opens on {room[0]["attrs"].get("src")}, not the empty chair by the window ({ROOM})')
+            out.append(f'{W}: the breath opens on {room[0]["attrs"].get("src")}, not J\'s pick, A · The guest at the basin ({ROOM})')
         if any(SPREAD in x for x in pics):
             out.append(f'{W}: the pause\'s default shows the 17 Nov editorial spread\'s picture ({SPREAD})')
         if sec['attrs'].get('data-opt', 'live') != 'live':
