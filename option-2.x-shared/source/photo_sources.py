@@ -62,7 +62,7 @@ SOURCE = {
     # service candidates under Shift+V (task b1dd24c9), at the model's review size until J picks one
     'om-menu-blonding-bl8b1.webp': 'm:om-menu-blonding-bl8b1.png',               # Blonding BL8b seed 1
     'om-menu-color-correction-cc11a1.webp': 'm:om-menu-color-correction-cc11a1.png',     # Color Correction CC11A seed 1
-    'om-menu-extensions-ex11a1.webp': 'm:om-menu-extensions-ex11a1.png',         # Extensions EX11A seed 1
+    'om-menu-extensions-ex11a2.webp': 'm:om-menu-extensions-ex11a2.png',         # Extensions EX11A seed 2
     'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style-clean.png',
     'om-menu-extensions.webp': 'm:om-menu-extensions.png',
     'om-menu-finishing-touches.webp': 'm:om-menu-finishing-touches.png',
@@ -156,7 +156,7 @@ BUILT_ON = {
     # model's picture with the photographer's pixels laid back wherever the two rooms agree; every try in Test Lab EXP-salonom-menu-guest-1)
     'om-menu-blonding-bl8b1.png': 'm:11-styling-stations-clean.jpg',          # a guest in the styling chair under the blonde poster
     'om-menu-color-correction-cc11a1.png': 'm:10-color-bar-clean.jpg',        # a guest in profile at the colour bar
-    'om-menu-extensions-ex11a1.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',    # a guest from behind between the Aveda shelves
+    'om-menu-extensions-ex11a2.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',    # a guest from behind between the Aveda shelves
     'om-menu-cut-and-style-clean.png': 'm:11-styling-stations-clean.jpg',
     'om-menu-extensions.png': 'o:2-lounge-fireplace-5B3A1048.jpg',
     'om-menu-finishing-touches.png': 'o:8-glo-skincare-display-5B3A1070.jpg',
