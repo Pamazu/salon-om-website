@@ -292,7 +292,7 @@ STEP_OPTIONS = [
     dict(key='still', label='A · Still pictures', move='still',
          note='Each step’s picture stands still. Only the edge between two steps travels, and the words travel with it.'),
     dict(key='sheets', label='B · Sheets', move='sheets',
-         note='The next step is laid over the last like a sheet, its picture and words together. The one before eases back.'),
+         note='The next step is laid over the last like a sheet, its picture and words together. The one before stays and dims.'),
     dict(key='room', label='C · One room', move='room',
          note='Nothing travels. The picture dissolves into the next step’s and the words change in place.'),
     dict(key='focus', label='D · Into focus', move='focus',

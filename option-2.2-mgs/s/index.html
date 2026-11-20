@@ -2265,16 +2265,14 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
    clean"; build.chapter ch--move; reference page refs/#steps-scroll). A step stays one screen and keeps its photo, its film
    and the page's pull; only how it hands over to the next changes. mgs.js says, per step: --out, how far its top has gone
    above the screen's top (px, only while a step follows it); --inp, how far its top still is below it (px, only when it
-   follows a step); --ina, the share of its way in (0 to 1, 1 when it follows no step); --in, the same for every step; --rk,
-   1 while it travels in, 0 once it rests. The engine's --q is its share gone out. Calm motion and screenshots: today's. */
+   follows a step); --ina, the share of its way in (0 to 1, 1 when it follows no step); --in, the same for every step. The
+   engine's --q is its share gone out. Calm motion and screenshots: today's. */
 /* motion switch (was prefers-reduced-motion: no-preference) */
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__media {transform: translate3d(0, calc(var(--out, 0px) - var(--inp, 0px)), 0);}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__zoom, html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still.is-active .s__zoom {transform: none; transition: none;}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__veil, html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still:has(+ .ch--move) .s__shade {opacity: 0; transition: none;}
-html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets {--rad: clamp(18px, 2.6vw, 44px); overflow-x: clip !important; overflow-y: visible !important;
-    clip-path: inset(0 0 calc(-1 * var(--rad)) 0 round calc(var(--rad) * var(--rk, 0)) calc(var(--rad) * var(--rk, 0)) 0 0);}
-html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade) {transform: translate3d(0, var(--out, 0px), 0) scale(calc(1 - var(--q) * .05));}
-html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > .s__leave {transform: translate3d(0, var(--out, 0px), 0);}
+html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets {overflow-x: clip !important; overflow-y: visible !important;}
+html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave) {transform: translate3d(0, var(--out, 0px), 0);}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move)::after {content: ''; position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
     background: linear-gradient(to top, rgba(10, 7, 5, .46), rgba(10, 7, 5, 0)); opacity: min(1, calc(var(--q) * 8));}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-room {overflow-x: clip !important; overflow-y: visible !important; background: transparent;}
@@ -2811,7 +2809,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="c3678f2d60b2";</script>
+<script>window.OM_BUILD="30df7dec1755";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4616,11 +4614,12 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 
 /* the five steps' ways to scroll (build.chapter ch--move, task bfbe9e35; J 20 Nov: "do something really beautiful and clean,
    simple and beautfiul and clean"): for each step that carries one, how far it has come in and gone out, as mgs.css names
-   them (--out, --inp, --ina, --in, --rk); mgs.css draws each way from these alone. A step holds only against another step:
+   them (--out, --inp, --ina, --in); mgs.css draws each way from these alone. A step holds only against another step:
    the first one comes in and the last one leaves as today. D's soft picture (.ch__soft) is put in here: the step's own
-   photo again, small, so its blur is drawn once. Calm motion and screenshots: nothing is set. Found again after every swap. */
+   photo again, small, so its blur is drawn once; it is painted when the way is chosen (or its photo arrives),
+   never in the middle of a scroll. Calm motion and screenshots: nothing is set. Found again after every swap. */
 (function () {
-  var steps = [], queued = false, VARS = ['--out', '--inp', '--ina', '--in', '--rk'];
+  var steps = [], queued = false, VARS = ['--out', '--inp', '--ina', '--in'];
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     [].forEach.call(document.querySelectorAll('.s.ch'), function (s) {
@@ -4633,9 +4632,15 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     });
     steps = [].slice.call(document.querySelectorAll('.s.ch--move')).map(function (s) {
       var a = s.previousElementSibling, b = s.nextElementSibling;
-      return { s: s, prev: !!(a && a.classList.contains('ch--move')), next: !!(b && b.classList.contains('ch--move')), soft: s.querySelector('.ch__soft'), img: s.querySelector('.ch__top > img') };
+      var x = { s: s, prev: !!(a && a.classList.contains('ch--move')), next: !!(b && b.classList.contains('ch--move')), soft: s.querySelector('.ch__soft'), img: s.querySelector('.ch__top > img') };
+      if (x.soft && x.img) { if (x.img.complete && x.img.naturalWidth) paint(x); else x.img.addEventListener('load', function () { paint(x); }, { once: true }); }
+      return x;
     });
     ask();
+  }
+  function paint(x) {
+    var src = x.img.currentSrc || x.img.src; if (!src || x.soft._src === src) return;
+    x.soft._src = src; x.soft.style.backgroundImage = 'url("' + src + '")'; x.soft.style.backgroundPosition = getComputedStyle(x.img).objectPosition;
   }
   function step(x) {
     var s = x.s, r = s.getBoundingClientRect(), vh = innerHeight; if (r.height === 0) return;
@@ -4645,15 +4650,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     var share = 1 - below / vh;
     s.style.setProperty('--out', (x.next ? above : 0).toFixed(1) + 'px'); s.style.setProperty('--inp', (x.prev ? below : 0).toFixed(1) + 'px');
     s.style.setProperty('--ina', (x.prev ? share : 1).toFixed(4)); s.style.setProperty('--in', share.toFixed(4));
-    s.style.setProperty('--rk', (x.prev ? Math.min(1, (1 - share) * 6) : 0).toFixed(3));
     // in a hand-over (coming in or going out, on screen): its layers are promoted (mgs.css); coming in: D's title is soft
     var moving = (below > 0 && below < vh) || (above > 0 && above < r.height), arriving = below > 0;
     if (s._mo !== moving) { s._mo = moving; s.classList.toggle('is-moving', moving); }
     if (s._ar !== arriving) { s._ar = arriving; s.classList.toggle('is-arriving', arriving); }
-    if (x.soft && !x.soft._src && x.img) {
-      var src = x.img.currentSrc || x.img.src;
-      if (src && x.img.naturalWidth) { x.soft._src = src; x.soft.style.backgroundImage = 'url("' + src + '")'; x.soft.style.backgroundPosition = getComputedStyle(x.img).objectPosition; }
-    }
   }
   function frame() { queued = false; steps.forEach(step); }
   function ask() { if (!queued && steps.length) { queued = true; requestAnimationFrame(frame); } }

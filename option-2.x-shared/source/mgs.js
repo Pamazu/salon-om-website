@@ -707,11 +707,12 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 
 /* the five steps' ways to scroll (build.chapter ch--move, task bfbe9e35; J 20 Nov: "do something really beautiful and clean,
    simple and beautfiul and clean"): for each step that carries one, how far it has come in and gone out, as mgs.css names
-   them (--out, --inp, --ina, --in, --rk); mgs.css draws each way from these alone. A step holds only against another step:
+   them (--out, --inp, --ina, --in); mgs.css draws each way from these alone. A step holds only against another step:
    the first one comes in and the last one leaves as today. D's soft picture (.ch__soft) is put in here: the step's own
-   photo again, small, so its blur is drawn once. Calm motion and screenshots: nothing is set. Found again after every swap. */
+   photo again, small, so its blur is drawn once; it is painted when the way is chosen (or its photo arrives),
+   never in the middle of a scroll. Calm motion and screenshots: nothing is set. Found again after every swap. */
 (function () {
-  var steps = [], queued = false, VARS = ['--out', '--inp', '--ina', '--in', '--rk'];
+  var steps = [], queued = false, VARS = ['--out', '--inp', '--ina', '--in'];
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     [].forEach.call(document.querySelectorAll('.s.ch'), function (s) {
@@ -724,9 +725,15 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     });
     steps = [].slice.call(document.querySelectorAll('.s.ch--move')).map(function (s) {
       var a = s.previousElementSibling, b = s.nextElementSibling;
-      return { s: s, prev: !!(a && a.classList.contains('ch--move')), next: !!(b && b.classList.contains('ch--move')), soft: s.querySelector('.ch__soft'), img: s.querySelector('.ch__top > img') };
+      var x = { s: s, prev: !!(a && a.classList.contains('ch--move')), next: !!(b && b.classList.contains('ch--move')), soft: s.querySelector('.ch__soft'), img: s.querySelector('.ch__top > img') };
+      if (x.soft && x.img) { if (x.img.complete && x.img.naturalWidth) paint(x); else x.img.addEventListener('load', function () { paint(x); }, { once: true }); }
+      return x;
     });
     ask();
+  }
+  function paint(x) {
+    var src = x.img.currentSrc || x.img.src; if (!src || x.soft._src === src) return;
+    x.soft._src = src; x.soft.style.backgroundImage = 'url("' + src + '")'; x.soft.style.backgroundPosition = getComputedStyle(x.img).objectPosition;
   }
   function step(x) {
     var s = x.s, r = s.getBoundingClientRect(), vh = innerHeight; if (r.height === 0) return;
@@ -736,15 +743,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     var share = 1 - below / vh;
     s.style.setProperty('--out', (x.next ? above : 0).toFixed(1) + 'px'); s.style.setProperty('--inp', (x.prev ? below : 0).toFixed(1) + 'px');
     s.style.setProperty('--ina', (x.prev ? share : 1).toFixed(4)); s.style.setProperty('--in', share.toFixed(4));
-    s.style.setProperty('--rk', (x.prev ? Math.min(1, (1 - share) * 6) : 0).toFixed(3));
     // in a hand-over (coming in or going out, on screen): its layers are promoted (mgs.css); coming in: D's title is soft
     var moving = (below > 0 && below < vh) || (above > 0 && above < r.height), arriving = below > 0;
     if (s._mo !== moving) { s._mo = moving; s.classList.toggle('is-moving', moving); }
     if (s._ar !== arriving) { s._ar = arriving; s.classList.toggle('is-arriving', arriving); }
-    if (x.soft && !x.soft._src && x.img) {
-      var src = x.img.currentSrc || x.img.src;
-      if (src && x.img.naturalWidth) { x.soft._src = src; x.soft.style.backgroundImage = 'url("' + src + '")'; x.soft.style.backgroundPosition = getComputedStyle(x.img).objectPosition; }
-    }
   }
   function frame() { queued = false; steps.forEach(step); }
   function ask() { if (!queued && steps.length) { queued = true; requestAnimationFrame(frame); } }

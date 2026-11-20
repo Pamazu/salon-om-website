@@ -1069,19 +1069,18 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
    clean"; build.chapter ch--move; reference page refs/#steps-scroll). A step stays one screen and keeps its photo, its film
    and the page's pull; only how it hands over to the next changes. mgs.js says, per step: --out, how far its top has gone
    above the screen's top (px, only while a step follows it); --inp, how far its top still is below it (px, only when it
-   follows a step); --ina, the share of its way in (0 to 1, 1 when it follows no step); --in, the same for every step; --rk,
-   1 while it travels in, 0 once it rests. The engine's --q is its share gone out. Calm motion and screenshots: today's. */
+   follows a step); --ina, the share of its way in (0 to 1, 1 when it follows no step); --in, the same for every step. The
+   engine's --q is its share gone out. Calm motion and screenshots: today's. */
 @media (prefers-reduced-motion: no-preference) {
   /* A · Still pictures: each picture stands where it is; the edge between two steps travels over them, the words with it */
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__media { transform: translate3d(0, calc(var(--out, 0px) - var(--inp, 0px)), 0); }
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__zoom, html:not([data-motion="calm"]):not([data-shot]) .ch--move-still.is-active .s__zoom { transform: none; transition: none; }
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__veil, html:not([data-motion="calm"]):not([data-shot]) .ch--move-still:has(+ .ch--move) .s__shade { opacity: 0; transition: none; }
-  /* B · Sheets: the next step is one sheet with soft top corners, laid over the last, which holds, eases back and dims.
-     A held step draws a corner's depth past its own foot, so the sheet's corners show it and not the page's ground */
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets { --rad: clamp(18px, 2.6vw, 44px); overflow-x: clip !important; overflow-y: visible !important;
-    clip-path: inset(0 0 calc(-1 * var(--rad)) 0 round calc(var(--rad) * var(--rk, 0)) calc(var(--rad) * var(--rk, 0)) 0 0); }
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade) { transform: translate3d(0, var(--out, 0px), 0) scale(calc(1 - var(--q) * .05)); }
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > .s__leave { transform: translate3d(0, var(--out, 0px), 0); }
+  /* B · Sheets: the next step is laid over the last like a sheet, its picture and words together, a soft shadow at its
+     leading edge; the last one holds still and dims (never scaled down: a smaller picture shows its own edge, a line round a
+     filled shape; no rounded corners: a clip re-drawn on every frame cost a long frame at J's 6K window) */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets { overflow-x: clip !important; overflow-y: visible !important; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave) { transform: translate3d(0, var(--out, 0px), 0); }
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move)::after { content: ''; position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
     background: linear-gradient(to top, rgba(10, 7, 5, .46), rgba(10, 7, 5, 0)); opacity: min(1, calc(var(--q) * 8)); }
   /* C · One room: nothing travels. Both steps hold where they are; the next one's picture dissolves in over the last, the
