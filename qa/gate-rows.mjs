@@ -326,8 +326,10 @@ async function pulls(p, W, size, add, seen) {
   for (const t of await p.evaluate(tall)) {
     if (!t.next) { seen[`5 ${W} ${size} ${t.id}`] = 'the last section: nothing to pull into'; continue; }
     const r = await pullWalk(io(p), t.id);
-    seen[`5 ${W} ${size} ${t.id}`] = r.map((x) => `${x.step}${x.pass ? '' : ' OFF'}: top ${x.top} bottomGap ${x.bottomGap} nextTop ${x.nextTop}`);
-    for (const x of r.filter((x) => !x.pass)) add(5, `at ${size} "${t.id}", ${STEPS[x.step][0]}: ${STEPS[x.step][1]}, but top ${x.top}, bottomGap ${x.bottomGap}, nextTop ${x.nextTop}`);
+    // each line carries the page's snap style at that step: beside a tall section it is "none" (mgs.js holds the browser's own snap
+    // off there); anything else on a line that is off says the browser's snap ran under the pull
+    seen[`5 ${W} ${size} ${t.id}`] = r.map((x) => `${x.step}${x.pass ? '' : ' OFF'}: top ${x.top} bottomGap ${x.bottomGap} nextTop ${x.nextTop} snap "${x.snap}"`);
+    for (const x of r.filter((x) => !x.pass)) add(5, `at ${size} "${t.id}", ${STEPS[x.step][0]}: ${STEPS[x.step][1]}, but top ${x.top}, bottomGap ${x.bottomGap}, nextTop ${x.nextTop}${x.snap === 'none' ? '' : ` (the browser's own snap was on: scroll-snap-type "${x.snap}")`}`);
   }
   await jump(p, 0); await wait(p, 400);
 }

@@ -1,7 +1,9 @@
 // Why one tall section misses its pull (task 95e37a41): r4 snap's step b (jump 200 px short of the section's end, scroll slowly
 // 320 px on), then every 50 ms for 2.5 s the scroll position, the section's top, bottom and height, the next section's top, and
 // any sheet stage's own height and min-height, so a move that is not the pull shows where it comes from. WebKit (%WEBKIT%).
-// Usage: node qa/pull-probe.mjs <m|g> <salon|coaching> <section id> [390|1440]
+// And who set the page's snap style since it loaded, each write with its callers (task 58855053: the browser's own snap ran
+// under the pull whenever another script set the style back after mgs.js had turned it off).
+// Usage: node qa/pull-probe.mjs <m|g|s> <salon|coaching> <section id> [390|1440]
 import { webkit } from 'playwright';
 import { serve, open, jump, wait, toWorld } from './lib.mjs';
 import path from 'node:path';
@@ -12,6 +14,20 @@ const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().po
 const b = await webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
 const phone = +w < 600;
 const ctx = await b.newContext(phone ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { viewport: { width: 1440, height: 900 } });
+// html.style handed out through a wrapper that notes each write of scrollSnapType: when, the value, what it replaced, its callers
+await ctx.addInitScript(() => {
+  let o = HTMLHtmlElement.prototype; while (o && !Object.getOwnPropertyDescriptor(o, 'style')) o = Object.getPrototypeOf(o);
+  if (!o) return;
+  const d = Object.getOwnPropertyDescriptor(o, 'style'); let wrap = null; window.__snapBy = [];
+  const who = () => (new Error().stack || '').split('\n').slice(1, 5).map((l) => l.replace(location.origin, '').replace(/:\d+$/, '')).join(' < ');
+  Object.defineProperty(o, 'style', { configurable: true, set(v) { d.set.call(this, v); }, get() {
+    const real = d.get.call(this); if (this !== document.documentElement) return real;
+    return wrap ||= new Proxy(real, {
+      get: (t, k) => { const v = t[k]; return typeof v === 'function' ? v.bind(t) : v; },
+      set: (t, k, v) => { if (k === 'scrollSnapType') window.__snapBy.push({ t: Math.round(performance.now()), to: v, was: t.scrollSnapType, y: Math.round(scrollY), by: who() }); t[k] = v; return true; },
+    });
+  } });
+});
 for (const mode of modes.split(',')) {
 const p = await open(ctx, `${base}/${v}/`);
 if (mode === 'frozen') await p.evaluate(() => { window.__lensT = 5; });
@@ -36,6 +52,9 @@ const end = rows[rows.length - 1];
 console.log(mode, 'frames', fr.length, 'in 3 s; interval median', q(.5), 'ms, p95', q(.95), 'ms, max', q(1), 'ms | settled at', JSON.stringify({ t: end.t, bottom: end.bottom, next: end.next }));
 let last = '';
 for (const r of rows) { const k = `${r.y}|${r.h}|${r.sh}|${r.mh}|${r.snap}`; if (k !== last) console.log(' ', mode, JSON.stringify(r)); last = k; }
+const by = await p.evaluate(() => window.__snapBy || []);
+console.log(mode, 'the snap style was set', by.length, 'times since the page loaded (t in ms since then; a caller with no page address is this script\'s own jump):');
+for (const w of by) console.log(' ', mode, JSON.stringify(w));
 await p.close();
 }
 await b.close(); srv.close();
