@@ -462,7 +462,9 @@ html[data-switch="b"].wdoor-on.wdoor-hold .wdoor { opacity: 0; pointer-events: n
 .vs__head .eyebrow { color: var(--ivory-soft); }
 .vs__head h2 { font-size: var(--t-h2); }
 .vs__row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--sp-3); }
-.vs__ph { position: relative; margin: 0 0 var(--sp-3); height: min(36vh, 400px); overflow: hidden; border-radius: var(--r-photo); clip-path: inset(100% 0 0 0); transition: clip-path 1.5s var(--io-strong) var(--d, 0s); }
+/* the photos take 30% of the window's height (36% until 20 Nov), so the visit holds in one laptop window with the page's foot
+   under its words (at 1440 x 900 they ended 33 px above the window's bottom and the section ran 55 px past it; task cf6eeff6) */
+.vs__ph { position: relative; margin: 0 0 var(--sp-3); height: min(30vh, 400px); overflow: hidden; border-radius: var(--r-photo); clip-path: inset(100% 0 0 0); transition: clip-path 1.5s var(--io-strong) var(--d, 0s); }
 .vs.is-active .vs__ph { clip-path: inset(0); }
 .vs__ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform 2.4s var(--io-strong) var(--d, 0s); }
 .vs.is-active .vs__ph img { transform: none; }
@@ -646,10 +648,19 @@ html[data-motion="calm"] #pause .br__ph, html[data-motion="calm"] #pause .br__zo
 /* the five steps (J, 11 Nov, on G's Breathe at 1440: "That empty space there is too much"): the layout stays 2.2's; the
    words and their one "Feel" line now sit together under the title instead of the line floating in a three-column grid on
    the far right, and the title's empty descender room under "Breathe." is taken back */
+/* J, 20 Nov (task cf6eeff6): "in each of these five-steps sections, the gap between the heading and the text below it is too
+   small, and the gap between the text and the bottom of the viewport is too large". The title stands one step of the scale
+   above its words, measured where the eye sees it, from the title's baseline to the words' cap height: --sp-4 (40 px) below
+   1024, --sp-5 (64 px) from 1024 up (it was 32-40 px under a 216-280 px title). Its margin takes off what the step's grid gap,
+   the title's own room under its baseline (.09em) and the words' leading over their cap height (.49 of their size) already
+   give. The words end on the opening screen's foot line, 104 px (--sp-6) from 1024 up and --base (88 px) below it, as the
+   opening's words do: 2.2's room for its door bar (next.css, 104 px) was added on top of --base here, 192 px */
+html[data-variant^="2.2-"] .ch__title { margin-bottom: calc(var(--sp-4) - clamp(14px, 2.4vh, 28px) - .09em - .49 * var(--t-body)); }
 @media (min-width: 1024px) {
   html[data-variant^="2.2-"] .ch__side { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: flex-start; gap: var(--sp-3) var(--sp-6); }
   html[data-variant^="2.2-"] .ch__specs { display: flex; gap: var(--sp-5); flex: none; }
-  html[data-variant^="2.2-"] .ch__title { margin-bottom: -.08em; }
+  html[data-variant^="2.2-"] .ch__title { margin-bottom: calc(var(--sp-5) - clamp(14px, 2.4vh, 28px) - .09em - .49 * var(--t-body)); }
+  html[data-variant^="2.2-"] .ch__copy { padding-bottom: max(0px, calc(var(--sp-6) - var(--base))); }
 }
 /* dark and light alternate down every page (round 4 rhythm walk): G's pause on the dark ground (its preview next is light),
    M's Why Aveda dark (its team next is light), and voices on a light ground wherever it follows the dark menu (M) */
@@ -801,8 +812,9 @@ main :where(.s div:has(> .btn + .btn)) { display: flex; flex-wrap: wrap; align-i
 /* a section never hides its own words (the gap walk's cut-off check): the Aveda facts (M's on a phone hid four facts, G's
    at every width), the team letter at 768 (G's button half under the edge; the phone's one window stays where it fits)
    and S's visit on a laptop (its first and last step cut) grow with their words; where the words fit, nothing moves.
-   G's "Words from our guests" too, since copy round 6's reward line (its button 22 px under the edge at 1366 x 768) */
-html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices) { height: auto; min-height: 100vh; min-height: 100svh; }
+   G's "Words from our guests" too, since copy round 6's reward line (its button 22 px under the edge at 1366 x 768); and the
+   visit's line (G's Inner Work words of its second and fourth stops 13 px under the edge at 1366 x 768; task cf6eeff6) */
+html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices, .lnsec) { height: auto; min-height: 100vh; min-height: 100svh; }
 /* task b36dde1f: a film Safari refused to start (an iPhone in Low Power Mode starts films only from a tap; Safari starts no
    muted film in a window it judges unseen) keeps its photo drifting slowly, from the photo exactly as shown (no jump), always
    running so no section snaps back as it leaves; a tap later starts the film, which fades in over the drift (mgs.js) */

@@ -9,14 +9,20 @@
 //     spacing levels), or 4 px or less where the stack's gaps are 20 px or more.
 //   - a button straight under another button (a group) only when they sit under 8 px apart;
 //   - anything cut off: words, a button or a picture past the edge of a section that hides what overflows it.
+//   - (J 20 Nov, the five steps: "the gap between the heading and the text below it is too small, and the gap between the text
+//     and the bottom of the viewport is too large", which no gap above showed: the title's box overlaps its words' box)
+//     words under a display heading starting less than a fifth of its size under its baseline (baseline to cap height);
+//   - on a slide one window tall, words laid over it (a box set absolute, as a step's words on its picture) ending more than
+//     1.5x the page's foot (--base) above the window's bottom and 24 px over it, and any slide's words ending under half of it.
 // Writes qa/out-gaps-<browser>/gaps.json (every gap measured and every flag) and, for each flagged section and width, a
 // picture of each flagged gap, the window centred on it and the gap marked in red: <v>-<world>-<id>-<w>-<n>.jpg.
+// Sizes: the seven above plus 1976 x 1209 and 3230 x 1319 (J's 6K screen), as lens-contrast.mjs.
 // node run.mjs gaps [webkit|chromium] [m,g,s]     SIZES=1440,390 or IDS=sec1,sec2 narrow it
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
-import { serve, wait, open, toWorld, jump, SIZES } from './lib.mjs';
+import { serve, wait, open, toWorld, jump, SIZES, vp } from './lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BROWSER = process.env.BROWSER || 'webkit';
@@ -43,13 +49,26 @@ const measure = (args) => {
   const label = (e) => (e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).slice(0, 2).join('.') : '')
     + ' "' + (e.textContent || e.getAttribute('alt') || '').trim().replace(/\s+/g, ' ').slice(0, 32) + '"');
   const med = (xs) => { const v = [...xs].sort((x, y) => x - y); return v.length ? v[Math.floor((v.length - 1) / 2)] : 0; };
+  // the baseline of the first (or last) line of words in e, and the size of those words: a zero-size marker set beside them
+  const line = (e, end) => {
+    const tx = []; const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+    for (let n; (n = tw.nextNode());) if (n.nodeValue.trim() && vis(n.parentElement)) tx.push(n);
+    if (!tx.length) return null;
+    const n = end ? tx[tx.length - 1] : tx[0], sp = document.createElement('span');
+    sp.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    n.parentNode.insertBefore(sp, end ? n.nextSibling : n); const y = sp.getBoundingClientRect().bottom; sp.remove();
+    return { y, fs: parseFloat(getComputedStyle(n.parentElement).fontSize) };
+  };
+  // the page's foot: the room a slide keeps under its words (--base)
+  const pb = document.createElement('div'); pb.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:var(--base)';
+  document.body.appendChild(pb); const BASE = Math.round(pb.getBoundingClientRect().height); pb.remove();
   const secs = [...document.querySelectorAll(`main[data-world="${world}"] > section.s, main[data-world="${world}"] > footer`)]
     .filter((s) => !onlyIds.length || onlyIds.includes(s.id));
   const res = [];
   for (const s of secs) {
     const sr = s.getBoundingClientRect();
     if (!sr.height) continue;
-    const stacks = [];
+    const stacks = [], heads = [];
     for (const c of [s, ...s.querySelectorAll('*')]) {
       if (c.closest('[aria-hidden="true"], svg, .wdoor') || !/^(block|flex|grid|list-item|flow-root)$/.test(getComputedStyle(c).display)) continue;
       if ([...c.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim())) continue;   // mixed inline words: not a stack
@@ -75,13 +94,21 @@ const measure = (args) => {
         }
         const kind = k.matches('.btn') || (k.querySelector('.btn') && !(k.textContent.replace(k.querySelector('.btn').textContent, '').trim())) ? 'button'
           : (k.matches('img, video, figure, picture') || (k.querySelector('img, video') && !k.textContent.trim())) ? 'picture' : 'text';
-        kids.push({ k, kind, l: r.left, r: r.right, t, b });
+        const disp = kind === 'text' && fs >= 40 && t !== r.top;      // display type, measured at its baseline above
+        kids.push({ k, kind, l: r.left, r: r.right, t, b, fs, disp, bl: disp ? b - .15 * fs : null });
       }
       kids.sort((x, y) => x.t - y.t);
       const gaps = [];
       for (let i = 1; i < kids.length; i++) {
         const A = kids[i - 1], B = kids[i];
         if (Math.min(A.r, B.r) - Math.max(A.l, B.l) < Math.max(8, .25 * Math.min(A.r - A.l, B.r - B.l))) continue;   // side by side
+        // a heading over its words, read as the eye reads it: from the heading's baseline to the cap height of the words
+        // (their boxes can overlap, which is why the gaps below never saw the five steps' titles on their words)
+        if (A.disp && B.kind === 'text' && A.k.matches('h1, h2, h3, h4, h5, h6, :has(h1, h2, h3, h4, h5, h6)')) {
+          const c = line(B.k, false);
+          if (c) heads.push({ above: label(A.k), below: label(B.k), size: Math.round(A.fs), eye: Math.round(c.y - .7 * c.fs - A.bl),
+            y: Math.round(A.bl - sr.top), x: Math.round(Math.max(A.l, B.l) - sr.left), w: Math.round(Math.min(A.r, B.r) - Math.max(A.l, B.l)) });
+        }
         if (B.t < A.b - 1) continue;      // overlapping (a stacked slideshow)
         gaps.push({ A, B, gap: Math.round(B.t - A.b) });
       }
@@ -111,7 +138,29 @@ const measure = (args) => {
         if (out > 4) cut.push({ out, edge: b > sr.bottom ? 'bottom' : 'top', label: label(e), x: Math.round(r.left - sr.left), w: Math.round(r.width) });
       }
     }
-    res.push({ id: s.id, top: Math.round(sr.top + scrollY), h: Math.round(sr.height), gaps: stacks, cut });
+    // the foot: on a slide one window tall, the room under its lowest words or button, and whether those words rest on the
+    // slide's foot: laid over it (a box set absolute, as a step's words on its picture) and held in its lower half (the
+    // second door's words, laid over its picture high up, do not)
+    let foot = null;
+    // (a section as tall as its words, s--auto, that flows on into the next is no slide, even where it happens to be one window tall)
+    if (Math.abs(sr.height - innerHeight) <= 2 && !s.classList.contains('s--auto')) {
+      let low = null;
+      for (const e of s.querySelectorAll('*')) {
+        if (e.closest('[aria-hidden="true"], svg, .wdoor, .ai-mark') || (e.parentElement && e.parentElement.closest('.btn'))) continue;
+        if (!(e.matches('.btn') || [...e.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim())) || !vis(e)) continue;
+        let fixed = false, over = null;
+        for (let x = e; x && x !== s; x = x.parentElement) { const p = getComputedStyle(x).position; if (p === 'fixed') fixed = true; if (p === 'absolute' && !over) over = x; }
+        const r = e.getBoundingClientRect();
+        if (fixed || r.width < 2 || r.height < 2) continue;
+        if (!low || r.bottom > low.b) low = { b: r.bottom, below: label(e), over };
+      }
+      if (low && low.over) {     // the words of the box laid over the slide: their middle in the slide's lower half
+        const ws = [...low.over.querySelectorAll('*')].filter((e) => vis(e) && [...e.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim())).map((e) => e.getBoundingClientRect()).filter((r) => r.height > 1);
+        low.over = ws.length > 0 && (Math.min(...ws.map((r) => r.top)) + Math.max(...ws.map((r) => r.bottom))) / 2 > sr.top + sr.height / 2;
+      }
+      if (low) foot = { gap: Math.round(sr.bottom - low.b), above: low.below, over: !!low.over, y: Math.round(low.b - sr.top) };
+    }
+    res.push({ id: s.id, top: Math.round(sr.top + scrollY), h: Math.round(sr.height), base: BASE, gaps: stacks, heads, foot, cut });
   }
   return res;
 };
@@ -119,7 +168,7 @@ const measure = (args) => {
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
 const b = await pw[BROWSER].launch();
 console.log(BROWSER, b.version());
-const sizes = SIZES(BROWSER).filter(([w]) => !ONLY_W.length || ONLY_W.includes(w));
+const sizes = [...SIZES(BROWSER), ['1976', vp(1976, 1209)], ['3230', vp(3230, 1319)]].filter(([w]) => !ONLY_W.length || ONLY_W.includes(w));
 const med = (xs) => { const v = [...xs].sort((x, y) => x - y); return v.length ? v[Math.floor((v.length - 1) / 2)] : 0; };
 const page = async (v, world, opt) => {
   const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/?shot`);
@@ -134,11 +183,12 @@ const JUDGED = [
   { id: 'c-deeper', below: 'p.pr__close', gap: 40, why: 'the closing line set apart from the paragraphs, on the 40 px step' },
   { id: 'c-how', below: 'dl.pr__list', gap: 80, why: 'the words end, then the practices as cards: a break between groups' },
   { id: 'hosts', below: 'div.tl__with', gap: 46, why: 'the founder, then the two hosts with her: a break between groups' },
-  { id: 'kind', below: 'span.voices__mark', gap: 49, why: 'the quote mark is a large glyph in a tall, mostly empty box; the eye sees about 20 px' },
-  { id: 'services', below: 'div.mn__after', gap: 0, why: 'the price list ends on its rule and its own padding: the boxes touch, the eye sees about 24 px' },
+  { id: ['kind', 'c-kind', 'early', 'c-early'], below: 'span.voices__mark', gap: 49, why: 'the quote mark is a large glyph in a tall, mostly empty box; the eye sees about 20 px' },
+  { id: ['services', 'c-services'], below: 'div.mn__after', gap: 0, why: 'the price list ends on its rule and its own padding: the boxes touch, the eye sees about 24 px' },
+  { id: ['aveda', 'c-aveda'], below: 'dl.av__rows', gap: 0, why: 'the facts as a table: its line sits on the table\'s top rule and the rows start under the rule; the eye sees about 10 px (pictures, 20 Nov)' },
   { id: 'pause', below: 'p.lead', gap: 390, near: 30, why: 'the gap holds the arched photo, drawn by ::before, which the walk cannot measure' },
 ];
-const judged = (id, g) => JUDGED.find((j) => j.id === id && g.below.startsWith(j.below) && Math.abs(g.gap - j.gap) <= (j.near || 8));
+const judged = (id, g) => JUDGED.find((j) => [].concat(j.id).includes(id) && g.below.startsWith(j.below) && Math.abs(g.gap - j.gap) <= (j.near || 8));
 const log = [];
 try {
   // pass 1: every gap of every section, both worlds
@@ -171,6 +221,23 @@ try {
         const j = why && judged(sec.id, g);
         if (j) (sec.judged = sec.judged || []).push({ why, judged: j.why, ...g });
         else if (why) sec.flags.push({ why, ...g });
+      }
+      // a heading over its words: at least a fifth of its size between its baseline and their cap height
+      for (const h of sec.heads) {
+        if (h.eye >= .2 * h.size) continue;
+        const g = { why: `crowded: words ${h.eye} px under the baseline of a ${h.size} px heading, a fifth of its size is ${Math.round(.2 * h.size)}`, kind: 'head', ...h, gap: Math.max(h.eye, 2) };
+        const j = judged(sec.id, g);
+        if (j) (sec.judged = sec.judged || []).push({ judged: j.why, ...g }); else sec.flags.push(g);
+      }
+      // the foot: words laid over a slide end on the page's foot; no slide's words end under half of it
+      const f = sec.foot;
+      if (f) {
+        let why = null;
+        if (f.over && f.gap > 1.5 * sec.base && f.gap - sec.base >= 24) why = `wide: the words end ${f.gap} px above the window's bottom, the page's foot is ${sec.base} px`;
+        else if (f.gap < .5 * sec.base) why = `tight: the words end ${f.gap} px above the window's bottom, the page's foot is ${sec.base} px`;
+        const g = why && { why, kind: 'foot', above: f.above, below: "(the window's bottom)", gap: Math.max(f.gap, 2), y: f.y, x: 0, w: opt.viewport.width };
+        const j = g && judged(sec.id, g);
+        if (j) (sec.judged = sec.judged || []).push({ judged: j.why, ...g }); else if (g) sec.flags.push(g);
       }
       // one flag per section and edge for what is cut off, naming the element lost furthest; its picture marks that edge
       for (const edge of ['bottom', 'top']) {
