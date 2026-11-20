@@ -33,7 +33,7 @@ var errs=[];addEventListener('error',function(e){errs.push(String(e.message))});
 function jump(id,f){var s=document.getElementById(id),r=document.documentElement;r.style.scrollBehavior='auto';r.style.scrollSnapType='none';scrollTo(0,Math.round(s.getBoundingClientRect().top+scrollY+(s.offsetHeight-innerHeight)*f));setTimeout(function(){r.style.scrollSnapType='';r.style.scrollBehavior=''},60)}
 function st(id){var s=document.getElementById(id),sh=s&&s.querySelector('[data-sheet]'),p=document.getElementById('opt-panel'),h=document.querySelector('.opt-handle');
 return{opt:s&&s.getAttribute('data-opt'),e:s&&s.style.getPropertyValue('--e'),stick:!!(s&&s.querySelector(':scope > .ch__stick')),h:s&&+(s.offsetHeight/innerHeight).toFixed(2),letters:s?s.querySelectorAll('[data-write] .l').length:0,sheet:sh&&sh._sheet?{ready:!!sh._sheet.ready,frames:sh._sheet.frames,err:sh.getAttribute('data-sheet-error')}:null,
-handle:h?getComputedStyle(h).display:'none',panel:!!p&&!p.hidden,sec:p&&p.querySelector('.opt__sec')?p.querySelector('.opt__sec').textContent:null,rows:p?p.querySelectorAll('.opt__row').length:0,opts:s&&s.getAttribute('data-opts')?JSON.parse(s.getAttribute('data-opts')).length:0,wide:document.documentElement.scrollWidth,w:innerWidth,errs:errs.slice(0,5)}}
+handle:h?getComputedStyle(h).display:'none',panel:!!p&&!p.hidden,sec:p&&p.querySelector('.opt__sec')?p.querySelector('.opt__sec').textContent:null,rows:p?p.querySelectorAll('.opt__row:not(.opt__row--pic)').length:0,opts:s&&s.getAttribute('data-opts')?JSON.parse(s.getAttribute('data-opts')).length:0,wide:document.documentElement.scrollWidth,w:innerWidth,errs:errs.slice(0,5)}}
 function frames(id){return new Promise(function(done){var s=document.getElementById(id),r=document.documentElement,y0=s.getBoundingClientRect().top+scrollY-40,dy=Math.max(innerHeight,s.offsetHeight-innerHeight)+80,g=[],at=[],last=0,lk=0,t0=performance.now();
 r.style.scrollBehavior='auto';r.style.scrollSnapType='none';
 (function fr(t){if(last){g.push(t-last);if(t-last>50)at.push([+lk.toFixed(2),Math.round(t-last)])}last=t;var k=Math.min(1,(t-t0)/2400);lk=k;scrollTo(0,y0+dy*k);if(k<1)requestAnimationFrame(fr);else{r.style.scrollSnapType='';r.style.scrollBehavior='';g.sort(function(a,b){return a-b});
@@ -63,10 +63,14 @@ const extra = (u, req, res2) => {
 const srv = await serve(REPO, extra), port = srv.address().port;
 for (const [name, addr, sec, at, hand, fm] of RUNS) {
   if (process.env.SIM_STEPS === '1' && !fm) continue;      // the five steps' runs only
-  const fin = new Promise((ok) => (done = ok));
-  sh('openurl', dev.udid, `http://127.0.0.1:${port}${addr}&run=${name}&sec=${sec}&at=${at}&hand=${hand ? 1 : 0}&frames=${fm ? 1 : 0}`);
-  const to = setTimeout(() => done && done(), 60000); await fin; clearTimeout(to);
-  if (!res.runs[name]) console.log(name, 'no report: the page never started');
+  // a page that never reports is opened once more (task 1ff4c3f4: on a loaded Mac one row a run, a different one each time,
+  // came back empty), then counted as failed
+  for (let k = 0; k < 2 && !res.runs[name]; k++) {
+    const fin = new Promise((ok) => (done = ok));
+    sh('openurl', dev.udid, `http://127.0.0.1:${port}${addr}&run=${name}&sec=${sec}&at=${at}&hand=${hand ? 1 : 0}&frames=${fm ? 1 : 0}`);
+    const to = setTimeout(() => done && done(), 60000); await fin; clearTimeout(to);
+    if (!res.runs[name]) console.log(name, k ? 'no report twice: the page never started' : 'no report: the page never started, opened once more');
+  }
 }
 const R = res.runs, checks = [];
 const ok = (n, p, i) => { checks.push({ n, pass: !!p, i }); console.log(p ? 'PASS' : 'FAIL', n, i === undefined ? '' : JSON.stringify(i)); };
