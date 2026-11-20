@@ -2016,12 +2016,12 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices, .lnsec) { hei
    running so no section snaps back as it leaves; a tap later starts the film, which fades in over the drift (mgs.js) */
 @keyframes held-drift { from { transform: scale(1); } to { transform: scale(1.07) translate3d(-1.2%, -.8%, 0); } }
 /* the film's poster and, on a step, the real photo laid over it move as one stack (same box, same transform) */
-html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
-html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none; }
+html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
+html[data-shot] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) { animation: none; }
 /* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
    block to html[data-motion="calm"]; it sits after the drift so it wins) */
 /* motion switch (was prefers-reduced-motion: reduce) */
-html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img) {animation: none;}
+html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) {animation: none;}
 /* task b36dde1f: a film Safari refuses is laid in as a moving image (mgs.js asImage: <img src="film.mp4">, which Safari plays
    by itself in Low Power Mode), over its <video> (whose refused start still shows a still frame) and under the photo; it fades in once it shows a frame and
    steps aside once the <video> truly plays */
@@ -2815,7 +2815,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
   <section data-opt-key="steps" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Today’s: C · Crossfade&quot;,&quot;d&quot;:&quot;Scroll: the photo dissolves into the nature film. About one screen.&quot;},{&quot;k&quot;:&quot;breath&quot;,&quot;n&quot;:&quot;B · The breath&quot;,&quot;d&quot;:&quot;Scroll slowly: the nature film opens from a thin line across the photo until it fills the screen, as the pause’s room opens. About two screens.&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The photo, then its film&quot;,&quot;d&quot;:&quot;Each step’s photo, giving way to its nature film a few seconds after it arrives.&quot;},{&quot;k&quot;:&quot;sheet&quot;,&quot;n&quot;:&quot;D · The sheet&quot;,&quot;d&quot;:&quot;Scroll: the photo turns to ribbed glass and, rib by rib, gives way to the nature film. About a screen and a half.&quot;}]" data-opt-name="The five steps" class="s ch ch--stack ch--scroll ch--scroll-fade" id="unhurried" data-tone="dark" data-sound="air" data-chapter="3" style="--acc: var(--air)" aria-labelledby="unhurried-t">
-    <div class="s__media"><div class="s__zoom ch__stack"><img fetchpriority="low" src="media/air-poster.webp?v=07a21e0528" alt="" decoding="async"><video data-src="media/air.mp4?v=94bbb2044d" data-src-hevc="media/air-hevc.mp4?v=ddeb9ee468" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img fetchpriority="low" data-pic="step-unhurried" src="img/real-lounge.webp?v=d01ff7c001" srcset="img/hd/real-lounge-640.webp?v=4e673980dd 640w, img/hd/real-lounge-960.webp?v=77626a57c2 960w, img/hd/real-lounge-1280.webp?v=53b9847dc9 1280w, img/hd/real-lounge-1920.webp?v=7b423a6216 1920w, img/hd/real-lounge-2560.webp?v=ea8fe33a02 2560w, img/hd/real-lounge-3840.webp?v=e3242e2e30 3840w, img/hd/real-lounge-5120.webp?v=1970da1402 5120w, img/hd/real-lounge-5330.webp?v=31c73f3e01 5330w" sizes="(max-width: 700px) 188vw, (max-width: 2000px) 131vw, 131vw" alt="" decoding="async" loading="lazy"></div></div></div><p class="ai-mark ai-mark--film">Made with AI</p>
+    <div class="s__media"><div class="s__zoom ch__stack"><img fetchpriority="low" src="media/air-poster.webp?v=07a21e0528" alt="" decoding="async"><video data-src="media/air.mp4?v=94bbb2044d" data-src-hevc="media/air-hevc.mp4?v=ddeb9ee468" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><picture><source media="(min-aspect-ratio: 3/2) and (min-height: 540px)" srcset="img/hd/real-lounge-landscape-640.webp?v=f7fc16e455 640w, img/hd/real-lounge-landscape-960.webp?v=a48d16b9a4 960w, img/hd/real-lounge-landscape-1280.webp?v=74a3d4565e 1280w, img/hd/real-lounge-landscape-1920.webp?v=eaee021cfd 1920w, img/hd/real-lounge-landscape-2560.webp?v=b81ee0a97c 2560w, img/hd/real-lounge-landscape-3840.webp?v=c44181670a 3840w, img/hd/real-lounge-landscape-5330.webp?v=a21444ee0a 5330w" sizes="(max-width: 700px) 188vw, (max-width: 2000px) 131vw, 131vw"><img fetchpriority="low" data-pic="step-unhurried" src="img/real-lounge.webp?v=d01ff7c001" srcset="img/hd/real-lounge-640.webp?v=4e673980dd 640w, img/hd/real-lounge-960.webp?v=77626a57c2 960w, img/hd/real-lounge-1280.webp?v=53b9847dc9 1280w, img/hd/real-lounge-1920.webp?v=7b423a6216 1920w, img/hd/real-lounge-2560.webp?v=ea8fe33a02 2560w, img/hd/real-lounge-3840.webp?v=e3242e2e30 3840w, img/hd/real-lounge-5120.webp?v=1970da1402 5120w, img/hd/real-lounge-5330.webp?v=31c73f3e01 5330w" sizes="(max-width: 700px) 188vw, (max-width: 2000px) 131vw, 131vw" alt="" decoding="async" loading="lazy"></picture></div></div></div><p class="ai-mark ai-mark--film">Made with AI</p>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">04<small>/ 05</small></span><span class="label"><b>Unhurried</b> · Your time</span></p>
@@ -2828,7 +2828,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
   <section data-opt-key="steps" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Today’s: C · Crossfade&quot;,&quot;d&quot;:&quot;Scroll: the photo dissolves into the nature film. About one screen.&quot;},{&quot;k&quot;:&quot;breath&quot;,&quot;n&quot;:&quot;B · The breath&quot;,&quot;d&quot;:&quot;Scroll slowly: the nature film opens from a thin line across the photo until it fills the screen, as the pause’s room opens. About two screens.&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The photo, then its film&quot;,&quot;d&quot;:&quot;Each step’s photo, giving way to its nature film a few seconds after it arrives.&quot;},{&quot;k&quot;:&quot;sheet&quot;,&quot;n&quot;:&quot;D · The sheet&quot;,&quot;d&quot;:&quot;Scroll: the photo turns to ribbed glass and, rib by rib, gives way to the nature film. About a screen and a half.&quot;}]" data-opt-name="The five steps" class="s ch ch--stack ch--scroll ch--scroll-fade" id="home" data-tone="dark" data-sound="ether" data-chapter="4" style="--acc: var(--ether)" aria-labelledby="home-t">
-    <div class="s__media"><div class="s__zoom ch__stack"><img fetchpriority="low" src="media/ether-poster.webp?v=9557ea46ce" alt="" decoding="async"><video data-src="media/ether.mp4?v=2745ccb7a7" data-src-hevc="media/ether-hevc.mp4?v=40a6cb7113" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><img fetchpriority="low" data-pic="step-home" src="img/real-styling-stations.webp?v=c65669385d" srcset="img/hd/real-styling-stations-640.webp?v=9b8b81245f 640w, img/hd/real-styling-stations-960.webp?v=570019571c 960w, img/hd/real-styling-stations-1280.webp?v=8cb143843c 1280w, img/hd/real-styling-stations-1920.webp?v=b0457c0efd 1920w, img/hd/real-styling-stations-2560.webp?v=f15f48d67a 2560w, img/hd/real-styling-stations-3840.webp?v=e35103f733 3840w, img/hd/real-styling-stations-5464.webp?v=b1479e1e31 5464w" sizes="(max-width: 700px) 188vw, (max-width: 2000px) 131vw, 131vw" alt="" decoding="async" loading="lazy"></div></div></div><p class="ai-mark ai-mark--film">Made with AI</p>
+    <div class="s__media"><div class="s__zoom ch__stack"><img fetchpriority="low" src="media/ether-poster.webp?v=9557ea46ce" alt="" decoding="async"><video data-src="media/ether.mp4?v=2745ccb7a7" data-src-hevc="media/ether-hevc.mp4?v=40a6cb7113" muted playsinline loop preload="none" aria-hidden="true"></video><div class="ch__top" aria-hidden="true"><picture><source media="(min-aspect-ratio: 3/2) and (min-height: 540px)" srcset="img/hd/real-styling-stations-landscape-640.webp?v=6bc45d689c 640w, img/hd/real-styling-stations-landscape-960.webp?v=8df96155e8 960w, img/hd/real-styling-stations-landscape-1280.webp?v=26de40ed4c 1280w, img/hd/real-styling-stations-landscape-1920.webp?v=5a58b7602c 1920w, img/hd/real-styling-stations-landscape-2560.webp?v=ca3c2eac85 2560w, img/hd/real-styling-stations-landscape-3840.webp?v=736e4c276b 3840w, img/hd/real-styling-stations-landscape-5464.webp?v=752bdce723 5464w" sizes="(max-width: 700px) 188vw, (max-width: 2000px) 131vw, 131vw"><img fetchpriority="low" data-pic="step-home" src="img/real-styling-stations.webp?v=c65669385d" srcset="img/hd/real-styling-stations-640.webp?v=9b8b81245f 640w, img/hd/real-styling-stations-960.webp?v=570019571c 960w, img/hd/real-styling-stations-1280.webp?v=8cb143843c 1280w, img/hd/real-styling-stations-1920.webp?v=b0457c0efd 1920w, img/hd/real-styling-stations-2560.webp?v=f15f48d67a 2560w, img/hd/real-styling-stations-3840.webp?v=e35103f733 3840w, img/hd/real-styling-stations-5464.webp?v=b1479e1e31 5464w" sizes="(max-width: 700px) 188vw, (max-width: 2000px) 131vw, 131vw" alt="" decoding="async" loading="lazy"></picture></div></div></div><p class="ai-mark ai-mark--film">Made with AI</p>
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
       <p class="ch__meta a-left" style="--d:.2s"><span class="ch__num">05<small>/ 05</small></span><span class="label"><b>Carry it home</b> · The finish</span></p>
@@ -3164,7 +3164,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="3eb5c00c2bae";</script>
+<script>window.OM_BUILD="f33e25272e61";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4865,12 +4865,16 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 })();
 /* Each picture at the size the screen needs (task b1dd24c9): build.py gives M/G/S pictures a srcset, which a browser
    prefers to src. The tweak panel (tweaks.js, shared with 2.2) swaps a picture by setting its src, so while a picture
-   shows a tweaked file its srcset is set aside, and it comes back with "Use the original". */
+   shows a tweaked file its srcset is set aside, and it comes back with "Use the original"; a step photo's cut (its
+   <picture>'s <source>, task 1ff4c3f4) is set aside with it. */
 (function () {
   function sync(im) {
     var custom = im.hasAttribute('data-orig') && im.getAttribute('src') !== im.getAttribute('data-orig');
-    if (custom && im.hasAttribute('srcset')) { im.setAttribute('data-hd-srcset', im.getAttribute('srcset')); im.removeAttribute('srcset'); }
-    else if (!custom && im.hasAttribute('data-hd-srcset')) { im.setAttribute('srcset', im.getAttribute('data-hd-srcset')); im.removeAttribute('data-hd-srcset'); }
+    var src = im.parentNode && im.parentNode.tagName === 'PICTURE' ? [].slice.call(im.parentNode.querySelectorAll('source')) : [];
+    [im].concat(src).forEach(function (e) {
+      if (custom && e.hasAttribute('srcset')) { e.setAttribute('data-hd-srcset', e.getAttribute('srcset')); e.removeAttribute('srcset'); }
+      else if (!custom && e.hasAttribute('data-hd-srcset')) { e.setAttribute('srcset', e.getAttribute('data-hd-srcset')); e.removeAttribute('data-hd-srcset'); }
+    });
   }
   var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });

@@ -2016,12 +2016,12 @@ html[data-variant^="2.2-"] :is(.facts, .team-letter, .vs, .voices, .lnsec) { hei
    running so no section snaps back as it leaves; a tap later starts the film, which fades in over the drift (mgs.js) */
 @keyframes held-drift { from { transform: scale(1); } to { transform: scale(1.07) translate3d(-1.2%, -.8%, 0); } }
 /* the film's poster and, on a step, the real photo laid over it move as one stack (same box, same transform) */
-html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
-html[data-shot] :is(.is-held > img, .is-held > .ch__top > img) { animation: none; }
+html[data-variant^="2.2-"] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) { animation: held-drift 18s var(--io-soft) infinite alternate; }
+html[data-shot] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) { animation: none; }
 /* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
    block to html[data-motion="calm"]; it sits after the drift so it wins) */
 /* motion switch (was prefers-reduced-motion: reduce) */
-html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img) {animation: none;}
+html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) {animation: none;}
 /* task b36dde1f: a film Safari refuses is laid in as a moving image (mgs.js asImage: <img src="film.mp4">, which Safari plays
    by itself in Low Power Mode), over its <video> (whose refused start still shows a still frame) and under the photo; it fades in once it shows a frame and
    steps aside once the <video> truly plays */
@@ -2838,7 +2838,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="9da7d45cd580";</script>
+<script>window.OM_BUILD="0d721627ec71";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4539,12 +4539,16 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 })();
 /* Each picture at the size the screen needs (task b1dd24c9): build.py gives M/G/S pictures a srcset, which a browser
    prefers to src. The tweak panel (tweaks.js, shared with 2.2) swaps a picture by setting its src, so while a picture
-   shows a tweaked file its srcset is set aside, and it comes back with "Use the original". */
+   shows a tweaked file its srcset is set aside, and it comes back with "Use the original"; a step photo's cut (its
+   <picture>'s <source>, task 1ff4c3f4) is set aside with it. */
 (function () {
   function sync(im) {
     var custom = im.hasAttribute('data-orig') && im.getAttribute('src') !== im.getAttribute('data-orig');
-    if (custom && im.hasAttribute('srcset')) { im.setAttribute('data-hd-srcset', im.getAttribute('srcset')); im.removeAttribute('srcset'); }
-    else if (!custom && im.hasAttribute('data-hd-srcset')) { im.setAttribute('srcset', im.getAttribute('data-hd-srcset')); im.removeAttribute('data-hd-srcset'); }
+    var src = im.parentNode && im.parentNode.tagName === 'PICTURE' ? [].slice.call(im.parentNode.querySelectorAll('source')) : [];
+    [im].concat(src).forEach(function (e) {
+      if (custom && e.hasAttribute('srcset')) { e.setAttribute('data-hd-srcset', e.getAttribute('srcset')); e.removeAttribute('srcset'); }
+      else if (!custom && e.hasAttribute('data-hd-srcset')) { e.setAttribute('srcset', e.getAttribute('data-hd-srcset')); e.removeAttribute('data-hd-srcset'); }
+    });
   }
   var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
