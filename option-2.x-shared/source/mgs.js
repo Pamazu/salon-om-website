@@ -704,3 +704,47 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   document.addEventListener('om:swap', function () { setTimeout(find, 0); });
   find();
 })();
+
+/* the five steps' ways to scroll (build.chapter ch--move, task bfbe9e35; J 20 Nov: "do something really beautiful and clean,
+   simple and beautfiul and clean"): for each step that carries one, how far it has come in and gone out, as mgs.css names
+   them (--out, --inp, --ina, --in, --rk); mgs.css draws each way from these alone. A step holds only against another step:
+   the first one comes in and the last one leaves as today. D's soft picture (.ch__soft) is put in here: the step's own
+   photo again, small, so its blur is drawn once. Calm motion and screenshots: nothing is set. Found again after every swap. */
+(function () {
+  var steps = [], queued = false, VARS = ['--out', '--inp', '--ina', '--in', '--rk'];
+  var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  function find() {
+    [].forEach.call(document.querySelectorAll('.s.ch'), function (s) {
+      var top = s.querySelector('.ch__top'), soft = top && top.querySelector(':scope > .ch__soft'), want = s.classList.contains('ch--move-focus');
+      if (want && top && !soft) { soft = document.createElement('i'); soft.className = 'ch__soft'; soft.setAttribute('aria-hidden', 'true'); top.appendChild(soft); }
+      else if (!want && soft) top.removeChild(soft);
+      if (soft) soft._src = '';
+      s._mv = null;
+      if (!s.classList.contains('ch--move')) VARS.forEach(function (k) { s.style.removeProperty(k); });
+    });
+    steps = [].slice.call(document.querySelectorAll('.s.ch--move')).map(function (s) {
+      var a = s.previousElementSibling, b = s.nextElementSibling;
+      return { s: s, prev: !!(a && a.classList.contains('ch--move')), next: !!(b && b.classList.contains('ch--move')), soft: s.querySelector('.ch__soft'), img: s.querySelector('.ch__top > img') };
+    });
+    ask();
+  }
+  function step(x) {
+    var s = x.s, r = s.getBoundingClientRect(), vh = innerHeight; if (r.height === 0) return;
+    var still = calm() || document.documentElement.hasAttribute('data-shot');
+    var below = still ? 0 : Math.min(vh, Math.max(0, r.top)), above = still ? 0 : Math.min(r.height, Math.max(0, -r.top));
+    var key = below.toFixed(1) + '|' + above.toFixed(1); if (s._mv === key) return; s._mv = key;
+    var share = 1 - below / vh;
+    s.style.setProperty('--out', (x.next ? above : 0).toFixed(1) + 'px'); s.style.setProperty('--inp', (x.prev ? below : 0).toFixed(1) + 'px');
+    s.style.setProperty('--ina', (x.prev ? share : 1).toFixed(4)); s.style.setProperty('--in', share.toFixed(4));
+    s.style.setProperty('--rk', (x.prev ? Math.min(1, (1 - share) * 6) : 0).toFixed(3));
+    if (x.soft && !x.soft._src && x.img) {
+      var src = x.img.currentSrc || x.img.src;
+      if (src && x.img.naturalWidth) { x.soft._src = src; x.soft.style.backgroundImage = 'url("' + src + '")'; x.soft.style.backgroundPosition = getComputedStyle(x.img).objectPosition; }
+    }
+  }
+  function frame() { queued = false; steps.forEach(step); }
+  function ask() { if (!queued && steps.length) { queued = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', ask, { passive: true }); addEventListener('resize', ask);
+  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
+  find();
+})();

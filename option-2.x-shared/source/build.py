@@ -202,7 +202,10 @@ def chapter(d, i, n):
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
                + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + _picture_mark(t['poster']) + '</div>')
         media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
-    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}{" ch--still" if still else ""}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
+    # d['move'] (M/G, task bfbe9e35): how a step hands over to the next as the reader scrolls (mgs.js says how far it has come
+    # in and gone out, mgs.css draws each way); only the class changes, the content stays the step's own
+    move = f' ch--move ch--move-{d["move"]}' if d.get('move') and d.get('film_top') and not still else ''
+    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}{" ch--still" if still else ""}{move}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
     {media}
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">
