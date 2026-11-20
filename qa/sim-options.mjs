@@ -58,6 +58,7 @@ const extra = (u, req, res2) => {
 };
 const srv = await serve(REPO, extra), port = srv.address().port;
 for (const [name, addr, sec, at, hand, fm] of RUNS) {
+  if (process.env.SIM_STEPS === '1' && !fm) continue;      // the five steps' runs only
   const fin = new Promise((ok) => (done = ok));
   sh('openurl', dev.udid, `http://127.0.0.1:${port}${addr}&run=${name}&sec=${sec}&at=${at}&hand=${hand ? 1 : 0}&frames=${fm ? 1 : 0}`);
   const to = setTimeout(() => done && done(), 60000); await fin; clearTimeout(to);
@@ -66,10 +67,13 @@ for (const [name, addr, sec, at, hand, fm] of RUNS) {
 const R = res.runs, checks = [];
 const ok = (n, p, i) => { checks.push({ n, pass: !!p, i }); console.log(p ? 'PASS' : 'FAIL', n, i === undefined ? '' : JSON.stringify(i)); };
 const p0 = R['pause-live-panel'] || {};
+if (process.env.SIM_STEPS !== '1') {
 ok('the handle shows in mobile Safari', p0.handle && p0.handle !== 'none', p0.handle);
 ok('the handle opens the panel on the pause', p0.panel && p0.sec === 'The pause' && p0.rows === 5, p0);
 ok('an option swaps in place in mobile Safari', (R['pause-live-swapped-cinema'] || {}).opt === 'cinema' && (R['pause-live-swapped-cinema'] || {}).letters > 0, R['pause-live-swapped-cinema']);
+}
 for (const [name, , sec, , , fm, key] of RUNS) {
+  if (process.env.SIM_STEPS === '1' && !fm) continue;
   const s = R[name] || {}, want = (RUNS.find((r) => r[0] === name)[1].match(new RegExp('opt-' + (key || sec) + '=([\\w-]+)')) || [])[1];
   if (fm) {      // a step: its option in place (the scroll frame for a scroll option), handing over half way, and the frames through it
     const live = R['steps-live'] || {}, scroll = want !== 'live';

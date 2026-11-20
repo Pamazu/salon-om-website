@@ -584,7 +584,9 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (!p) return null;
       var n = +el.getAttribute('data-flute') || 12;
       if (el.children.length !== n) { el.textContent = ''; for (var k = 0; k < n; k++) el.appendChild(document.createElement('i')); }
-      return { el: el, scope: el.closest('section') || p, img: p.querySelector('img'), ribs: [].slice.call(el.children), src: '',
+      // a glass held in a step's sticky frame (the five steps' sheet, task 5cf1107e) follows the frame, which stands still while
+      // the step is pinned, so its ribs are drawn once there instead of on every scroll frame (iOS Safari: 4 frames over 50 ms)
+      return { el: el, scope: el.closest('.ch__stick') || el.closest('section') || p, img: p.querySelector('img'), ribs: [].slice.call(el.children), src: '',
                bend: +(el.getAttribute('data-flute-bend') || 14), mag: +(el.getAttribute('data-flute-mag') || 1.06) };
     }).filter(Boolean);
     q();
