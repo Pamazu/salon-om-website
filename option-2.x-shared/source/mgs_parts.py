@@ -242,7 +242,12 @@ def _close(slides):
     for kind, d in slides:
         if kind == 'end' and out and out[-1][0] == 'cta':
             c = out.pop()[1]
-            out.append((S.close, dict(cta=c, end=dict(d, foot_visit=FOOT_VISIT), img=c.get('close_img') or CLOSE_IMG[c['id']])))
+            # (task cde7849b; J 20 Nov 12:49 Z: "this section feels could be part of the previous, continues with respect to the
+            # previous one ... And having a form directly there to contact directly woudl be ideal"): Begin flows on from the
+            # section before it, with its form; Begin on its own screen, as before, stays under Shift+V
+            out.append((S.close, dict(cta=c, end=dict(d, foot_visit=FOOT_VISIT), img=c.get('close_img') or CLOSE_IMG[c['id']], flow=True,
+                                      option_name='Begin', options=[dict(key='screen', label='Begin on its own screen',
+                                      note='As before 20 Nov: Begin fills its own screen after the second door, its words centred, no form.', flow=False)])))
         else:
             out.append((kind, d))
     return out
