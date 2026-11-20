@@ -156,11 +156,12 @@ SALON = [
                  options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # the label (task a749167b)
   _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
-  ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
-                 btn=btn(BOOK, BOOK_URL, arrow=True))),
   # her Begin text and her two buttons (call, email: the one action's two ways); her two-week word (11 Nov). Round 6
   # (task b9a04e51): no 'Book online' (her booking page lists no services) and no Inner Work block in the footer
-  _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),
+  # OM · Oneness and Begin are ONE section on the same brown ground, OM's words then Begin's (task cde7849b; J 20 Nov 13:24 Z:
+  # "put that section as a single section with the other brown one")
+  _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward']),
+        om=dict(label='OM · Oneness', text=M.OM, accents=['kindness.'])),
   # the door to the other world comes after the world's last call to action, as its last slide, the footer inside it (task
   # d9a90616; J 19 Nov 12:06 Z: "the call to action for both ... should be before the gate to the other world. It should be
   # before it. Otherwise, the user will not get to the final call to action before being tempted to move away to the other
@@ -169,7 +170,9 @@ SALON = [
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 
-COACHING = twin(SALON, iw_entries('g', SALON))   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
+_IWG = iw_entries('g', SALON)
+_IWG['begin'] = dict(_IWG['begin'], om={k: IW.IW['g']['om'][k] for k in ('label', 'text', 'accents')})   # Inner Work's own OM words in its Begin
+COACHING = twin(SALON, _IWG)   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
   [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'Why Aveda', 'aveda'), ('04', 'The team', 'hosts'), ('05', 'Begin', 'begin')],

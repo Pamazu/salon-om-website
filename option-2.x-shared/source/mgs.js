@@ -725,15 +725,15 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 })();
 
 /* Begin's form (task cde7849b): the visitor's message written into their own email app, to the address Begin's Email button
-   uses (data-mailform); nothing passes through the page. Name and a way to reply are needed; then a calm thank-you */
+   uses (data-mailform); nothing passes through the page. A required field left empty is focused; then a calm thank-you */
 document.addEventListener('submit', function (e) {
   var f = e.target; if (!f || !f.matches || !f.matches('form[data-mailform]')) return;
   e.preventDefault();
-  var v = function (n) { var el = f.elements[n]; return el ? el.value.trim() : ''; };
-  var miss = !v('name') ? 'name' : !v('contact') ? 'contact' : '';
-  if (miss) { f.elements[miss].focus(); f.elements[miss].setAttribute('aria-invalid', 'true'); return; }
-  var L = [].map.call(f.querySelectorAll('label'), function (l) { return l.firstChild.textContent.trim(); });
-  var body = ['name', 'contact', 'want', 'when', 'msg'].map(function (n, i) { return v(n) ? L[i] + ': ' + v(n) : ''; }).filter(Boolean).join('\n');
-  location.href = 'mailto:' + f.getAttribute('data-mailform') + '?subject=' + encodeURIComponent(f.getAttribute('data-subject') + ' · ' + v('name')) + '&body=' + encodeURIComponent(body);
+  var els = [].filter.call(f.elements, function (el) { return el.name; });
+  var miss = els.filter(function (el) { return el.required && !el.value.trim(); })[0];
+  if (miss) { miss.focus(); miss.setAttribute('aria-invalid', 'true'); return; }
+  var msg = f.elements.msg ? f.elements.msg.value.trim() : '', from = f.elements.email ? f.elements.email.value.trim() : '';
+  var body = msg + (from ? (msg ? '\n\n' : '') + 'Reply to: ' + from : '');
+  location.href = 'mailto:' + f.getAttribute('data-mailform') + '?subject=' + encodeURIComponent(f.getAttribute('data-subject')) + '&body=' + encodeURIComponent(body);
   var t = f.querySelector('.cl__thanks'); if (t) t.hidden = false;
 });

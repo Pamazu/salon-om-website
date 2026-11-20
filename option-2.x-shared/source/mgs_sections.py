@@ -146,7 +146,7 @@ def close(d, world):
     flow = d.get('flow')
     return f'''<section class="s s--auto cl{' cl--flow' if flow else ''}" id="{c['id']}" data-tone="dark" data-sound="{c.get('sound', 'bed')}" aria-labelledby="{c['id']}-t">
     <div class="cl__cta s__leave">
-      <div class="cl__words">
+      <div class="cl__words">{om_words(c.get('om'))}
         <p class="label a-up" style="--d:.2s">{c['label']}</p>
         <h2 id="{c['id']}-t"><span class="mask"><span class="mask__in" style="--d:.35s">{c['title']}</span></span></h2>
         {text}{cycle(c, .85)}{(f'<p class="cl__last a-up" style="--d:.95s">' + c['last'] + '</p>') if c.get('last') else ''}
@@ -157,28 +157,35 @@ def close(d, world):
   </section>'''
 
 
+def om_words(om):
+    """OM · Oneness's words at the head of Begin, on its brown ground (task cde7849b; J 20 Nov 13:24 Z)"""
+    if not om:
+        return ''
+    text = om['text']
+    for a in om.get('accents') or []:
+        text = text.replace(a, f'<em>{a}</em>', 1)
+    return f'''
+        <div class="cl__om"><p class="label a-up" style="--d:.1s">{om['label']}</p><p class="cl__omtext a-up" style="--d:.2s">{text}</p></div>'''
+
+
 def mail_form(btns, world):
-    """Begin's form (task cde7849b; J 20 Nov 12:49 Z: "having a form directly there to contact directly woudl be ideal"): it writes
-    the visitor's message into their own email app, addressed as Begin's own Email button is (mgs.js data-mailform), so nothing
-    passes through the page or a third party. Salon: to book a visit; Inner Work: to ask for the Connection Call."""
+    """Begin's form (task cde7849b; J 20 Nov 13:24 Z: "the form is too big, just email and message, simple"): it writes the
+    visitor's message into their own email app, addressed as Begin's own Email button is (mgs.js data-mailform), so nothing
+    passes through the page or a third party"""
     m = re.search(r'href="mailto:([^"?]+)(?:\?subject=([^"&]*))?', btns)
     if not m:
         return ''
     import urllib.parse
     to = m.group(1)
     salon = world != 'coaching'
-    subject = urllib.parse.unquote(m.group(2)) if m.group(2) else ('A visit to Salon OM' if salon else 'Connection Call')
-    want = ('What you would like', 'A cut, colour, a treatment, or not sure yet') if salon else ('What you are looking for', 'A few words, if you like')
-    go = 'Write to the salon' if salon else 'Ask for your Connection Call'
+    subject = urllib.parse.unquote(m.group(2)) if m.group(2) else 'A visit to Salon OM'
+    go = 'Send' if salon else 'Ask for your Connection Call'
     return f'''
         <form class="cl__form a-up" style="--d:1.1s" data-mailform="{E(to)}" data-subject="{E(subject)}" novalidate>
-          <div class="cl__row"><label>Your name<input name="name" autocomplete="name" required></label><label>Phone or email<input name="contact" autocomplete="email" required></label></div>
-          <label>{want[0]}<input name="want" placeholder="{E(want[1])}"></label>
-          <label>The days and times that suit you<input name="when" placeholder="Weekday mornings, Saturday…"></label>
-          <label>A short message<textarea name="msg" rows="3"></textarea></label>
+          <label>Your email<input name="email" type="email" autocomplete="email" required></label>
+          <label>Your message<textarea name="msg" rows="3"></textarea></label>
           <button class="btn btn--light" type="submit">{go} <span class="arr" aria-hidden="true">→</span></button>
-          <p class="cl__note">This opens your own email app with your message ready to send to {E(to)}. Nothing is sent or kept by this page.</p>
-          <p class="cl__thanks" role="status" hidden>Thank you. Your email app has your message ready: press send, and we will reply soon.</p>
+          <p class="cl__thanks" role="status" hidden>Thank you. Your email app has your message ready to send to {E(to)}.</p>
         </form>'''
 
 
