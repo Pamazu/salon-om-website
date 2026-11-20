@@ -5,12 +5,15 @@
 // reporter also opens the panel with the phone's handle and swaps an option in place. The five steps' options (task 5cf1107e,
 // one key for all five, ?opt-steps=): each opens on its option and is scrolled through its first step in 2.4 s, the frames
 // counted (mobile Safari's own: J 19 Nov, "smooth ... on a phone"), today's the same way. Writes <out>/result.json and shots.
-//   node sim-options.mjs [out]
+//   node sim-options.mjs [out]      SIM_GLASS=1: only the header's glass (task 95ac520e); SIM_DEVICE="iPad Pro 13": another simulator
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url'; import { execFileSync } from 'node:child_process';
 import { serve } from './lib.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), OUT = path.resolve(process.argv[2] || 'out-sim-options'); fs.mkdirSync(OUT, { recursive: true });
 const sh = (...a) => execFileSync('xcrun', ['simctl', ...a], { encoding: 'utf8' });
-const dev = Object.values(JSON.parse(sh('list', 'devices', 'available', '-j')).devices).flat().find((d) => d.name === 'iPhone 17');
+// SIM_DEVICE (task 95ac520e): another simulator by the start of its name, e.g. "iPad Pro 13" (mobile Safari's desktop layout)
+const WANT = process.env.SIM_DEVICE || 'iPhone 17', DEVS = Object.values(JSON.parse(sh('list', 'devices', 'available', '-j')).devices).flat();
+const dev = DEVS.find((d) => d.name === WANT) || DEVS.find((d) => d.name.startsWith(WANT));
+if (!dev) throw new Error(`no ${WANT} simulator available`);
 const wasBooted = dev.state === 'Booted'; if (!wasBooted) sh('boot', dev.udid); sh('bootstatus', dev.udid, '-b');
 console.log('simulator', dev.name, dev.udid, wasBooted ? '(was booted)' : '(booted here)');
 // [name, address, section to show, where inside it (0 top, .97 near its end), also try the handle and an in-place swap]
@@ -22,6 +25,12 @@ const RUNS = [['pause-live', '/m/?opt-pause=live', 'pause', 0, true], ['pause-do
   ['steps-live', '/m/?opt-steps=live', 'arrive', 0, false, true, 'steps'], ['steps-breath', '/m/?opt-steps=breath', 'arrive', 0, false, true, 'steps'],
   ['steps-fade', '/m/?opt-steps=fade', 'arrive', 0, false, true, 'steps'], ['steps-sheet', '/m/?opt-steps=sheet', 'arrive', 0, false, true, 'steps'],
   ['g-steps-breath', '/g/?opt-steps=breath', 'renew', 0, false, true, 'steps']];
+// SIM_GLASS=1 (task 95ac520e; J 19 Nov 11:50 Z: "I also don't like the navigation bar having a hard background. It doesn't look
+// clean or have the glass effect the navigation bar usually has"): the header's glass (.hdr-glass) in mobile Safari's own
+// compositor, which draws the backdrop blur Playwright's WebKit leaves out. Over Why Aveda and the menu, both versions: one shot
+// with the glass, then the same view with only the glass hidden (the control: what lies behind the bar reads sharp there).
+const GLASS = process.env.SIM_GLASS === '1';
+const GLASS_RUNS = ['m', 'g'].flatMap((v) => [[`glass-${v}-aveda`, `/${v}/?glass=1`, 'aveda', .5], [`glass-${v}-services`, `/${v}/?glass=1`, 'services', .4]]);
 const REPORTER = `<script>try{localStorage.setItem('om-sound','off')}catch(e){}</script>
 <script>(function(){
 var post=function(o){return fetch('/__r',{method:'POST',body:JSON.stringify(o)}).catch(function(){})},sl=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
@@ -34,8 +43,12 @@ function frames(id){return new Promise(function(done){var s=document.getElementB
 r.style.scrollBehavior='auto';r.style.scrollSnapType='none';
 (function fr(t){if(last){g.push(t-last);if(t-last>50)at.push([+lk.toFixed(2),Math.round(t-last)])}last=t;var k=Math.min(1,(t-t0)/2400);lk=k;scrollTo(0,y0+dy*k);if(k<1)requestAnimationFrame(fr);else{r.style.scrollSnapType='';r.style.scrollBehavior='';g.sort(function(a,b){return a-b});
 done({n:g.length,worst:Math.round(g[g.length-1]),p95:Math.round(g[Math.floor(g.length*.95)]),over50:g.filter(function(x){return x>50}).length,at:at})}})(t0)})}
+function glass(){var g=document.querySelector('.hdr-glass');if(!g)return{glass:'none on the page'};var c=getComputedStyle(g),b=g.getBoundingClientRect();
+return{backdrop:c.webkitBackdropFilter||c.backdropFilter,opacity:c.opacity,bg:c.backgroundImage.slice(0,160),h:Math.round(b.height),ground:document.documentElement.classList.contains('hdr-ground'),under:(document.elementsFromPoint(innerWidth/2,30).find(function(e){return e.classList&&e.classList.contains('s')})||{}).id||null,w:innerWidth,vh:innerHeight}}
 async function go(){var q=new URLSearchParams(location.search),name=q.get('run'),id=q.get('sec'),f=+q.get('at')||0,hand=q.get('hand')==='1',fm=q.get('frames')==='1';
 await sl(2500);jump(id,f);await sl(4500);
+if(q.get('glass')==='1'){var G=glass();await post({ev:'shot',name:name});var g=document.querySelector('.hdr-glass');if(g)g.style.visibility='hidden';await sl(700);
+await post({ev:'shot',name:name+'-off'});if(g)g.style.visibility='';await post({ev:'state',name:name,s:G});await post({ev:'done'});return}
 if(fm){var F=await frames(id);await sl(400);var S0=st(id);S0.frames=F;jump(id,.5);await sl(1600);await post({ev:'shot',name:name+'-mid'});S0.mid=st(id).e;await post({ev:'state',name:name,s:S0});await post({ev:'done'});return}
 if(hand){document.querySelector('.opt-handle').click();await sl(900);await post({ev:'shot',name:name+'-panel'});await post({ev:'state',name:name+'-panel',s:st(id)});
 document.querySelector('#opt-panel [data-k="cinema"]').click();await sl(1200);document.querySelector('.opt-handle').click();await sl(4200);
@@ -57,7 +70,7 @@ const extra = (u, req, res2) => {
   return false;
 };
 const srv = await serve(REPO, extra), port = srv.address().port;
-for (const [name, addr, sec, at, hand, fm] of RUNS) {
+for (const [name, addr, sec, at, hand, fm] of (GLASS ? GLASS_RUNS : RUNS)) {
   if (process.env.SIM_STEPS === '1' && !fm) continue;      // the five steps' runs only
   const fin = new Promise((ok) => (done = ok));
   sh('openurl', dev.udid, `http://127.0.0.1:${port}${addr}&run=${name}&sec=${sec}&at=${at}&hand=${hand ? 1 : 0}&frames=${fm ? 1 : 0}`);
@@ -67,12 +80,14 @@ for (const [name, addr, sec, at, hand, fm] of RUNS) {
 const R = res.runs, checks = [];
 const ok = (n, p, i) => { checks.push({ n, pass: !!p, i }); console.log(p ? 'PASS' : 'FAIL', n, i === undefined ? '' : JSON.stringify(i)); };
 const p0 = R['pause-live-panel'] || {};
-if (process.env.SIM_STEPS !== '1') {
+if (GLASS) for (const [name] of GLASS_RUNS) { const s = R[name] || {};
+  ok(`${name}: the header's glass is on over the section, blurring what lies behind it`, s.ground && +s.opacity === 1 && /blur\(/.test(s.backdrop || ''), s); }
+if (process.env.SIM_STEPS !== '1' && !GLASS) {
 ok('the handle shows in mobile Safari', p0.handle && p0.handle !== 'none', p0.handle);
 ok('the handle opens the panel on the pause', p0.panel && p0.sec === 'The pause' && p0.rows === 5, p0);
 ok('an option swaps in place in mobile Safari', (R['pause-live-swapped-cinema'] || {}).opt === 'cinema' && (R['pause-live-swapped-cinema'] || {}).letters > 0, R['pause-live-swapped-cinema']);
 }
-for (const [name, , sec, , , fm, key] of RUNS) {
+for (const [name, , sec, , , fm, key] of (GLASS ? [] : RUNS)) {
   if (process.env.SIM_STEPS === '1' && !fm) continue;
   const s = R[name] || {}, want = (RUNS.find((r) => r[0] === name)[1].match(new RegExp('opt-' + (key || sec) + '=([\\w-]+)')) || [])[1];
   if (fm) {      // a step: its option in place (the scroll frame for a scroll option), handing over half way, and the frames through it
