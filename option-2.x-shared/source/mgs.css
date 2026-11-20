@@ -813,6 +813,14 @@ html[data-shot] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__t
 /* the one motion switch: on the launched site, Reduce Motion keeps a held film's photo still (motion_css rewrites this
    block to html[data-motion="calm"]; it sits after the drift so it wins) */
 @media (prefers-reduced-motion: reduce) { :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) { animation: none; } }
+/* a step's photo stands on its own soft preview (task 1ff4c3f4; J 20 Nov: "images take too long to load in the 5 steps section
+   it needs to be instant"): mgs_parts.srcset lays it under the photo, in the page itself, framed as the photo is (cover, the same
+   object-position), so a step shows its picture the moment it arrives on any line, a jump included; the photo covers it once
+   decoded, fading in when it comes while its step is on screen (mgs.js), never a cut from soft to sharp */
+.ch__pre { position: absolute; inset: 0; background: 50% 30% / cover no-repeat; }
+@media (max-aspect-ratio: 3/4) { .ch__pre { background-position: 50% 22%; } }
+@keyframes photo-in { from { opacity: 0; } }
+html[data-variant^="2.2-"] .s .ch__top img.is-in { animation: photo-in var(--t-ui) var(--io-soft); }
 /* task b36dde1f: a film Safari refuses is laid in as a moving image (mgs.js asImage: <img src="film.mp4">, which Safari plays
    by itself in Low Power Mode), over its <video> (whose refused start still shows a still frame) and under the photo; it fades in once it shows a frame and
    steps aside once the <video> truly plays */
@@ -1085,7 +1093,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ch--scroll-fade.ch--stack .ch__top, .ch--scroll-fade.ch--stack.is-active .ch__top { opacity: calc(1 - var(--e, 0)); transition: none; }
 /* D · The sheet: the photo becomes ribbed glass (the fluted glass, mgs.js data-flute), then rib by rib, left to right, the
    ribs clear and the film shows through */
-.ch--scroll-sheet .ch__top img { opacity: calc(1 - min(1, var(--e, 0) * 7)); }
+.ch--scroll-sheet .ch__top :is(img, .ch__pre) { opacity: calc(1 - min(1, var(--e, 0) * 7)); }
 .ch__ribs { position: absolute; inset: 0; display: flex; pointer-events: none; opacity: min(1, calc(var(--e, 0) * 7)); }
 .ch__ribs i { position: relative; flex: 1; background-repeat: no-repeat; opacity: clamp(0, calc(1 - (var(--e, 0) - .15 - var(--j) * .55) / .3), 1); }
 .ch__ribs i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, 0) 34%, rgba(10, 7, 5, 0) 62%, rgba(10, 7, 5, .18)); }

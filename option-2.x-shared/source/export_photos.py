@@ -11,7 +11,7 @@ Each export keeps the look of the file it replaces: its colour is fitted, channe
 (a grade made for the site, such as the Inner Work copies, carries over). The originals are not in git (photos of people,
 StoryLegal's client-photo conditions; 30-55 MB each); only the exports are.
 
-  ~/StoryForge/ComfyUI/.venv/bin/python option-2.x-shared/source/export_photos.py [name ...] [--dry] [--cuts]
+  ~/StoryForge/ComfyUI/.venv/bin/python option-2.x-shared/source/export_photos.py [name ...] [--dry] [--cuts] [--previews]
 """
 import json, os, sys
 import numpy as np
@@ -114,6 +114,30 @@ def master(name):
     return p if os.path.exists(p) else None
 
 
+# a picture's soft preview, carried inside the page (task 1ff4c3f4, J 20 Nov: "images take too long to load in the 5 steps section
+# it needs to be instant"): on one 4G line the fourth step's photo alone needs 2 s or more, and on J's 6K a step's photo is
+# decoded again as its step arrives (150 ms of black, filmed 20 Nov), so the photo stands on this, which is there from the
+# page's first paint with no request; made from the picture's own smallest export, so it keeps its grade
+PREVIEWS = V + 'photo_previews.json'
+PREVIEW_W = 64                 # 64 px, softened and kept at quality 85: smooth at 6K (40 px at 55 showed blocks), ~1 KB
+
+
+def preview(name):
+    import base64, io
+    src = next((p for p in (f'{IMG}hd/{name[:-5]}-640.webp', IMG + name) if os.path.exists(p)), None)
+    if not src:
+        return f'{name}: no file to preview'
+    im = Image.open(src).convert('RGB')
+    im = im.resize((PREVIEW_W, max(1, round(im.height * PREVIEW_W / im.width))), Image.LANCZOS).filter(ImageFilter.GaussianBlur(1.5))
+    b = io.BytesIO()
+    im.save(b, 'WEBP', quality=85, method=6)
+    d = json.load(open(PREVIEWS)) if os.path.exists(PREVIEWS) else {}
+    d[name] = 'data:image/webp;base64,' + base64.b64encode(b.getvalue()).decode()
+    json.dump(d, open(PREVIEWS, 'w'), indent=1, sort_keys=True)
+    open(PREVIEWS, 'a').write('\n')
+    return f', preview {len(b.getvalue())} B'
+
+
 def cut(name, m, ws):
     """the cut's ladder (CUTS), from the same prepared master as the picture's own, at the same widths; listed in
     photo_exports.json as '<name> <cut>'"""
@@ -174,7 +198,7 @@ def export(name, dry=False, cuts_only=False):
     json.dump(dict(json.load(open(V + 'photo_exports.json')) if os.path.exists(V + 'photo_exports.json') else {}, **{name: ws}),
               open(V + 'photo_exports.json', 'w'), indent=1, sort_keys=True)
     open(V + 'photo_exports.json', 'a').write('\n')
-    return f'{name}: {m.size} need {need} -> {ws} (colour fit, mean diff before {before:.1f})' + (cut(name, m, ws) if name in CUTS else '')
+    return f'{name}: {m.size} need {need} -> {ws} (colour fit, mean diff before {before:.1f})' + (cut(name, m, ws) if name in CUTS else '') + preview(name)
 
 
 if __name__ == '__main__':
@@ -182,5 +206,9 @@ if __name__ == '__main__':
     if bad:
         sys.exit('not exported: a picture shows a cleaned place raw, or is undeclared (task a8c429a3):\n  ' + '\n  '.join(bad))
     names = [a for a in sys.argv[1:] if not a.startswith('--')] or list(SOURCE)
+    if '--previews' in sys.argv:              # --previews: only the soft previews, from the files already exported
+        for n in [a for a in sys.argv[1:] if not a.startswith('--')] or [k for k in json.load(open(V + 'photo_exports.json')) if ' ' not in k]:
+            print(n + preview(n))
+        sys.exit(0)
     for n in names:
         print(export(n, dry='--dry' in sys.argv, cuts_only='--cuts' in sys.argv))
