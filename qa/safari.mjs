@@ -1,7 +1,8 @@
 // Real Safari through safaridriver (task 2846db82, CEO MA 16 Nov): what Playwright's WebKit cannot show, on the live pages.
 //   node run.mjs safari <mac|sim> [m,g] [films,sound,snap,visit,entry,glass]   (visit: a person's walk, VISIT_DWELL=2300,6000 ms; glass: the header's glass)
 //   mac: Safari on macOS, its window at 1440 x 900 on the job's own screen (sDelegate --needs macos,own-screen gives
-//        SDELEGATE_SCREEN_FRAME; without one this refuses to open a window). sim: iOS Simulator Safari at iPhone size.
+//        SDELEGATE_SCREEN_FRAME; without one this refuses to open a window). sim: iOS Simulator Safari at iPhone size, or the
+//        simulator SIM_DEVICE names by the start of its name ("iPad Pro 13": the desktop layout; task 95ac520e).
 // No packages: WebDriver over HTTP with Node's own fetch. Reuses r4.mjs's step ids, film timing (photo on at 1.5 s, the film
 // moving by 6 s) and its six snap steps and expectations.
 //   films: per step, the element film's clock advances, it is not paused, no error, the photo has dissolved.
@@ -19,7 +20,8 @@ import { tall, pullWalk } from './lib.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const [, WHERE = 'mac', VERS_ARG = 'm,g', WHAT = 'films,sound,snap'] = process.argv.slice(2);
 const VERS = VERS_ARG.split(',');
-const OUT = path.join(HERE, `out-safari-${WHERE}${process.env.SITE === 'local' ? '-local' : ''}`);
+const DEV = WHERE === 'sim' && process.env.SIM_DEVICE ? '-' + process.env.SIM_DEVICE.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '') : '';
+const OUT = path.join(HERE, `out-safari-${WHERE}${DEV}${process.env.SITE === 'local' ? '-local' : ''}`);
 fs.mkdirSync(OUT, { recursive: true });
 const PORT = 4444 + Math.floor(Math.random() * 500);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -29,9 +31,10 @@ let sid = null, drv = null, sim = null;
 // sim: an iPhone simulator booted headless with simctl (no Simulator window), shut down at the end if this run booted it
 function bootSim() {
   const all = JSON.parse(execFileSync('xcrun', ['simctl', 'list', 'devices', 'available', '-j']).toString()).devices;
-  const phones = Object.entries(all).filter(([rt]) => /iOS/.test(rt)).flatMap(([, d]) => d).filter((d) => /^iPhone/.test(d.name));
-  const dev = phones.find((d) => d.name === 'iPhone 17') || phones[0];
-  if (!dev) throw new Error('no iPhone simulator available');
+  const devs = Object.entries(all).filter(([rt]) => /iOS/.test(rt)).flatMap(([, d]) => d), want = process.env.SIM_DEVICE;
+  const phones = devs.filter((d) => /^iPhone/.test(d.name));
+  const dev = want ? devs.find((d) => d.name === want) || devs.find((d) => d.name.startsWith(want)) : phones.find((d) => d.name === 'iPhone 17') || phones[0];
+  if (!dev) throw new Error(`no ${want || 'iPhone'} simulator available`);
   const mine = dev.state !== 'Booted';
   if (mine) execFileSync('xcrun', ['simctl', 'boot', dev.udid]);
   execFileSync('xcrun', ['simctl', 'bootstatus', dev.udid, '-b']);
@@ -239,6 +242,9 @@ async function visit(v, dwell) {
 // (.hdr-glass, mgs.js) over Why Aveda's sheet and the menu, in real Safari, since Playwright's WebKit draws no backdrop blur at all.
 // At each place one shot with the glass, then the same with only the glass hidden: the control, where what lies behind the bar
 // reads sharp; with the glass it must read frosted. Its computed backdrop filter, opacity and colour are kept with the shots.
+// In the simulator each is also taken from its display (simctl io screenshot): what the person sees, composited, whatever
+// WebDriver's own snapshot of the page leaves out.
+const screen = (name) => { if (!sim) return; try { execFileSync('xcrun', ['simctl', 'io', sim.udid, 'screenshot', path.join(OUT, name)], { stdio: 'ignore' }); } catch (e) { res.notes.push(`simctl screenshot ${name}: ${e.message}`); } };
 async function glass(v) {
   const out = [];
   for (const [id, frac] of [['aveda', .5], ['services', .4]]) {
@@ -248,9 +254,9 @@ async function glass(v) {
     await jump(top + Math.round(Math.max(0, h - vh) * frac)); await sleep(1800);
     const st = await exec(() => { const g = document.querySelector('.hdr-glass'); if (!g) return { glass: 'none on the page' }; const c = getComputedStyle(g);
       return { backdrop: c.webkitBackdropFilter || c.backdropFilter, opacity: c.opacity, bg: c.backgroundColor, h: Math.round(g.getBoundingClientRect().height), ground: document.documentElement.classList.contains('hdr-ground') }; });
-    await shot(`${v}-glass-${id}.png`);
+    await shot(`${v}-glass-${id}.png`); screen(`${v}-glass-${id}-screen.png`);
     await exec(() => { const g = document.querySelector('.hdr-glass'); if (g) g.style.visibility = 'hidden'; }); await sleep(500);
-    await shot(`${v}-glass-${id}-off.png`);
+    await shot(`${v}-glass-${id}-off.png`); screen(`${v}-glass-${id}-off-screen.png`);
     await exec(() => { const g = document.querySelector('.hdr-glass'); if (g) g.style.visibility = ''; });
     out.push({ id, frac, ...st });
   }
