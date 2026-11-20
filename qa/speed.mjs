@@ -20,6 +20,9 @@ const [LAT, BPS] = NETS[NET];
 let line = 0;      // when the shared line is next free (ms)
 // the pages to serve: this checkout's build, or (PAGES=dir) another build's m/, g/, s/ index.html (e.g. the live commit's)
 const PAGES = process.env.PAGES || path.join(REPO, 'option-2.2-mgs');
+// ASSETS=dir: the pictures, films and sounds from another build's option-2.2/site (e.g. git archive <sha> option-2.2/site),
+// so an A/B whose files differ (a re-exported photo under the same name) compares files too, not only pages (task 1ff4c3f4)
+const ASSETS = process.env.ASSETS || path.join(REPO, 'option-2.2', 'site');
 // H2=1: HTTP/2 over TLS as the live Firebase sites serve (every file on one connection, so a film never queues for one
 // of HTTP/1.1's six); the key and certificate are a local self-signed pair (H2_DIR, default ~/tmp/12ad020c/speed)
 const H2 = process.env.H2 === '1', H2_DIR = process.env.H2_DIR || path.join(os.homedir(), 'tmp/12ad020c/speed');
@@ -38,7 +41,7 @@ const handler = (req, res) => {
   const rec = LOG ? { f: m ? (m[2] || 'index.html') : u, range: req.headers.range || '', ask: Date.now() - tCase, sent: 0 } : null;
   if (rec) { reqs.push(rec); res.on('close', () => { rec.end = Date.now() - tCase; }); }
   if (!m) { res.writeHead(404); return res.end(); }
-  const file = !m[2] || m[2] === 'index.html' ? path.join(PAGES, m[1], 'index.html') : path.join(REPO, 'option-2.2', 'site', m[2]);
+  const file = !m[2] || m[2] === 'index.html' ? path.join(PAGES, m[1], 'index.html') : path.join(ASSETS, m[2]);
   fs.stat(file, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); return res.end(); }
     const type = TYPES[path.extname(file)] || 'application/octet-stream', r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
@@ -189,13 +192,17 @@ async function steps(v, w, box) {
     const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
     const f0 = await p.evaluate(() => window.__frames.length);
     await jump(p, top); const t0 = Date.now();
-    const o = await at(p, id, t0);
+    const o = { ...(await at(p, id, t0)), atMs: t0 - tCase };      // when the reader arrived, on the request log's clock
     await p.waitForTimeout(Math.max(0, READ - (Date.now() - t0)));
     const fr = await p.evaluate((n) => window.__frames.slice(n).map((x) => x[1]), f0);
     walk.push({ ...o, longFrames: fr.length, worstFrameMs: fr.length ? Math.max(...fr) : 0 });
     if (LOG) console.error(`  ${v} ${w} ${id}: ${JSON.stringify(walk[walk.length - 1])}`);
   }
   await shut(ctx, b);
+  // LOG=1: the walk's own requests are kept beside the jump's (task 1ff4c3f4: what holds the line on the way to a step)
+  const walkRequests = reqs;
+  // a jump that hangs (WebKit at 3230, 20 Nov: twice in a row) keeps the walk: the case is written with no jump
+  box.part = { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct: null, jumpHung: true, ...(LOG ? { walkRequests } : {}) };
   let direct = null;
   if (ids.length > 3) {
     reqs = []; held = new Set(); line = 0; tCase = Date.now();
@@ -205,19 +212,21 @@ async function steps(v, w, box) {
     if (LOG) console.error(`  ${v} ${w} jump to ${id}: ${JSON.stringify(direct)}`);
     await shut(ctx, b);
   }
-  return { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct, ...(LOG ? { requests: reqs } : {}) };
+  return { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct, ...(LOG ? { requests: reqs, walkRequests } : {}) };
 }
 // a case gets 150 s (a full case takes some 25-40 s); one that runs out is closed and tried once more, then written as hung
 for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
-  let row = null;
+  let row = null, part = null;
   for (let attempt = 1; attempt <= 2 && !row; attempt++) {
     const box = {}; let timer;
     row = await Promise.race([(STEPS ? steps : one)(v, w, box).catch((e) => ({ v, w, net: NET, error: String(e.message || e).slice(0, 160) })),
       new Promise((ok) => { timer = setTimeout(() => ok(null), STEPS ? 200000 : 150000); })]);
     clearTimeout(timer);
+    part = part || box.part || null;
+    if (!row && part && attempt === 2) row = part;      // tried twice: the walk that came through is kept
     if (!row || row.error) { if (box.b) box.b.close().catch(() => {}); if (attempt === 1) { console.log(`${v} ${w}: ${row ? row.error : 'hung 150 s'}; trying once more`); row = null; } }
   }
-  rows.push(row || { v, w, net: NET, hung: true }); const { requests, ...brief } = rows[rows.length - 1]; console.log(JSON.stringify(brief));
+  rows.push(row || { v, w, net: NET, hung: true }); const { requests, walkRequests, ...brief } = rows[rows.length - 1]; console.log(JSON.stringify(brief));
 }
 srv.close();
 fs.writeFileSync(OUT, JSON.stringify(rows, null, 1));
