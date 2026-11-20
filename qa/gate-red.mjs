@@ -16,11 +16,14 @@ const HERE = path.dirname(fileURLToPath(import.meta.url)), REPO = path.resolve(H
 const OUT = path.resolve(process.argv[2] || 'gate-out');
 const PAGE = path.join(REPO, 'option-2.2-mgs', 'm', 'index.html');
 
-// row: [what breaks, what is added before </body>, the pass that reads it, the worlds it needs]
+// row: [what breaks, what is added before </body>, the pass that reads it, the worlds it needs]; a row with two checks has a
+// break for each, keyed by the row and a letter (5b), read on its row
 export const BREAKS = {
   4: ['the visit preview line stays undrawn', '<style>#visit .ln__path{animation:none!important;transition:none!important;stroke-dashoffset:.6!important}</style>', '1440', ['salon']],
   5: ['a wheel inside the menu jumps back to its top (held there 0.4 s, over the page\'s own scrolling; armed by a wheel only, so row 6\'s jump into the menu does not spend it)',
     "<script>(function(){var at=0,wh=-1e9;addEventListener('wheel',function(){wh=performance.now();},{passive:true,capture:true});function f(){var s=document.getElementById('services');if(s){var t=Math.round(s.getBoundingClientRect().top+scrollY);if(!at&&performance.now()-wh<400&&scrollY>t+150&&scrollY<t+500)at=performance.now();if(at&&performance.now()-at<400)scrollTo(0,t);}requestAnimationFrame(f);}requestAnimationFrame(f);})();</script>", '1440', ['salon']],
+  '5b': ['past a tall section the page never pulls (it believes a finger rests on the screen: a touchstart with no touchend, so mgs.js settle() waits)',
+    "<script>addEventListener('load',function(){dispatchEvent(new Event('touchstart'));});</script>", '1440', ['salon']],
   6: ['the menu photo panel scrolls away with the list', '<style>.mn__ph{position:relative!important}</style>', '1440', ['salon']],
   8: ['the voices on another ground', '<style>section.voices{background:#6B3A2A!important;background-image:none!important}</style>', '1440', ['salon']],
   9: ['a step number in mint', '<style>.ch__num{color:#8FCBA4!important}</style>', '1440', ['salon']],
@@ -66,15 +69,15 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       const [, opts, fn] = PASSES.find((x) => x[0] === size);
       const ctx = await browser.newContext(opts);
       const p = await open(ctx, `${base}/m/?break=${n}`);
-      const off = {}, seen = {};
+      const off = {}, seen = {}, row = parseInt(n, 10);
       for (const [w, P, W] of WORLDS.filter((x) => worlds.includes(x[0]))) {
         if (w === 'coaching') await toWorld(p, 'coaching');
         await jump(p, 0); await wait(p, 400);
-        await fn(p, 'm', P, W, (r, m) => (off[r] ||= []).push(`${W}: ${m}`), seen);
+        await fn(p, 'm', P, W, (r, m) => (off[r] ||= []).push(`${W}: ${m}`), seen, row);
       }
       await ctx.close();
-      rows[n] = { break: what, red: !!off[n], off: off[n] || [] };
-      console.log(`row ${n} (${what}): ${off[n] ? 'RED, ' + off[n][0] : 'still green: this check does not see its row broken'}`);
+      rows[n] = { break: what, red: !!off[row], off: off[row] || [] };
+      console.log(`row ${n} (${what}): ${off[row] ? 'RED, ' + off[row][0] : 'still green: this check does not see its row broken'}`);
     }
   } finally { await browser.close(); srv.close(); }
   const k = key();

@@ -4526,10 +4526,13 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   var off = false, t = 0, dir = 1, lastY = scrollY, touching = false, pending = false;
   function sel() { var s = document.getElementById('tw-snap'); return !s || s.value === 'mandatory'; }
   function secs() { var m = document.querySelector('main[data-world]:not([hidden])'); return m ? [].slice.call(m.children).filter(function (e) { return e.classList.contains('s'); }) : []; }
+  // the page's own style is compared, never only this flag (task 58855053): the tweak panel sets the style back once its
+  // settings arrive, and the world switch a frame after it lands; the flag then said off while the browser's own snap ran
+  // under the pull (S, where a tall section is always near: past a tall section's end the page went on a whole window)
   function snap(on) {
     if (!sel()) return;
-    if (on === !off) return;
-    off = !on; root.style.scrollSnapType = on ? '' : 'none';
+    var want = on ? '' : 'none';
+    off = !on; if (root.style.scrollSnapType !== want) root.style.scrollSnapType = want;
   }
   function look() {
     pending = false;
