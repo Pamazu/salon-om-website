@@ -23,6 +23,8 @@ for (const w of ws.split(',').map(Number)) {
   const ctx = await b.newContext({ viewport: size, deviceScaleFactor: dpr, isMobile: w === 390, hasTouch: w === 390 });
   for (const v of vs.split(',')) {
     const p = await open(ctx, `${base}/${v}/${qs ? '?' + qs : ''}`);
+    // the switcher may redraw the section from its store as the page settles: wait for it, and say what the page is if it never comes
+    if (!(await p.waitForSelector('#pause', { state: 'attached', timeout: 20000 }).catch(() => null))) { console.log('NO #pause', v, w, await p.evaluate(() => [location.href, document.title, document.querySelectorAll('section[id]').length, document.body.innerText.slice(0, 160)])); continue; }
     const g = await p.evaluate(() => { const s = document.getElementById('pause'); return { y: s.offsetTop, span: s.offsetHeight - innerHeight }; });
     const at = (t) => jump(p, Math.round(g.y + g.span * t));
     if (w === 1440) for (let k = 0; k <= 10; k++) { await at(k / 10); await wait(p, 700); await p.screenshot({ path: `${out}/${v}-${w}-strip-${k}.jpg`, type: 'jpeg', quality: 70 }); }
