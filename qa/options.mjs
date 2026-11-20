@@ -124,6 +124,19 @@ for (const v of ['m', 'g', 's']) {
   await p3.evaluate(() => window.OMOptions.choose('pause', 'live', false)); await wait(p3, 300); s = await state(p3);
   ok(`${v}: today's version again, address and memory clean`, s.pause === 'live' && !s.url.includes('opt-pause') && !s.ls.some((x) => x.includes('opt-pause')), s);
   await p3.close();
+  // a choice the page no longer offers (the five steps' B, C and D, taken away in task bfbe9e35; J 20 Nov: "I don't like any of
+  // the effects on the 5 steps scroll triggered ... first remove the current ones") while a link or this browser still names
+  // one: the steps open as today's, and the panel on a step lists none of the three
+  for (const [how, url, mem] of [['a link', `${base}/${v}/?opt-steps=sheet`, null], ['this browser', `${base}/${v}/`, 'breath']]) {
+    const c4 = await b.newContext({ viewport: { width: 1440, height: 900 } }), p4 = await page(c4, url, `${v}-gone-${mem || 'link'}`);
+    if (mem) { await p4.evaluate((x) => localStorage.setItem('om-opt-' + document.documentElement.getAttribute('data-variant') + '-opt-steps', x), mem); await p4.reload({ waitUntil: 'load' }); await wait(p4, 1500); }
+    await toPause(p4, 'arrive'); await p4.keyboard.press('Shift+V'); await wait(p4, 600);
+    const t = await state(p4), steps = await p4.evaluate(() => [...document.querySelectorAll('main[data-world] > .s.ch')].map((x) => x.getAttribute('data-opt') || 'live'));
+    ok(`${v}: ${how} naming a step effect that is gone opens today's steps, the panel on a step lists none of the three`,
+      steps.length === 10 && steps.every((x) => x === 'live') && t.open && !t.rows.some((r) => /The breath|Crossfade|The sheet/.test(r)), { steps, sec: t.sec, rows: t.rows });
+    if (!mem) await shot(p4, `${v}-1440-step-panel`);
+    await c4.close();
+  }
   // the pause's picture (tasks 279db527, e1a1e009): J's pick, A, today; A re-lit, S1, S2, the lounge and the chair by the window under it
   await toPause(p); await p.click('#opt-panel [data-k="live"]:not([data-pic])'); await wait(p, 3600); s = await state(p);
   ok(`${v}: the pause lists its picture's options, thumbnails drawn`, s.pics.join() === 'live*,lit,exhale,window,lounge,chair' && s.thumbs.length === 6 && s.thumbs.every(Boolean), { pics: s.pics, thumbs: s.thumbs });

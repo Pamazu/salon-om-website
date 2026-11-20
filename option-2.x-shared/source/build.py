@@ -202,11 +202,7 @@ def chapter(d, i, n):
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
                + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + _picture_mark(t['poster']) + '</div>')
         media = media.replace('<div class="s__zoom">', '<div class="s__zoom ch__stack">', 1).replace('</div></div>', top + '</div></div>', 1)
-    # d['scroll'] (M/G, task 5cf1107e; J 19 Nov: "One in which we play with scroll to switch between the nature video and the
-    # other video ... Just like in the take a breath section"): the step stays on screen while the scroll hands its photo
-    # over to its film (mgs.js drives --e; mgs.css draws each way); only the class changes, the content stays the step's own
-    scroll = f' ch--scroll ch--scroll-{d["scroll"]}' if d.get('scroll') and d.get('film_top') and not still else ''
-    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}{" ch--still" if still else ""}{scroll}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
+    return f'''<section class="s ch{" ch--stack" if d.get('film_top') else ""}{" ch--still" if still else ""}" id="{d['id']}" data-tone="dark" data-sound="{d['sound']}"{chap} style="--acc: var(--{d['acc']})" aria-labelledby="{d['id']}-t">
     {media}
     <div class="s__scrim ch__scrim"></div><div class="s__veil"></div>
     <div class="s__leave ch__copy">

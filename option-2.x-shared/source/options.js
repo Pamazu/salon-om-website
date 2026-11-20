@@ -50,7 +50,7 @@
   }
 
   /* ---- the swap: the option's attributes and content into the same element. An option whose content is the live one
-     (data-same: it changes only the section's attributes, e.g. the five steps' scroll options, task 5cf1107e) keeps the
+     (data-same: it changes only the section's attributes, task 5cf1107e) keeps the
      content in place, so its films, their loading and what the engine holds of them carry on untouched */
   function swapOne(s, k) {
     var src, hk = LIVE;
