@@ -1,4 +1,14 @@
 {
+ "om-menu-blonding-bl10a2.webp": {
+  "bar": 0.6,
+  "files": {
+   "img/hd/om-menu-blonding-bl10a2-640.webp": "709b19180d4194892ae587a2385e504114ba27ba7ff95bd7d5664db56a71239c",
+   "img/hd/om-menu-blonding-bl10a2-832.webp": "da89d429f5c70fc97bab134c5a4fd3f6c406d975a1bd8c6c095faed69dc027a0",
+   "img/om-menu-blonding-bl10a2.webp": "8c609c88c514a935c904be0e86534d178d47c97f6729122f4e85ff24e7377967"
+  },
+  "measure": 0.655,
+  "room": "6-shampoo-basins-25oct.jpg"
+ },
  "om-menu-blonding.webp": {
   "bar": 0.6,
   "files": {

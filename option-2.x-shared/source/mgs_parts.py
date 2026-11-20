@@ -170,6 +170,9 @@ PICTURE_OPTIONS = {
         dict(key='chair', label='In the styling chair, under the blonde poster', img='om-menu-blonding-bl9b4.webp', ai=AI_GUEST, pos='42% 38%',
              alt='A generated guest with long golden-blonde hair in a styling chair under an Aveda poster at Salon OM, seen from behind',
              note='Seen from behind in the chair, her long golden hair lit by the blind; the real poster and room.'),
+        dict(key='basin', label='At the rinse, in your 25 Oct basins room', img='om-menu-blonding-bl10a2.webp', ai=AI_GUEST, pos='50% 43%',
+             alt='A generated guest reclined at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles',
+             note='Reclined at the basin, her hair falling back into the bowl, below the tidy shelves of your 25 Oct picture.'),
     ]),
     'om-menu-color-correction.webp': dict(name='Color Correction', live='Today’s: the guest by the Aveda canvas', options=[
         dict(key='bar', label='At the colour bar', img='om-menu-color-correction-cc11a1.webp', ai=AI_GUEST, pos='62% 45%',
