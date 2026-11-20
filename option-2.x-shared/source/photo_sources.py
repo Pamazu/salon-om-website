@@ -71,7 +71,7 @@ SOURCE = {
     # the five steps' candidates under Shift+V, both worlds (task f748d06c), at the model's 1248 px until J picks one
     'om-step-arrive-arb1.webp': 'm:om-step-arrive-arb1.png',
     'om-step-unwind-uwa42.webp': 'm:om-step-unwind-uwa42.png',
-    'om-step-unwind-uwb1.webp': 'm:om-step-unwind-uwb1.png',
+    'om-step-unwind-uwb2k2.webp': 'm:om-step-unwind-uwb2k2.png',
     'om-step-renew-rnb42.webp': 'm:om-step-renew-rnb42.png',
     'om-step-unhurried-uha1.webp': 'm:om-step-unhurried-uha1.png',
     'om-step-unhurried-uhb3.webp': 'm:om-step-unhurried-uhb3.png',
@@ -79,7 +79,7 @@ SOURCE = {
     'om-step-home-hmd2.webp': 'm:om-step-home-hmd2.png',
     'iw-step-connect-cna1.webp': 'm:iw-step-connect-cna1.png',
     'iw-step-connect-cnb1.webp': 'm:iw-step-connect-cnb1.png',
-    'iw-step-revisit-rva3.webp': 'm:iw-step-revisit-rva3.png',
+    'iw-step-revisit-rva2k42.webp': 'm:iw-step-revisit-rva2k42.png',
     'iw-step-revisit-rvb1.webp': 'm:iw-step-revisit-rvb1.png',
     'iw-step-witness-wta1.webp': 'm:iw-step-witness-wta1.png',
     'iw-step-witness-wtb2.webp': 'm:iw-step-witness-wtb2.png',
@@ -155,7 +155,7 @@ J25_ZONES = [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (
 ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750), 'om-pause-guest-j25.png': (3100, 300, 8000, 3567),
              'om-pause-exhale-j25.png': (4650, 1250, 7350, 3050),      # S1: cut there, then drawn at the model's 1248 px
              'om-menu-blonding-bl10a2-j25.png': (4623, 761, 6807, 4037),      # BL10A seed 2 (task b1dd24c9): cut there, drawn at 832 px
-             'om-step-unwind-uwa42.png': (2458, 437, 8192, 4260), 'om-step-unwind-uwb1.png': (3441, 656, 7537, 3387)}   # task f748d06c, 1248 px
+             'om-step-unwind-uwa42.png': (2458, 437, 8192, 4260), 'om-step-unwind-uwb2k2.png': (3441, 1339, 7537, 4070)}   # task f748d06c, 1248 px
 
 # every generated master -> what it was made on: 'o:<original>', 'm:<cleaned master>', or None (no photo: a mood film's frame,
 # the meadow). A picture made on the raw original of a cleaned place and then cleaned itself names what was removed in
@@ -193,7 +193,7 @@ BUILT_ON = {
     # (no paste, J 20 Nov 08:55 Z); every try in Test Lab EXP-salonom-step-pictures-1, its arm the shot named here
     'om-step-arrive-arb1.png': 'm:4-styling-chair-window-clean.jpg',     # AR-b seed 1
     'om-step-unwind-uwa42.png': 'm:6-shampoo-basins-25oct.jpg',     # UW-a seed 42
-    'om-step-unwind-uwb1.png': 'm:6-shampoo-basins-25oct.jpg',     # UW-b seed 1
+    'om-step-unwind-uwb2k2.png': 'm:6-shampoo-basins-25oct.jpg',     # UW-b2 seed 2 (framed lower than UW-b: her face clear of the words on a phone)
     'om-step-renew-rnb42.png': 'm:10-color-bar-clean.jpg',     # RN-b seed 42
     'om-step-unhurried-uha1.png': 'm:4-styling-chair-window-clean.jpg',     # UH-a seed 1
     'om-step-unhurried-uhb3.png': 'o:2-lounge-fireplace-5B3A1048.jpg',     # UH-b seed 3
@@ -201,7 +201,7 @@ BUILT_ON = {
     'om-step-home-hmd2.png': 'o:iw-5B3A1044.jpg',     # HM-d seed 2
     'iw-step-connect-cna1.png': 'o:2-lounge-fireplace-5B3A1048.jpg',     # CN-a seed 1
     'iw-step-connect-cnb1.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',     # CN-b seed 1
-    'iw-step-revisit-rva3.png': 'o:iw-5B3A1044.jpg',     # RV-a seed 3
+    'iw-step-revisit-rva2k42.png': 'o:iw-5B3A1044.jpg',     # RV-a2 seed 42 (framed tighter than RV-a: her face clear of the words on a desktop)
     'iw-step-revisit-rvb1.png': 'o:iw-5B3A1044.jpg',     # RV-b seed 1
     'iw-step-witness-wta1.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',     # WT-a seed 1
     'iw-step-witness-wtb2.png': 'm:4-styling-chair-window-clean.jpg',     # WT-b seed 2

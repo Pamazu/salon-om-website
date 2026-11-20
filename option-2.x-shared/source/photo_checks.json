@@ -57,15 +57,15 @@
   "measure": 0.838,
   "room": "6-shampoo-basins-25oct.jpg"
  },
- "om-step-unwind-uwb1.webp": {
+ "om-step-unwind-uwb2k2.webp": {
   "bar": 0.6,
   "files": {
-   "img/hd/om-step-unwind-uwb1-1248.webp": "473b05f59be311b56ef0d98999f1d342c0888882b8e93672fe87586177bdff18",
-   "img/hd/om-step-unwind-uwb1-640.webp": "657a30ecd670a4f63f7072b03dc118e3459035e19dc5ca4ec20d20b81fa1fc2f",
-   "img/hd/om-step-unwind-uwb1-960.webp": "a33060f8e0ffa15a92e8ab0a25fc38ec266d0495b607a3978aa0124bbd8e195a",
-   "img/om-step-unwind-uwb1.webp": "437a326696de916e1d1d7d3fb980dddd6a6a659859a1c844e8cb014148f0dd7e"
+   "img/hd/om-step-unwind-uwb2k2-1248.webp": "bae7334607d1b702143d6e60c2bcf4027af7fa903dcee963ae0dae15909b7be9",
+   "img/hd/om-step-unwind-uwb2k2-640.webp": "3430ebe289da45f1a476a2d13fb37b657d8d01a63860f688a97d5f5f6e3c9899",
+   "img/hd/om-step-unwind-uwb2k2-960.webp": "c23ca4318d1a889b37611c625d256b3eb76eb0f775d49d8ef2dc5a02567e8b6d",
+   "img/om-step-unwind-uwb2k2.webp": "21383b8899f7fdafd0951383bd0c2bb11d065c31819508477941ce57c48b479f"
   },
-  "measure": 0.875,
+  "measure": 0.923,
   "room": "6-shampoo-basins-25oct.jpg"
  },
  "real-shampoo-basins.webp": {
