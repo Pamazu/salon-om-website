@@ -2867,7 +2867,9 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
    also please"): every copy of a picture that declares candidates carries data-pic (section_options.pictures), its candidates
    wait in <template data-pic-for> in the same store. The panel lists the pictures of the section on screen under its options,
    each with a small thumbnail; a choice swaps the picture in place on every copy (its files, words, focus and AI label), in a
-   section's option too, and is kept per picture the same way (?pic-<picture>=<option>). */
+   section's option too, and is kept per picture the same way (?pic-<picture>=<option>).
+   An option may bring another section with it (its menu entry's "a": {key: variant}, section_options also=; task 9999ef8a):
+   choosing it shows that section in that variant, choosing another puts it back to today's; out of sight, it comes into view. */
 (function () {
   'use strict';
   var root = document.documentElement;
@@ -2892,6 +2894,12 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   function keyOf(s) { return s.getAttribute('data-opt-key'); }
   function twinsOf(key) { return secs.filter(function (s) { return keyOf(s) === key; }); }
   function has(menu, k) { return menu.some(function (o) { return o.k === k; }); }
+  function alsoOf(key, k) { var ts = twinsOf(key), o = ts.length && menuOf(ts[0]).filter(function (x) { return x.k === k; })[0]; return (o && o.a) || {}; }
+  // the sections an option brings with it: shown in their variant; those the option before brought, and this one does not, back to today's
+  function link(was, now) {
+    Object.keys(was).forEach(function (o) { if (!(o in now)) twinsOf(o).forEach(function (t) { if (t.getAttribute('data-opt') === was[o]) swapOne(t, LIVE); }); });
+    Object.keys(now).forEach(function (o) { twinsOf(o).forEach(function (t) { if (t.getAttribute('data-opt') !== now[o]) swapOne(t, now[o]); }); });
+  }
 
   /* ---- where a choice lives: the address first (a shared link), then this browser */
   function param(name) { var m = new RegExp('[?&]' + name + '=([^&#]*)').exec(location.search); return m ? decodeURIComponent(m[1]) : null; }
@@ -2993,6 +3001,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   function choose(key, k, animate) {
     var ts = twinsOf(key); if (!ts.length || !has(menuOf(ts[0]), k) || ts[0].getAttribute('data-opt') === k) return;
     keep('opt-' + key, k, LIVE);
+    var was = alsoOf(key, ts[0].getAttribute('data-opt') || LIVE), now = alsoOf(key, k);
     var shown = ts.filter(function (s) { var r = s.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; });
     function go() {
       ts.forEach(function (s) {
@@ -3002,6 +3011,10 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
         s.classList.remove('opt-out');
         if (shown.indexOf(s) >= 0 && animate) { s.classList.add('opt-in'); setTimeout(function () { s.classList.remove('opt-in'); }, 700); }
       });
+      link(was, now);
+      // what it brought, out of sight: it comes into view, so the choice shows (as a chosen picture does, reveal())
+      var first = Object.keys(now).map(function (o) { return twinsOf(o).filter(function (t) { return !t.closest('[hidden]'); })[0]; }).filter(Boolean)[0];
+      if (first && animate) { var r = first.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) first.scrollIntoView({ block: 'start', behavior: calm() ? 'auto' : 'smooth' }); }
       draw(true);
     }
     if (!animate || !shown.length || calm()) return go();
@@ -3018,7 +3031,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   secs.forEach(function (s) {
     var key = keyOf(s); if (done[key]) return; done[key] = 1;
     var k = param('opt-' + key) || saved('opt-' + key);
-    if (k && k !== LIVE && has(menuOf(s), k)) twinsOf(key).forEach(function (t) { swapOne(t, k); });
+    if (k && k !== LIVE && has(menuOf(s), k)) { twinsOf(key).forEach(function (t) { swapOne(t, k); }); link({}, alsoOf(key, k)); }
   });
   Object.keys(ptpl).forEach(function (p) {
     var n = 'pic-' + p.replace(/\.webp$/, ''), k = param(n) || saved(n), o = k && k !== LIVE && optOf(p, k);

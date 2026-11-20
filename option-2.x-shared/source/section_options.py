@@ -6,6 +6,12 @@ ONE block for every section, naming none. A section declares its options in its 
     options=[dict(key='door', label='The door', note='...', **changed keys), dict(key='a', label='...', kind=other_renderer, ...)]
     option_label='...'   the live default's name in the panel; option_note='...' its line there; option_name='...' the section's
                          (else its label or eyebrow)
+    variants=[dict(key='...', kind=..., **changed keys)]   the section drawn another way that its own list does not offer:
+                         only another section's option brings it (also=, below); kept in the same store
+    also={'<key>': '<variant or option key>'}   on an option: choosing it also shows that section (by its option key, in
+                         the same world) in that variant, and choosing another option puts it back to today's (task 9999ef8a;
+                         J 20 Nov 12:47 Z: the team "felt continous ... after the one of what is your color": the team's option
+                         "as on 11 Nov" brings Why Aveda's look of then above it, while Why Aveda's own list stays J's two)
 
 Each option is a named variant of that section (its layout, its picture, its effect): the SAME section drawn again by its own
 renderer (or the renderer the option names in `kind`) with the option's keys changed, so its words and pictures stay the
@@ -32,7 +38,8 @@ import re
 E = html.escape
 _STORE = []          # the templates of the page being built: (section id, option key, world, attributes, inner html)
 DEFAULT = dict(key='live', label='Today’s version')
-OPTION_KEYS = {'key', 'label', 'note', 'kind'}       # the option's own words; every other key changes the section's dict
+OPTION_KEYS = {'key', 'label', 'note', 'kind', 'also'}   # the option's own words; every other key changes the section's dict
+_HAS, _ALSO = {}, []  # the option and variant keys drawn per (world, section key); each also= asked for, checked in store()
 
 
 def _split(section_html):
@@ -49,10 +56,10 @@ def render(draw, kind_of, d, world):
     """the section's live html, carrying its options; the other options' templates kept for store().
     draw(kind, d) draws one section; kind_of is the section's own kind."""
     opts = d['options']
-    keys = [o['key'] for o in opts]
+    keys = [o['key'] for o in opts] + [o['key'] for o in d.get('variants', [])]
     assert DEFAULT['key'] not in keys and len(set(keys)) == len(keys) and all(re.fullmatch(r'[a-z0-9-]+', k) for k in keys), \
         f'section_options: "{d["id"]}" option keys must be unique, lowercase, and never "{DEFAULT["key"]}": {keys}'
-    base = {k: v for k, v in d.items() if k not in ('options', 'option_label', 'option_note', 'option_name', 'option_key')}
+    base = {k: v for k, v in d.items() if k not in ('options', 'variants', 'option_label', 'option_note', 'option_name', 'option_key')}
     live = draw(kind_of, base)
     attrs, inner = _split(live)
     sid = attrs.get('id')
@@ -60,7 +67,7 @@ def render(draw, kind_of, d, world):
     key = d.get('option_key') or (sid[len(world_prefix(world)):] if world_prefix(world) and sid.startswith(world_prefix(world)) else sid)
     assert re.fullmatch(r'[a-z0-9-]+', key), f'section_options: "{sid}" option key "{key}" must be lowercase letters, digits and dashes'
     menu = [dict(k=DEFAULT['key'], n=d.get('option_label') or DEFAULT['label'], **({'d': d['option_note']} if d.get('option_note') else {}))]
-    for o in opts:
+    for o in opts + d.get('variants', []):
         changed = {k: v for k, v in o.items() if k not in OPTION_KEYS}
         if world == 'coaching':      # the twin copies the salon's options: a picture named there would be the salon's own
             import mgs_parts as MP
@@ -68,7 +75,12 @@ def render(draw, kind_of, d, world):
         a, i = _split(draw(o.get('kind', kind_of), dict(base, **changed)))
         assert a.get('id') == sid, f'section_options: option "{o["key"]}" of "{sid}" draws a section with another id'
         _STORE.append((sid, o['key'], world, a, None if i == inner else i))
-        menu.append(dict(k=o['key'], n=o['label'], **({'d': o['note']} if o.get('note') else {})))
+        _HAS.setdefault((world, key), set()).add(o['key'])
+        if o in d.get('variants', []):
+            continue      # a variant is not on its section's own list
+        for other, vk in (o.get('also') or {}).items():
+            _ALSO.append((world, sid, o['key'], other, vk))
+        menu.append(dict(k=o['key'], n=o['label'], **({'d': o['note']} if o.get('note') else {}), **({'a': o['also']} if o.get('also') else {})))
     name = re.sub(r'<[^>]+>|\[|\]', '', str(d.get('option_name') or d.get('label') or d.get('eyebrow') or '')).strip()   # the panel's short name for it
     extra = (f' data-opt-key="{E(key)}" data-opt="{DEFAULT["key"]}" data-opts="{E(json.dumps(menu, ensure_ascii=False, separators=(",", ":")))}"'
              + (f' data-opt-name="{E(name)}"' if name else ''))
@@ -82,8 +94,11 @@ def world_prefix(world):
 
 def store():
     """the templates collected since the last call, as one hidden block; '' when no section declared options"""
-    global _STORE
-    out, _STORE = _STORE, []
+    global _STORE, _HAS, _ALSO
+    for world, sid, k, other, vk in _ALSO:
+        assert vk in _HAS.get((world, other), set()), \
+            f'section_options: option "{k}" of "{sid}" shows "{other}" as "{vk}", which no section "{other}" of that world draws'
+    out, _STORE, _HAS, _ALSO = _STORE, [], {}, []
     if not out:
         return ''
     rows = []

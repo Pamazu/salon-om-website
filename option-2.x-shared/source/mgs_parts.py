@@ -314,7 +314,8 @@ def team(note=False, sid='hosts'):
     m = dict(M.TEAM[0], img=TEAM_IMG[0][0], alt=TEAM_IMG[0][1])
     people = [m] + [dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in (1, 2)]
     d = dict(id=sid, layout='letter', ph_tag=False, eyebrow='Meet the team', title=M.TEAM_LINE,
-             intro=M.TEAM[0]['desc'], people=people, with_label='With', lead=True)   # her card's name and role (11 Nov)
+             intro=M.TEAM[0]['desc'], people=people, with_label='With', lead=True,   # her card's name and role (11 Nov)
+             options=S.TEAM_OPTIONS, option_label=S.TEAM_LIVE_LABEL)   # task 9999ef8a
     if note: d.update(note=draft(TEAM_NOTE), sign='Maggie')
     return ('team', d)
 

@@ -52,5 +52,30 @@ class Pictures(unittest.TestCase):
         self.assertIn('<img data-pic="ft.webp" class="mn__img', out)
 
 
+class Also(unittest.TestCase):
+    """task 9999ef8a: an option may show another section in one of its variants (also=); a variant is off its own list"""
+    def draw(self, kind, d):
+        return f'<section class="s {d.get("cls", "x")}" id="{d["id"]}">{d.get("words", "w")}</section>'
+
+    def page(self, also_to='old'):
+        SO.store()
+        a = SO.render(self.draw, 'k', dict(id='a', options=[dict(key='b2', label='B2', cls='b2')], variants=[dict(key='old', cls='old')]), 'salon')
+        h = SO.render(self.draw, 'k', dict(id='h', options=[dict(key='nov', label='Nov', also={'a': also_to})]), 'salon')
+        return a, h
+
+    def test_a_variant_is_drawn_but_not_listed(self):
+        a, h = self.page()
+        self.assertIn('"k":"b2"', a.replace('&quot;', '"'))
+        self.assertNotIn('old', a)
+        self.assertIn('"a":{"a":"old"}', h.replace('&quot;', '"'))
+        store = SO.store()
+        self.assertIn('data-opt-for="a" data-opt="old"', store)
+
+    def test_also_to_a_variant_nobody_draws_is_refused(self):
+        self.page(also_to='gone')
+        with self.assertRaises(AssertionError):
+            SO.store()
+
+
 if __name__ == '__main__':
     unittest.main()

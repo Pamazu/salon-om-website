@@ -543,6 +543,10 @@ AVEDA_SHEET = 'F'
 AVEDA_LIVE_LABEL = 'F · A clear window drifts'
 SYNCED = dict(label='F · synced with the scroll', note='The clear window opens around its subject as the section rises into view and moves with the page; still while the page is still.')
 AVEDA_OPTIONS = [dict(key='sheet-fs', kind=aveda_sheet, sheet='FS', **SYNCED)]
+# Why Aveda as it stood right before the team on G from 6 to 11 Nov (b5af357 to 2332179): its line and four facts on the light
+# ground, the reward and the button, the team following on the same ground (task 9999ef8a). Not on Why Aveda's own list (J's two,
+# gate row 26): the team's option "As on 11 Nov" brings it. Her quote came on 13 Nov, after it: it stays in today's.
+AVEDA_VARIANTS = [dict(key='facts-nov11', kind='facts', light=True, quote=None)]
 
 
 def door_sheet(d, world):
@@ -565,3 +569,13 @@ def door_sheet(d, world):
 DOOR_SHEET = 'FS'
 DOOR_OPTIONS = [dict(key='photo', label='The words on the photo (before 19 Nov)', note='White words straight on the photo under a dark shade.', kind='bridge')]
 DOOR_LIVE_LABEL = SYNCED['label']
+
+
+# The team's options (task 9999ef8a; J 20 Nov, his video at 4:21: "i will love more options i feel more beautiful"; 12:47 Z:
+# "previously you had this section in a way that felt continous I think that it was after the one of what is your color").
+# Today's layout stays the section on the page until J picks.
+TEAM_LIVE_LABEL = 'Today’s: her portrait beside the letter'
+TEAM_NOV11 = dict(key='nov11', label='As on 11 Nov: right after Why Aveda, one light ground',
+                  note='Why Aveda above shows its line and four facts on the same light ground, and the team follows on, as on G from 6 to 11 Nov (2332179).',
+                  also={'aveda': 'facts-nov11'})
+TEAM_OPTIONS = [TEAM_NOV11]
