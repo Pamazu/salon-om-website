@@ -307,11 +307,14 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
 .cl--foot { min-height: 0; padding-top: var(--sp-5); }
 /* OM · Oneness with Begin inside it (G, task cde7849b): OM's screen keeps its full height and centred words, Begin follows on the
    same ground, no snap point between; the ring stays centred on OM's screen; Begin's photo opens with the section */
-.mani--begin { grid-template-rows: 100vh auto; grid-template-rows: 100svh auto; align-items: stretch; }
-.mani--begin > .mani__in { align-self: center; }
+.mani--begin { --gb: clamp(var(--sp-6), 9vw, var(--sp-7)); grid-template-rows: auto auto; align-items: stretch; }
+/* the space above Begin and the space below it are one value, --gb (J 20 Nov 13:58 Z: "too much gap above your moment awaits and too
+   little padding below that section"): OM's words keep their place from the section's top; only the empty screen under OM's
+   button goes, so the gap above is --gb whatever the window */
+.mani--begin > .mani__in { align-self: start; padding-bottom: 0; }
 .mani--begin .mani__ring { top: 50vh; top: 50svh; }
 .mani--begin > .mani__begin { position: relative; z-index: 2; background: none; min-height: 0; }
-.mani--begin > .mani__begin .cl__cta { max-width: 1560px; margin: 0 auto; padding: var(--sp-5) var(--gutter) var(--base); }   /* OM's own column (.mani__in), Why Aveda's rhythm (.av--sheet .av__letter) and the room every slide keeps at its foot */
+.mani--begin > .mani__begin .cl__cta { max-width: 1560px; margin: 0 auto; padding: var(--gb) var(--gutter); }   /* OM's own column (.mani__in), --gb above and below */   /* OM's own column (.mani__in), Why Aveda's rhythm (.av--sheet .av__letter) and the room every slide keeps at its foot */
 .mani--begin.is-active .cl__ph { clip-path: inset(0); }
 .mani--begin.is-active .cl__ph img { transform: none; }     /* the footer band alone, after the second door on G (task cde7849b) */
 .cl__cta { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-6); width: 100%; max-width: 1680px; margin: 0 auto;
