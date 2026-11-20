@@ -4,12 +4,12 @@
 // colour, so the contrast behind every line is read from the pixels (qa/pause_contrast.py). At 1440 also a strip of eleven
 // frames through the section, to see the breath move. chromium (4th argument, or ENGINE=) for Chromium (the PC). The pool's pinned browser when
 // given (WEBKIT=, run-at-ref --asset WEBKIT; CHROME= or SDELEGATE_CHROMIUM=), else Playwright's own.
-// Usage: node pause.mjs <outdir> [m,g] [1440,390,3230] [webkit|chromium]
+// Usage: node pause.mjs <outdir> [m,g] [1440,390,3230] [webkit|chromium] [query, e.g. opt-pause=centred]
 import * as pw from 'playwright';
 import fs from 'node:fs'; import path from 'node:path';
 import { serve, open, jump, wait } from './lib.mjs';
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const [out = 'pause-shots', vs = 'm,g', ws = '1440,390,3230', eng = ''] = process.argv.slice(2);
+const [out = 'pause-shots', vs = 'm,g', ws = '1440,390,3230', eng = '', qs = ''] = process.argv.slice(2);
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
@@ -22,7 +22,7 @@ for (const w of ws.split(',').map(Number)) {
   const dpr = w === 390 ? 3 : 2;
   const ctx = await b.newContext({ viewport: size, deviceScaleFactor: dpr, isMobile: w === 390, hasTouch: w === 390 });
   for (const v of vs.split(',')) {
-    const p = await open(ctx, `${base}/${v}/`);
+    const p = await open(ctx, `${base}/${v}/${qs ? '?' + qs : ''}`);
     const g = await p.evaluate(() => { const s = document.getElementById('pause'); return { y: s.offsetTop, span: s.offsetHeight - innerHeight }; });
     const at = (t) => jump(p, Math.round(g.y + g.span * t));
     if (w === 1440) for (let k = 0; k <= 10; k++) { await at(k / 10); await wait(p, 700); await p.screenshot({ path: `${out}/${v}-${w}-strip-${k}.jpg`, type: 'jpeg', quality: 70 }); }

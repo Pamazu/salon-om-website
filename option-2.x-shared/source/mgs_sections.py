@@ -417,7 +417,7 @@ def pause_scene(d, world):
     </div>'''
     else:
         raise AssertionError(f'pause_scene: no scene "{sc}"')
-    split = ' data-split' if sc == 'breath' and pos else ''
+    split = ' data-split' if sc == 'breath' and pos and d.get('layout') != 'centre' else ''
     return f'''<section class="s ps ps--{sc}" id="{d['id']}"{split} data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
     {inner}
     <div class="s__shade"></div>
@@ -430,6 +430,9 @@ def pause_scene(d, world):
 # Work's twin draws the same options in its own words and picture.
 PAUSE_DEFAULT = dict(scene='breath', cue=('breathe in', 'breathe out'))
 PAUSE_OPTIONS = [
+    # (task 3c02d47d; J 20 Nov 12:43 Z: "I need ASAP fast like quick the option of this section that was centered with the scroll
+    # triggered interaction"): B as it ran before 4e3a4a4, the words centred over the room, on today's picture
+    dict(key='centred', label='B · The breath, centred', note='As before 20 Nov: the room opens from a thin line as you breathe in, the words centred over it; the question arrives on the exhale.', scene='breath', layout='centre'),
     dict(key='standing', label='The door, standing in the room', note='Her words beside a tall arched door on the empty chair by the window (before 19 Nov).', kind='tease'),
     dict(key='glass', label='D1 · The glass door', note='The door again, behind two leaves of fluted glass that slide apart as it arrives.', kind='tease', glass=True),
     dict(key='through', label='D2 · Step through', note='Scroll slowly: you walk up to the door until it fills the screen and you stand in the room.', scene='through'),

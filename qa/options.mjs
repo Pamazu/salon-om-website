@@ -82,12 +82,17 @@ for (const v of ['m', 'g', 's']) {
   ok(`${v}: it follows the section on screen`, s.sec === 'The pause' && s.rows.length === await nOpts('pause'), { sec: s.sec, rows: s.rows });
   await shot(p, `${v}-1440-pause-live`);
   // B · The breath is the default since f1857cd (task 95ac520e): choosing it is choosing today's version, the address and memory clean
-  for (const k of ['door', 'room', 'live', 'cinema']) {
+  for (const k of ['door', 'room', 'centred', 'live', 'cinema']) {
     await toPause(p);
     await p.click(`#opt-panel [data-k="${k}"]:not([data-pic])`); await wait(p, 4200); s = await state(p);
     const kept = k === 'live' ? !s.url.includes('opt-pause') && !s.ls.some((x) => x.includes('opt-pause')) : s.url.includes(`opt-pause=${k}`) && s.ls.some((x) => x.endsWith('opt-pause=' + k));
     ok(`${v}: pause -> ${k}, both worlds, in the address and this browser`, s.pause === k && s.cpause === k && kept && s.letters > 0,
       { pause: s.pause, cpause: s.cpause, url: s.url, letters: s.letters, on: s.on });
+    if (k === 'centred') {       // task 3c02d47d: B as before 4e3a4a4, its words centred over the room, on J's pick A
+      const cz = await p.evaluate(() => { const s = document.getElementById('pause'), i = s.querySelector('.ps__pic img'), w = s.querySelector('.ps__words');
+        return { breath: s.classList.contains('ps--breath'), split: s.hasAttribute('data-split'), img: (i.getAttribute('src') || '').split('?')[0], align: getComputedStyle(w).textAlign }; });
+      ok(`${v}: centred is B · The breath with its words centred, on J's pick A`, cz.breath && !cz.split && /om-pause-rest\.webp$/.test(cz.img) && cz.align === 'center', cz);
+    }
     if (k === 'live') {
       // with the page's snap on, the wheel moves through it (it must not jump past it)
       const top = await p.evaluate(() => document.getElementById('pause').getBoundingClientRect().top + scrollY);
