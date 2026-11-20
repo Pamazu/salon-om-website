@@ -1,5 +1,5 @@
 // The QA scripts' shared blocks (task 2846db82 / cf6eeff6): the loopback server for a commit's built M/G/S pages and the
-// page helpers every check uses. r4.mjs, copy-check.mjs and gaps.mjs import them; record.mjs and menu-panels.mjs still
+// page helpers every check uses. r4.mjs, copy-check.mjs, gaps.mjs, gate-rows.mjs and safari.mjs import them; record.mjs and menu-panels.mjs still
 // carry their own server (record.mjs adds film routes: pass them as `extra`).
 import http from 'node:http';
 import fs from 'node:fs';
@@ -102,3 +102,68 @@ export const vp = (w, h) => ({ viewport: { width: w, height: h } });
 export const phone = (browser) => ({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: browser !== 'firefox', hasTouch: true });
 export const SIZES = (browser) => [['390', phone(browser)], ['768', vp(768, 1024)], ['1024', vp(1024, 768)], ['1280', vp(1280, 800)],
   ['1366', vp(1366, 768)], ['1440', vp(1440, 900)], ['1920', vp(1920, 1080)]];
+
+// approved-features row 5, the pull (J 13 Nov, asks e55369fb, ead2f524: past a tall section the page "should have the same
+// behavior as the transition between any other slides and work the same way ... The same applies in reverse"; task 58855053).
+// One block for gate-rows.mjs row 5, r4.mjs snap and safari.mjs snap.
+// tall(): every section of the shown world taller than the window, by id, as mgs.js secs() sees them (main[data-world] > .s),
+// each with whether a section follows it; run in the page (p.evaluate(tall), or WebDriver's execute)
+export function tall() {
+  const m = document.querySelector('main[data-world]:not([hidden])'), vh = innerHeight;
+  const all = m ? [...m.children].filter((e) => e.classList.contains('s') && e.id) : [];
+  return all.map((e, i) => ({ id: e.id, h: Math.round(e.getBoundingClientRect().height), next: i < all.length - 1 })).filter((s) => s.h > vh + 2);
+}
+// where a section's edges sit relative to the window (px; 0 = aligned); the next section is the next one mgs.js settles on
+export function edgesOf(id) {
+  const s = document.getElementById(id), r = s.getBoundingClientRect();
+  let n = s.nextElementSibling; while (n && !n.classList.contains('s')) n = n.nextElementSibling;
+  return { top: Math.round(r.top), bottomGap: Math.round(r.bottom - innerHeight), nextTop: n ? Math.round(n.getBoundingClientRect().top) : null, y: Math.round(scrollY), vh: innerHeight, snap: document.documentElement.style.scrollSnapType };
+}
+// a slow scroll in small steps: the mouse wheel on a laptop size; on a phone size (mobile WebKit has no wheel) the same steps as
+// scroll positions, which fire the same scroll events a finger's scroll does; Chromium on a phone: a finger's drag over CDP
+export async function wheel(p, dy, { step = 60, browser = 'webkit' } = {}) {
+  const n = Math.max(1, Math.round(Math.abs(dy) / step)), vp = p.viewportSize(), mobile = vp.width < 600;
+  if (!mobile) await p.mouse.move(vp.width / 2, vp.height / 2);      // the wheel where a person's pointer rests, mid-window
+  if (mobile && browser === 'chromium') {
+    const cdp = await p.context().newCDPSession(p), x = vp.width / 2;
+    const y0 = dy > 0 ? vp.height * .8 : vp.height * .2;
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: y0 }] });
+    for (let i = 1; i <= n; i++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y0 - dy * i / n }] }); await wait(p, 40); }
+    await wait(p, 120);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    return;
+  }
+  for (let i = 0; i < n; i++) {
+    const d = Math.sign(dy) * Math.abs(dy) / n;
+    if (mobile) await p.evaluate((d) => scrollBy({ top: d, behavior: 'instant' }), d); else await p.mouse.wheel(0, d);
+    await wait(p, 40);
+  }
+}
+// the six moves (r4.mjs round 4, task 2846db82) and what each must leave once the page is at rest: [move, expected, pass]
+export const STEPS = {
+  a: ['a little way into the section, at rest', 'no move: top < 0, bottomGap > 0', (e) => e.top < 0 && e.bottomGap > 0],
+  b: ['slowly a little past its end (120 px of the next)', 'bottomGap 0 (its bottom on the window bottom)', (e) => Math.abs(e.bottomGap) <= 2],
+  c: ['on, less than a third of the window', 'bottomGap 0 again', (e) => Math.abs(e.bottomGap) <= 2],
+  d: ['on, more than a third of the window', 'nextTop 0 (the next section in)', (e) => e.nextTop !== null && Math.abs(e.nextTop) <= 2],
+  e: ['back up a little', 'nextTop 0 (stays)', (e) => e.nextTop !== null && Math.abs(e.nextTop) <= 2],
+  f: ['back up more than a third', 'bottomGap 0 (back to its end)', (e) => Math.abs(e.bottomGap) <= 2],
+};
+// what pullWalk() drives: run(fn, arg) in the page, jump(y), wheel(dy), wait(ms); io(p) for Playwright, safari.mjs passes WebDriver's
+export const io = (p, browser = 'webkit') => ({ run: (fn, a) => p.evaluate(fn, a), jump: (y) => jump(p, y), wheel: (dy) => wheel(p, dy, { browser }), wait: (ms) => wait(p, ms) });
+// walk one tall section through the six moves; at(r) runs after each (r4.mjs takes its still there). Step a needs some free
+// scroll to read (over 100 px); b starts 200 px short of the end (at the top of a section less than 200 px taller than the
+// window) and moves 120 px past it; c to f need a section after it: callers pass only those (tall()'s next).
+export async function pullWalk(io, id, at) {
+  const g = await io.run((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: Math.round(r.top + scrollY), h: Math.round(r.height), vh: innerHeight }; }, id);
+  const out = [], over = g.h - g.vh, third = g.vh / 3;
+  const rec = async (k) => { await io.wait(1300); const e = await io.run(edgesOf, id), r = { step: k, ...e, pass: STEPS[k][2](e) }; out.push(r); if (at) await at(r); };
+  if (over > 100) { await io.jump(g.top); await io.wait(900); await io.wheel(Math.min(300, over - 40)); await rec('a'); }
+  const start = g.top + Math.max(0, over - 200);
+  await io.jump(start); await io.wait(900);
+  await io.wheel(g.top + over - start + 120); await rec('b');
+  await io.wheel(Math.round(third * .6)); await rec('c');
+  await io.wheel(Math.round(third * 1.25)); await rec('d');
+  await io.wheel(-120); await rec('e');
+  await io.wheel(-Math.round(third * 1.25)); await rec('f');
+  return out;
+}

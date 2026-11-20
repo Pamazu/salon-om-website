@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import http from 'node:http';
+import { tall, pullWalk } from './lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const [, WHERE = 'mac', VERS_ARG = 'm,g', WHAT = 'films,sound,snap'] = process.argv.slice(2);
@@ -261,42 +262,25 @@ async function entry(v) {
   return { css: process.env.ENTRY_CSS || null, steps };
 }
 
-// r4.mjs snap(): the same six steps on the tall sections of this version (1440 x 900), through WebDriver wheel actions
+// r4.mjs snap(): the same six moves (lib.mjs pullWalk) on every section of this version taller than the window, found by id in
+// both worlds (lib.mjs tall(); 1440 x 900), through WebDriver wheel actions
 async function wheel(dy, step = 60) {
   const n = Math.max(1, Math.round(Math.abs(dy) / step)), d = Math.round(Math.sign(dy) * Math.abs(dy) / n);
   const acts = [];
   for (let i = 0; i < n; i++) { acts.push({ type: 'scroll', x: 720, y: 450, deltaX: 0, deltaY: d, duration: 40, origin: 'viewport' }); acts.push({ type: 'pause', duration: 40 }); }
   await wd('POST', S('/actions'), { actions: [{ type: 'wheel', id: 'wheel', actions: acts }] });
 }
-const edges = (id) => exec((id) => {
-  const s = document.getElementById(id), n = s.nextElementSibling, r = s.getBoundingClientRect();
-  return { top: Math.round(r.top), bottomGap: Math.round(r.bottom - innerHeight), nextTop: n ? Math.round(n.getBoundingClientRect().top) : null, y: Math.round(scrollY), vh: innerHeight };
-}, id);
 async function snap(v) {
-  const cases = { g: ['services', 'c-how', 'hosts'], m: ['services', 'hosts'] }[v] || [];
-  const out = [];
-  for (const id of cases) {
-    if (id.startsWith('c-')) { await exec(() => document.querySelector('.worlds [data-to-world="coaching"]').click()); await sleep(2800); }
-    const g = await exec((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height, vh: innerHeight }; }, id);
-    if (g.h <= g.vh + 2) { out.push({ id, note: 'not taller than the window here' }); continue; }
-    const third = g.vh / 3, rec = async (step, expect) => { await sleep(1300); out.push({ id, step, expect, ...(await edges(id)) }); };
-    try {
-      await jump(g.top); await sleep(900);
-      await wheel(Math.min(300, g.h - g.vh - 40)); await rec('a', 'no move: top < 0, bottomGap > 0');
-      await jump(g.top + g.h - g.vh - 200); await sleep(900);
-      await wheel(320); await rec('b', 'bottomGap 0');
-      await wheel(Math.round(third * 0.6)); await rec('c', 'bottomGap 0 again');
-      await wheel(Math.round(third * 1.25)); await rec('d', 'nextTop 0');
-      await wheel(-120); await rec('e', 'nextTop 0 (stays)');
-      await wheel(-Math.round(third * 1.25)); await rec('f', 'bottomGap 0');
-    } catch (e) { out.push({ id, error: e.message }); break; }
-    if (id.startsWith('c-')) { await exec(() => document.querySelector('.worlds [data-to-world="salon"]').click()); await sleep(2800); }
-  }
-  for (const r of out) {
-    if (!r.step) continue;
-    const ok = { a: r.top < 0 && r.bottomGap > 0, b: Math.abs(r.bottomGap) <= 2, c: Math.abs(r.bottomGap) <= 2, d: r.nextTop != null && Math.abs(r.nextTop) <= 2, e: r.nextTop != null && Math.abs(r.nextTop) <= 2, f: Math.abs(r.bottomGap) <= 2 }[r.step];
-    r.pass = ok;
-    console.log('snap', v, r.id, r.step, ok ? 'pass' : 'FAIL', `top ${r.top} bottomGap ${r.bottomGap} nextTop ${r.nextTop}`);
+  const out = [], drive = { run: exec, jump, wheel: (dy) => wheel(dy), wait: sleep };
+  for (const world of ['salon', 'coaching']) {
+    if (world === 'coaching') { await exec(() => document.querySelector('.worlds [data-to-world="coaching"]').click()); await sleep(2800); }
+    for (const t of await exec(tall)) {
+      if (!t.next) { out.push({ world, id: t.id, note: 'the last section: nothing to pull into' }); continue; }
+      try {
+        await pullWalk(drive, t.id, (r) => { out.push({ world, id: t.id, ...r }); console.log('snap', v, world, t.id, r.step, r.pass ? 'pass' : 'FAIL', `top ${r.top} bottomGap ${r.bottomGap} nextTop ${r.nextTop}`); });
+      } catch (e) { out.push({ world, id: t.id, error: e.message }); break; }
+    }
+    if (world === 'coaching') { await exec(() => document.querySelector('.worlds [data-to-world="salon"]').click()); await sleep(2800); }
   }
   return out;
 }

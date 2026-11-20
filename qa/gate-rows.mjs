@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
-import { serve, open, wait, jump, toWorld, pictures } from './lib.mjs';
+import { serve, open, wait, jump, toWorld, pictures, tall, pullWalk, io, STEPS } from './lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url)), REPO = path.resolve(HERE, '..');
 const OUT = path.resolve(process.argv[2] || 'gate-out'), VERS = (process.argv[3] || 'm,g,s').split(',');
@@ -34,7 +34,7 @@ const topOf = (p, id) => p.evaluate((id) => { const e = document.getElementById(
 const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 
 // 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22, 24, 25
-async function desktop(p, v, P, W, add, seen) {
+async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs's row (a break's other rows need no pull walk)
   const vh = 900;
   // row 9: every green on the page is one of option B's forests (a green = its green clearly above its red and blue)
   const greens = await p.evaluate((P) => {
@@ -119,6 +119,7 @@ async function desktop(p, v, P, W, add, seen) {
     if (fwd > 0) add(5, `wheeling up through the menu jumped forward from ${up[fwd - 1]} to ${up[fwd]}`);
     if (down[down.length - 1] <= ys + 4) add(5, `a slow wheel did not move into the menu (stayed at ${down[down.length - 1]}, its top is ${ys})`);
   }
+  if (!only || only === 5) await pulls(p, W, '1440', add, seen);
 
   // row 8: the voices: one centred testimonial at a time, changing in place, on the forest ground
   for (const id of await p.evaluate((P) => [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} > section.voices`)].filter((s) => s.querySelectorAll('[data-quotes] .q').length > 1).map((s) => s.id), P)) {
@@ -317,9 +318,24 @@ async function door(p, P, W, add, seen, size) {
   await jump(p, d0.y); await wait(p, 300);
 }
 
-// 390 x 844 phone: rows 6, 14, 20 and 25
-async function phone(p, v, P, W, add, seen) {
+// row 5, the pull (J 13 Nov, asks e55369fb, ead2f524: past a tall section "the same behavior as the transition between any other
+// slides ... The same applies in reverse"; task 58855053): every section of the world taller than the window, found by id, through
+// lib.mjs pullWalk()'s six moves: free inside; a little past its end its bottom lines up; a third on, the next section pulls in;
+// and the same on the way back. The last section has nothing to pull into.
+async function pulls(p, W, size, add, seen) {
+  for (const t of await p.evaluate(tall)) {
+    if (!t.next) { seen[`5 ${W} ${size} ${t.id}`] = 'the last section: nothing to pull into'; continue; }
+    const r = await pullWalk(io(p), t.id);
+    seen[`5 ${W} ${size} ${t.id}`] = r.map((x) => `${x.step}${x.pass ? '' : ' OFF'}: top ${x.top} bottomGap ${x.bottomGap} nextTop ${x.nextTop}`);
+    for (const x of r.filter((x) => !x.pass)) add(5, `at ${size} "${t.id}", ${STEPS[x.step][0]}: ${STEPS[x.step][1]}, but top ${x.top}, bottomGap ${x.bottomGap}, nextTop ${x.nextTop}`);
+  }
+  await jump(p, 0); await wait(p, 400);
+}
+
+// 390 x 844 phone: rows 5, 6, 14, 20 and 25
+async function phone(p, v, P, W, add, seen, only) {
   await heads(p, P, W, add, seen, '390');
+  if (!only || only === 5) await pulls(p, W, '390', add, seen);
   const yp = await topOf(p, `${P}pause`);
   if (yp >= 0) { await jump(p, Math.max(0, yp - 844)); await wait(p, 500); await jump(p, yp); await wait(p, 5200); await door(p, P, W, add, seen, '390'); }
   const ys = await topOf(p, `${P}services`);

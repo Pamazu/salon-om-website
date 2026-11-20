@@ -14,7 +14,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
-import { serve as serveRepo, wait, open, toWorld, jump, SIZES } from './lib.mjs';
+import { serve as serveRepo, wait, open, toWorld, jump, SIZES, tall, pullWalk, io, STEPS } from './lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BROWSER = process.env.BROWSER || 'webkit';
@@ -77,60 +77,30 @@ async function shots(b, base) {
   console.log('shots', log.length, '| bar shown over text:', bad.length, bad.map((l) => `${l.v}-${l.world}-${l.id}-${l.w}`).join(' '));
 }
 
-// where a section's edges sit relative to the window (px; 0 = aligned)
-const edges = (p, id) => p.evaluate((id) => {
-  const s = document.getElementById(id), n = s.nextElementSibling, r = s.getBoundingClientRect();
-  return { top: Math.round(r.top), bottomGap: Math.round(r.bottom - innerHeight), nextTop: n ? Math.round(n.getBoundingClientRect().top) : null, y: Math.round(scrollY), vh: innerHeight, snap: document.documentElement.style.scrollSnapType };
-}, id);
-// a slow scroll in small steps: the mouse wheel on a laptop size; on a phone size (mobile WebKit has no wheel) the same
-// steps as scroll positions, which fire the same scroll events a finger's scroll does
-async function wheel(p, dy, step = 60) {
-  const n = Math.max(1, Math.round(Math.abs(dy) / step)), mobile = p.viewportSize().width < 600;
-  if (mobile && BROWSER === 'chromium') {      // Chromium: a finger's drag (touch down, move in small steps, lift)
-    const cdp = await p.context().newCDPSession(p), vp = p.viewportSize(), x = vp.width / 2;
-    const y0 = dy > 0 ? vp.height * .8 : vp.height * .2;
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: y0 }] });
-    for (let i = 1; i <= n; i++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y0 - dy * i / n }] }); await wait(p, 40); }
-    await wait(p, 120);
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    return;
-  }
-  for (let i = 0; i < n; i++) {
-    const d = Math.sign(dy) * Math.abs(dy) / n;
-    if (mobile) await p.evaluate((d) => scrollBy({ top: d, behavior: 'instant' }), d); else await p.mouse.wheel(0, d);
-    await wait(p, 40);
-  }
-}
 async function snap(b, base) {
-  const res = [];
-  // round 5 QA: the hosts letter (M, G) grows with its words on a laptop, so it is a tall section there too; IDS narrows the cases
+  const res = [], save = () => fs.writeFileSync(path.join(OUT, 'snap.json'), JSON.stringify(res, null, 1));
+  // every section taller than the window, found by id in each version, world and size (lib.mjs tall(), task 58855053), through
+  // lib.mjs pullWalk()'s six moves; IDS narrows the sections
   const ids = (process.env.IDS || '').split(',').filter(Boolean);
-  const cases = [['g', 'salon', 'services'], ['m', 'salon', 'services'], ['g', 'coaching', 'c-how'], ['s', 'coaching', 'c-deeper'],
-    ['g', 'salon', 'hosts'], ['m', 'salon', 'hosts'],
-    // task 95e37a41: the sections under the sheet, tall where their words outgrow the screen (the list goes when task 58855053 finds every tall section itself)
-    ['m', 'salon', 'aveda'], ['g', 'salon', 'aveda'], ['m', 'coaching', 'c-aveda'], ['g', 'coaching', 'c-aveda'], ['m', 'salon', 'deeper'], ['g', 'coaching', 'c-deeper']].filter(([v, , id]) => VERS.includes(v) && (!ids.length || ids.includes(id)));
-  for (const [v, world, id] of cases) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
+  for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
     try {
-    if (world === 'coaching') await toWorld(p, 'coaching');
-    if (opt.viewport.width >= 600) await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2);
-    const g = await p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height, vh: innerHeight }; }, id);
-    if (g.h <= g.vh + 2) { res.push({ v, world, id, w, note: 'not taller than the window here' }); await ctx.close(); continue; }
-    const third = g.vh / 3, rec = async (step, expect) => { await wait(p, 1300); const e = await edges(p, id); res.push({ v, world, id, w, step, expect, ...e }); await p.screenshot({ path: path.join(OUT, `snap-${v}-${id}-${w}-${res.length}.jpg`), type: 'jpeg', quality: 70 }); };
-    await jump(p, g.top); await wait(p, 900);
-    await wheel(p, Math.min(300, g.h - g.vh - 40)); await rec('a: a little way into the section, at rest', 'no move: top < 0, bottomGap > 0');
-    await jump(p, g.top + g.h - g.vh - 200); await wait(p, 900);
-    await wheel(p, 320); await rec('b: slowly a little past its end (120 px of the next)', 'bottomGap 0 (its bottom on the window bottom)');
-    await wheel(p, Math.round(third * .6)); await rec('c: on, less than a third of the window', 'bottomGap 0 again');
-    await wheel(p, Math.round(third * 1.25)); await rec('d: on, more than a third of the window', 'nextTop 0 (next section in)');
-    await wheel(p, -120); await rec('e: back up a little', 'nextTop 0 (stays)');
-    await wheel(p, -Math.round(third * 1.25)); await rec('f: back up more than a third', 'bottomGap 0 (back to its end)');
-    } catch (e) { res.push({ v, world, id, w, error: e.message.slice(0, 200) }); }
-    fs.writeFileSync(path.join(OUT, 'snap.json'), JSON.stringify(res, null, 1));
+      if (world === 'coaching') await toWorld(p, 'coaching');
+      for (const t of (await p.evaluate(tall)).filter((t) => !ids.length || ids.includes(t.id))) {
+        if (!t.next) { res.push({ v, world, id: t.id, w, note: 'the last section: nothing to pull into' }); continue; }
+        try {
+          await pullWalk(io(p, BROWSER), t.id, async (r) => {
+            res.push({ v, world, id: t.id, w, ...r, step: `${r.step}: ${STEPS[r.step][0]}`, expect: STEPS[r.step][1] });
+            await p.screenshot({ path: path.join(OUT, `snap-${v}-${t.id}-${w}-${res.length}.jpg`), type: 'jpeg', quality: 70 });
+          });
+        } catch (e) { res.push({ v, world, id: t.id, w, error: e.message.slice(0, 200) }); }
+        save();
+      }
+    } catch (e) { res.push({ v, world, w, error: e.message.slice(0, 200) }); }
     await ctx.close();
   }
-  fs.writeFileSync(path.join(OUT, 'snap.json'), JSON.stringify(res, null, 1));
-  for (const r of res) console.log('snap', r.v, r.id, r.w, r.step || r.note || r.error, '|', r.expect || '', '| top', r.top, 'bottomGap', r.bottomGap, 'nextTop', r.nextTop, 'snap', JSON.stringify(r.snap));
+  save();
+  for (const r of res) console.log('snap', r.v, r.world, r.id, r.w, r.step || r.note || r.error, '|', r.expect || '', r.pass === false ? '| OFF' : '', '| top', r.top, 'bottomGap', r.bottomGap, 'nextTop', r.nextTop, 'snap', JSON.stringify(r.snap));
 }
 
 // G: the visit preview becoming the step rail (J's 4 Nov ask): stills at fixed points of the preview's leave, and whether the
