@@ -192,6 +192,7 @@ def chapter(d, i, n):
         # M/G/S (task 5cf1107e): a step's photo loads as its step comes near, in mgs.js's nearest-first line with the films; the
         # first step's from the page's start (measured on 4G at 390: near-first held its film 0.6 s, its photo had to go first)
         lazy = ' loading="lazy"' if _MGS and d.get('chapter', 0) > 0 else ''
+        lazy += ' data-cut' if _MGS else ''       # M/G/S: its cut for the screens it frames, if it has one (mgs_parts.srcset, task 1ff4c3f4)
         top = (f'<div class="ch__top{" is-stand" if t.get("stand") else ""}" aria-hidden="true"><img src="{t["poster"]}" alt="" decoding="async"{lazy}{pos}>'
                + (f'<video data-src-top="{t["src"]}" muted playsinline loop preload="none"></video>' if t.get('src') else '')
                + (f'<span class="tag label">{t["stand"]}</span>' if t.get('stand') else '') + _picture_mark(t['poster']) + '</div>')

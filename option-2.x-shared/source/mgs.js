@@ -577,12 +577,16 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 })();
 /* Each picture at the size the screen needs (task b1dd24c9): build.py gives M/G/S pictures a srcset, which a browser
    prefers to src. The tweak panel (tweaks.js, shared with 2.2) swaps a picture by setting its src, so while a picture
-   shows a tweaked file its srcset is set aside, and it comes back with "Use the original". */
+   shows a tweaked file its srcset is set aside, and it comes back with "Use the original"; a step photo's cut (its
+   <picture>'s <source>, task 1ff4c3f4) is set aside with it. */
 (function () {
   function sync(im) {
     var custom = im.hasAttribute('data-orig') && im.getAttribute('src') !== im.getAttribute('data-orig');
-    if (custom && im.hasAttribute('srcset')) { im.setAttribute('data-hd-srcset', im.getAttribute('srcset')); im.removeAttribute('srcset'); }
-    else if (!custom && im.hasAttribute('data-hd-srcset')) { im.setAttribute('srcset', im.getAttribute('data-hd-srcset')); im.removeAttribute('data-hd-srcset'); }
+    var src = im.parentNode && im.parentNode.tagName === 'PICTURE' ? [].slice.call(im.parentNode.querySelectorAll('source')) : [];
+    [im].concat(src).forEach(function (e) {
+      if (custom && e.hasAttribute('srcset')) { e.setAttribute('data-hd-srcset', e.getAttribute('srcset')); e.removeAttribute('srcset'); }
+      else if (!custom && e.hasAttribute('data-hd-srcset')) { e.setAttribute('srcset', e.getAttribute('data-hd-srcset')); e.removeAttribute('data-hd-srcset'); }
+    });
   }
   var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
   document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
