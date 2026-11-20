@@ -2015,6 +2015,10 @@ html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img, .is-held
    object-position), so a step shows its picture the moment it arrives on any line, a jump included; the photo covers it once
    decoded, fading in when it comes while its step is on screen (mgs.js), never a cut from soft to sharp */
 .ch__pre { position: absolute; inset: 0; background: 50% 30% / cover no-repeat; }
+/* drawn small and grown by the GPU (an eighth of the frame, scaled 8x, framed the same): full size, the frame's own layer
+   painted the preview at the phone's 3x as step 2 came on screen, one frame of 106-124 ms in the iOS Simulator where
+   today's was 33-42 (sim-options, 20 Nov); this way 28 ms, and the soft picture is as smooth */
+.ch__pre { inset: auto; left: 0; top: 0; width: 12.5%; height: 12.5%; transform: scale(8); transform-origin: 0 0; will-change: transform; }
 @media (max-aspect-ratio: 3/4) { .ch__pre { background-position: 50% 22%; } }
 @keyframes photo-in { from { opacity: 0; } }
 html[data-variant^="2.2-"] .s .ch__top img.is-in { animation: photo-in var(--t-ui) var(--io-soft); }
@@ -3159,7 +3163,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="b08e6a92178e";</script>
+<script>window.OM_BUILD="14ad89962af2";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
