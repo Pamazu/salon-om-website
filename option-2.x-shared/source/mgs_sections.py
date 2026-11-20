@@ -133,8 +133,7 @@ def close(d, world):
         <p class="label a-up" style="--d:.2s">{c['label']}</p>
         <h2 id="{c['id']}-t"><span class="mask"><span class="mask__in" style="--d:.35s">{c['title']}</span></span></h2>
         {text}{cycle(c, .85)}{(f'<p class="cl__last a-up" style="--d:.95s">' + c['last'] + '</p>') if c.get('last') else ''}
-        <div class="cl__btn a-up" style="--d:1s">{c['btn']}</div>{mail_form(c['btn'], world) if flow else ''}
-      </div>
+        <div class="cl__btn a-up" style="--d:1s">{c['btn']}</div>      </div>
       <figure class="cl__ph" aria-hidden="true"><img src="img/{img}" alt="" decoding="async" loading="lazy" style="--pos:{pos}"></figure>
     </div>
     {_foot(e, d['draft'])}
