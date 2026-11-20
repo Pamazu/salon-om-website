@@ -15,7 +15,8 @@ const wasBooted = dev.state === 'Booted'; if (!wasBooted) sh('boot', dev.udid); 
 console.log('simulator', dev.name, dev.udid, wasBooted ? '(was booted)' : '(booted here)');
 // [name, address, section to show, where inside it (0 top, .97 near its end), also try the handle and an in-place swap]
 // today's options (task 1ff4c3f4): the pause's seven (breath left with 279db527) and Why Aveda's two, F its default and FS
-// (sheets G, H, I, A-E left with 18f77bd); Step through is read near its end, where the room fills the view
+// (sheets G, H, I, A-E left with 18f77bd); Step through is read near its end, where the room fills the view; the steps' own:
+// today's C · Crossfade (live), B breath, the photo then its film (photo), D sheet (mgs_parts.STEP_OPTIONS at 3ef72f7)
 const RUNS = [['pause-live', '/m/?opt-pause=live', 'pause', 0, true], ['pause-standing', '/m/?opt-pause=standing', 'pause', 0], ['pause-glass', '/m/?opt-pause=glass', 'pause', 0],
   ['pause-through', '/m/?opt-pause=through', 'pause', .97], ['pause-door', '/m/?opt-pause=door', 'pause', 0], ['pause-room', '/m/?opt-pause=room', 'pause', 0],
   ['pause-cinema', '/m/?opt-pause=cinema', 'pause', 0],
@@ -23,7 +24,7 @@ const RUNS = [['pause-live', '/m/?opt-pause=live', 'pause', 0, true], ['pause-st
   ['g-aveda-fs', '/g/?opt-aveda=sheet-fs', 'aveda', 0], ['g-pause-room', '/g/?opt-pause=room&opt-aveda=live', 'pause', 0],
   // [.., frames through the section, the option's key when it is not the section's id]
   ['steps-live', '/m/?opt-steps=live', 'arrive', 0, false, true, 'steps'], ['steps-breath', '/m/?opt-steps=breath', 'arrive', 0, false, true, 'steps'],
-  ['steps-fade', '/m/?opt-steps=fade', 'arrive', 0, false, true, 'steps'], ['steps-sheet', '/m/?opt-steps=sheet', 'arrive', 0, false, true, 'steps'],
+  ['steps-photo', '/m/?opt-steps=photo', 'arrive', 0, false, true, 'steps'], ['steps-sheet', '/m/?opt-steps=sheet', 'arrive', 0, false, true, 'steps'],
   ['g-steps-breath', '/g/?opt-steps=breath', 'renew', 0, false, true, 'steps']];
 const REPORTER = `<script>try{localStorage.setItem('om-sound','off')}catch(e){}</script>
 <script>(function(){
@@ -79,7 +80,8 @@ for (const [name, , sec, , , fm, key] of RUNS) {
   if (process.env.SIM_STEPS === '1' && !fm) continue;
   const s = R[name] || {}, want = (RUNS.find((r) => r[0] === name)[1].match(new RegExp('opt-' + (key || sec) + '=([\\w-]+)')) || [])[1];
   if (fm) {      // a step: its option in place (the scroll frame for a scroll option), handing over half way, and the frames through it
-    const live = R['steps-live'] || {}, scroll = want !== 'live';
+    // every step option scrolls but the photo-then-film one (mgs_parts.STEP_OPTIONS, 3ef72f7: today's C · Crossfade is a scroll too)
+    const live = R['steps-live'] || {}, scroll = want !== 'photo';
     ok(`${name}: opens on its option, the scroll frame ${scroll ? 'in place, half way at mid-scroll' : 'absent'}, fits the phone, no script error`,
       s.opt === want && s.stick === scroll && (!scroll || (+s.mid > .2 && +s.mid < .8)) && s.wide <= s.w && !(s.errs || []).length, s);
     ok(`${name}: mobile Safari scrolls through it without a frame over 100 ms, no more long frames than today's`,
