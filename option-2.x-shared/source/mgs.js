@@ -562,6 +562,16 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      what the reader sees on arriving and its film only follows. So one step's photo is on this line at a time: the one on
      screen at once, then the others nearest the screen first, the far ones once the opening's film moves (or 6 s on); a
      near one decoded ahead, so painting it never holds a frame, a far one loaded only (no memory held, 1068f87) */
+  /* a step's photo stands on its soft preview (mgs_parts.srcset, mgs.css .ch__pre): one that comes while its step is on screen
+     fades in over it, never a cut from soft to sharp; one that came before shows at once; a picture option that swaps the photo
+     (options.js) sets the preview aside, as it shows the step's own photo */
+  [].forEach.call(document.querySelectorAll('.ch__pre'), function (pre) {
+    var f = pre.parentNode, im = f.querySelector('img'), of = (pre.getAttribute('data-of') || '').split('?')[0]; if (!im) return;
+    new MutationObserver(function () { pre.hidden = (im.getAttribute('src') || '').split('?')[0] !== of; }).observe(im, { attributes: true, attributeFilter: ['src'] });
+    if (im.complete && im.naturalWidth) return;
+    im.addEventListener('load', function () { var r = f.getBoundingClientRect(); if (!r.width || r.bottom <= 0 || r.top >= innerHeight) return;
+      im.classList.add('is-in'); im.addEventListener('animationend', function x(e) { if (e.animationName !== 'photo-in') return; im.classList.remove('is-in'); im.removeEventListener('animationend', x); }); }, { once: true });
+  });
   function opened() { var hv = films[0]; return performance.now() > 6000 || (hv && !hv.paused && hv.currentTime > .3); }
   function photos() {
     var t = performance.now(), w = films.filter(function (v) { var im = photo(v), m = v.closest('main'); return im && m && !m.hidden && !(im.complete && im.naturalWidth); })

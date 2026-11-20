@@ -2022,6 +2022,14 @@ html[data-shot] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__t
    block to html[data-motion="calm"]; it sits after the drift so it wins) */
 /* motion switch (was prefers-reduced-motion: reduce) */
 html[data-motion="calm"] :is(.is-held > img, .is-held > .ch__top > img, .is-held > .ch__top > picture > img) {animation: none;}
+/* a step's photo stands on its own soft preview (task 1ff4c3f4; J 20 Nov: "images take too long to load in the 5 steps section
+   it needs to be instant"): mgs_parts.srcset lays it under the photo, in the page itself, framed as the photo is (cover, the same
+   object-position), so a step shows its picture the moment it arrives on any line, a jump included; the photo covers it once
+   decoded, fading in when it comes while its step is on screen (mgs.js), never a cut from soft to sharp */
+.ch__pre { position: absolute; inset: 0; background: 50% 30% / cover no-repeat; }
+@media (max-aspect-ratio: 3/4) { .ch__pre { background-position: 50% 22%; } }
+@keyframes photo-in { from { opacity: 0; } }
+html[data-variant^="2.2-"] .s .ch__top img.is-in { animation: photo-in var(--t-ui) var(--io-soft); }
 /* task b36dde1f: a film Safari refuses is laid in as a moving image (mgs.js asImage: <img src="film.mp4">, which Safari plays
    by itself in Low Power Mode), over its <video> (whose refused start still shows a still frame) and under the photo; it fades in once it shows a frame and
    steps aside once the <video> truly plays */
@@ -2294,7 +2302,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ch--scroll-fade.ch--stack .ch__top, .ch--scroll-fade.ch--stack.is-active .ch__top { opacity: calc(1 - var(--e, 0)); transition: none; }
 /* D · The sheet: the photo becomes ribbed glass (the fluted glass, mgs.js data-flute), then rib by rib, left to right, the
    ribs clear and the film shows through */
-.ch--scroll-sheet .ch__top img { opacity: calc(1 - min(1, var(--e, 0) * 7)); }
+.ch--scroll-sheet .ch__top :is(img, .ch__pre) { opacity: calc(1 - min(1, var(--e, 0) * 7)); }
 .ch__ribs { position: absolute; inset: 0; display: flex; pointer-events: none; opacity: min(1, calc(var(--e, 0) * 7)); }
 .ch__ribs i { position: relative; flex: 1; background-repeat: no-repeat; opacity: clamp(0, calc(1 - (var(--e, 0) - .15 - var(--j) * .55) / .3), 1); }
 .ch__ribs i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, 0) 34%, rgba(10, 7, 5, 0) 62%, rgba(10, 7, 5, .18)); }
@@ -2838,7 +2846,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="0d721627ec71";</script>
+<script>window.OM_BUILD="1636bc44c63d";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4507,6 +4515,16 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      what the reader sees on arriving and its film only follows. So one step's photo is on this line at a time: the one on
      screen at once, then the others nearest the screen first, the far ones once the opening's film moves (or 6 s on); a
      near one decoded ahead, so painting it never holds a frame, a far one loaded only (no memory held, 1068f87) */
+  /* a step's photo stands on its soft preview (mgs_parts.srcset, mgs.css .ch__pre): one that comes while its step is on screen
+     fades in over it, never a cut from soft to sharp; one that came before shows at once; a picture option that swaps the photo
+     (options.js) sets the preview aside, as it shows the step's own photo */
+  [].forEach.call(document.querySelectorAll('.ch__pre'), function (pre) {
+    var f = pre.parentNode, im = f.querySelector('img'), of = (pre.getAttribute('data-of') || '').split('?')[0]; if (!im) return;
+    new MutationObserver(function () { pre.hidden = (im.getAttribute('src') || '').split('?')[0] !== of; }).observe(im, { attributes: true, attributeFilter: ['src'] });
+    if (im.complete && im.naturalWidth) return;
+    im.addEventListener('load', function () { var r = f.getBoundingClientRect(); if (!r.width || r.bottom <= 0 || r.top >= innerHeight) return;
+      im.classList.add('is-in'); im.addEventListener('animationend', function x(e) { if (e.animationName !== 'photo-in') return; im.classList.remove('is-in'); im.removeEventListener('animationend', x); }); }, { once: true });
+  });
   function opened() { var hv = films[0]; return performance.now() > 6000 || (hv && !hv.paused && hv.currentTime > .3); }
   function photos() {
     var t = performance.now(), w = films.filter(function (v) { var im = photo(v), m = v.closest('main'); return im && m && !m.hidden && !(im.complete && im.naturalWidth); })

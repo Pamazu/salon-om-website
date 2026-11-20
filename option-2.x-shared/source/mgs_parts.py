@@ -879,7 +879,19 @@ def srcset(body, v):
     def vw(e, k, w):
         return math.ceil(e[k] / w * 105) if e.get(k) else None
 
+    pv = json.load(open(here + 'photo_previews.json')) if os.path.exists(here + 'photo_previews.json') else {}
+
+    def pre(tag, name):
+        # a step's photo stands on its own soft preview (export_photos.preview, task 1ff4c3f4; J 20 Nov: "images take too long
+        # to load in the 5 steps section it needs to be instant"), laid under it and framed as it is (cover, its object-position)
+        p = re.search(r'object-position:\s*([^;"]+)', tag)
+        return (f'<i class="ch__pre" data-of="img/{name}" style="background-image:url({pv[name]})'
+                + (f';background-position:{p.group(1)}' if p else '') + '"></i>') if name in pv else ''
+
     def one(m):
+        return (pre(m.group(0), m.group(1)) if ' data-cut' in m.group(0) else '') + _one(m)
+
+    def _one(m):
         tag, name = m.group(0), m.group(1)
         # a step's photo (build.chapter marks it data-cut) also ships its cut to the screens it frames, when it has one and
         # keeps the frame's own object-position (the cut is made for it)
