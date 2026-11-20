@@ -168,7 +168,7 @@ const measure = (args) => {
 };
 
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
-const b = await pw[BROWSER].launch();
+const b = await pw[BROWSER].launch(BROWSER === 'webkit' && process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});   // the pool's pinned WebKit (run-at-ref --asset WEBKIT), as r4.mjs
 console.log(BROWSER, b.version());
 const sizes = [...SIZES(BROWSER), ['1976', vp(1976, 1209)], ['3230', vp(3230, 1319)]].filter(([w]) => !ONLY_W.length || ONLY_W.includes(w));
 const med = (xs) => { const v = [...xs].sort((x, y) => x - y); return v.length ? v[Math.floor((v.length - 1) / 2)] : 0; };

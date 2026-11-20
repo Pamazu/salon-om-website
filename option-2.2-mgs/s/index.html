@@ -2576,6 +2576,12 @@ html[data-shot] .tm__band img { transform: none !important; }
   .tm--centred .tm__av, .tm--breath .tm__av { width: 56px; height: 56px; }
 }
 
+/* QA round 2 (WebKit 1024 and 1440): the band's people one under another until the right column has room for two; the label
+   over the breath's people on their centre line; the breath's portrait a little lower, her head clear of the header */
+@media (max-width: 1279px) { .tm--band .tm__people { grid-template-columns: 1fr; } .tm--band .tm__people--n3 .tm__p { grid-template-columns: 64px minmax(0, 1fr); } }
+.tm--breath .tm__people > .tm__with { text-align: center; }
+.tm__run .ps__pic img { object-position: 50% 34%; }
+
 /* the option switcher (task e5325977, options.js): a small panel in the page's own floating glass (the bottom anchor's,
    next.css .wdoor), anchored bottom left above the tweak button it sits beside; pill rows, the chosen one filled ivory as the
    header's chosen world is; no outline on any filled shape. Its colours are fixed, not the theme's, as the tweak button's
@@ -3019,7 +3025,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="d1399eb5e017";</script>
+<script>window.OM_BUILD="edc5097a3529";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
