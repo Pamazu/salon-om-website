@@ -4303,6 +4303,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   function settle() {
     if (touching || !off || !sel() || root.classList.contains('menu-open')) return;
     var vh = innerHeight, list = secs(), b = null;
+    // a section whose top rests at the window's top is a slide at rest, whatever its height (task b623ab76): pulled up after a
+    // tall section, a section shorter than the window (S's Begin at 1440, after the menu) put the next one's edge inside the
+    // window, and the settle pulled straight back up a third, so the next section never pulled in (row 5)
+    for (var j = 0; j < list.length; j++) { if (Math.abs(list[j].getBoundingClientRect().top) <= 2 && list[j].offsetHeight) return; }
     for (var k = 1; k < list.length; k++) {
       var top = list[k].getBoundingClientRect().top;
       if (top > 2 && top < vh - 2) { b = top; break; }
