@@ -143,6 +143,11 @@ PAUSE_PICK_POS = '51% 60%'
 PICTURE_OPTIONS = {
     # today's is J's pick, A (task 69006a72, 5e79645: the 19 Nov pause guest with his 25 Oct basins room laid under her by her outline)
     PAUSE_PICK: dict(name='The pause’s picture', live='Today’s: A · The guest at the basin, your pick', options=[
+        # (task e1a1e009; J 20 Nov 07:12 Z: "use cinematic lighting to stage it better so that the focal point is the relaxed woman"):
+        # A's own pixels, the light staged on her and the room flagged down in the picture itself; the page's shade eases (light)
+        dict(key='lit', label='A, re-lit', img='om-pause-rest-lit.webp', ai=AI_GUEST, pos=PAUSE_PICK_POS, light=.4,
+             alt='A generated guest resting at a shampoo basin at Salon OM, eyes closed, warm light on her face and towel, the room in shade',
+             note='Your pick, lit like a film still: the light on her face and the towel, the room falling into shade.'),
         # (task e1a1e009, every try on record ac8238bb): at the model's 1248 px, sharpened only once J picks (J 18 Nov); pos = her face
         dict(key='exhale', label='S1 · The exhale at the basin', img='om-pause-exhale.webp', ai=AI_GUEST, pos='46.2% 49.9%',
              alt='A generated guest lying back at a shampoo basin at Salon OM, eyes closed, a towel over her black cape, her hair falling to the bowl',

@@ -32,6 +32,7 @@ a.add_argument('--subject', type=float, default=.30)    # stops added on her, at
 a.add_argument('--room', type=float, default=1.4)       # stops taken from the room outside her, most far from the key
 a.add_argument('--spill', type=float, default=.5)       # the share of the pool that still reaches the room near her (0..1)
 a.add_argument('--feather', type=float, default=.003)   # her outline's softness, a fraction of the width
+a.add_argument('--grain', type=float, default=0)        # with --matte: her fine grain raised toward the room's around her (0..1)
 o = a.parse_args()
 
 im = Image.open(o.inp).convert('RGB')
@@ -51,6 +52,19 @@ if o.matte:
     m = Image.open(o.matte).convert('L').resize((w, h), Image.LANCZOS).filter(ImageFilter.MinFilter(3))
     m = np.asarray(m.filter(ImageFilter.GaussianBlur(max(1, o.feather * w))), dtype=np.float32) / 255
     stops = stops + m * o.subject * (.35 + .65 * pool) - (1 - m) * o.room * (1 - o.spill * pool)
+    if o.grain:     # a generated guest is smoother than the photo around her (task e1a1e009, 1:1 QA of A): her grain matched to the
+        # room's within a ring around her, as a colourist adds grain to a comp; luminance noise, the same on every channel
+        from scipy import ndimage as ndi
+        Y = x @ np.array([.299, .587, .114], np.float32)
+        hf = Y - ndi.gaussian_filter(Y, 1.5)
+        ring = ndi.binary_dilation(m > .5, iterations=int(.02 * w)) & (m < .05)
+        sr, sh = float(hf[ring].std()), float(hf[m > .95].std())
+        add = max(0.0, sr ** 2 - sh ** 2) ** .5 * o.grain
+        rng = np.random.default_rng(1)
+        n = ndi.gaussian_filter(rng.standard_normal((h, w)).astype(np.float32), .6)
+        x = np.clip(x + (m * add * n / max(float(n.std()), 1e-6))[..., None], 0, 1)
+        print('grain: room', round(sr * 255, 2), 'her', round(sh * 255, 2), 'added', round(add * 255, 2), 'levels')
+        del Y, hf, ring, n
     del m
 lin = x ** 2.2 * (2 ** stops)[..., None]                            # light adds in linear light, like a real lamp
 if o.matte:                                                         # whites roll off like film, never a clipped towel

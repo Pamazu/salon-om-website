@@ -2,8 +2,10 @@
 // 2x), in WebKit (J's Safari). A frame at each point of the breath (0.15 the room opening, 0.5 the in-breath full, 0.72 the
 // out-breath with the question, 1 at rest) and, at the last two, the same frame with the words hidden plus each line's box and
 // colour, so the contrast behind every line is read from the pixels (qa/pause_contrast.py). At 1440 also a strip of eleven
-// frames through the section, to see the breath move. Usage: node pause.mjs <outdir> [m,g] [1440,390,3230]
-import { webkit } from 'playwright';
+// frames through the section, to see the breath move. ENGINE=chromium for Chromium (the PC). The pool's pinned browser when
+// given (WEBKIT=, run-at-ref --asset WEBKIT; CHROME= or SDELEGATE_CHROMIUM=), else Playwright's own.
+// Usage: node pause.mjs <outdir> [m,g] [1440,390,3230]
+import * as pw from 'playwright';
 import fs from 'node:fs'; import path from 'node:path';
 import { serve, open, jump, wait } from './lib.mjs';
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
@@ -11,7 +13,9 @@ const [out = 'pause-shots', vs = 'm,g', ws = '1440,390,3230'] = process.argv.sli
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
-const b = await webkit.launch();
+const ENGINE = process.env.ENGINE || 'webkit', exe = ENGINE === 'webkit' ? process.env.WEBKIT : process.env.CHROME || process.env.SDELEGATE_CHROMIUM;
+const b = await pw[ENGINE].launch(exe ? { executablePath: exe } : {});
+console.log(ENGINE, b.version());
 const LINES = '#pause .ps__cue, #pause .ps__head, #pause .ps__sub, #pause .ps__coda';
 for (const w of ws.split(',').map(Number)) {
   const size = w === 390 ? { width: 390, height: 844 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };

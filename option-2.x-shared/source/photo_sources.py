@@ -51,7 +51,8 @@ SOURCE = {
     'real-styling-stations.webp': 'm:11-styling-stations-clean.jpg',
     'om-menu-signature-color.webp': 'm:om-menu-signature-color-clean.png',   # the bin and the vacuum hose removed (task a8c429a3)
     'om-menu-blonding.webp': 'm:om-menu-blonding-j25.png',     # on J's 25 Oct picture (task 69006a72)
-    'om-pause-rest.webp': 'm:om-pause-guest-j25.png',     # the pause's picture A, under Shift+V (task 279db527), on J's 25 Oct picture
+    'om-pause-rest.webp': 'm:om-pause-guest-j25.png',     # the pause's picture A, J's pick (task e1a1e009), on J's 25 Oct picture
+    'om-pause-rest-lit.webp': 'm:om-pause-guest-j25-lit.png',     # A re-lit (task e1a1e009), under Shift+V until J picks it
     # the pause's other candidates under Shift+V (tasks e1a1e009, 279db527), at the model's review size until J picks one
     'om-pause-exhale.webp': 'm:om-pause-exhale-j25.png',     # S1, on J's 25 Oct picture
     'om-pause-window.webp': 'm:om-pause-window.png',         # S2
@@ -132,6 +133,7 @@ BASINS_ORIGINALS = {'6-shampoo-basins-5B3A1072.jpg', '12-shampoo-basins-backbar-
 J25_ZONES = [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (888, 232, 1038, 368)]
 # a picture made on J25 and cut from it: the box it was cut from (full-size px), so its pixels can be measured against his
 ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750), 'om-pause-guest-j25.png': (3100, 300, 8000, 3567),
+             'om-pause-guest-j25-lit.png': (3100, 300, 8000, 3567),   # A re-lit: A's pixels, A's crop
              'om-pause-exhale-j25.png': (4650, 1250, 7350, 3050),      # S1: cut there, then drawn at the model's 1248 px
              'om-menu-blonding-bl10a2-j25.png': (4623, 761, 6807, 4037)}      # BL10A seed 2 (task b1dd24c9): cut there, drawn at 832 px
 
@@ -147,6 +149,9 @@ BUILT_ON = {
     # the pause (task 69006a72): the 19 Nov pause guest (PZ5) with J's 25 Oct room laid under her by her own outline
     # (salon-om-pictures/tools/room_under_guest.py), cut at ROOM_CROP and graded (cine_grade.py)
     'om-pause-guest-j25.png': 'm:6-shampoo-basins-25oct.jpg',
+    # A re-lit (task e1a1e009; J 20 Nov: "use cinematic lighting to stage it better so that the focal point is the relaxed woman"):
+    # A's own pixels, the light staged on her outline and the room flagged down (cine_grade.py --matte, her grain matched, --grain)
+    'om-pause-guest-j25-lit.png': 'm:6-shampoo-basins-25oct.jpg',
     # the pause's candidates (task e1a1e009; Qwen-Image-Edit 2511 on the Mac Studio, her own outline laid on the real room,
     # salon-om-pictures/tools/cine_try.sh; every try: record ac8238bb)
     'om-pause-exhale-j25.png': 'm:6-shampoo-basins-25oct.jpg',             # S1: a guest lying back at the basin

@@ -47,7 +47,7 @@ def stamp(name, d, files):
                'files': {os.path.relpath(f, IMG + '..'): hashlib.sha256(open(f, 'rb').read()).hexdigest() for f in sorted(files)}}
     json.dump(c, open(CHECKS, 'w'), indent=1, sort_keys=True)
     open(CHECKS, 'a').write('\n')
-NEW = {'film-hero-forest.webp', 'film-air-curtains.webp', 'om-pause-rest.webp'}      # no site file yet: the 1280 fallback is made from the master first
+NEW = {'film-hero-forest.webp', 'film-air-curtains.webp', 'om-pause-rest.webp', 'om-pause-rest-lit.webp'}      # no site file yet: the 1280 fallback is made from the master first
 # a master that is a real photo (a cleaned copy '-clean.jpg', or a generated guest pasted onto it '-on-photo.png') keeps the
 # photo's grain, so it gets the same blur as an original
 PHOTO_MASTER = ('-clean.jpg', '-on-photo.png', '-25oct.jpg')     # -25oct.jpg: J's basins picture on the photographer's frame, his grain

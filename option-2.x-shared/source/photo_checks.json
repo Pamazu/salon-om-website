@@ -31,6 +31,21 @@
   "measure": 0.682,
   "room": "6-shampoo-basins-25oct.jpg"
  },
+ "om-pause-rest-lit.webp": {
+  "bar": 0.6,
+  "files": {
+   "img/hd/om-pause-rest-lit-1280.webp": "cb65331bac8e8a3d7cc011078c9332786147739d60516cfc0859a3ac94bec83b",
+   "img/hd/om-pause-rest-lit-1920.webp": "af069c3a75828be80cd48f6c9e62f54959212b28da3715a69bc8ccb2edc2b883",
+   "img/hd/om-pause-rest-lit-2560.webp": "4749115e2234617d6e8f7ec62ff5832a9f10e12609dcb656807729de8ee14718",
+   "img/hd/om-pause-rest-lit-3840.webp": "ca545c78b55368cc700571e49966dafe9548601afbed7049e24ab6ff761bcd82",
+   "img/hd/om-pause-rest-lit-4900.webp": "df683787bef108a96fc2fea532f3b3ac88fd415d671b0efec41642ed5c39ebf4",
+   "img/hd/om-pause-rest-lit-640.webp": "521c5571cda4aacdf9d4dfd6265a25fdb0178f18282fdaf62507bbfe949923ae",
+   "img/hd/om-pause-rest-lit-960.webp": "1f927397805fdba429010326975bca338dbc62494d61b425b3d9d5ef077ceddc",
+   "img/om-pause-rest-lit.webp": "d769934f9000f3dd08cc6c7efab9a45bada309a3dc488b104a1107a02c48ae8b"
+  },
+  "measure": 0.866,
+  "room": "6-shampoo-basins-25oct.jpg"
+ },
  "om-pause-rest.webp": {
   "bar": 0.6,
   "files": {
