@@ -174,7 +174,7 @@ def om_begin(d, world):
     html = build.R['tease']({k: v for k, v in d.items() if k != 'begin'})
     img = b.get('close_img') or MP.CLOSE_IMG[b['id']]
     cl = close(dict(cta=b, img=img, draft=d.get('draft', '')), world)
-    inner = cl[cl.index('<div class="cl__cta'):cl.rindex('</section>')].rstrip()
+    inner = cl[cl.index('<div class="cl__cta'):cl.rindex('</section>')].rstrip().replace('<div class="cl__cta s__leave">', '<div class="cl__cta">', 1)   # it stays as Why Aveda's quote part does
     part = f'<div class="mani__begin cl" id="{b["id"]}" aria-labelledby="{b["id"]}-t">\n    {inner}\n    </div>'
     assert html.startswith('<section class="s mani'), 'om_begin: the tease drew something else'
     html = html.replace('<section class="s mani', '<section class="s s--auto mani mani--begin', 1)
