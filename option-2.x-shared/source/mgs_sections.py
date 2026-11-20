@@ -120,11 +120,28 @@ def _foot(e, draft):
     </footer>'''
 
 
+def with_foot(kind):
+    """The footer sits inside the slide that closes its world, whichever section that is (approved feature 14; J 10 Nov:
+    "the footer looks terrible ... maybe having two sections in one whole slide"). ONE block for every closing slide: the
+    section as its own block draws it (`kind`: a renderer here, or one of build.R's by name), then the footer (_foot, from
+    d['foot']), last inside the same <section>. mgs_parts._close() gives the footer to the section it follows: Begin on M,
+    the second door on G and S (task d9a90616)."""
+    def draw(d, world):
+        import build
+        own = {k: v for k, v in d.items() if k != 'foot'}
+        html = kind(own, world) if callable(kind) else build.R[kind](own)
+        m = re.search(r'(\n[ \t]*<div class="s__shade"></div>)?\n[ \t]*</section>\s*$', html)
+        assert m, 'with_foot: a renderer drew something other than one <section>'
+        return html[:m.start()] + '\n    ' + _foot(d['foot'], d['draft']) + html[m.start():]
+    return draw
+
+
 def close(d, world):
-    """Begin and the footer as ONE closing screen (Spoke & Weal's "Not sure what to book?" over its footer; Heyday's photo
-    beside the details): the call to action on the left, Begin's own photo framed whole on the right, the details in a
-    short band under both. On a phone: the photo, the action, the band."""
-    c, e = d['cta'], d.get('end')
+    """Begin as the closing screen (Spoke & Weal's "Not sure what to book?" over its footer; Heyday's photo beside the
+    details): the call to action on the left, Begin's own photo framed whole on the right. Where Begin closes its world
+    (M) the footer's details sit in a short band under both, in the same slide (with_foot); on a phone: the photo, the
+    action, the band. Where a section follows it (G, S: the second door, task d9a90616) it is a slide of its own."""
+    c = d['cta']
     img, pos = d['img']
     text = f'<p class="cl__text a-up" style="--d:.7s">{c["text"]}</p>' if c.get('text') else ''
     flow = d.get('flow')
@@ -137,7 +154,6 @@ def close(d, world):
         <div class="cl__btn a-up" style="--d:1s">{c['btn']}</div>      </div>
       <figure class="cl__ph" aria-hidden="true"><img src="img/{img}" alt="" decoding="async" loading="lazy" style="--pos:{pos}"></figure>
     </div>
-    {_foot(e, d['draft']) if e else ''}
   </section>'''
 
 
@@ -182,13 +198,6 @@ def om_begin(d, world):
     m = re.search(r'\n[ \t]*<div class="s__shade"></div>\n[ \t]*</section>\s*$', html)
     assert m, 'om_begin: the tease drew no shade before its end'
     return html[:m.start()] + '\n    ' + part + html[m.start():]
-
-
-def foot_alone(d, world):
-    """the closing screen's footer band on its own, where no Begin comes right before it (G: after the second door, task cde7849b)"""
-    return f'''<section class="s s--auto cl cl--foot" id="{d['id']}-foot" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="Contact">
-    {_foot(d, d['draft'])}
-  </section>'''
 
 
 def cred(d, world):

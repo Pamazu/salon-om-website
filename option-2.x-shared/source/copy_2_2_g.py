@@ -38,9 +38,10 @@ import copy_2_2_iw as IW
 #            care for the earth, in the same visit." / Book your visit
 #  om        "OM · Oneness" / her quiet version, "A sacred sound and a gift for all ..." / story / her own last line,
 #            "Simply by being here, you are part of the kindness." / Book your visit
-#  door      "What could change for you?" / her two practices / story / her Connection Call line / its own two buttons
 #  begin     "Your moment awaits." / her text ("from your first sip of tea to your final style") + her two-week word / "Begin." / "Hair that feels like you, and
 #            attention that is only on you." / Book your visit
+#  door      (after the page's own call to action, task d9a90616) "What could change for you?" / her two practices / story /
+#            her Connection Call line / its own two buttons
 # Inner Work, the page: HOOK "Explore who you are Becoming." + ROT / PROOF her short credentials / RETAIN below /
 #   REWARD Begin's "You leave the call knowing your next step" / CTA Book a Connection Call.
 #  deeper    "Look a little deeper." + her lead / Hebb, in her text / story / "You get to choose again." / Book a Connection Call

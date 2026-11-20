@@ -349,9 +349,11 @@ def row13(sections, letter, site):     # one call to action per world, throughou
             bare = sid[len(P):]
             for l in sections[sid]['links']:
                 t, h = l['text'], l['href']
-                if bare == 'begin':
-                    if t == 'Begin' and h != f'#{P}begin':
+                if t == 'Begin' and sections[sid]['footer'] and 'btn' not in l['cls'].split():     # the footer's anchor, in whichever slide closes the world
+                    if h != f'#{P}begin':
                         out.append(f'{W}: the footer\'s "Begin" goes to {h}, not this world\'s close #{P}begin')
+                    continue
+                if bare == 'begin':
                     continue
                 if 'btn' not in l['cls'].split() and t != own:
                     continue
@@ -369,9 +371,26 @@ def row13(sections, letter, site):     # one call to action per world, throughou
     return out
 
 
-def row14(sections, letter, site):     # the footer sits inside the closing slide
-    return [f'{W}: the footer is not inside the closing slide ("{P}begin")' for w, P, W, ids in worlds(sections)
-            if not (sections.get(P + 'begin') or {}).get('footer')]
+def row14(sections, letter, site):     # the footer sits inside the closing slide: the world's last (Begin on M, the second door on G and S)
+    return [f'{W}: the footer is not inside the closing slide ("{ids[-1]}")' for w, P, W, ids in worlds(sections)
+            if not (sections.get(ids[-1]) or {}).get('footer')]
+
+
+def row28(sections, letter, site):     # G and S: each world's last call to action comes before its door to the other world
+    """J 19 Nov 2026 12:06 Z (task d9a90616): "the call to action for both ... both worlds, should be before the gate to the other
+    world. It should be before it. Otherwise, the user will not get to the final call to action before being tempted to move
+    away to the other world." On G and S, in both worlds, Begin comes before the second door and the door is the world's last
+    section. M keeps the owner's own order (her second door, then "Begin." as the last word)."""
+    out = []
+    for w, P, W, ids in worlds(sections):
+        b, d = P + 'begin', P + 'deeper'
+        if b not in ids or d not in ids:
+            out.append(f'{W}: the page has no "{b if b not in ids else d}"')
+        elif ids.index(b) > ids.index(d):
+            out.append(f'{W}: the second door ("{d}") comes before the world\'s last call to action ("{b}")')
+        elif ids[-1] != d:
+            out.append(f'{W}: the second door ("{d}") is not the world\'s last section ("{ids[-1]}" is)')
+    return out
 
 
 def row15(sections, letter, site):     # the pause's heading writes itself in, out of focus into focus
@@ -696,6 +715,7 @@ ROWS = {
     24: ('each sheet picture\'s clear window opens on its subject; Why Aveda\'s on the shelves of Aveda products', 'mgs', row24),
     26: ('Why Aveda\'s list is F and one option, F synced with the scroll; the second door synced with the scroll', 'mgs', row26),
     27: ('a generated picture is on the page only once J picked it in Shift+V', 'mgs', row27),
+    28: ('on G and S each world\'s last call to action comes before its door to the other world, the door last', 'gs', row28),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
 MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg', 24: 'mgs', 25: 'mgs'}
