@@ -101,10 +101,12 @@ def pictures(body, declared):
     each candidate is drawn as an <img> in a template of the store, so the build gives it its srcset and photo_sources checks it
     like any picture. A picture with no candidate, or not on the page, gets nothing; a page with none is unchanged, byte for byte.
     A candidate goes live as the picture only once J picks it there (approved_gate.py row 27)."""
-    marks = sorted([(m.start(), m.group(1)) for m in re.finditer(r'<section\b[^>]*\sid="([^"]+)"', body)] +
-                   [(m.start(), m.group(1)) for m in re.finditer(r'<template data-opt-for="([^"]+)"', body)])
     tp, rows = world_prefix('coaching'), []
     for name, p in declared.items():
+        # read on the page as it is now: each picture before this one gained data-pic, which moves everything after it (with
+        # three service pictures in the menu a copy read as the next section's, task b1dd24c9)
+        marks = sorted([(m.start(), m.group(1)) for m in re.finditer(r'<section\b[^>]*\sid="([^"]+)"', body)] +
+                       [(m.start(), m.group(1)) for m in re.finditer(r'<template data-opt-for="([^"]+)"', body)])
         opts = p.get('options') or []
         tag = re.compile(r'<img\b(?=[^>]*\ssrc="img/' + re.escape(name) + r'")')
         at = [m.start() for m in tag.finditer(body)]

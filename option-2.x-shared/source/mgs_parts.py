@@ -176,6 +176,11 @@ PICTURE_OPTIONS = {
              alt='A generated guest with even, glossy medium-brown hair in profile at the colour bar at Salon OM',
              note='Chest up in profile at the colour wall, her hair one even glossy brown.'),
     ]),
+    'om-menu-extensions.webp': dict(name='Luxury Extensions', live='Today’s: the guest on the bench by the fire', options=[
+        dict(key='shelves', label='Between the Aveda shelves, by the window', img='om-menu-extensions-ex11a1.webp', ai=AI_GUEST, pos='50% 45%',
+             alt='A generated guest with very long, full, warm-brown waves, seen from behind between the Aveda shelves at Salon OM',
+             note='Seen from behind, long full waves down her back, daylight from the windows; the real shelves and products.'),
+    ]),
 }
 
 
