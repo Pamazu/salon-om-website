@@ -122,6 +122,9 @@ EARLY_ORDER = (2, 3, 4, 7, 5, 6, 1, 0)
 
 HERO_LINE = M.SALON_OPEN['title'] + ' An Avila Beach salon. ' + draft(D['proof'])
 
+# her Begin text and her two buttons (call, email: the one action's two ways); her two-week word (11 Nov). Round 6 (task
+# b9a04e51): no 'Book online' (her booking page lists no services) and no Inner Work block in the footer
+BEGIN_G = _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward']))
 SALON = [
   _with(salon_hero(proof=True, line=HERO_LINE), rot=draft(G['rot_salon'])),
   (S.pause_scene, dict(id='pause', label='The pause', **S.PAUSE_DEFAULT, tone='dark', accents=['moment.'], breath=PAUSE_DOOR, breath_alt=PAUSE_DOOR_ALT, text=M.PAUSE['text'], after=M.PAUSE['after'], after_at='4.4s',
@@ -155,19 +158,18 @@ SALON = [
                  options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # the label (task a749167b)
   _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
-  ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
-                 btn=btn(BOOK, BOOK_URL, arrow=True))),
-  # Begin right under OM · Oneness, on the same brown ground, each at its own height, as one section to the eye; the second door
-  # after them (task cde7849b; J 20 Nov 13:3x Z: "JUST KEEP THE SAME OM BROWN SECTION AND MAKE THE LAST CTA SECTION PART OF THE OM
-  # BROWN SECTION ... both parts still the same height they originally have")
-  # her Begin text and her two buttons (call, email: the one action's two ways); her two-week word (11 Nov). Round 6
-  # (task b9a04e51): no 'Book online' (her booking page lists no services) and no Inner Work block in the footer
-  _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),
+  # OM · Oneness and Begin are ONE section, OM's screen as it was and Begin's words right under it on the same ground, one scroll
+  # (task cde7849b; J 20 Nov 13:3x Z: "JUST KEEP THE SAME OM BROWN SECTION AND MAKE THE LAST CTA SECTION PART OF THE OM BROWN
+  # SECTION"; 13:43 Z: "too much margin at the top ... NOT COntknous ... the background color is not exactly the same")
+  (S.om_begin, dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
+                    btn=btn(BOOK, BOOK_URL, arrow=True), begin=BEGIN_G[1])),
   door(short=False),
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 
-COACHING = twin(SALON, iw_entries('g', SALON))   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
+_IWG = iw_entries('g', SALON)
+_IWG['om'] = dict(_IWG['om'], begin=dict(BEGIN_G[1], **iw_entries('g', [BEGIN_G])['begin'], id=TWIN + 'begin'))   # Inner Work's own Begin in its OM
+COACHING = twin(SALON, _IWG)   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
   [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'Why Aveda', 'aveda'), ('04', 'The team', 'hosts'), ('05', 'Begin', 'begin')],

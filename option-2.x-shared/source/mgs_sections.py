@@ -165,6 +165,24 @@ def mail_form(btns, world):
         </form>'''
 
 
+def om_begin(d, world):
+    """OM · Oneness with Begin inside it, ONE section (task cde7849b; J 20 Nov 13:43 Z: "NOT COntknous ... the background color is
+    not exactly the same"): OM's own screen drawn exactly as the tease draws it, then Begin's words and photo (as close() draws
+    them) right under OM's words, on the section's own ground, with its ring and shade: one ground and one scroll by construction"""
+    import build, mgs_parts as MP
+    b = d['begin']
+    html = build.R['tease']({k: v for k, v in d.items() if k != 'begin'})
+    img = b.get('close_img') or MP.CLOSE_IMG[b['id']]
+    cl = close(dict(cta=b, img=img, draft=d.get('draft', '')), world)
+    inner = cl[cl.index('<div class="cl__cta'):cl.rindex('</section>')].rstrip()
+    part = f'<div class="mani__begin cl" id="{b["id"]}" aria-labelledby="{b["id"]}-t">\n    {inner}\n    </div>'
+    assert html.startswith('<section class="s mani'), 'om_begin: the tease drew something else'
+    html = html.replace('<section class="s mani', '<section class="s s--auto mani mani--begin', 1)
+    m = re.search(r'\n[ \t]*<div class="s__shade"></div>\n[ \t]*</section>\s*$', html)
+    assert m, 'om_begin: the tease drew no shade before its end'
+    return html[:m.start()] + '\n    ' + part + html[m.start():]
+
+
 def foot_alone(d, world):
     """the closing screen's footer band on its own, where no Begin comes right before it (G: after the second door, task cde7849b)"""
     return f'''<section class="s s--auto cl cl--foot" id="{d['id']}-foot" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="Contact">

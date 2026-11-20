@@ -379,7 +379,8 @@ TWIN = 'c-'          # every Inner Work section id is its salon twin's, with thi
 TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open', 'aria', 'label', 'text', 'after', 'accents',
               'proof_line', 'btn', 'reward', 'answer', 'title', 'rows', 'name', 'sub', 'body', 'specs', 'paras', 'quote', 'cite',
               'facts', 'src', 'intro', 'people', 'with_label', 'sign', 'tiles', 'beneath', 'quotes', 'more', 'last', 'tagline',
-              'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k'}
+              'disclaimer', 'legend', 'brand_lines', 'iw_block', 'copyright', 'connect', 'visit', 'explore', 'steps', 'line_k',
+              'begin'}      # Begin inside OM · Oneness on G, its own words (task cde7849b)
 TWIN_PICTURES = {'breath', 'breath_alt', 'breath_mark', 'film_top', 'photo', 'line_img', 'img', 'mark', 'close_img'}
 # lists of cards: each card takes its words, and its picture
 TWIN_CARD_WORDS = {'people': {'name', 'role', 'desc', 'img', 'alt'}, 'tiles': {'title', 'tag', 'price', 'missing', 'img', 'alt', 'pos', 'ai'}}

@@ -1496,7 +1496,16 @@ main[data-world] .voices .voices__t { color: var(--forest-deep); }
 /* ---- Begin and the footer: ONE closing screen (Spoke & Weal, JUUT, Heyday). The call to action on the left and Begin's
    own photo framed whole on the right, then the details in a short band under both, on the world's own ground */
 .cl { display: flex; flex-direction: column; background: var(--umber); color: var(--ivory); }
-.cl--foot { min-height: 0; padding-top: var(--sp-5); }     /* the footer band alone, after the second door on G (task cde7849b) */
+.cl--foot { min-height: 0; padding-top: var(--sp-5); }
+/* OM · Oneness with Begin inside it (G, task cde7849b): OM's screen keeps its full height and centred words, Begin follows on the
+   same ground, no snap point between; the ring stays centred on OM's screen; Begin's photo opens with the section */
+.mani--begin { grid-template-rows: 100vh auto; grid-template-rows: 100svh auto; align-items: stretch; }
+.mani--begin > .mani__in { align-self: center; }
+.mani--begin .mani__ring { top: 50vh; top: 50svh; }
+.mani--begin > .mani__begin { position: relative; z-index: 2; background: none; min-height: 0; }
+.mani--begin > .mani__begin .cl__cta { padding-top: 0; }
+.mani--begin.is-active .cl__ph { clip-path: inset(0); }
+.mani--begin.is-active .cl__ph img { transform: none; }     /* the footer band alone, after the second door on G (task cde7849b) */
 .cl__cta { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-6); width: 100%; max-width: 1680px; margin: 0 auto;
   padding: calc(var(--top) + var(--sp-5)) var(--gutter) var(--sp-4); }
 .cl__words { display: grid; justify-items: start; gap: var(--sp-3); }
@@ -2759,7 +2768,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="ca9b7fcc9711";</script>
+<script>window.OM_BUILD="adcae41b8dbc";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v

@@ -1496,7 +1496,16 @@ main[data-world] .voices .voices__t { color: var(--forest-deep); }
 /* ---- Begin and the footer: ONE closing screen (Spoke & Weal, JUUT, Heyday). The call to action on the left and Begin's
    own photo framed whole on the right, then the details in a short band under both, on the world's own ground */
 .cl { display: flex; flex-direction: column; background: var(--umber); color: var(--ivory); }
-.cl--foot { min-height: 0; padding-top: var(--sp-5); }     /* the footer band alone, after the second door on G (task cde7849b) */
+.cl--foot { min-height: 0; padding-top: var(--sp-5); }
+/* OM · Oneness with Begin inside it (G, task cde7849b): OM's screen keeps its full height and centred words, Begin follows on the
+   same ground, no snap point between; the ring stays centred on OM's screen; Begin's photo opens with the section */
+.mani--begin { grid-template-rows: 100vh auto; grid-template-rows: 100svh auto; align-items: stretch; }
+.mani--begin > .mani__in { align-self: center; }
+.mani--begin .mani__ring { top: 50vh; top: 50svh; }
+.mani--begin > .mani__begin { position: relative; z-index: 2; background: none; min-height: 0; }
+.mani--begin > .mani__begin .cl__cta { padding-top: 0; }
+.mani--begin.is-active .cl__ph { clip-path: inset(0); }
+.mani--begin.is-active .cl__ph img { transform: none; }     /* the footer band alone, after the second door on G (task cde7849b) */
 .cl__cta { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-6); width: 100%; max-width: 1680px; margin: 0 auto;
   padding: calc(var(--top) + var(--sp-5)) var(--gutter) var(--sp-4); }
 .cl__words { display: grid; justify-items: start; gap: var(--sp-3); }
@@ -2841,16 +2850,14 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </div>
     <div class="s__shade"></div>
   </section>
-  <section class="s mani dark" id="om" data-tone="dark" data-sound="bed" aria-label="OM · Oneness">
+  <section class="s s--auto mani mani--begin dark" id="om" data-tone="dark" data-sound="bed" aria-label="OM · Oneness">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
       <p class="mani__label label a-left" style="--d:.1s">OM · Oneness</p>
       <p class="mani__text" data-write="letters" data-accents="kindness.">A sacred sound and a gift for all, whatever your path or belief. Like a pebble in a pond, its ripples reach outward, lifting the spirit of all. Simply by being here, you are part of the kindness.</p>
       <div class="mani__btn a-up" style="--d:1.6s"><a class="btn" href="#begin">Book your visit <span class="arr" aria-hidden="true">→</span></a></div>
     </div>
-    <div class="s__shade"></div>
-  </section>
-  <section class="s s--auto cl" id="begin" data-tone="dark" data-sound="bed" aria-labelledby="begin-t">
+    <div class="mani__begin cl" id="begin" aria-labelledby="begin-t">
     <div class="cl__cta s__leave">
       <div class="cl__words">
         <p class="label a-up" style="--d:.2s">Begin</p>
@@ -2859,7 +2866,8 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
         <div class="cl__btn a-up" style="--d:1s"><a class="btn btn--light" href="tel:+18056271550">Call the salon <span class="arr" aria-hidden="true">→</span></a><a class="btn btn--ghost" href="mailto:contact@salonomavilabeach.com">Email us</a></div>      </div>
       <figure class="cl__ph" aria-hidden="true"><img fetchpriority="low" src="img/real-maggie-standing-shelves.webp?v=909b2a9d13" srcset="img/hd/real-maggie-standing-shelves-640.webp?v=8f90d17895 640w, img/hd/real-maggie-standing-shelves-960.webp?v=3ece076bf2 960w, img/hd/real-maggie-standing-shelves-1140.webp?v=91f9f4d1c4 1140w" sizes="(max-width: 700px) 97vw, (max-width: 2000px) 31vw, 17vw" alt="" decoding="async" loading="lazy" style="--pos:50% 28%"></figure>
     </div>
-    
+    </div>
+    <div class="s__shade"></div>
   </section>
   <section data-opt-key="deeper" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;F · synced with the scroll&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The words on the photo (before 19 Nov)&quot;,&quot;d&quot;:&quot;White words straight on the photo under a dark shade.&quot;}]" data-opt-name="The second door" class="s s--auto dr" id="deeper" data-tone="light" data-sound="bed" aria-labelledby="deeper-t">
     <div class="sh" data-sheet="FS" data-subject=".44 .31 .56 .93">
@@ -3065,16 +3073,14 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </div>
     <div class="s__shade"></div>
   </section>
-  <section class="s mani dark" id="c-om" data-tone="dark" data-sound="bed" aria-label="&lt;span class=&quot;draft&quot;&gt;Inner Work · Becoming&lt;/span&gt;" data-long>
+  <section class="s s--auto mani mani--begin dark" id="c-om" data-tone="dark" data-sound="bed" aria-label="&lt;span class=&quot;draft&quot;&gt;Inner Work · Becoming&lt;/span&gt;" data-long>
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
       <p class="mani__label label a-left" style="--d:.1s"><span class="draft">Inner Work · Becoming</span></p>
       <p class="mani__text" data-write="letters" data-accents="again.">The beliefs that guide our choices are formed all along the way: in childhood, in relationships, through loss, success and life’s turning points. Some still serve us. Others were simply the best we knew how, given our age, environment and circumstances at the time. You get to choose again.</p>
       <div class="mani__btn a-up" style="--d:1.6s"><a class="btn" href="mailto:connect@maggiewoodward.com?subject=Connection%20Call">Book a Connection Call <span class="arr" aria-hidden="true">→</span></a></div>
     </div>
-    <div class="s__shade"></div>
-  </section>
-  <section class="s s--auto cl" id="c-begin" data-tone="dark" data-sound="bed" aria-labelledby="c-begin-t">
+    <div class="mani__begin cl" id="c-begin" aria-labelledby="c-begin-t">
     <div class="cl__cta s__leave">
       <div class="cl__words">
         <p class="label a-up" style="--d:.2s">Begin</p>
@@ -3083,7 +3089,8 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
         <div class="cl__btn a-up" style="--d:1s"><a class="btn btn--light" href="mailto:connect@maggiewoodward.com?subject=Connection%20Call">Book a Connection Call <span class="arr" aria-hidden="true">→</span></a></div>      </div>
       <figure class="cl__ph" aria-hidden="true"><img fetchpriority="low" src="img/real-maggie-fireside-close.webp?v=0ad735b686" srcset="img/hd/real-maggie-fireside-close-640.webp?v=9e723e797a 640w, img/hd/real-maggie-fireside-close-960.webp?v=2cc0fa1781 960w, img/hd/real-maggie-fireside-close-1143.webp?v=e8e37f5689 1143w" sizes="(max-width: 700px) 93vw, (max-width: 2000px) 31vw, 17vw" alt="" decoding="async" loading="lazy" style="--pos:50% 30%"></figure>
     </div>
-    
+    </div>
+    <div class="s__shade"></div>
   </section>
   <section data-opt-key="deeper" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;F · synced with the scroll&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The words on the photo (before 19 Nov)&quot;,&quot;d&quot;:&quot;White words straight on the photo under a dark shade.&quot;}]" data-opt-name="The second door" class="s s--auto dr" id="c-deeper" data-tone="light" data-sound="bed" aria-labelledby="c-deeper-t">
     <div class="sh" data-sheet="FS" data-subject=".46 .10 .84 .50">
@@ -3109,7 +3116,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="4bfe415425ef";</script>
+<script>window.OM_BUILD="d222c8543f3c";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
