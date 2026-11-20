@@ -1,6 +1,7 @@
 // The five steps' ways to scroll (task bfbe9e35; J 20 Nov 07:18 Z: "I don't like any of the effects on the 5 steps scroll
 // triggered, do something really beautiful and clean, simple and beautfiul and clean. Give more ideas"): A still pictures,
-// B sheets, C one room, D into focus, one choice for all five steps in both worlds (mgs_parts.STEP_OPTIONS). Checked in
+// B sheets, D into focus (C one room was left out before the ship: its dissolve is the crossfade J removed), one choice for
+// all five steps in both worlds (mgs_parts.STEP_OPTIONS). Checked in
 // WebKit, on M and G, at 1440, a phone and J's 6K window: today's steps untouched until a choice; each choice marks all ten
 // steps, keeps each one screen tall and its film's own element; half way between two steps the picture and the words are
 // where that way says (read from the page, the snap paused so the page rests there); at rest nothing is left over; calm
@@ -11,7 +12,7 @@ import { serve, open, wait, phone } from './lib.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url)), REPO = path.resolve(HERE, '..');
 const OUT = path.resolve(process.argv[2] || path.join(HERE, 'out-steps-move')); fs.mkdirSync(OUT, { recursive: true });
 const VERS = (process.argv[3] || 'm,g').split(','), WIDTHS = (process.argv[4] || '1440,390,3230').split(',');
-const WAYS = ['still', 'sheets', 'room', 'focus'], CTX = { 1440: { viewport: { width: 1440, height: 900 } }, 390: phone('webkit'), 3230: { viewport: { width: 3230, height: 1700 }, deviceScaleFactor: 2 } };
+const WAYS = ['still', 'sheets', 'focus'], CTX = { 1440: { viewport: { width: 1440, height: 900 } }, 390: phone('webkit'), 3230: { viewport: { width: 3230, height: 1700 }, deviceScaleFactor: 2 } };
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
 const b = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
 const res = { browser: 'webkit ' + b.version(), started: new Date().toISOString(), checks: [], errors: [], frames: {} };
@@ -77,7 +78,6 @@ for (const v of VERS) for (const w of WIDTHS) {
         // a seam line is a row brighter than both the sheet below it and the held picture above it
         const k2 = Math.round(px.length / 2), above = px.slice(0, k2 - 2), below = px.slice(k2 + 2), edge = px.slice(k2 - 2, k2 + 2), lim = Math.max(...above, ...below) + 12;
         ok(`${tag}: sheets, half way: no light line at the sheet's edge`, edge.every((x) => x <= lim), { rows: px }); } }
-    if (k === 'room') ok(`${tag}: one room, half way: both pictures stand still, the next half dissolved in, neither step's words showing`, near(A.media.top, 0) && near(U.media.top, 0) && near(U.media.op, .5, .06) && U.copy.op === 0 && A.copy.op === 0, { a: A.media.top, u: U.media, words: [A.copy.op, U.copy.op] });
     if (k === 'focus') ok(`${tag}: into focus, half way: the next step's picture and title are soft`, U.soft && U.soft.op > .5 && U.title.blur > 3 && near(U.media.top, U.sec.top), { soft: U.soft, title: U.title.blur });
     await p.screenshot({ path: path.join(OUT, `${v}-${w}-${k}-half.jpg`), type: 'jpeg', quality: 76 });
     if (k !== 'live') {
@@ -106,8 +106,11 @@ for (const v of VERS) for (const w of WIDTHS) {
   ok(`${tag}: today's again restores every step (nothing set, no soft picture, the same films)`, s.every((x) => !/ch--move/.test(x.cls) && x.one && !x.soft && !x.vars && x.film), s.map((x) => x.cls));
   await ctx.close();
 }
+{ const ctx = await b.newContext(CTX[1440]), p = await open(ctx, `${base}/m/?opt-steps=sheets`); const s = await all(p);
+  ok('m 1440: a link with sheets opens on it, all ten steps', s.every((x) => x.cls.includes('ch--move-sheets') && x.opt === 'sheets'), s.map((x) => x.opt)); await ctx.close(); }
+// C · One room was left out before the ship (a dissolve is the crossfade J removed): a link or a browser still naming it opens today's
 { const ctx = await b.newContext(CTX[1440]), p = await open(ctx, `${base}/m/?opt-steps=room`); const s = await all(p);
-  ok('m 1440: a link with one room opens on it, all ten steps', s.every((x) => x.cls.includes('ch--move-room') && x.opt === 'room'), s.map((x) => x.opt)); await ctx.close(); }
+  ok('m 1440: a link naming one room (left out) opens today\'s ten steps', s.length === 10 && s.every((x) => !/ch--move/.test(x.cls) && (x.opt || 'live') === 'live'), s.map((x) => x.opt)); await ctx.close(); }
 ok('no script errors', res.errors.length === 0, res.errors.slice(0, 8));
 res.pass = res.checks.every((c) => c.pass);
 fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify(res, null, 1));

@@ -287,14 +287,14 @@ def salon_hero(proof=False, visit='arrive', line=None):
 # triggered, do something really beautiful and clean, simple and beautfiul and clean. Give more ideas but first remove the
 # current ones"): one choice for all five (option_key), in both worlds; each draws the same step with move= (build.chapter:
 # only its class changes), today's stays the default until J picks. Reference page: option-2.2-mgs/refs/#steps-scroll.
-# Never reuse the keys breath, fade or sheet: a browser may still remember them for the three effects he had removed
+# Never reuse the keys breath, fade, sheet or room: a browser may still remember them for the effects he had removed and for
+# C · One room, left out before the ship (CEO MA's QA, 20 Nov: a dissolve into the next picture is the crossfade he removed,
+# and half way it is a double exposure)
 STEP_OPTIONS = [
     dict(key='still', label='A · Still pictures', move='still',
          note='Each step’s picture stands still. Only the edge between two steps travels, and the words travel with it.'),
     dict(key='sheets', label='B · Sheets', move='sheets',
          note='The next step is laid over the last like a sheet, its picture and words together. The one before stays and dims.'),
-    dict(key='room', label='C · One room', move='room',
-         note='Nothing travels. The picture dissolves into the next step’s and the words change in place.'),
     dict(key='focus', label='D · Into focus', move='focus',
          note='Each step arrives soft and comes into focus as it settles, the picture and then its title.'),
 ]

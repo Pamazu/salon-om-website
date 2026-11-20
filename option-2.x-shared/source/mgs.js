@@ -698,12 +698,12 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 
 /* the five steps' ways to scroll (build.chapter ch--move, task bfbe9e35; J 20 Nov: "do something really beautiful and clean,
    simple and beautfiul and clean"): for each step that carries one, how far it has come in and gone out, as mgs.css names
-   them (--out, --inp, --ina, --in); mgs.css draws each way from these alone. A step holds only against another step:
+   them (--out, --inp, --in); mgs.css draws each way from these alone. A step holds only against another step:
    the first one comes in and the last one leaves as today. D's soft picture (.ch__soft) is put in here: the step's own
    photo again, small, so its blur is drawn once; it is painted when the way is chosen (or its photo arrives),
    never in the middle of a scroll. Calm motion and screenshots: nothing is set. Found again after every swap. */
 (function () {
-  var steps = [], queued = false, VARS = ['--out', '--inp', '--ina', '--in'];
+  var steps = [], queued = false, VARS = ['--out', '--inp', '--in'];
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     [].forEach.call(document.querySelectorAll('.s.ch'), function (s) {
@@ -733,7 +733,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     var key = below.toFixed(1) + '|' + above.toFixed(1); if (s._mv === key) return; s._mv = key;
     var share = 1 - below / vh;
     s.style.setProperty('--out', (x.next ? above : 0).toFixed(1) + 'px'); s.style.setProperty('--inp', (x.prev ? below : 0).toFixed(1) + 'px');
-    s.style.setProperty('--ina', (x.prev ? share : 1).toFixed(4)); s.style.setProperty('--in', share.toFixed(4));
+    s.style.setProperty('--in', share.toFixed(4));
     // in a hand-over (coming in or going out, on screen): its layers are promoted (mgs.css); coming in: D's title is soft
     var moving = (below > 0 && below < vh) || (above > 0 && above < r.height), arriving = below > 0;
     if (s._mo !== moving) { s._mo = moving; s.classList.toggle('is-moving', moving); }
