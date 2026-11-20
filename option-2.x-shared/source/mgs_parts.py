@@ -167,9 +167,9 @@ PICTURE_OPTIONS = {
     # photographer's pixels laid back wherever the two rooms agree), checked at 1:1 (face, hands, every contact, light against
     # the room); every try in Test Lab EXP-salonom-menu-guest-1
     'om-menu-blonding.webp': dict(name='Blonding', live='Today’s: the guest at the basin', options=[
-        dict(key='chair', label='In the styling chair, under the blonde poster', img='om-menu-blonding-bl8b1.webp', ai=AI_GUEST, pos='47% 35%',
+        dict(key='chair', label='In the styling chair, under the blonde poster', img='om-menu-blonding-bl8b1c.webp', ai=AI_GUEST, pos='50% 42%',
              alt='A generated guest with long golden-blonde hair in a styling chair under an Aveda poster at Salon OM, seen from behind',
-             note='Seen from behind, her golden hair lit by the blind, feet on the footrest; the real poster and room.'),
+             note='Seen from behind, her golden hair lit by the blind; the real poster and room.'),
     ]),
     'om-menu-color-correction.webp': dict(name='Color Correction', live='Today’s: the guest by the Aveda canvas', options=[
         dict(key='bar', label='At the colour bar', img='om-menu-color-correction-cc11a1.webp', ai=AI_GUEST, pos='62% 45%',
@@ -180,11 +180,6 @@ PICTURE_OPTIONS = {
         dict(key='shelves', label='Between the Aveda shelves, by the window', img='om-menu-extensions-ex11a2.webp', ai=AI_GUEST, pos='50% 45%',
              alt='A generated guest with very long, full, warm-brown waves, seen from behind between the Aveda shelves at Salon OM',
              note='Seen from behind, long full waves down her back lit by the windows; the real shelves and products.'),
-    ]),
-    'om-menu-cut-and-style.webp': dict(name='Cut and Style', live='Today’s: the guest in the chair mid-floor', options=[
-        dict(key='bob', label='A fresh bob, in the chair by the blind', img='om-menu-cut-and-style-cs11a1.webp', ai=AI_GUEST, pos='38% 45%',
-             alt='A generated guest with a sleek, freshly cut chin-length bob in a styling chair at Salon OM, in profile',
-             note='Sat back in the styling chair in clean profile, a sleek chin-length bob; the real blind, poster and room. The same chair as Blonding’s new one.'),
     ]),
 }
 
