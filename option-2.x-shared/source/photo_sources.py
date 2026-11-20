@@ -1,4 +1,4 @@
-"""Where every picture on M, G and S comes from, and the check that no picture shows a place the client asked cleaned in
+"""Where every picture and film on M, G and S comes from (films: FILMS, task 2a3f89d3), and the check that no picture shows a place the client asked cleaned in
 its raw state (task a8c429a3).
 
 J, 18 Nov 2026 17:24 Z, on Inner Work's door built on the raw basins photo 1059: "we already had a cleanup version of this
@@ -320,3 +320,41 @@ def check_page(body, source=None):
     bad = check(source, used - set(RETIRED)) + [f'{n}: retired: {RETIRED[n]}' for n in sorted(used & set(RETIRED))]
     if bad:
         raise SystemExit('photo_sources: a picture shows a cleaned place raw, or is undeclared (task a8c429a3):\n  ' + '\n  '.join(bad))
+
+
+# Where every film on M, G and S comes from (AI Act Art 50; task 2a3f89d3): whether it is made with AI, what made it, the record
+# that says so, and the sha256 of every file of it the pages name (the film and its lighter HEVC twin, task 5cb93228).
+# build.film() puts "Made with AI" on every film made with AI (StoryLegal, 18 Nov, "Made with AI labels on a client's website":
+# on the film itself, as text on the page, visible with no hover or tap the whole time it plays); approved_gate.py refuses a
+# film the pages name with no line here, or whose staged file is not the one recorded, so a new film, or new bytes under an
+# old name, never goes live before its origin is written. Read, never guessed: the six films are byte-identical to Option 2's
+# (option-2/site/media, committed 13 Oct, 9ed8955), whose Films README records each one ("generated on the client's Magnific
+# account", with its model), its durations those of the files (hero 13.6 s, earth 16.5 s, the elements 17.4 s); each HEVC twin
+# is made from its film. A clip from StoryForge's job service (MiniMax H3) takes its line from the json returned with it
+# ("Machine-generated with MiniMax H3."); filmed or licensed footage is ai=False with its source.
+FILM_RECORD = 'option-2/design-system/assets/Films/README.md'
+FILMS = {
+    'hero': dict(ai=True, made='Seedance 2.5: a slow push through a misty rainforest with light shafts', record=FILM_RECORD,
+               files={'hero.mp4': 'a6babba4a6205c1524528ae72cec4ef07e1bee931895a8e6693afa96ab9a0fcf',
+                      'hero-hevc.mp4': '48db7a5c1d5955e5096b00213be10cb5d47526d9e79889bf268e23993179a914'}),
+    'earth': dict(ai=True, made='Seedance 2.5: driftwood grain under a sweep of golden light', record=FILM_RECORD,
+               files={'earth.mp4': '565945ea501ea18848801737a18dbd916bac2e40dff326e692dd36409112ab98',
+                      'earth-hevc.mp4': '0750d1762d8e8d7cd766d83fb866ca64b9f803a397ef2d9ef24bbae1d037faf7'}),
+    'water': dict(ai=True, made='Kling 2.5: turquoise water over sand, from above', record=FILM_RECORD,
+               files={'water.mp4': '46c77c103cd7e76e9761027a23eb7c1909d446b8aecdf4c2f7b0bba54b3911d7'}),
+    'fire': dict(ai=True, made='Kling 2.5: candle flames and embers in darkness', record=FILM_RECORD,
+               files={'fire.mp4': '7eedcf6076e717a051780a6b34a50122284d30385bed283eb5658532ebc95f80',
+                      'fire-hevc.mp4': '98abcf11e90fc0f34d32cd082b899eabff6df7363961ac59780566382aa2774f'}),
+    'air': dict(ai=True, made='Kling 2.5: linen curtains breathing in sunlight', record=FILM_RECORD,
+               files={'air.mp4': '94bbb2044ddbe193b7f87cc292649789ec43185eda6ca3648711be3d7e9585d9',
+                      'air-hevc.mp4': 'ddeb9ee468eee4496df858dfb95d299fbef0e61f6a2825140038d8d407420931'}),
+    'ether': dict(ai=True, made='Kling 2.5: incense smoke through a beam of light', record=FILM_RECORD,
+               files={'ether.mp4': '2745ccb7a7b6d03f4b806f8dfbb24def4769b8753cea1bd30789f6d82b059bb2',
+                      'ether-hevc.mp4': '40a6cb7113063deca97fb1e75d13e8843f618ba43cd5cc60a545d3b44dc1a7a1'}),
+}
+
+
+def film_of(src):
+    """the FILMS line a film file belongs to (src as a page names it: folder and ?v= dropped), or None"""
+    f = src.split('?')[0].rsplit('/', 1)[-1]
+    return next((k for k, v in FILMS.items() if f in v['files']), None)

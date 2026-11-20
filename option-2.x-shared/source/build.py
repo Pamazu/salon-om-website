@@ -81,7 +81,18 @@ def film(name, lazy=False):
         import mgs_parts as MP
         return MP.film_still(name)
     return (f'<div class="s__media"><div class="s__zoom"><img src="media/{name}-poster.webp" alt="" decoding="async">'
-            f'<video data-src="media/{name}.mp4" muted playsinline loop preload="none" aria-hidden="true"></video></div></div>')
+            f'<video data-src="media/{name}.mp4" muted playsinline loop preload="none" aria-hidden="true"></video></div></div>'
+            + _film_mark(name))
+
+def _film_mark(name):
+    """M/G/S: "Made with AI" on a film made with AI (AI Act Art 50, task 2a3f89d3), read from its origin (photo_sources.FILMS),
+    after the film's frame so it stays above the film's scrim (mgs.css .ai-mark--film); 2.2-2.4 never carry it. A film with no
+    recorded origin gets none, and the deploy gate refuses it (approved_gate.film_law)"""
+    if not _MGS:
+        return ''
+    import photo_sources as PS, mgs_sections as S, mgs_parts as MP
+    o = PS.FILMS.get(name)
+    return S.ai_mark(MP.AI_MADE, film=True) if o and o['ai'] else ''
 
 # ---------------------------------------------------------------- slide renderers
 def hero_mark(d):

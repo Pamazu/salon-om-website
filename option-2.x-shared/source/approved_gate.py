@@ -12,6 +12,9 @@ Every row of reference/approved-features.md (Salon OM brain folder) has its chec
   - a QA step, only where a machine truly cannot judge (QA_ONLY, one line why).
 A row of the list with none of the three refuses the deploy: a new row J approves comes with its check.
 
+Before the rows, the law (film_law, task 2a3f89d3; AI Act Art 50): every film the pages play has its origin recorded for the very
+file staged, and every film made with AI says "Made with AI" on it. No waiver line lifts it.
+
 Before any row, the deployed commit must contain the commit live on each site it deploys (the site's deployed.json, which
 deploy-mgs.sh writes; until a site has one, origin/mgs-options): a build from an older base would take live work back off the
 sites (CEO MA, 19 Nov). To bring an older version back, revert it on top of the live commit.
@@ -63,6 +66,7 @@ class Page(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.sections, self.order, self.stack, self.cur, self.main, self.link = {}, {}, [], None, None, None
+        self.every = []           # every section in page order, the option switcher's templates too (an id there repeats)
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -72,6 +76,7 @@ class Page(HTMLParser):
             self.cur = self.sections[a['id']] = {'attrs': a, 'films': [], 'pics': [], 'classes': {}, 'words': 0, 'links': [],
                                                  'footer': False, 'heads': []}
             self.order.setdefault(self.main, []).append(a['id'])
+            self.every.append(self.cur)
         if self.cur is not None:
             for c in (a.get('class') or '').split():
                 self.cur['classes'][c] = self.cur['classes'].get(c, 0) + 1
@@ -117,6 +122,7 @@ def parse(html):
     p = Page()
     p.feed(html)
     p.sections['__order__'] = p.order
+    p.sections['__every__'] = p.every
     return p.sections
 
 
@@ -631,6 +637,42 @@ def pick(argv, site=None, path=None, now=None):
     return 0
 
 
+def film_law(pages, site=SITE):
+    """AI Act Art 50 (task 2a3f89d3): every film the pages play has its origin written in photo_sources.FILMS, for the very file
+    staged (its sha256), and every film made with AI says "Made with AI" on it (StoryLegal, 18 Nov, "Made with AI labels on a
+    client's website": on the film itself, as text on the page, visible with no hover or tap the whole time it plays). The law,
+    not a feature J approved: it runs before the rows and no waiver line lifts it. Every section is read, the option switcher's
+    templates too, so no Shift+V choice shows an unlabelled film. Returns (what is off, the films counted)."""
+    PS, out, n = _sources(), [], 0
+    for letter, html in pages.items():
+        L = letter.upper()
+        for sec in parse(html)['__every__']:
+            sid, ai = sec['attrs'].get('id'), False
+            for f in sec['films']:
+                for k in ('data-src', 'data-src-hevc', 'data-src-top'):
+                    src = (f['attrs'].get(k) or '').split('?')[0]
+                    if not src:
+                        continue
+                    n += k == 'data-src'
+                    name = PS.film_of(src)
+                    if name is None:
+                        out.append(f'{L} "{sid}": the film {src} has no recorded origin (photo_sources.FILMS: what made it, '
+                                   'from its own record, never guessed)')
+                        continue
+                    path = os.path.join(site, src) if site else ''
+                    if path and os.path.exists(path):
+                        with open(path, 'rb') as fh:
+                            if hashlib.sha256(fh.read()).hexdigest() != PS.FILMS[name]['files'][os.path.basename(src)]:
+                                out.append(f'{L} "{sid}": {src} is not the file whose origin is recorded (its sha256 differs): '
+                                           'write the new film\'s origin in photo_sources.FILMS')
+                    ai = ai or PS.FILMS[name]['ai']
+            if ai and not sec['classes'].get('ai-mark--film'):
+                out.append(f'{L} "{sid}": a film made with AI with no "Made with AI" on it (build.film, mgs_sections.ai_mark)')
+        out += [f'{L}: a film\'s label reads "{t}", not "Made with AI"'
+                for t in re.findall(r'class="ai-mark ai-mark--film">([^<]*)<', html) if t != 'Made with AI']
+    return sorted(set(out)), n
+
+
 ROWS = {
     1: ('each step has its own film, moving, with its own sound', 'mg', row1),
     2: ('each step shows its own real photo', 'mg', row2),
@@ -912,6 +954,17 @@ def main(argv, pages=None, message=None, rows=None, measured_off=None, known=Non
         pages = {l: b.decode('utf-8') for l, b in raw.items()}
     else:
         raw = {l: h.encode('utf-8') for l, h in pages.items()}
+    law, films = film_law(pages)
+    if law:
+        print('REFUSED: a film on these pages breaks the AI Act\'s Art 50 (task 2a3f89d3): every film needs its origin in '
+              'photo_sources.FILMS for the file staged, and every film made with AI says "Made with AI" on it. No waiver lifts '
+              'this.', file=sys.stderr)
+        for m in law:
+            print(f'    - {m}', file=sys.stderr)
+        print('Nothing was deployed.', file=sys.stderr)
+        return 1
+    print(f'AI Act Art 50: {films} film spots on {" ".join(letters)}, each with its recorded origin, every one made with AI '
+          'labelled "Made with AI" (photo_sources.FILMS).')
     rows = list_rows() if rows is None else rows
     if rows is None:
         print(f'REFUSED: the approved-features list cannot be read at {LIST} (APPROVED_FEATURES= or ALL_KERNEL= points to it), '
