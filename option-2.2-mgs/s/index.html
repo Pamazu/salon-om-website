@@ -4472,29 +4472,44 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom <= 0 ? 1 - r.bottom : r.top >= innerHeight ? 1 + r.top - innerHeight : 0; }
   function ready(v) { return !v.paused || v.readyState >= 3 || (v._img && v._img.complete) || performance.now() - v._from > 4000; }
   function photo(v) { if (v._ph === undefined) { var s = v.closest('.s'); v._ph = (s && s.querySelector('.ch__top img')) || null; } return v._ph; }
-  function photoReady(v) { var im = photo(v); return !im || (im.complete && im.naturalWidth > 0 && v._dec) || performance.now() - v._pfrom > 4000; }
+  // (a film let go, release(), has _pfrom 0: its photo is asked again, never read as asked long ago, task 1ff4c3f4)
+  function photoReady(v) { var im = photo(v); return !im || (im.complete && im.naturalWidth > 0 && v._dec) || (v._pfrom > 0 && performance.now() - v._pfrom > 4000); }
+  /* and only this line asks for a step's photo (task 1ff4c3f4): left to the browser's own lazy loading, a jump to the fourth
+     step on a phone asked for four steps' photos at once, with three steps' sounds (5.8 MB on one 4G line: its own photo
+     after 6.1 s, its film 8.3 s). A picture with no box is never fetched by lazy loading, so a step's lazy photo is out of
+     the layout until the line asks for it; it fills its frame (absolute), so nothing else moves. */
+  function hold(im) { im._held = true; im.style.display = 'none'; }
+  function free(im) { if (im._held) { im._held = false; im.style.display = ''; } if (im.loading === 'lazy') im.loading = 'eager'; }
+  films.forEach(function (v) { var im = photo(v); if (im && im.loading === 'lazy' && !im.complete) hold(im); });
   function ask(v) {
     var im = photo(v); if (!im || v._pfrom) return; v._pfrom = performance.now();
     var done = function () { v._dec = true; pump(); };
-    if (im.loading === 'lazy') im.loading = 'eager';
+    free(im);
     if (im.decode) im.decode().then(done, done); else if (im.complete) done(); else { im.addEventListener('load', done); im.addEventListener('error', done); }
   }
-  /* and while nothing near waits, the steps further on load their photos one at a time in the page's order (loaded, not
-     decoded, so a far photo holds no memory), once the opening's film moves or 6 s on: measured at 3230 on 4G, near-first
-     alone reached the fourth step 10 s before its 1.9 MB photo, which the page's start used to fetch */
+  /* the photos have their own line beside the films' (task 1ff4c3f4): measured at 3230 on one shared 4G line, the fourth
+     step's photo (4.6 MB) was asked as the reader reached the second step but shared the line with five files at a time
+     (the second step's 6 MB film, the next steps' sounds and films) and came 9.6 s after its step, while a step's photo is
+     what the reader sees on arriving and its film only follows. So one step's photo is on this line at a time: the one on
+     screen at once, then the others nearest the screen first, the far ones once the opening's film moves (or 6 s on); a
+     near one decoded ahead, so painting it never holds a frame, a far one loaded only (no memory held, 1068f87) */
   function opened() { var hv = films[0]; return performance.now() > 6000 || (hv && !hv.paused && hv.currentTime > .3); }
-  function later() {
-    var w = films.filter(function (v) { var im = photo(v), m = v.closest('main'); return im && m && !m.hidden; });
-    if (w.some(function (v) { var im = photo(v); return v._lfrom && !im.complete && performance.now() - v._lfrom < 8000; })) return;
-    var nx = w.filter(function (v) { return !v._lfrom && !v._pfrom && !photo(v).complete; })[0];
-    if (nx) { nx._lfrom = performance.now(); var im = photo(nx); if (im.loading === 'lazy') im.loading = 'eager'; im.addEventListener('load', pump); im.addEventListener('error', pump); }
+  function photos() {
+    var t = performance.now(), w = films.filter(function (v) { var im = photo(v), m = v.closest('main'); return im && m && !m.hidden && !(im.complete && im.naturalWidth); })
+      .map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; });
+    if (w.length && w[0][0] === 0) ask(w[0][1]);
+    if (w.some(function (x) { var s = x[1]._pfrom || x[1]._lfrom; return s && t - s < 8000; })) return;
+    var nx = w.filter(function (x) { return !x[1]._pfrom && !x[1]._lfrom && (x[1]._near || opened()); })[0];
+    if (!nx) return; nx = nx[1];
+    if (nx._near) ask(nx); else { nx._lfrom = t; var im = photo(nx); free(im); im.addEventListener('load', pump); im.addEventListener('error', pump); }
   }
   function pump() {
-    if (calm) return; var busy = false;
+    photos();
+    if (calm) return;      // calm motion plays no films: its photos come by the same line
+    var busy = false;
     films.filter(function (v) { return v._near; }).map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; })
-      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; ask(v); if (!photoReady(v)) { busy = true; return; }
+      .forEach(function (x) { var v = x[1], im = photo(v); if (x[0] > 0 && busy) return; if (im && im.complete && im.naturalWidth) ask(v); if (!photoReady(v)) { busy = true; return; }
         if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
-    if (!busy && opened()) later();
   }
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { of.get(e.target).forEach(function (v) { v._near = e.isIntersecting; if (!v._near) release(v); }); });
