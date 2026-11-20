@@ -242,9 +242,15 @@ async function visit(v, dwell) {
 // (.hdr-glass, mgs.js) over Why Aveda's sheet and the menu, in real Safari, since Playwright's WebKit draws no backdrop blur at all.
 // At each place one shot with the glass, then the same with only the glass hidden: the control, where what lies behind the bar
 // reads sharp; with the glass it must read frosted. Its computed backdrop filter, opacity and colour are kept with the shots.
-// In the simulator each is also taken from its display (simctl io screenshot): what the person sees, composited, whatever
-// WebDriver's own snapshot of the page leaves out.
-const screen = (name) => { if (!sim) return; try { execFileSync('xcrun', ['simctl', 'io', sim.udid, 'screenshot', path.join(OUT, name)], { stdio: 'ignore' }); } catch (e) { res.notes.push(`simctl screenshot ${name}: ${e.message}`); } };
+// Each is also taken from the display itself, composited as the person sees it, whatever WebDriver's own snapshot of the page
+// leaves out (WebKit draws a backdrop blur only when it composites): in the simulator with simctl io screenshot, on the Mac
+// with screencapture of Safari's window on the job's own screen.
+const screen = (name) => {
+  try {
+    if (sim) execFileSync('xcrun', ['simctl', 'io', sim.udid, 'screenshot', path.join(OUT, name)], { stdio: 'ignore' });
+    else if (res.window) { const w = res.window; execFileSync('/usr/sbin/screencapture', ['-x', `-R${w.x},${w.y},${w.width},${w.height}`, path.join(OUT, name)], { stdio: 'ignore' }); }
+  } catch (e) { res.notes.push(`screen ${name}: ${e.message}`.slice(0, 300)); }
+};
 async function glass(v) {
   const out = [];
   for (const [id, frac] of [['aveda', .5], ['services', .4]]) {
