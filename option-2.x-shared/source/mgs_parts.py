@@ -271,12 +271,31 @@ def salon_hero(proof=False, visit='arrive', line=None):
                               open=dict(o, btns=btn(o['btns'][0], BOOK_URL, 'light', arrow=True) + btn(o['btns'][1], '#pause', 'ghost'))))
 
 
+# the five steps' ways to scroll (task bfbe9e35; J 20 Nov 07:18 Z: "I don't like any of the effects on the 5 steps scroll
+# triggered, do something really beautiful and clean, simple and beautfiul and clean. Give more ideas but first remove the
+# current ones"): one choice for all five (option_key), in both worlds; each draws the same step with move= (build.chapter:
+# only its class changes), today's stays the default until J picks. Reference page: option-2.2-mgs/refs/#steps-scroll.
+# Never reuse the keys breath, fade or sheet: a browser may still remember them for the three effects he had removed
+STEP_OPTIONS = [
+    dict(key='still', label='A · Still pictures', move='still',
+         note='Each step’s picture stands still. Only the edge between two steps travels, and the words travel with it.'),
+    dict(key='sheets', label='B · Sheets', move='sheets',
+         note='The next step is laid over the last like a sheet, its picture and words together. The one before eases back.'),
+    dict(key='room', label='C · One room', move='room',
+         note='Nothing travels. The picture dissolves into the next step’s and the words change in place.'),
+    dict(key='focus', label='D · Into focus', move='focus',
+         note='Each step arrives soft and comes into focus as it settles, the picture and then its title.'),
+]
+STEP_OPTION_WORDS = dict(option_key='steps', option_name='The five steps', option_label='Today’s: the photo, then its film',
+                         option_note='Each step’s photo, giving way to its nature film a few seconds after it arrives.')
+
+
 def step(k, extra=None, cta=False, specs_more=None):
     rail, name, line, what, feel = M.STEPS[k]
     body = what + ((' ' + draft(extra)) if extra else '')
     d = dict(id=STEP_ID[k], chapter=k, sound=STEP_FILM[k], film=STEP_FILM[k], acc=STEP_FILM[k], num=f'0{k + 1}', of='/ 05',
              name=rail, sub=name.split(' · ')[-1], title=line, body=body, specs=M.STEP_DETAILS[k] + (specs_more or []),
-             film_top=dict(poster='img/' + STEP_IMG[k]))
+             film_top=dict(poster='img/' + STEP_IMG[k]), options=STEP_OPTIONS, **STEP_OPTION_WORDS)
     if cta: d['btn'] = btn(BOOK, BOOK_URL, 'light', arrow=True)
     return ('ch', d)
 

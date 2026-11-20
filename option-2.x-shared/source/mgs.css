@@ -1033,6 +1033,40 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--breath .ps__coda { position: absolute; z-index: 2; bottom: max(9vh, 116px); left: 0; right: 0; text-align: center; opacity: 0; transition: opacity 1.6s var(--io); }
 .ps--breath.is-exhale .ps__sub, .ps--breath.is-rest .ps__coda, html[data-shot] .ps--breath .ps__sub, html[data-shot] .ps--breath .ps__coda { opacity: 1; transform: none; }
 .ps--breath .ps__cue { position: absolute; z-index: 2; top: calc(var(--hdr) + 6vh); left: 0; right: 0; margin: 0; text-align: center; color: rgba(245, 238, 228, .78); transition: opacity .8s var(--io); }
+/* the five steps' ways to scroll (task bfbe9e35; J 20 Nov: "do something really beautiful and clean, simple and beautfiul and
+   clean"; build.chapter ch--move; reference page refs/#steps-scroll). A step stays one screen and keeps its photo, its film
+   and the page's pull; only how it hands over to the next changes. mgs.js says, per step: --out, how far its top has gone
+   above the screen's top (px, only while a step follows it); --inp, how far its top still is below it (px, only when it
+   follows a step); --ina, the share of its way in (0 to 1, 1 when it follows no step); --in, the same for every step; --rk,
+   1 while it travels in, 0 once it rests. The engine's --q is its share gone out. Calm motion and screenshots: today's. */
+@media (prefers-reduced-motion: no-preference) {
+  /* A · Still pictures: each picture stands where it is; the edge between two steps travels over them, the words with it */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__media { transform: translate3d(0, calc(var(--out, 0px) - var(--inp, 0px)), 0); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__zoom, html:not([data-motion="calm"]):not([data-shot]) .ch--move-still.is-active .s__zoom { transform: none; transition: none; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__veil, html:not([data-motion="calm"]):not([data-shot]) .ch--move-still:has(+ .ch--move) .s__shade { opacity: 0; transition: none; }
+  /* B · Sheets: the next step is one sheet with soft top corners, laid over the last, which holds, eases back and dims.
+     A held step draws a corner's depth past its own foot, so the sheet's corners show it and not the page's ground */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets { --rad: clamp(18px, 2.6vw, 44px); overflow-x: clip !important; overflow-y: visible !important;
+    clip-path: inset(0 0 calc(-1 * var(--rad)) 0 round calc(var(--rad) * var(--rk, 0)) calc(var(--rad) * var(--rk, 0)) 0 0); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade) { transform: translate3d(0, var(--out, 0px), 0) scale(calc(1 - var(--q) * .05)); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > .s__leave { transform: translate3d(0, var(--out, 0px), 0); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move)::after { content: ''; position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
+    background: linear-gradient(to top, rgba(10, 7, 5, .46), rgba(10, 7, 5, 0)); opacity: min(1, calc(var(--q) * 8)); }
+  /* C · One room: nothing travels. Both steps hold where they are; the next one's picture dissolves in over the last, the
+     words of the last leave first and the next one's come in place */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-room { overflow-x: clip !important; overflow-y: visible !important; background: transparent; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-room > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave) { transform: translate3d(0, calc(var(--out, 0px) - var(--inp, 0px)), 0); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-room > :is(.s__media, .s__scrim) { opacity: var(--ina, 1); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-room > .s__leave { opacity: min(clamp(0, calc((var(--ina, 1) - .55) / .45), 1), clamp(0, calc(1 - var(--q) / .45), 1)); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-room .s__zoom, html:not([data-motion="calm"]):not([data-shot]) .ch--move-room.is-active .s__zoom { transform: none; transition: none; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-room .s__veil, html:not([data-motion="calm"]):not([data-shot]) .ch--move-room:has(+ .ch--move) .s__shade { opacity: 0; transition: none; }
+  /* D · Into focus: the step arrives soft and sharpens as it settles, as the pause's heading does (approved feature 15).
+     The soft picture is a quarter-size copy of the step's own photo, blurred once and scaled up (mgs.js .ch__soft), so only
+     its opacity changes; the title follows a moment after */
+  .ch__soft { position: absolute; left: -1%; top: -1%; width: 25.5%; height: 25.5%; transform: scale(4); transform-origin: 0 0; background-size: cover; background-repeat: no-repeat; filter: blur(5px); opacity: 0; pointer-events: none; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus .ch__soft { opacity: clamp(0, calc((1 - var(--in, 1)) * 1.6), 1); transition: opacity .5s var(--io-soft); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus .ch__title { filter: blur(calc((1 - var(--in, 1)) * 14px)); transition: filter .6s var(--io-soft) .15s; }
+}
 /* C · Cinema: the room as a wide film frame opening from its centre; the heading set huge above and below it, never on it;
    the question and the last line wait at the side */
 .ps--cinema { display: grid; align-items: center; }
