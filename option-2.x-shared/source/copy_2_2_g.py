@@ -38,9 +38,10 @@ import copy_2_2_iw as IW
 #            care for the earth, in the same visit." / Book your visit
 #  om        "OM · Oneness" / her quiet version, "A sacred sound and a gift for all ..." / story / her own last line,
 #            "Simply by being here, you are part of the kindness." / Book your visit
-#  door      "What could change for you?" / her two practices / story / her Connection Call line / its own two buttons
 #  begin     "Your moment awaits." / her text ("from your first sip of tea to your final style") + her two-week word / "Begin." / "Hair that feels like you, and
 #            attention that is only on you." / Book your visit
+#  door      (after the page's own call to action, task d9a90616) "What could change for you?" / her two practices / story /
+#            her Connection Call line / its own two buttons
 # Inner Work, the page: HOOK "Explore who you are Becoming." + ROT / PROOF her short credentials / RETAIN below /
 #   REWARD Begin's "You leave the call knowing your next step" / CTA Book a Connection Call.
 #  deeper    "Look a little deeper." + her lead / Hebb, in her text / story / "You get to choose again." / Book a Connection Call
@@ -156,10 +157,14 @@ SALON = [
                  options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # the label (task a749167b)
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                  btn=btn(BOOK, BOOK_URL, arrow=True))),
-  door(short=False),
   # her Begin text and her two buttons (call, email: the one action's two ways); her two-week word (11 Nov). Round 6
   # (task b9a04e51): no 'Book online' (her booking page lists no services) and no Inner Work block in the footer
   _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),
+  # the door to the other world comes after the world's last call to action, as its last slide, the footer inside it (task
+  # d9a90616; J 19 Nov 12:06 Z: "the call to action for both ... should be before the gate to the other world. It should be
+  # before it. Otherwise, the user will not get to the final call to action before being tempted to move away to the other
+  # world"). Inner Work's twin follows by itself. M keeps her own order: the second door, then Begin
+  door(short=False),
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 

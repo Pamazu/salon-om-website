@@ -259,6 +259,14 @@ class EveryRow(Before21, unittest.TestCase):
     def test_26_the_door_drifts(self):
         self.red(26, in_section(self.s, 'deeper', 'data-sheet="FS"', 'data-sheet="F"'), letter='s', why='second door')
 
+    def test_13_the_footer_anchor_under_the_second_door(self):     # G's footer sits in its closing slide, the second door (task d9a90616)
+        html = in_section(page(LIVE, 'g'), 'deeper', '<a href="#begin">Begin<', '<a href="#top">Begin<')
+        self.red(13, html, letter='g', why='"Begin"')
+
+    def test_14_the_footer_out_of_g_s_closing_slide(self):
+        html = in_section(page(LIVE, 'g'), 'deeper', '<footer class="foot cl__foot" id="letters">', '<div class="foot cl__foot" id="letters">')
+        self.red(14, html, letter='g', why='"deeper"')
+
     def test_s_passes_and_breaks_on_its_own_rows(self):
         self.assertEqual(self.off(self.s, 's'), {})
         self.red(13, in_section(self.s, 'deeper', 'Explore Inner Work', 'Go elsewhere'), letter='s')   # the section's, not its option's template
@@ -453,6 +461,42 @@ class RedControls(unittest.TestCase):
             green = json.load(fh)['off']
         new = {n: sorted(set(r['off']) - set(green.get(n, []))) for n, r in rows.items()}
         self.assertEqual([n for n, lines in new.items() if not lines], [], 'a break that adds nothing off on its row')
+
+
+class Row28(unittest.TestCase):
+    """Row 28 (task d9a90616; J 19 Nov 12:06 Z: "the call to action ... should be before the gate to the other world"): on G and
+    S, in both worlds, Begin comes before the second door and the door is the world's last section. Red = the pages live on
+    20 Nov (985f7d2: the door, then Begin); green = this commit's pages; M, the owner's own order, is not read."""
+    LIVE_20_NOV = '985f7d2'
+
+    def off(self, html, letter):
+        return g.row28(g.parse(html), letter, g.SITE)
+
+    def test_28_red_the_live_pages_of_20_nov(self):
+        for letter in 'gs':
+            off = self.off(page(self.LIVE_20_NOV, letter), letter)
+            self.assertEqual(len(off), 2, off)                      # both worlds
+            self.assertTrue(all('comes before' in m for m in off), off)
+
+    def test_28_green_this_commit(self):
+        for letter in 'gs':
+            self.assertEqual(self.off(page(BUILT, letter), letter), [])
+            self.assertNotIn(28, g.check({letter: page(BUILT, letter)}))
+
+    def test_28_red_a_section_after_the_door(self):
+        html = page(BUILT, 's')
+        j, k = span(html, 'hosts'); sec = html[j:k]; html = html[:j] + html[k:]
+        j, k = span(html, 'deeper')
+        self.assertTrue(any('"deeper"' in m and 'last section' in m for m in self.off(html[:k] + sec + html[k:], 's')))
+
+    def test_28_red_a_world_without_its_door(self):
+        html = page(BUILT, 's')
+        j, k = span(html, 'c-deeper')
+        self.assertTrue(any('no "c-deeper"' in m for m in self.off(html[:j] + html[k:], 's')))
+
+    def test_28_m_keeps_the_owner_s_order(self):
+        self.assertEqual(g.ROWS[28][1], 'gs')
+        self.assertNotIn(28, g.check({'m': page(BUILT, 'm')}))
 
 
 class Row23(unittest.TestCase):

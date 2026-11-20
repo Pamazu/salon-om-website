@@ -237,12 +237,21 @@ def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
 
 
 def _close(slides):
-    """Begin and the footer become one closing screen (mgs_sections.close): an adjacent cta + end pair is merged."""
+    """Begin is drawn as the closing screen (mgs_sections.close) wherever it stands, and the footer sits inside the slide it
+    follows, the world's last (mgs_sections.with_foot; approved feature 14): Begin's own on M, the second door's on G and S,
+    where each world's last call to action comes before its door to the other world (task d9a90616; J 19 Nov 12:06 Z: "the
+    call to action ... should be before the gate to the other world ... Otherwise, the user will not get to the final call
+    to action before being tempted to move away to the other world"). A section's options (Shift+V) carry the footer too."""
     out = []
     for kind, d in slides:
-        if kind == 'end' and out and out[-1][0] == 'cta':
-            c = out.pop()[1]
-            out.append((S.close, dict(cta=c, end=dict(d, foot_visit=FOOT_VISIT), img=c.get('close_img') or CLOSE_IMG[c['id']])))
+        if kind == 'cta':
+            out.append((S.close, dict(cta=d, img=d.get('close_img') or CLOSE_IMG[d['id']])))
+        elif kind == 'end' and out:
+            k, last = out.pop()
+            last = dict(last, foot=dict(d, foot_visit=FOOT_VISIT))
+            if last.get('options'):
+                last['options'] = [dict(o, kind=S.with_foot(o['kind'])) if 'kind' in o else o for o in last['options']]
+            out.append((S.with_foot(k), last))
         else:
             out.append((kind, d))
     return out

@@ -1,7 +1,8 @@
 """Option 2.2 · S, Short (study febe2c3a, section 8): one screen per stage, about a third of the scroll. Salon OM in
 six screens, Inner Work in five. Maggie's words only, shortened by cutting whole sentences, never rewording (the cuts
 go to her); the proof line and the Begin summary are the study's [draft] lines. Left out: the pause, OM, the full step
-screens, the full credentials, Why Aveda (its one line moves into the proof screen)."""
+screens, the full credentials, Why Aveda (its one line moves into the proof screen). Each world ends on its own call to
+action, Begin, and only then its door to the other world (task d9a90616)."""
 from mgs_parts import *
 import copy_2_2_iw as IW
 
@@ -34,8 +35,10 @@ S_IW_REWARD = 'You leave the call knowing your next step, and whether Maggie is 
 PROOF = ('proof', dict(id='hosts', eyebrow=M.TEAM_LINE, title=draft(S_TEAM_HOOK),
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
                        quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA, line_img=AVEDA_PHOTO))   # its picture: task a749167b
-SALON = [dict_with(salon_hero(proof=True, visit='visit', line=S_HERO_LINE), rot=draft(S_ROT)), VISIT, PROOF, services(), door(short=True),
-         dict_with(begin(summary=True), answer=draft(A11['adjust'])), salon_end(LEGEND, visit='visit', iw=False)]
+# task d9a90616 (J 19 Nov 12:06 Z: "the call to action ... should be before the gate to the other world"): Begin, then the
+# second door as the world's last slide, the footer inside it; Inner Work's twin follows by itself
+SALON = [dict_with(salon_hero(proof=True, visit='visit', line=S_HERO_LINE), rot=draft(S_ROT)), VISIT, PROOF, services(),
+         dict_with(begin(summary=True), answer=draft(A11['adjust'])), door(short=True), salon_end(LEGEND, visit='visit', iw=False)]
 COACHING = twin(SALON, iw_entries('s', SALON))   # J 18 Nov: only the words change (task 7a3c013b)
 
 CFG = cfg('s', 'Short', SALON, COACHING,

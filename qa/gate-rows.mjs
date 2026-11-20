@@ -32,6 +32,8 @@ export function key(v) {
 const WORLDS = [['salon', '', 'Salon OM'], ['coaching', 'c-', 'Inner Work']];
 const topOf = (p, id) => p.evaluate((id) => { const e = document.getElementById(id); return e ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);
 const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+// the slide that closes a world: its last section, Begin on M, the second door on G and S (task d9a90616; row 14 reads its footer)
+const lastId = (p, P) => p.evaluate((P) => { const s = [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} > section.s`)].pop(); return s ? s.id : ''; }, P);
 
 // 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22, 24, 25
 async function desktop(p, v, P, W, add, seen) {
@@ -139,10 +141,10 @@ async function desktop(p, v, P, W, add, seen) {
   }
 
   // row 14: the footer sits inside the closing slide, with no empty band under it
-  const yb = await topOf(p, `${P}begin`);
+  const last = await lastId(p, P), yb = await topOf(p, last);
   if (yb >= 0) {
     await jump(p, yb); await wait(p, 900);
-    const f = await p.evaluate((P) => { const s = document.getElementById(`${P}begin`), f = s.querySelector('footer'); if (!f) return null; const a = s.getBoundingClientRect(), b = f.getBoundingClientRect(); return [Math.round(a.height), Math.round(a.bottom - b.bottom)]; }, P);
+    const f = await p.evaluate((id) => { const s = document.getElementById(id), f = s.querySelector('footer'); if (!f) return null; const a = s.getBoundingClientRect(), b = f.getBoundingClientRect(); return [Math.round(a.height), Math.round(a.bottom - b.bottom)]; }, last);
     seen[`14 ${W} 1440`] = f;
     if (!f) add(14, 'the closing slide has no footer inside it');
     else if (f[1] > 2) add(14, `an empty band of ${f[1]} px under the footer at 1440`);
@@ -339,10 +341,10 @@ async function phone(p, v, P, W, add, seen) {
     else if (m.shown < m.rows) add(6, `on a phone ${m.rows - m.shown} of ${m.rows} menu rows show no photo`);
     else if (m.srcs < m.rows) add(6, 'on a phone two menu rows show the same photo');
   }
-  const yb = await topOf(p, `${P}begin`);
+  const last = await lastId(p, P), yb = await topOf(p, last);
   if (yb >= 0) {
     await jump(p, yb); await wait(p, 900);
-    const f = await p.evaluate((P) => { const s = document.getElementById(`${P}begin`), f = s.querySelector('footer'); if (!f) return null; const a = s.getBoundingClientRect(), b = f.getBoundingClientRect(); return [Math.round(a.height), Math.round(a.bottom - b.bottom)]; }, P);
+    const f = await p.evaluate((id) => { const s = document.getElementById(id), f = s.querySelector('footer'); if (!f) return null; const a = s.getBoundingClientRect(), b = f.getBoundingClientRect(); return [Math.round(a.height), Math.round(a.bottom - b.bottom)]; }, last);
     seen[`14 ${W} 390`] = f;
     if (f && f[1] > 2) add(14, `an empty band of ${f[1]} px under the footer on a phone`);
   }
