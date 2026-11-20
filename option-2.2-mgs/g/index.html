@@ -2268,6 +2268,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
    follows a step); --ina, the share of its way in (0 to 1, 1 when it follows no step); --in, the same for every step. The
    engine's --q is its share gone out. Calm motion and screenshots: today's. */
 /* motion switch (was prefers-reduced-motion: no-preference) */
+html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move {isolation: isolate;}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__media {transform: translate3d(0, calc(var(--out, 0px) - var(--inp, 0px)), 0);}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__zoom, html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still.is-active .s__zoom {transform: none; transition: none;}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__veil, html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still:has(+ .ch--move) .s__shade {opacity: 0; transition: none;}
@@ -3153,7 +3154,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="686611ac0570";</script>
+<script>window.OM_BUILD="25f06a3bb80a";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
