@@ -2869,6 +2869,11 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     set('style', L.style); if (!on && c.style.getPropertyValue('--pos')) im.style.setProperty('--pos', c.style.getPropertyValue('--pos'));
     im.classList.toggle('is-ai', on ? L.ai : !!o.ai);
     im.setAttribute('data-pic-opt', o.k);
+    // the picture's own file is the option shown: the tweak panel's original (tweaks.js data-orig) follows it, so the srcset
+    // sync (mgs.js) never sets this srcset aside nor puts an earlier option's back over it (task 279db527; J 20 Nov, 2:53:
+    // "now i cannot go back to the original one")
+    if (im.hasAttribute('data-orig')) im.setAttribute('data-orig', im.getAttribute('src'));
+    im.removeAttribute('data-hd-srcset');
     var f = L.f; if (f.shared) return;
     if (f.mark) { f.mark.hidden = !on && !o.ai; f.mark.textContent = on ? f.text : (o.ai || f.text); return; }
     if (!on && o.ai && !im._pm) { im._pm = document.createElement('p'); im._pm.className = 'ai-mark'; im.parentElement.appendChild(im._pm); }
@@ -2882,7 +2887,8 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     if (row) row.click(); else im.scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' });
   }
   function choosePic(p, k, animate) {
-    var o = optOf(p, k); if (!o || (pon[p] || LIVE) === k) return;
+    var o = optOf(p, k); if (!o) return;
+    if ((pon[p] || LIVE) === k) return reveal(p);      // chosen again: its picture comes back, over a menu row opened since
     pon[p] = k; keep('pic-' + p.replace(/\.webp$/, ''), k, LIVE);
     var ims = picsOf(p), shown = animate && !calm() ? ims.filter(seen) : [];
     function go() {
