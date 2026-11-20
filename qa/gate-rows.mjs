@@ -141,15 +141,6 @@ async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs
     if (!(g.length >= 3 && g[1] > g[0] + 8 && g[1] > g[2]) && !/rgb\(\s*\d+,\s*\d{2,3},/.test(a.img)) add(8, `"${id}": the ground is ${a.ground}, not the forest green`);
   }
 
-  // row 14: the footer sits inside the closing slide, with no empty band under it
-  const last = await lastId(p, P), yb = await topOf(p, last);
-  if (yb >= 0) {
-    await jump(p, yb); await wait(p, 900);
-    const f = await p.evaluate((id) => { const s = document.getElementById(id), f = s.querySelector('footer'); if (!f) return null; const a = s.getBoundingClientRect(), b = f.getBoundingClientRect(); return [Math.round(a.height), Math.round(a.bottom - b.bottom)]; }, last);
-    seen[`14 ${W} 1440`] = f;
-    if (!f) add(14, 'the closing slide has no footer inside it');
-    else if (f[1] > 2) add(14, `an empty band of ${f[1]} px under the footer at 1440`);
-  }
 
   // rows 15 and 17: the pause (M and G)
   const yp = await topOf(p, `${P}pause`);
@@ -194,6 +185,18 @@ async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs
   // back a screen was snapped back into it on G and S: 23c60cf): each sheet's clear window on its subject; one heading size
   await subjects(p, P, W, add, seen, '1440');
   await heads(p, P, W, add, seen, '1440');
+
+  // row 14: the footer sits inside the closing slide, with no empty band under it. After the entries (task d9a90616): on G and S
+  // the closing slide is the second door, and a visit to it just before row 21 left it arrived, so its entry had nothing to show
+  // on S, which has no pause between the two
+  const last = await lastId(p, P), yb = await topOf(p, last);
+  if (yb >= 0) {
+    await jump(p, yb); await wait(p, 900);
+    const f = await p.evaluate((id) => { const s = document.getElementById(id), f = s.querySelector('footer'); if (!f) return null; const a = s.getBoundingClientRect(), b = f.getBoundingClientRect(); return [Math.round(a.height), Math.round(a.bottom - b.bottom)]; }, last);
+    seen[`14 ${W} 1440`] = f;
+    if (!f) add(14, 'the closing slide has no footer inside it');
+    else if (f[1] > 2) add(14, `an empty band of ${f[1]} px under the footer at 1440`);
+  }
 
   // row 4: the visit preview's line reaches 05, its stops travel into the step rail at step 01, and back in reverse (M, G)
   const yv = await topOf(p, `${P}visit`), ya = await topOf(p, `${P}arrive`);
