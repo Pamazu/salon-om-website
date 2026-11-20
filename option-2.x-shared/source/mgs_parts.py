@@ -386,6 +386,114 @@ def salon_end(legend, visit='arrive', explore=None, iw=True):
 # sequence, sections, colors, style, films stay the same. So pictures and copy change". twin() lays Inner Work's words and
 # pictures (copy_2_2_iw.py) over it and nothing else.
 TWIN = 'c-'          # every Inner Work section id is its salon twin's, with this in front
+
+# THE FIVE STEPS' PICTURES, each world its own (task f748d06c; J 20 Nov 07:18 Z: "Ensure that all images in the five steps will
+# give me different options for them. Images need to be aligned with the text. Is crucial ... If they don't have nothing to do
+# with the text is a huge mistake"). Today both worlds show the salon's five photos (STEP_IMG): each is a place without the step's
+# act in it, and under Inner Work's words none of them is about the words. So every step, in each world, gets its own options in
+# Shift+V, each showing what its words say; today's photo stays the picture until J picks (row 27). Each candidate is one guest
+# in the salon's real room (a generated person is only a guest, alone: StoryLegal 17 Nov), drawn WHOLE by FLUX.2 Klein 4B on the
+# Mac Studio from the room's own photo (J 20 Nov 08:55 Z: "just use AI models ... regenerating the whole image"), at the model's
+# 1248 px until J picks one; every try, its shot plan and its verdict in Test Lab EXP-salonom-step-pictures-1.
+# (key, label, file, focus, alt, note): focus is her face, so a phone's narrow crop keeps her
+STEP_PICTURES = {
+    'arrive': [
+        ('tea-fire', 'Tea by the fire, talking', 'om-step-arrive-ara2k42.webp', '28% 35%',
+         'A generated guest laughing as she talks on the striped bench by the lit fireplace at Salon OM, a cup of tea in both hands, cookies beside her',
+         'Her comfort chosen, tea and a little something to snack on, and a real conversation by the fire.'),
+        ('consult', 'Tea at her consultation, by the window', 'om-step-arrive-arb1.webp', '70% 30%',
+         'A generated guest with a cup of tea in the styling chair by the window at Salon OM, lifting a lock of her hair as she talks',
+         'Her tea in hand, she shows what she wants for her hair: the drink and the real conversation of her words.'),
+    ],
+    'unwind': [
+        ('aroma', 'Breathing in the oil', 'om-step-unwind-uwa42.webp', '50% 35%',
+         'A generated guest in a towel at the shampoo basins of Salon OM, eyes closed, breathing in the scent of a small amber oil bottle',
+         'The sensory experience that begins the visit: she breathes in the oil, eyes closed, at your 25 Oct basins.'),
+        ('ritual', 'At rest in the basin chair', 'om-step-unwind-uwb1.webp', '60% 55%',
+         'A generated guest reclined at a shampoo basin at Salon OM, eyes closed and smiling, a towel round her shoulders',
+         'During the scalp and shoulder ritual: reclined at the basin, eyes closed, the tension gone. Your 25 Oct basins.'),
+    ],
+    'renew': [
+        ('colour', 'Her new colour, at the colour bar', 'om-step-renew-rnb42.webp', '78% 30%',
+         'A generated guest with glossy, dimensional brunette and caramel hair, smiling over her shoulder at the colour bar of Salon OM',
+         'The service done: healthy, dimensional colour, turning at the Aveda colour wall.'),
+        ('foils', 'Foils on, in the chair', 'om-step-renew-rna2k1.webp', '42% 30%',
+         'A generated guest in a black cape with rows of foils in her hair, a magazine on her lap, in a styling chair at Salon OM',
+         'Her service under way: her colour developing in foils, at ease in the chair.'),
+    ],
+    'unhurried': [
+        ('laugh', 'Laughing in the chair by the window', 'om-step-unhurried-uha1.webp', '62% 30%',
+         'A generated guest in a black cape laughing freely in the styling chair by the window at Salon OM',
+         'Laugh, cry, talk or rest in silence: she laughs, at ease in her chair.'),
+        ('rest', 'Resting by the fire, in silence', 'om-step-unhurried-uhb3.webp', '18% 30%',
+         'A generated guest resting by the lit fireplace in the lounge of Salon OM, eyes closed, a cup of tea in her hands',
+         'Rest in silence: eyes closed by the fire, her tea in her hands. This is your space.'),
+    ],
+    'home': [
+        ('take-home', 'Choosing what to take home', 'om-step-home-hmb3.webp', '50% 30%',
+         'A generated guest in a camel coat reading the label of an Aveda bottle between the product shelves at Salon OM',
+         'Ready to leave, her finished hair glossy, she reads the bottle she takes home to recreate her style.'),
+    ],
+    TWIN + 'arrive': [
+        ('call-fire', 'A first call, by the fire', 'iw-step-connect-cna1.webp', '27% 25%',
+         'A generated woman on the phone on the striped bench by the lit fireplace, smiling softly',
+         'The courage to reach out: a first call, a simple conversation.'),
+        ('call-window', 'A first call, by the window', 'iw-step-connect-cnb1.webp', '37% 30%',
+         'A generated woman on the phone by the window, smiling as the conversation begins',
+         'The courage to reach out: a first call by the window.'),
+    ],
+    TWIN + 'unwind': [
+        ('photo', 'An old photograph, by the fire', 'iw-step-revisit-rva3.webp', '30% 45%',
+         'A generated woman by the lit fireplace looking tenderly at an old photograph in her hands',
+         'Gently revisiting the moments that shaped you: an old photograph, looked at with care.'),
+        ('journal', 'Writing it down, by the fire', 'iw-step-revisit-rvb1.webp', '40% 30%',
+         'A generated woman writing in a notebook on her knee on the striped bench by the fireplace',
+         'Exploring thoughts and beliefs, with curiosity: she writes them down by the fire.'),
+    ],
+    TWIN + 'renew': [
+        ('daylight', 'Face to the daylight', 'iw-step-witness-wta1.webp', '37% 30%',
+         'A generated woman at a tall window, her face lifted to the daylight, eyes closed, smiling',
+         'Stepping into the present with a new sense of freedom: her face to the light.'),
+        ('distance', 'Watching the street, from a distance', 'iw-step-witness-wtb2.webp', '58% 40%',
+         'A generated woman in a chair by the window, her chin on her hand, watching the street outside',
+         'Witnessing from a gentle distance: she watches, calm, from her chair.'),
+    ],
+    TWIN + 'unhurried': [
+        ('walk-on', 'Walking on, outside the salon', 'iw-step-choose-cha2.webp', '55% 25%',
+         'A generated woman in a blue sweater walking from the wooden stairs outside the salon, smiling',
+         'A new pathway, chosen: walking on, with the street ahead of her.'),
+        ('stairs', 'Up the stairs, step by step', 'iw-step-choose-chb42.webp', '42% 25%',
+         'A generated woman in a camel coat climbing the wooden stairs outside the salon, her hand on the railing, looking up',
+         'Each time you choose, a new pathway: one step, then the next.'),
+    ],
+    TWIN + 'home': [
+        ('stride', 'In her own stride', 'iw-step-become-chb1.webp', '45% 22%',
+         'A generated woman in a camel coat walking on outside the salon, smiling, her hand on the stair railing',
+         'What once took courage now feels natural: she moves forward, smiling.'),
+        ('onward', 'Walking on, empowered', 'iw-step-become-bcc2.webp', '50% 22%',
+         'A generated woman with short silver hair walking toward the camera outside the salon, smiling, her hand on the stair railing',
+         'Feeling empowered, with change designed to last: she walks on, sure of herself.'),
+    ],
+}
+# today's step photo, as each world's panel names it (Inner Work's are her own photos, IW_STEP_PICS)
+STEP_TODAY = ['the team of three', 'your 25 Oct basins room, empty', 'the colour bar', 'the lounge, empty', 'the styling stations, empty']
+STEP_TODAY_IW = ['the coach by the fire', 'the lounge, empty', 'the coach in the salon', 'the coach on the steps outside',
+                 'the coach by the product wall']
+
+
+def _step_pictures():
+    """each step's entry in PICTURE_OPTIONS, keyed by its section (a photo may show in more than one). Labelled "Made with AI":
+    the model drew the whole picture, room included, from the salon's photo (not a guest laid on the photographer's pixels).
+    Called once Inner Work's step photos (IW_STEP_PICS) are known"""
+    import copy_2_2_iw as IW
+    for k, sid in enumerate(STEP_ID):
+        for w, name, f, today in ((sid, M.STEPS[k][0], STEP_IMG[k], STEP_TODAY[k]),
+                                  (TWIN + sid, IW.STEPS[k][0], IW_PHOTO[IW_STEP_PICS[k][0]][0], STEP_TODAY_IW[k])):
+            if STEP_PICTURES[w]:
+                PICTURE_OPTIONS['step-' + w] = dict(
+                    file=f, section=w, name=f'{name}’s picture', live='Today’s: ' + today,
+                    options=[dict(key=key, label=lab, img=img, ai=AI_MADE, pos=pos, alt=alt, note=note)
+                             for key, lab, img, pos, alt, note in STEP_PICTURES[w]])
 # the fields that carry words (and the links of their buttons), and those that carry pictures (with their alt text, crop
 # and AI label). Anything else (a film, sound, tone, layout flag) stays the salon section's; an entry naming one stops the build
 TWIN_WORDS = {'hook', 'eyebrow', 'line', 'rot', 'ctas', 'note', 'aveda', 'open', 'aria', 'label', 'text', 'after', 'accents',
@@ -467,6 +575,7 @@ IW_PATH_PICS = [('warm', '50% 24%'), ('fireside', '50% 40%'), ('smile', '50% 26%
 # the five steps of the Journey, five different photos (approved-features row 2), each a landscape original, so a step's
 # full-width frame stays sharp on J's 6K window (row 18; QA 18 Nov: portrait originals there drew at 1.5x): (photo, focus)
 IW_STEP_PICS = [('fire', None), ('lounge_wide', None), ('salon_wide', '50% 26%'), ('outdoor_steps', None), ('wall', None)]
+_step_pictures()      # the five steps' picture options, both worlds (task f748d06c)
 # each place that still shows a repeat or a frame, and the coaching picture it waits for (next on task 7a3c013b)
 IW_PICTURES_TO_MAKE = []      # none: every Inner Work picture place shows one of her own photos, none repeated within a section
 IW_LEFT_OPEN = ['the drawn word mark of the first screen stays SALON OM, the site\'s mark in both worlds (copy_2_2_iw.NOTES asks for INNER WORK)']

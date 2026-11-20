@@ -27,6 +27,19 @@ class Pictures(unittest.TestCase):
             SO.pictures(body, {'one.webp': OPT('one')})
 
 
+    def test_section_swaps_only_its_own_section(self):
+        # task f748d06c: a step's photo shows in the salon's step and again in Inner Work's twin step (c-arrive), and on M the
+        # basins photo once more in Inner Work's door; each world's step declares its own options under its own key
+        body = ('<main id="main-salon"><section id="arrive"><img src="img/a.webp"></section></main>'
+                '<main><section id="c-arrive"><img src="img/a.webp"></section><section id="c-door"><img src="img/a.webp"></section></main>')
+        out = SO.pictures(body, {'step-a': dict(OPT('a'), file='a.webp', section='arrive'),
+                                 'c-step-a': dict(OPT('a'), file='a.webp', section='c-arrive')})
+        self.assertIn('<section id="arrive"><img data-pic="step-a" src="img/a.webp">', out)
+        self.assertIn('<section id="c-arrive"><img data-pic="c-step-a" src="img/a.webp">', out)
+        self.assertIn('<section id="c-door"><img src="img/a.webp">', out)
+        self.assertEqual(out.count('data-pic-for="step-a"'), 2)
+        self.assertEqual(out.count('data-pic-for="c-step-a"'), 2)
+
     def test_only_swaps_the_one_copy_it_names(self):
         # task b1dd24c9: Finishing Touches' options swap the tall desktop panel (mn__img) only; its phone row (mn__rph) keeps
         # today's picture, whose 3:2 already shows it whole

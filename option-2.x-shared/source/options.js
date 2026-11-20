@@ -78,8 +78,9 @@
   function optOf(p, k) { return (ptpl[p] || []).filter(function (o) { return o.k === k; })[0]; }
   function picsOf(p) { return [].slice.call(document.querySelectorAll('img[data-pic="' + p + '"]')); }
   function frameOf(im) {      // the picture's own AI label: in a box holding no other picture (the menu's panel labels its open one by is-ai)
-    for (var el = im.parentElement, sec = im.closest('section'); el && el !== sec; el = el.parentElement) {
-      if (el.querySelectorAll('img').length > 1) return { shared: true };
+    for (var el = im.parentElement, sec = im.closest('section'), own = false; el && el !== sec; el = el.parentElement, own = true) {
+      // a box of its own inside a shared one (a step's photo over its film's poster, task f748d06c): the label goes in its own box
+      if (el.querySelectorAll('img').length > 1) return own ? {} : { shared: true };
       var m = el.querySelector(':scope > .ai-mark'); if (m) return { mark: m, text: m.textContent };
     }
     return {};

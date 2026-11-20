@@ -100,7 +100,10 @@ def pictures(body, declared):
     in the sections' option templates) gets data-pic, so a choice changes every copy of it (the menu's panel and its phone row);
     each candidate is drawn as an <img> in a template of the store, so the build gives it its srcset and photo_sources checks it
     like any picture. A picture with no candidate, or not on the page, gets nothing; a page with none is unchanged, byte for byte.
-    A candidate goes live as the picture only once J picks it there (approved_gate.py row 27)."""
+    A candidate goes live as the picture only once J picks it there (approved_gate.py row 27).
+    section (task f748d06c): the id of the one section whose copies its options change, when the same file shows in other
+    sections too (a step's photo, shown again under Inner Work's own words in the twin step c-<id>); the entry is then keyed by
+    its own name and names its picture in file=. data-pic carries the entry's key."""
     tp, rows = world_prefix('coaching'), []
     for name, p in declared.items():
         # read on the page as it is now: each picture before this one gained data-pic, which moves everything after it (with
@@ -111,18 +114,20 @@ def pictures(body, declared):
         # only (task b1dd24c9): the class of the one copy its options swap (Finishing Touches: 'mn__img', the desktop panel), the
         # other copies keep today's picture (its phone row, whose 3:2 already shows it whole); default: every copy
         only = r'(?=[^>]*\sclass="[^"]*\b' + re.escape(p['only']) + r'\b)' if p.get('only') else ''
-        tag = re.compile(r'<img\b(?=[^>]*\ssrc="img/' + re.escape(name) + r'")' + only)
-        at = [m.start() for m in tag.finditer(body)]
+        tag = re.compile(r'<img\b(?=[^>]*\ssrc="img/' + re.escape(p.get('file', name)) + r'")' + only)
+        sec = lambda a: next((sid for i, sid in reversed(marks) if i < a), '')
+        at = [m.start() for m in tag.finditer(body) if not p.get('section') or sec(m.start()) == p['section']]
         if not opts or not at:
             continue
         keys = [o['key'] for o in opts]
         assert DEFAULT['key'] not in keys and len(set(keys)) == len(keys) and all(re.fullmatch(r'[a-z0-9-]+', k) for k in keys), \
             f'section_options: picture "{name}": option keys must be unique, lowercase, and never "{DEFAULT["key"]}": {keys}'
-        where = {next((sid for i, sid in reversed(marks) if i < a), '') for a in at}
-        where = {w[len(tp):] if tp and w.startswith(tp) else w for w in where}
+        where = {sec(a) for a in at}
+        where = {w[len(tp):] if tp and w.startswith(tp) and not p.get('section') else w for w in where}
         assert len(where) == 1 and '' not in where, f'section_options: picture "{name}" sits in more than one section ({sorted(where)}): ' \
             'a choice would change another section too; give it a file of its own there'
-        body = tag.sub(f'<img data-pic="{E(name)}"', body)
+        for a in reversed(at):
+            body = body[:a] + f'<img data-pic="{E(name)}"' + body[a + 4:]
         rows.append(f'<template data-pic-for="{E(name)}" data-opt="{DEFAULT["key"]}" data-name="{E(p["name"])}" data-n="{E(p["live"])}"></template>')
         for o in opts:
             rows.append(f'<template data-pic-for="{E(name)}" data-opt="{E(o["key"])}" data-n="{E(o["label"])}"'

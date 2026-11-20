@@ -62,7 +62,7 @@ DPR = {'w3230': 2, 'w1440': 2, 'w390': 3}
 def candidates():
     """a picture's Shift+V candidate -> the picture it stands in for (mgs_parts.PICTURE_OPTIONS, task 279db527)"""
     import mgs_parts
-    return {o['img']: name for name, p in mgs_parts.PICTURE_OPTIONS.items() for o in p.get('options') or []}
+    return {o['img']: p.get('file', name) for name, p in mgs_parts.PICTURE_OPTIONS.items() for o in p.get('options') or []}     # file=: a step's entry (task f748d06c)
 
 
 def needed(name):

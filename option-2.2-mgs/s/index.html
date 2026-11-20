@@ -2248,6 +2248,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--breath .ps__pic img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 55%; display: block; }
 /* a picture swapped in by Shift+V (options.js, task 279db527) keeps its subject in view: its own focus, in every scene of the pause */
 .s.ps img[style*="--pos"] { object-position: var(--pos); }
+.ch__top img[style*="--pos"] { object-position: var(--pos) !important; }     /* a step's picture option keeps its own subject in view, over the photo's own focus (task f748d06c) */
 /* a screen wider than the photos' real pixels stay sharp edge to edge (J's 6K window; approved row 18: "sharp at its display size
    on J's largest screen ... never upscaled soft"): the room opens to a large rounded frame of the width they hold, never soft */
 @media (min-width: 2401px) {
@@ -2825,7 +2826,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="5d7d62a37361";</script>
+<script>window.OM_BUILD="39f4acbd5021";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -2908,8 +2909,9 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   function optOf(p, k) { return (ptpl[p] || []).filter(function (o) { return o.k === k; })[0]; }
   function picsOf(p) { return [].slice.call(document.querySelectorAll('img[data-pic="' + p + '"]')); }
   function frameOf(im) {      // the picture's own AI label: in a box holding no other picture (the menu's panel labels its open one by is-ai)
-    for (var el = im.parentElement, sec = im.closest('section'); el && el !== sec; el = el.parentElement) {
-      if (el.querySelectorAll('img').length > 1) return { shared: true };
+    for (var el = im.parentElement, sec = im.closest('section'), own = false; el && el !== sec; el = el.parentElement, own = true) {
+      // a box of its own inside a shared one (a step's photo over its film's poster, task f748d06c): the label goes in its own box
+      if (el.querySelectorAll('img').length > 1) return own ? {} : { shared: true };
       var m = el.querySelector(':scope > .ai-mark'); if (m) return { mark: m, text: m.textContent };
     }
     return {};
