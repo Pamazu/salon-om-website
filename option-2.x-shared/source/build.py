@@ -23,7 +23,13 @@ def _mgs_engine():
     # longer starts one itself; it did so for the opening film before mgs.js ran, asking for the H.264 file the twin then replaced
     film = '        if (r.top < vh * 2 && r.bottom > -vh) attach(v);\n'
     assert js.count(film) == 1, 'engine.js: the film attach line moved'
-    return js.replace(film, '')
+    js = js.replace(film, '')
+    # the header reads the footer as dark once the footer is what lies under it (task d9a90616): on G and S the footer sits inside
+    # the second door, a light slide, and on a phone it is taller than the window, so the header kept its dark ink over the
+    # footer's dark ground. A footer inside a dark slide (Begin, on M) reads as before
+    tone = "tone = s.getAttribute('data-tone') || 'dark';"
+    assert js.count(tone) == 1, 'engine.js: the header tone line moved'
+    return js.replace(tone, "{ var ft = s.querySelector(':scope > footer'); tone = (ft && ft.getBoundingClientRect().top <= hdrMid ? 'dark' : s.getAttribute('data-tone')) || 'dark'; }")
 TW_JS = open(V + 'tweaks.js').read()
 TW_CSS = open(V + 'tweaks.css').read()
 # extra stylesheets per variation, appended after the shared ones (2.3 and 2.4 stay as they were at the checkpoint)
