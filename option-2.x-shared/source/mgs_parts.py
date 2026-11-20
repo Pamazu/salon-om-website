@@ -747,6 +747,12 @@ def motion_css(css):
         i = j
     return ''.join(out)
 
+# the screens a picture's cut is for (export_photos.CUTS, a 4:3 band of a portrait photo, task 1ff4c3f4): 3:2 or wider, and
+# tall enough that the step's frame is the screen's shape (mgs.css .ch__stick: min-height 540px); the margin over 4:3 keeps
+# the band whole when a toolbar takes some of a tablet's height
+CUT_MEDIA = {'landscape': '(min-aspect-ratio: 3/2) and (min-height: 540px)'}
+
+
 def srcset(body, v):
     """Every picture on M, G and S at the size the screen needs (task b1dd24c9, approved features row 18): an <img> whose file
     has exports in img/hd/ (export_photos.py, listed in photo_exports.json) gets srcset with each width and sizes from the
@@ -763,6 +769,10 @@ def srcset(body, v):
 
     def one(m):
         tag, name = m.group(0), m.group(1)
+        # a step's photo (build.chapter marks it data-cut) also ships its cut to the screens it frames, when it has one and
+        # keeps the frame's own object-position (the cut is made for it)
+        cuts = [k for k in CUT_MEDIA if f'{name} {k}' in ex] if ' data-cut' in tag and 'object-position' not in tag else []
+        tag = tag.replace(' data-cut', '', 1)
         if name not in ex or ' srcset=' in tag or (name not in sz and ' data-cand' not in tag):
             return tag
         stem = name[:-5]
@@ -775,7 +785,11 @@ def srcset(body, v):
         sizes = ', '.join(x for x in (f'(max-width: 700px) {vw(e, "w390", 390)}vw' if e.get('w390') else '',
                                       f'(max-width: 2000px) {vw(e, "w1440", 1440)}vw' if e.get('w1440') else '',
                                       f'{vw(e, "w3230", 3230)}vw') if x)
-        return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
+        tag = tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
+        for k in cuts:
+            cset = ', '.join(f'img/hd/{stem}-{k}-{w}.webp {w}w' for w in ex[f'{name} {k}'])
+            tag = f'<picture><source media="{CUT_MEDIA[k]}" srcset="{cset}" sizes="{sizes}">{tag}</picture>'
+        return tag
     return re.sub(r'<img [^>]*?src="img/([^"/]+\.webp)"[^>]*>', one, body)
 
 

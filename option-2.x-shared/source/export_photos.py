@@ -11,7 +11,7 @@ Each export keeps the look of the file it replaces: its colour is fitted, channe
 (a grade made for the site, such as the Inner Work copies, carries over). The originals are not in git (photos of people,
 StoryLegal's client-photo conditions; 30-55 MB each); only the exports are.
 
-  ~/StoryForge/ComfyUI/.venv/bin/python option-2.x-shared/source/export_photos.py [name ...] [--dry]
+  ~/StoryForge/ComfyUI/.venv/bin/python option-2.x-shared/source/export_photos.py [name ...] [--dry] [--cuts]
 """
 import json, os, sys
 import numpy as np
@@ -57,6 +57,12 @@ GRAIN_BLUR = 0.9
 QUALITY = 78
 LADDER = [640, 960, 1280, 1920, 2560, 3840, 5120, 6400, 8192]
 DPR = {'w3230': 2, 'w1440': 2, 'w390': 3}
+# a picture drawn in a frame of another shape ships only what the frame shows (task 1ff4c3f4): a step's portrait photo fills a
+# landscape screen by its width (next.css .ch__top img: cover, object-position 50% 30%), so a screen 3:2 or wider shows at most
+# its 4:3 band, cut where that object-position keeps it (top = 30 % of the height left over), which then frames exactly as the
+# whole picture does at every such shape; mgs_parts.CUT_MEDIA gives it to those screens (measured at 3230 on 4G: the lounge's
+# 4.6 MB came 9.6 s after its step). name -> (cut, its aspect, the object-position's y)
+CUTS = {'real-lounge.webp': ('landscape', 4 / 3, .30), 'real-styling-stations.webp': ('landscape', 4 / 3, .30)}
 
 
 def candidates():
@@ -108,7 +114,21 @@ def master(name):
     return p if os.path.exists(p) else None
 
 
-def export(name, dry=False):
+def cut(name, m, ws):
+    """the cut's ladder (CUTS), from the same prepared master as the picture's own, at the same widths; listed in
+    photo_exports.json as '<name> <cut>'"""
+    k, asp, oy = CUTS[name]
+    ch = round(m.width / asp)
+    y0 = round(oy * (m.height - ch))
+    c = m.crop((0, y0, m.width, y0 + ch))
+    for w in ws:
+        (c if w == c.width else c.resize((w, round(c.height * w / c.width)), Image.LANCZOS)).save(f'{IMG}hd/{name[:-5]}-{k}-{w}.webp', quality=QUALITY, method=6)
+    json.dump(dict(json.load(open(V + 'photo_exports.json')), **{f'{name} {k}': ws}), open(V + 'photo_exports.json', 'w'), indent=1, sort_keys=True)
+    open(V + 'photo_exports.json', 'a').write('\n')
+    return f', {k} cut rows {y0}-{y0 + ch} of {m.height}'
+
+
+def export(name, dry=False, cuts_only=False):
     p = master(name)
     if not p:
         return f'{name}: no master yet ({SOURCE[name]})'
@@ -136,6 +156,8 @@ def export(name, dry=False):
         m = fitted                            # the same picture: keep the site file's grade
     elif frozen:
         return f'{name}: master differs from the site file (mean {before:.1f}) and 2.2-2.4 show that file: not exported'
+    if cuts_only:                             # --cuts: only the cut's ladder; the picture's own files stay as they are
+        return f'{name}: {m.size} -> {ws}' + (cut(name, m, ws) if name in CUTS else ', no cut')
     if not frozen:
         # only M, G and S show this picture, so its fallback is the new picture too (task a8c429a3: a cleaned picture's 1280
         # file kept the clutter while its ladder had none); 2.2-2.4's files never change
@@ -152,7 +174,7 @@ def export(name, dry=False):
     json.dump(dict(json.load(open(V + 'photo_exports.json')) if os.path.exists(V + 'photo_exports.json') else {}, **{name: ws}),
               open(V + 'photo_exports.json', 'w'), indent=1, sort_keys=True)
     open(V + 'photo_exports.json', 'a').write('\n')
-    return f'{name}: {m.size} need {need} -> {ws} (colour fit, mean diff before {before:.1f})'
+    return f'{name}: {m.size} need {need} -> {ws} (colour fit, mean diff before {before:.1f})' + (cut(name, m, ws) if name in CUTS else '')
 
 
 if __name__ == '__main__':
@@ -161,4 +183,4 @@ if __name__ == '__main__':
         sys.exit('not exported: a picture shows a cleaned place raw, or is undeclared (task a8c429a3):\n  ' + '\n  '.join(bad))
     names = [a for a in sys.argv[1:] if not a.startswith('--')] or list(SOURCE)
     for n in names:
-        print(export(n, dry='--dry' in sys.argv))
+        print(export(n, dry='--dry' in sys.argv, cuts_only='--cuts' in sys.argv))
