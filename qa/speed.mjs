@@ -142,6 +142,10 @@ async function one(v, w, box) {
 // STEPS=1: one step's moment, polled from its arrival: photo = its own picture loaded and decoded; film = moving; first = any
 // picture in its frame (the film's poster, the photo or the film)
 const READ = +(process.env.READ || 4000), STEPS = process.env.STEPS === '1';
+// VIDEO=dir (task 1ff4c3f4, J 20 Nov: "it needs to be instant"): the walk and the jump are filmed as WebKit paints them, and each
+// arrival gets its moment in the film (vMs), so what the reader SEES on arriving is looked at frame by frame, not only read from
+// the page (qa/arrive-frames.sh cuts each arrival into a strip); a filmed case costs CPU, so its times are not the A/B's
+const VIDEO = process.env.VIDEO || '';
 const FRAMES = () => { const F = window.__frames = []; let last = 0; const f = (t) => { if (last && t - last > 50) F.push([Math.round(t), Math.round(t - last)]); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); };
 async function at(p, id, t0) {
   await p.evaluate((id) => { const sec = document.getElementById(id); sec._t = performance.now();
@@ -178,9 +182,10 @@ async function steps(v, w, box) {
   const h = w < 700 ? 844 : w > 2000 ? Math.round(w * 9 / 16) : 900;
   const open = async () => {
     const b = box.b = await pw.webkit.launch();
-    const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: h }, deviceScaleFactor: w < 700 ? 3 : 2, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
+    const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: h }, deviceScaleFactor: w < 700 ? 3 : 2, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}),
+      ...(VIDEO ? { recordVideo: { dir: VIDEO, size: { width: Math.min(w, 1615), height: Math.round(Math.min(w, 1615) * h / w) } } } : {}) });
     await ctx.addInitScript(PROBE); await ctx.addInitScript(FRAMES);
-    const p = await ctx.newPage(); await p.goto(`${BASE}/${v}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    const p = await ctx.newPage(); box.vt0 = Date.now(); await p.goto(`${BASE}/${v}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
     await p.waitForTimeout(3000); await p.mouse.click(w / 2, 300); await p.waitForTimeout(1500);
     return { b, ctx, p };
   };
@@ -192,12 +197,13 @@ async function steps(v, w, box) {
     const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
     const f0 = await p.evaluate(() => window.__frames.length);
     await jump(p, top); const t0 = Date.now();
-    const o = { ...(await at(p, id, t0)), atMs: t0 - tCase };      // when the reader arrived, on the request log's clock
+    const o = { ...(await at(p, id, t0)), atMs: t0 - tCase, ...(VIDEO ? { vMs: t0 - box.vt0 } : {}) };      // when the reader arrived, on the request log's clock
     await p.waitForTimeout(Math.max(0, READ - (Date.now() - t0)));
     const fr = await p.evaluate((n) => window.__frames.slice(n).map((x) => x[1]), f0);
     walk.push({ ...o, longFrames: fr.length, worstFrameMs: fr.length ? Math.max(...fr) : 0 });
     if (LOG) console.error(`  ${v} ${w} ${id}: ${JSON.stringify(walk[walk.length - 1])}`);
   }
+  const walkVideo = VIDEO && p.video() ? await p.video().path().catch(() => null) : null;
   await shut(ctx, b);
   // LOG=1: the walk's own requests are kept beside the jump's (task 1ff4c3f4: what holds the line on the way to a step)
   const walkRequests = reqs;
@@ -208,11 +214,11 @@ async function steps(v, w, box) {
     reqs = []; held = new Set(); line = 0; tCase = Date.now();
     ({ b, ctx, p } = await open());
     const id = ids[4], top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
-    await jump(p, top); direct = await at(p, id, Date.now());
+    const tj = Date.now(); await jump(p, top); direct = { ...(await at(p, id, Date.now())), ...(VIDEO ? { vMs: tj - box.vt0, video: p.video() ? await p.video().path().catch(() => null) : null } : {}) };
     if (LOG) console.error(`  ${v} ${w} jump to ${id}: ${JSON.stringify(direct)}`);
     await shut(ctx, b);
   }
-  return { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct, ...(LOG ? { requests: reqs, walkRequests } : {}) };
+  return { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct, ...(VIDEO ? { walkVideo } : {}), ...(LOG ? { requests: reqs, walkRequests } : {}) };
 }
 // a case gets 150 s (a full case takes some 25-40 s); one that runs out is closed and tried once more, then written as hung
 for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
