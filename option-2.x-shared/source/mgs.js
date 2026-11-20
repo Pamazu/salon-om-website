@@ -352,8 +352,11 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (r.height > vh + 2 && r.top < -4 && r.bottom > 80) ground = s;      // a tall section scrolling under the header
     });
     if (ground) {      // the glass header's veil (mgs.css .hdr-glass): the section's ground, or its tone's when it paints none
-      var bg = getComputedStyle(ground).backgroundColor;
-      if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
+      // a closing slide carries the footer (mgs_sections.with_foot): once the footer is what lies under the header, the veil is
+      // the footer's ground, dark, whatever the slide above it wears (G, S: the light second door, task d9a90616)
+      var ft = ground.querySelector(':scope > footer'), foot = !!ft && ft.getBoundingClientRect().top < 80;
+      var bg = getComputedStyle(foot ? ft : ground).backgroundColor;
+      if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = foot || ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
       // on the veil itself, and only when it changes (task 5cf1107e): set on the root, every element of the page inherited it
       // and was styled again as a tall section came under the header (iOS Safari: a 57-85 ms frame as each step pinned)
       var hg = document.querySelector('.hdr-glass');
