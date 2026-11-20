@@ -184,11 +184,6 @@ PICTURE_OPTIONS = {
              alt='A generated guest with very long, full, warm-brown waves, seen from behind between the Aveda shelves at Salon OM',
              note='Seen from behind, long full waves down her back lit by the windows; the real shelves and products.'),
     ]),
-    'om-menu-cut-and-style.webp': dict(name='Cut and Style', live='Today’s: the guest in the chair mid-floor', options=[
-        dict(key='bob', label='A fresh bob, in the chair by the window', img='om-menu-cut-and-style-cs12a2.webp', ai=AI_GUEST, pos='50% 26%',
-             alt='A generated guest with a sleek, freshly cut chin-length dark bob in a styling chair by the window at Salon OM, in profile',
-             note='Sat back in the chair by the window, her face in profile, a sleek chin-length bob lit from behind; the real window, glo display and mirror.'),
-    ]),
     # Finishing Touches (J 19 Nov 18:15 Z: "not showing enough the products on the right"): a framing per width. Its options
     # swap the tall desktop panel only (only='mn__img'); the phone row keeps the liked picture, which its 3:2 shows whole
     'om-menu-finishing-touches.webp': dict(name='Finishing Touches, desktop', live='Today’s: your liked picture, framed on her', only='mn__img', options=[

@@ -68,7 +68,6 @@ SOURCE = {
     'om-menu-finishing-touches-ft12a1.webp': 'm:om-menu-finishing-touches-ft12a1.png',     # its Shift+V candidate FT12A seed 1
     'om-menu-blonding-bl9b4.webp': 'm:om-menu-blonding-bl9b4.png',             # Blonding BL9B seed 4
     'om-menu-blonding-bl10a2.webp': 'm:om-menu-blonding-bl10a2-j25.png',       # Blonding BL10A seed 2, at the basin of J's 25 Oct picture
-    'om-menu-cut-and-style-cs12a2.webp': 'm:om-menu-cut-and-style-cs12a2.png',   # Cut and Style CS12A seed 2, in photo 4's chair by the window
     'meadow.webp': 'm:meadow.png',
     # the two heroes' stills while the films are off (build.FILMS_SHOWN, task 5479dd6c): the sharpest frame of the film, upscaled
     # x4 (SeedVR2 or Real-ESRGAN on the Mac Studio); the master PNG lives with the other masters, not in git
@@ -168,7 +167,6 @@ BUILT_ON = {
     'om-menu-finishing-touches-ft12a1.png': 'o:8-glo-skincare-display-5B3A1070.jpg',
     'om-menu-blonding-bl9b4.png': 'm:11-styling-stations-clean.jpg',          # a guest in the styling chair under the blonde poster
     'om-menu-blonding-bl10a2-j25.png': 'm:6-shampoo-basins-25oct.jpg',        # a guest reclined at the right basin of J's 25 Oct picture
-    'om-menu-cut-and-style-cs12a2.png': 'm:4-styling-chair-window-clean.jpg',   # a guest with a fresh bob in the chair by the window
     'om-pause-guest-25oct.png': 'm:6-shampoo-basins-tidied.jpg',       # NOT J's picture: made on the tidied photo (task 69006a72)
     # photo 6 with the lamp, bin and vacuum removed and its own small items tidied away (cdfa655, T6/assemble.sh): saved on 19 Nov
     # as '6-shampoo-basins-25oct-clean.jpg', but it is not J's 25 Oct picture (its bottles are the photo's, not his rows)
