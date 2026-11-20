@@ -14,10 +14,13 @@ const dev = Object.values(JSON.parse(sh('list', 'devices', 'available', '-j')).d
 const wasBooted = dev.state === 'Booted'; if (!wasBooted) sh('boot', dev.udid); sh('bootstatus', dev.udid, '-b');
 console.log('simulator', dev.name, dev.udid, wasBooted ? '(was booted)' : '(booted here)');
 // [name, address, section to show, where inside it (0 top, .97 near its end), also try the handle and an in-place swap]
-const RUNS = [['pause-live', '/m/?opt-pause=live', 'pause', 0, true], ['pause-door', '/m/?opt-pause=door', 'pause', 0], ['pause-room', '/m/?opt-pause=room', 'pause', 0],
-  ['pause-breath', '/m/?opt-pause=breath', 'pause', .97], ['pause-cinema', '/m/?opt-pause=cinema', 'pause', 0],
-  ['aveda-f', '/m/?opt-pause=live&opt-aveda=sheet-f', 'aveda', 0], ['aveda-g', '/m/?opt-aveda=sheet-g', 'aveda', 0], ['aveda-i', '/m/?opt-aveda=sheet-i', 'aveda', 0],
-  ['aveda-d', '/m/?opt-aveda=sheet-d', 'aveda', 0], ['g-aveda-h', '/g/?opt-aveda=sheet-h', 'aveda', 0], ['g-pause-room', '/g/?opt-pause=room&opt-aveda=live', 'pause', 0],
+// today's options (task 1ff4c3f4): the pause's seven (breath left with 279db527) and Why Aveda's two, F its default and FS
+// (sheets G, H, I, A-E left with 18f77bd); Step through is read near its end, where the room fills the view
+const RUNS = [['pause-live', '/m/?opt-pause=live', 'pause', 0, true], ['pause-standing', '/m/?opt-pause=standing', 'pause', 0], ['pause-glass', '/m/?opt-pause=glass', 'pause', 0],
+  ['pause-through', '/m/?opt-pause=through', 'pause', .97], ['pause-door', '/m/?opt-pause=door', 'pause', 0], ['pause-room', '/m/?opt-pause=room', 'pause', 0],
+  ['pause-cinema', '/m/?opt-pause=cinema', 'pause', 0],
+  ['aveda-live', '/m/?opt-pause=live&opt-aveda=live', 'aveda', 0], ['aveda-fs', '/m/?opt-aveda=sheet-fs', 'aveda', 0],
+  ['g-aveda-fs', '/g/?opt-aveda=sheet-fs', 'aveda', 0], ['g-pause-room', '/g/?opt-pause=room&opt-aveda=live', 'pause', 0],
   // [.., frames through the section, the option's key when it is not the section's id]
   ['steps-live', '/m/?opt-steps=live', 'arrive', 0, false, true, 'steps'], ['steps-breath', '/m/?opt-steps=breath', 'arrive', 0, false, true, 'steps'],
   ['steps-fade', '/m/?opt-steps=fade', 'arrive', 0, false, true, 'steps'], ['steps-sheet', '/m/?opt-steps=sheet', 'arrive', 0, false, true, 'steps'],
@@ -29,7 +32,7 @@ var errs=[];addEventListener('error',function(e){errs.push(String(e.message))});
 function jump(id,f){var s=document.getElementById(id),r=document.documentElement;r.style.scrollBehavior='auto';r.style.scrollSnapType='none';scrollTo(0,Math.round(s.getBoundingClientRect().top+scrollY+(s.offsetHeight-innerHeight)*f));setTimeout(function(){r.style.scrollSnapType='';r.style.scrollBehavior=''},60)}
 function st(id){var s=document.getElementById(id),sh=s&&s.querySelector('[data-sheet]'),p=document.getElementById('opt-panel'),h=document.querySelector('.opt-handle');
 return{opt:s&&s.getAttribute('data-opt'),e:s&&s.style.getPropertyValue('--e'),stick:!!(s&&s.querySelector(':scope > .ch__stick')),h:s&&+(s.offsetHeight/innerHeight).toFixed(2),letters:s?s.querySelectorAll('[data-write] .l').length:0,sheet:sh&&sh._sheet?{ready:!!sh._sheet.ready,frames:sh._sheet.frames,err:sh.getAttribute('data-sheet-error')}:null,
-handle:h?getComputedStyle(h).display:'none',panel:!!p&&!p.hidden,sec:p&&p.querySelector('.opt__sec')?p.querySelector('.opt__sec').textContent:null,rows:p?p.querySelectorAll('.opt__row').length:0,wide:document.documentElement.scrollWidth,w:innerWidth,errs:errs.slice(0,5)}}
+handle:h?getComputedStyle(h).display:'none',panel:!!p&&!p.hidden,sec:p&&p.querySelector('.opt__sec')?p.querySelector('.opt__sec').textContent:null,rows:p?p.querySelectorAll('.opt__row').length:0,opts:s&&s.getAttribute('data-opts')?JSON.parse(s.getAttribute('data-opts')).length:0,wide:document.documentElement.scrollWidth,w:innerWidth,errs:errs.slice(0,5)}}
 function frames(id){return new Promise(function(done){var s=document.getElementById(id),r=document.documentElement,y0=s.getBoundingClientRect().top+scrollY-40,dy=Math.max(innerHeight,s.offsetHeight-innerHeight)+80,g=[],at=[],last=0,lk=0,t0=performance.now();
 r.style.scrollBehavior='auto';r.style.scrollSnapType='none';
 (function fr(t){if(last){g.push(t-last);if(t-last>50)at.push([+lk.toFixed(2),Math.round(t-last)])}last=t;var k=Math.min(1,(t-t0)/2400);lk=k;scrollTo(0,y0+dy*k);if(k<1)requestAnimationFrame(fr);else{r.style.scrollSnapType='';r.style.scrollBehavior='';g.sort(function(a,b){return a-b});
@@ -69,7 +72,7 @@ const ok = (n, p, i) => { checks.push({ n, pass: !!p, i }); console.log(p ? 'PAS
 const p0 = R['pause-live-panel'] || {};
 if (process.env.SIM_STEPS !== '1') {
 ok('the handle shows in mobile Safari', p0.handle && p0.handle !== 'none', p0.handle);
-ok('the handle opens the panel on the pause', p0.panel && p0.sec === 'The pause' && p0.rows === 5, p0);
+ok('the handle opens the panel on the pause', p0.panel && p0.sec === 'The pause' && p0.rows > 1 && p0.rows === p0.opts, p0);      // a row for each of the pause's options
 ok('an option swaps in place in mobile Safari', (R['pause-live-swapped-cinema'] || {}).opt === 'cinema' && (R['pause-live-swapped-cinema'] || {}).letters > 0, R['pause-live-swapped-cinema']);
 }
 for (const [name, , sec, , , fm, key] of RUNS) {

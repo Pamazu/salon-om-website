@@ -19,7 +19,7 @@ const b = await pw[BROWSER].launch(BROWSER === 'webkit' && process.env.WEBKIT ? 
 console.log(BROWSER, b.version());
 const res = { browser: BROWSER, started: new Date().toISOString(), runs: [] };
 const frame = (sel) => `(() => { const v = document.querySelector(${JSON.stringify(sel)}); if (!v) return null; const f = v.closest('.ch__top, .s__zoom'), img = f && f.querySelector('img');
-  const top = f && f.querySelector(':scope > .ch__top > img');
+  const top = f && f.querySelector(':scope > .ch__top > img, :scope > .ch__top > picture > img');
   const im = f && f.querySelector('.film-img'); return { stop: v.hasAttribute('data-stop'), img: im ? im.getAttribute('src') === v.getAttribute('data-src') : false, held: !!(f && f.classList.contains('is-held')), tf: img ? getComputedStyle(img).transform : null, topTf: top ? getComputedStyle(top).transform : null, paused: v.paused, on: v.classList.contains('is-on'), t: Math.round(v.currentTime * 100) / 100 }; })()`;
 for (const v of VERS) for (const [w, opt] of SIZES) {
   const ctx = await b.newContext(opt);
