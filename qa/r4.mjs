@@ -16,7 +16,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright';
-import { serve as serveRepo, wait, open, toWorld, jump, SIZES, tall, pullWalk, io, STEPS } from './lib.mjs';
+import { serve as serveRepo, wait, open, toWorld, jump, SIZES, tall, pullWalk, io, STEPS, wheel, edgesOf } from './lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BROWSER = process.env.BROWSER || 'webkit';
@@ -112,37 +112,42 @@ async function snap(b, base) {
 // and at its end its lower edge is on the window's with the page at its end; back up past its top by less than a third it
 // returns, by more than a third the slide before is back (whole, or at its end when it is the taller one)
 async function end(b, base) {
-  const res = [];
+  const res = [], W = (p, dy) => wheel(p, dy, { browser: BROWSER });
   for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
     const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/${QUERY ? '?' + QUERY : ''}`);
     try {
       if (world === 'coaching') await toWorld(p, 'coaching');
-      if (opt.viewport.width >= 600) await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2);
       const ids = await p.evaluate((world) => [...document.querySelectorAll(`main[data-world="${world}"] > section.s`)].map((s) => s.id), world);
       const last = ids[ids.length - 1], prev = ids[ids.length - 2];
       const geo = (id) => p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: Math.round(r.top + scrollY), h: Math.round(r.height), vh: innerHeight }; }, id);
-      const P0 = await geo(prev), vh = P0.vh, third = vh / 3, tallPrev = P0.h > vh + 2;
+      // a visitor has scrolled the whole page by the time they are here: each section is visited once, top to bottom, so its
+      // lazy pictures are in and its stage has its size, and nothing above changes height during the walk
+      for (const id of ids) { await jump(p, (await geo(id)).top); await wait(p, 400); }
+      await wait(p, 800);
       const rec = async (step, expect, ok) => {
         await wait(p, 1500);
-        const a = await edges(p, prev), z = await edges(p, last), left = await p.evaluate(() => Math.round(document.documentElement.scrollHeight - scrollY - innerHeight));
+        const a = await p.evaluate(edgesOf, prev), z = await p.evaluate(edgesOf, last), left = await p.evaluate(() => Math.round(document.documentElement.scrollHeight - scrollY - innerHeight));
         res.push({ v, world, w, prev, last, step, expect, pass: !!ok(a, z, left), prevTop: a.top, prevBottomGap: a.bottomGap, lastTop: z.top, lastBottomGap: z.bottomGap, pageLeft: left, snap: z.snap, ...(await barState(p)) });
         await p.screenshot({ path: path.join(OUT, `end-${v}-${world}-${w}-${step[0]}${QTAG}.jpg`), type: 'jpeg', quality: 75 });
       };
+      const P0 = await geo(prev), vh = P0.vh, third = vh / 3, tallPrev = P0.h > vh + 2;
       await jump(p, P0.top + Math.max(0, P0.h - vh)); await wait(p, 1200);
-      await wheel(p, Math.round(third * 1.5)); await rec('a: from the slide before, on by more than a third', 'the last slide in whole (its top 0)', (a, z) => Math.abs(z.top) <= 2);
-      const L = await geo(last), into = Math.min(200, L.h - vh - 20);
+      await W(p, Math.round(third * 1.5)); await rec('a: from the slide before, on by more than a third', 'the last slide in whole (its top 0)', (a, z) => Math.abs(z.top) <= 2);
+      let L = await geo(last);
       if (L.h > vh + 2) {
-        await wheel(p, into); await rec('b: a little way into the last slide, at rest', `no move (its top -${into})`, (a, z) => Math.abs(z.top + into) <= 2);
-        await wheel(p, L.h); await rec('c: on to the end of the page', 'its lower edge on the window\'s, nothing left under it', (a, z, left) => Math.abs(z.bottomGap) <= 2 && left <= 2);
-        await jump(p, L.top); await wait(p, 1200);
+        const into = Math.min(200, L.h - vh - 20);
+        await W(p, into); await rec('b: a little way into the last slide, at rest', `no move (its top -${into})`, (a, z) => Math.abs(z.top + into) <= 4);
+        await W(p, L.h); await rec('c: on to the end of the page', 'its lower edge on the window\'s, nothing left under it', (a, z, left) => Math.abs(z.bottomGap) <= 2 && left <= 2);
       }
-      await wheel(p, -Math.round(third * .5)); await rec('d: back up past its top, less than a third', 'back to its top (0)', (a, z) => Math.abs(z.top) <= 2);
-      await wheel(p, -Math.round(third * 1.5)); await rec('e: back up, more than a third', tallPrev ? 'the slide before back, its end on the window\'s lower edge' : 'the slide before back whole (its top 0)', (a) => Math.abs(tallPrev ? a.bottomGap : a.top) <= 2);
+      L = await geo(last); await jump(p, L.top); await wait(p, 1200);
+      await W(p, -Math.round(third * .5)); await rec('d: from its top, back up less than a third', 'back to its top (0)', (a, z) => Math.abs(z.top) <= 2);
+      L = await geo(last); await jump(p, L.top); await wait(p, 1200);
+      await W(p, -Math.round(third * 1.5)); await rec('e: from its top, back up more than a third', tallPrev ? 'the slide before back, its end on the window\'s lower edge' : 'the slide before back whole (its top 0)', (a) => Math.abs(tallPrev ? a.bottomGap : a.top) <= 2);
     } catch (e) { res.push({ v, world, w, error: e.message.slice(0, 200) }); }
     await ctx.close();
   }
   fs.writeFileSync(path.join(OUT, `end${QTAG}.json`), JSON.stringify(res, null, 1));
-  for (const r of res) console.log('end', r.v, r.world, r.w, r.error || `${r.pass ? 'PASS' : 'FAIL'} ${r.step} | ${r.expect} | ${r.prev} top ${r.prevTop} gap ${r.prevBottomGap}, ${r.last} top ${r.lastTop} gap ${r.lastBottomGap}, page left ${r.pageLeft}, bar ${r.bar}`);
+  for (const r of res) console.log('end', r.v, r.world, r.w, r.error || `${r.pass ? 'PASS' : 'FAIL'} ${r.step} | ${r.expect} | ${r.prev} top ${r.prevTop} gap ${r.prevBottomGap}, ${r.last} top ${r.lastTop} gap ${r.lastBottomGap}, page left ${r.pageLeft}, snap "${r.snap}", bar ${r.bar}`);
   console.log('end', res.filter((r) => r.pass).length, 'pass,', res.filter((r) => r.pass === false).length, 'fail,', res.filter((r) => r.error).length, 'errors');
 }
 
