@@ -4533,7 +4533,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     if (ground) {      // the glass header's veil (mgs.css .hdr-glass): the section's ground, or its tone's when it paints none
       var bg = getComputedStyle(ground).backgroundColor;
       if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
-      root.style.setProperty('--hdr-ground', bg);
+      // on the veil itself, and only when it changes (task 5cf1107e): set on the root, every element of the page inherited it
+      // and was styled again as a tall section came under the header (iOS Safari: a 57-85 ms frame as each step pinned)
+      var hg = document.querySelector('.hdr-glass');
+      if (hg && hg._bg !== bg) { hg._bg = bg; hg.style.setProperty('--hdr-ground', bg); }
     }
     root.classList.toggle('hdr-ground', !!ground);
     snap(!tall);
