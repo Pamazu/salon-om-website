@@ -181,6 +181,11 @@ PICTURE_OPTIONS = {
              alt='A generated guest with very long, full, warm-brown waves, seen from behind between the Aveda shelves at Salon OM',
              note='Seen from behind, long full waves down her back lit by the windows; the real shelves and products.'),
     ]),
+    'om-menu-cut-and-style.webp': dict(name='Cut and Style', live='Today’s: the guest in the chair mid-floor', options=[
+        dict(key='bob', label='A fresh bob, in the chair by the blind', img='om-menu-cut-and-style-cs11a1.webp', ai=AI_GUEST, pos='38% 45%',
+             alt='A generated guest with a sleek, freshly cut chin-length bob in a styling chair at Salon OM, in profile',
+             note='Sat back in the styling chair in clean profile, a sleek chin-length bob; the real blind, poster and room. The same chair as Blonding’s new one.'),
+    ]),
 }
 
 
