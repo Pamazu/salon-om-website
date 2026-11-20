@@ -271,28 +271,12 @@ def salon_hero(proof=False, visit='arrive', line=None):
                               open=dict(o, btns=btn(o['btns'][0], BOOK_URL, 'light', arrow=True) + btn(o['btns'][1], '#pause', 'ghost'))))
 
 
-# the five steps' options (task 5cf1107e; J 19 Nov 18:15 Z: "Have different options for the group of 5 sections. One in which we
-# play with scroll to switch between the nature video and the other video (right now the other video is just an image and
-# that's fine for now). Just like in the take a breath section we play with scroll. Differeent options."): one choice for all
-# five (option_key), in both worlds; each draws the same step with scroll= (build.chapter), today's stays the default
-STEP_OPTIONS = [
-    dict(key='breath', label='B · The breath', scroll='breath',
-         note='Scroll slowly: the nature film opens from a thin line across the photo until it fills the screen, as the pause’s room opens. About two screens.'),
-    dict(key='fade', label='C · Crossfade', scroll='fade',
-         note='Scroll: the photo dissolves into the nature film. About one screen.'),
-    dict(key='sheet', label='D · The sheet', scroll='sheet',
-         note='Scroll: the photo turns to ribbed glass and, rib by rib, gives way to the nature film. About a screen and a half.'),
-]
-STEP_OPTION_WORDS = dict(option_key='steps', option_name='The five steps', option_label='Today’s: the photo, then its film',
-                         option_note='Each step’s photo, giving way to its nature film a few seconds after it arrives.')
-
-
 def step(k, extra=None, cta=False, specs_more=None):
     rail, name, line, what, feel = M.STEPS[k]
     body = what + ((' ' + draft(extra)) if extra else '')
     d = dict(id=STEP_ID[k], chapter=k, sound=STEP_FILM[k], film=STEP_FILM[k], acc=STEP_FILM[k], num=f'0{k + 1}', of='/ 05',
              name=rail, sub=name.split(' · ')[-1], title=line, body=body, specs=M.STEP_DETAILS[k] + (specs_more or []),
-             film_top=dict(poster='img/' + STEP_IMG[k]), options=STEP_OPTIONS, **STEP_OPTION_WORDS)
+             film_top=dict(poster='img/' + STEP_IMG[k]))
     if cta: d['btn'] = btn(BOOK, BOOK_URL, 'light', arrow=True)
     return ('ch', d)
 
