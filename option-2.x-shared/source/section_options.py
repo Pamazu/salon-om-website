@@ -128,7 +128,8 @@ def pictures(body, declared):
             'a choice would change another section too; give it a file of its own there'
         for a in reversed(at):
             body = body[:a] + f'<img data-pic="{E(name)}"' + body[a + 4:]
-        rows.append(f'<template data-pic-for="{E(name)}" data-opt="{DEFAULT["key"]}" data-name="{E(p["name"])}" data-n="{E(p["live"])}"></template>')
+        rows.append(f'<template data-pic-for="{E(name)}" data-opt="{DEFAULT["key"]}" data-name="{E(p["name"])}" data-n="{E(p["live"])}"'
+                    + (f' data-file="{E(p["file"])}"' if p.get('file') else '') + '></template>')     # today's file, when the key is not it
         for o in opts:
             rows.append(f'<template data-pic-for="{E(name)}" data-opt="{E(o["key"])}" data-n="{E(o["label"])}"'
                         + (f' data-d="{E(o["note"])}"' if o.get('note') else '') + (f' data-ai="{E(o["ai"])}"' if o.get('ai') else '')

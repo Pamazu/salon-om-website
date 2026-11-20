@@ -244,7 +244,8 @@ async function picks(p, P, W, add, seen) {
       return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(i).opacity) > .5; }).map((i) => i.complete ? stem(i.currentSrc) : 'loading');
   }, pic);
   const want = (pic, k) => p.evaluate(([pic, k]) => { const t = document.querySelector(`#opt-store template[data-pic-for="${pic}"][data-opt="${k}"]`), i = t && t.content.querySelector('img[src]');
-    return decodeURIComponent((i ? i.getAttribute('src') : pic).split('?')[0].split('/').pop()).replace(/\.webp$/, ''); }, [pic, k]);
+    // today's: its file, named on its template when the picture's key is not its file (a step's photo, per world: task f748d06c)
+    return decodeURIComponent((i ? i.getAttribute('src') : (t && t.getAttribute('data-file')) || pic).split('?')[0].split('/').pop()).replace(/\.webp$/, ''); }, [pic, k]);
   const until = async (pic, w) => { let d = []; for (let t = 0; t < 30; t++) { await wait(p, 250); d = await drawn(pic); if (t > 3 && d.length && d.every((x) => x === w)) break; } return d; };
   const panel = async (on) => { if (await p.evaluate(() => { const n = document.getElementById('opt-panel'); return !!n && !n.hidden; }) !== on) { await p.keyboard.press('Shift+V'); await wait(p, 500); } };
   const choose = async (pic, k) => { const b = p.locator(`#opt-panel [data-pic="${pic}"][data-k="${k}"]`); if (!(await b.count())) return false; await b.first().click(); return true; };

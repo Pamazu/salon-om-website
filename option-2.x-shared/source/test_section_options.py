@@ -39,6 +39,8 @@ class Pictures(unittest.TestCase):
         self.assertIn('<section id="c-door"><img src="img/a.webp">', out)
         self.assertEqual(out.count('data-pic-for="step-a"'), 2)
         self.assertEqual(out.count('data-pic-for="c-step-a"'), 2)
+        # today's template names its file, so a check reading what is drawn knows today's picture (gate row 29)
+        self.assertIn('<template data-pic-for="step-a" data-opt="live" data-name="a" data-n="Today" data-file="a.webp">', out)
 
     def test_only_swaps_the_one_copy_it_names(self):
         # task b1dd24c9: Finishing Touches' options swap the tall desktop panel (mn__img) only; its phone row (mn__rph) keeps
