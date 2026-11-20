@@ -1076,7 +1076,7 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
   /* open below only, so the held step's picture can stay on screen past its own foot while nothing of the arriving sheet
      shows above its edge (a light line of its film did); the clip never changes, so it costs no frame */
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets { overflow: visible !important; clip-path: inset(0 0 -100vh 0); }
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave) { transform: translate3d(0, var(--out, 0px), 0); }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave, .ai-mark--film) { transform: translate3d(0, var(--out, 0px), 0); }
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move)::after { content: ''; position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
     background: linear-gradient(to top, rgba(10, 7, 5, .46), rgba(10, 7, 5, 0)); opacity: min(1, calc(var(--q) * 8)); }
   /* D · Into focus: the step arrives soft and sharpens as it settles, as the pause's heading does (approved feature 15).
@@ -1161,8 +1161,11 @@ html[data-motion="calm"] .ch__soft, html[data-shot] .ch__soft { display: none; }
 .sh__words .sh__more { margin: clamp(10px, 1.6vh, 16px) 0 0; max-width: 44ch; }
 .sh__words .sh__more:last-of-type { font: italic 300 clamp(20px, 1.6vw, 26px)/1.3 var(--serif); }
 .sh__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(20px, 3.4vh, 36px); }
-.sh > .ai-mark { left: auto; right: 16px; bottom: 16px; z-index: 3; }
-@media (max-width: 600px) { .sh > .ai-mark { bottom: auto; top: calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px); } }
+/* a film's "Made with AI" (AI Act Art 50, task 2a3f89d3) sits like the meadow's: on the film the section is filled with, bottom
+   right, clear of the hero's Scroll and the steps' facts; on a phone top right under the header, clear of the buttons. A child
+   of the section, above the film's scrim (near black at its foot), under the shade that dims a leaving section */
+.sh > .ai-mark, .s > .ai-mark--film { left: auto; right: 16px; bottom: 16px; z-index: 3; }
+@media (max-width: 600px) { .sh > .ai-mark, .s > .ai-mark--film { bottom: auto; top: calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px); } }
 /* the words on the sheet read comfortably at every width, in proportion to their heading (task 4739f125; J 19 Nov 14:26 Z:
    "the text is way to small here and here", the second door and Why Aveda at his window): one size for the body that grows
    with the window (18 px at 1440, 28 px at 3230), and the eyebrow, the facts, the source line and the buttons from it; the

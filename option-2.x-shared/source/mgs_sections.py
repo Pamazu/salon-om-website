@@ -22,11 +22,12 @@ AI_FROM_REAL = 'Made with AI from real salon photos'
 PICTURE_AI = {}
 
 
-def ai_mark(text):
+def ai_mark(text, film=False):
     """the words that say a picture or film was made with AI, as text on the page in a corner of it, always visible (no
     hover, tap or icon): StoryLegal's ruling of 17 Nov 2026 (msg 7d0dc68d, task 1c6ed2aa). One block for every generated
-    picture or film on these pages; its parent is the positioned frame of the picture or film it labels (mgs.css .ai-mark)"""
-    return f'<p class="ai-mark">{E(text)}</p>'
+    picture or film on these pages; its parent is the positioned frame of the picture or film it labels (mgs.css .ai-mark).
+    film: a film's label (task 2a3f89d3), a child of the section the film fills, so it sits above the film's scrim"""
+    return f'<p class="ai-mark{" ai-mark--film" if film else ""}">{E(text)}</p>'
 
 
 # the footer's AI line, true to every picture on M, G and S (task 5ae04e42): it names what is real and says the rest is

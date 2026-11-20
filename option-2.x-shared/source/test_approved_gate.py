@@ -607,6 +607,62 @@ class Row27(unittest.TestCase):
             self.assertEqual(g.pick(['om-pause-rest.webp', '--j', 'A, the guest resting at the basin, that one'], path=self.picks), 0)
         self.assertEqual(self.off(self.a), '')
 
+class FilmLaw(unittest.TestCase):
+    """AI Act Art 50 (task 2a3f89d3): every film has its recorded origin, every one made with AI says "Made with AI" on it.
+    Green: this tree's pages. Red: the pages live at 242f843 (no film labelled), and this tree's pages with one label taken off,
+    a film with no recorded origin, new bytes under a recorded name, an unlabelled film in a Shift+V template, other words."""
+    BEFORE = '242f843'
+    LABEL = '<p class="ai-mark ai-mark--film">Made with AI</p>'
+
+    def test_green_every_film_has_its_origin_and_label(self):
+        off, n = g.film_law({l: page(LIVE, l) for l in 'mgs'})
+        self.assertEqual(off, []); self.assertEqual(n, 26)          # M 12, G 12, S 2
+
+    def test_red_the_pages_before_this_task(self):
+        off, n = g.film_law({l: page(self.BEFORE, l) for l in 'mgs'})
+        self.assertEqual(n, 26); self.assertEqual(len(off), 26, off)
+        self.assertIn('M "top": a film made with AI with no "Made with AI" on it (build.film, mgs_sections.ai_mark)', off)
+
+    def test_red_one_label_taken_off(self):
+        off, _ = g.film_law({'m': in_section(page(LIVE, 'm'), 'unwind', self.LABEL, '')})
+        self.assertEqual(off, ['M "unwind": a film made with AI with no "Made with AI" on it (build.film, mgs_sections.ai_mark)'])
+
+    def test_red_a_film_with_no_recorded_origin(self):
+        off, _ = g.film_law({'m': page(LIVE, 'm').replace('media/water.mp4', 'media/rain.mp4')})
+        self.assertEqual([m for m in off if 'rain.mp4 has no recorded origin' in m], [m for m in off], off)
+        self.assertEqual(len(off), 2)                                # the salon's step 02 and Inner Work's
+
+    def test_red_new_bytes_under_a_recorded_name(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, 'media'))
+            with open(os.path.join(d, 'media', 'water.mp4'), 'wb') as f:
+                f.write(b'another film')
+            off, _ = g.film_law({'m': page(LIVE, 'm')}, site=d)
+        self.assertEqual(len(off), 2, off); self.assertTrue(all('sha256 differs' in m for m in off), off)
+
+    def test_red_an_unlabelled_film_in_a_shift_v_template(self):
+        t = ('<template data-opt-for="x"><section class="s" id="x"><div class="s__media"><div class="s__zoom">'
+             '<video data-src="media/fire.mp4"></video></div></div></section></template></body>')
+        off, _ = g.film_law({'m': page(LIVE, 'm').replace('</body>', t, 1)})
+        self.assertEqual(off, ['M "x": a film made with AI with no "Made with AI" on it (build.film, mgs_sections.ai_mark)'])
+
+    def test_red_other_words(self):
+        off, _ = g.film_law({'m': page(LIVE, 'm').replace(self.LABEL, self.LABEL.replace('Made with AI', 'Nature film'), 1)})
+        self.assertEqual(off, ['M: a film\'s label reads "Nature film", not "Made with AI"'])
+
+    def test_a_film_inside_a_script_is_not_a_film(self):
+        html = page(LIVE, 'm').replace('</body>', "<script>var t='<video data-src=\"media/x.mp4\"></video>'</script></body>")
+        self.assertEqual(g.film_law({'m': html})[0], [])
+
+    def test_the_gate_refuses_before_the_rows_and_no_quote_lifts_it(self):
+        html = in_section(page(LIVE, 'm'), 'top', self.LABEL, '')
+        err = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+            code = g.main(['m'], pages={'m': html}, message='x\n\nJ names row 19: "take the hero label off for now"',
+                          rows=list(range(1, 20)), measured_off={}, known=[])
+        self.assertEqual(code, 1); self.assertIn('AI Act', err.getvalue()); self.assertIn('M "top"', err.getvalue())
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
