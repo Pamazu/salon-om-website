@@ -148,12 +148,13 @@ SALON = [
   # round 3's answer line is cut; the value stack follows her intro, above the prices
   _with(services(), title=draft(G['menu_hook']), intro=M.MENU_LINE + ' ' + M.MENU_INTRO + ' ' + draft(G['menu_stack']),
         reward=draft(G['menu_reward']), btn=btn(BOOK, BOOK_URL, arrow=True)),
-  _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
-        intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
+  # J 20 Nov 13:08 Z: "put the version that had the people who listen first just after the what is in your color": Why Aveda, then the team
   (S.aveda_sheet, dict(id='aveda', sheet=S.AVEDA_SHEET, eyebrow=M.AVEDA_EYEBROW, title=draft(G['aveda_hook']), paras=[M.AVEDA],
                  quote=M.AVEDA_QUOTE, cite=M.AVEDA_CITE, facts=AVEDA_FACTS, src='Facts from aveda.com. Aveda is a trademark of Aveda Corporation.',
                  photo=AVEDA_PHOTO, reward=draft(G['aveda_reward']), btn=btn(BOOK, BOOK_URL, arrow=True),
                  options=S.AVEDA_OPTIONS, option_label=S.AVEDA_LIVE_LABEL)),   # the label (task a749167b)
+  _with(team(note=True), eyebrow=M.TEAM_LINE, title=draft(G['team_hook']), btn=btn(BOOK, BOOK_URL, arrow=True),
+        intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                  btn=btn(BOOK, BOOK_URL, arrow=True))),
   door(short=False),
@@ -166,5 +167,5 @@ SALON = [
 COACHING = twin(SALON, iw_entries('g', SALON))   # J 18 Nov: the salon world's sections, in its order; only the words are Inner Work's (task 7a3c013b)
 
 CFG = cfg('g', 'Guided', SALON, COACHING,
-  [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'The team', 'hosts'), ('04', 'Why Aveda', 'aveda'), ('05', 'Begin', 'begin')],
+  [('01', 'The visit', 'visit'), ('02', 'The menu', 'services'), ('03', 'Why Aveda', 'aveda'), ('04', 'The team', 'hosts'), ('05', 'Begin', 'begin')],
   IW.NAV['g'])
