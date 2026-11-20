@@ -180,10 +180,12 @@ IW_G = {
   'aveda': dict(eyebrow=H['eyebrow'], title=draft(G_IW['how_hook']), paras=[H['title'] + ' ' + T1[1]],
                 quote=H['cred_line'], cite='Maggie', facts=PRACTICES, src='', reward=H['close'], btn=B(CALL, 'call')),
   'om': dict(label=draft('Inner Work · Becoming'), text=P1 + ' ' + D['close'], accents=['again.'], btn=B(CALL, 'call')),
-  'deeper': dict(eyebrow='The second door', title=DOOR_TITLE, text=DOOR_TEXT, more=[DOOR_MORE + ' ' + draft(G_IW['hours'])],
-                 btns=DOOR_BTNS),
+  # as on G's salon page: Begin, then the second door, the world's last slide (task d9a90616; J 19 Nov: the call to action
+  # "should be before the gate to the other world")
   'begin': dict(label='Begin', title=M.FIRST['close'], text=draft(G_IW['begin_text']), last=M.BEGIN_LAST,
                 answer=draft(A11_WHERE), reward=draft(G_IW['begin_reward']), btns=[B(CALL, 'call', 'light')]),
+  'deeper': dict(eyebrow='The second door', title=DOOR_TITLE, text=DOOR_TEXT, more=[DOOR_MORE + ' ' + draft(G_IW['hours'])],
+                 btns=DOOR_BTNS),
   'letters': dict(legend=None),   # G's own legend, as on its salon page
 }
 NAV_G = [('01', 'The Journey', 'c-visit'), ('02', 'The path', 'c-services'), ('03', 'Credentials', 'c-hosts'),
@@ -202,9 +204,10 @@ IW_S = {
                 people=[dict(CRED_PEOPLE[0], desc=M.CRED_SHORT)],          # her short version "for tight spaces"
                 quotes=VOICES_TO_COME, line_k=H['eyebrow'], line=H['title'] + ' ' + T1[1]),
   'services': dict(IW_M['services']),                                     # S's salon menu is M's, word for word: so is its twin
-  'deeper': dict(eyebrow='The second door', title=DOOR_TITLE, text=DOOR_TEXT, btns=DOOR_BTNS[:1]),
+  # as on S's salon page: Begin, then the second door (task d9a90616)
   'begin': dict(label='Begin', title=M.FIRST['close'], text=O['note'], last=M.BEGIN_LAST, answer=draft(A11_WHERE),
                 btns=[B(CALL, 'call', 'light')]),
+  'deeper': dict(eyebrow='The second door', title=DOOR_TITLE, text=DOOR_TEXT, btns=DOOR_BTNS[:1]),
   'letters': dict(legend=None),
 }
 NAV_S = [('01', 'The Journey', 'c-visit'), ('02', 'Credentials', 'c-hosts'), ('03', 'The path', 'c-services'), ('04', 'Begin', 'c-begin')]
