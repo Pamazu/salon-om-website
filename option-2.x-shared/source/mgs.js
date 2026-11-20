@@ -528,11 +528,22 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     if (im.loading === 'lazy') im.loading = 'eager';
     if (im.decode) im.decode().then(done, done); else if (im.complete) done(); else { im.addEventListener('load', done); im.addEventListener('error', done); }
   }
+  /* and while nothing near waits, the steps further on load their photos one at a time in the page's order (loaded, not
+     decoded, so a far photo holds no memory), once the opening's film moves or 6 s on: measured at 3230 on 4G, near-first
+     alone reached the fourth step 10 s before its 1.9 MB photo, which the page's start used to fetch */
+  function opened() { var hv = films[0]; return performance.now() > 6000 || (hv && !hv.paused && hv.currentTime > .3); }
+  function later() {
+    var w = films.filter(function (v) { var im = photo(v), m = v.closest('main'); return im && m && !m.hidden; });
+    if (w.some(function (v) { var im = photo(v); return v._lfrom && !im.complete && performance.now() - v._lfrom < 8000; })) return;
+    var nx = w.filter(function (v) { return !v._lfrom && !v._pfrom && !photo(v).complete; })[0];
+    if (nx) { nx._lfrom = performance.now(); var im = photo(nx); if (im.loading === 'lazy') im.loading = 'eager'; im.addEventListener('load', pump); im.addEventListener('error', pump); }
+  }
   function pump() {
     if (calm) return; var busy = false;
     films.filter(function (v) { return v._near; }).map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; })
       .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; ask(v); if (!photoReady(v)) { busy = true; return; }
         if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
+    if (!busy && opened()) later();
   }
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { of.get(e.target).forEach(function (v) { v._near = e.isIntersecting; if (!v._near) release(v); }); });
