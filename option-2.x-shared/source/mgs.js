@@ -494,6 +494,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      again two screens before the person reaches it, from the browser's cache; its photo stands in its frame meanwhile,
      as it does before any film arrives. */
   function release(v) {
+    v._pfrom = 0; v._dec = false;      // its photo is decoded ahead again when its step comes back near (task 5cf1107e)
     if (!v._mine) return; v._mine = false;
     try { v.pause(); } catch (e) {}
     v.classList.remove('is-on');
