@@ -76,6 +76,7 @@ SOURCE = {
     'om-step-unhurried-uha1.webp': 'm:om-step-unhurried-uha1.png',
     'om-step-unhurried-uhb3.webp': 'm:om-step-unhurried-uhb3.png',
     'om-step-home-hmb3.webp': 'm:om-step-home-hmb3.png',
+    'om-step-home-hmd2.webp': 'm:om-step-home-hmd2.png',
     'iw-step-connect-cna1.webp': 'm:iw-step-connect-cna1.png',
     'iw-step-connect-cnb1.webp': 'm:iw-step-connect-cnb1.png',
     'iw-step-revisit-rva3.webp': 'm:iw-step-revisit-rva3.png',
@@ -197,6 +198,7 @@ BUILT_ON = {
     'om-step-unhurried-uha1.png': 'm:4-styling-chair-window-clean.jpg',     # UH-a seed 1
     'om-step-unhurried-uhb3.png': 'o:2-lounge-fireplace-5B3A1048.jpg',     # UH-b seed 3
     'om-step-home-hmb3.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',     # HM-b seed 3
+    'om-step-home-hmd2.png': 'o:iw-5B3A1044.jpg',     # HM-d seed 2
     'iw-step-connect-cna1.png': 'o:2-lounge-fireplace-5B3A1048.jpg',     # CN-a seed 1
     'iw-step-connect-cnb1.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',     # CN-b seed 1
     'iw-step-revisit-rva3.png': 'o:iw-5B3A1044.jpg',     # RV-a seed 3

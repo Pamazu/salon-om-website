@@ -433,6 +433,9 @@ STEP_PICTURES = {
         ('take-home', 'Choosing what to take home', 'om-step-home-hmb3.webp', '50% 30%',
          'A generated guest in a camel coat reading the label of an Aveda bottle between the product shelves at Salon OM',
          'Ready to leave, her finished hair glossy, she reads the bottle she takes home to recreate her style.'),
+        ('by-the-fire', 'Her bottles for home, by the lounge shelves', 'om-step-home-hmd2.webp', '50% 30%',
+         'A generated guest in a navy coat with a small shopping bag, smiling at two Aveda bottles by the lounge shelves at Salon OM',
+         'Coat on, bag on her wrist, she chooses the bottles that keep her style going at home.'),
     ],
     TWIN + 'arrive': [
         ('call-fire', 'A first call, by the fire', 'iw-step-connect-cna1.webp', '27% 25%',
