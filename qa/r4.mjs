@@ -6,7 +6,9 @@
 //           bar.json: per shot, whether the floating "Book your visit · Begin" bar shows and whether text sits under it.
 //   snap    the calm snapping around tall sections, measured after each move: snap.json and snap-*.jpg stills.
 //   visit   a person's walk down the salon world, this commit's pages against VISIT_BEFORE's: visit.json (task b36dde1f)
+//   end     the page's end, walked (task d9a90616): the last two slides of each world, into the last and back: end.json, end-*.jpg
 //   ONLY=shots|snap (default both), VERS=m,g,s; WEBKIT=<launcher> (sDelegate's WebKit asset) instead of Playwright's own
+//   QUERY=opt-deeper=photo: shots and end open the pages on that address (a section's option, as a shared link does)
 //   npm i && npx playwright install webkit && node r4.mjs
 import fs from 'node:fs';
 import os from 'node:os';
@@ -21,6 +23,7 @@ const BROWSER = process.env.BROWSER || 'webkit';
 const OUT = path.join(REPO, 'qa', `out-${BROWSER}`);
 const ONLY = process.env.ONLY || 'shots,snap';
 const VERS = (process.env.VERS || 'm,g,s').split(',');
+const QUERY = process.env.QUERY || '', QTAG = QUERY ? '-' + QUERY.replace(/[^a-z0-9]+/gi, '-') : '';
 fs.mkdirSync(OUT, { recursive: true });
 const serve = () => serveRepo(REPO);
 
@@ -55,24 +58,24 @@ async function shots(b, base) {
   const only_w = (process.env.SIZES || '').split(',').filter(Boolean);    // SIZES=768,1024: those widths instead (lib's sizes)
   for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of (only_w.length ? SIZES(BROWSER).filter(([x]) => only_w.includes(x))
     : v === 'g' ? [...sizes, ['1366', LAP]] : sizes)) {
-    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/`);
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/${QUERY ? '?' + QUERY : ''}`);
     if (world === 'coaching') await toWorld(p, 'coaching');
     const only = (process.env.IDS || '').split(',').filter(Boolean);      // IDS=begin,c-begin: just those sections
     const ids = (await p.evaluate((world) => [...document.querySelectorAll(`main[data-world="${world}"] > section.s`)].map((s) => s.id), world)).filter((id) => !only.length || only.includes(id));
     for (const id of ids) {
       const g = await p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height, vh: innerHeight }; }, id);
       await jump(p, g.top); await wait(p, WAIT);      // a section's late lines arrive up to about 4.5 s after it does
-      await p.screenshot({ path: path.join(OUT, `${v}-${world}-${id}-${w}.jpg`), type: 'jpeg', quality: 80 });
+      await p.screenshot({ path: path.join(OUT, `${v}-${world}-${id}-${w}${QTAG}.jpg`), type: 'jpeg', quality: 80 });
       log.push({ v, world, id, w, h: Math.round(g.h), ...(await barState(p)) });
       if (g.h > g.vh + 2) {
         await jump(p, g.top + g.h - g.vh); await wait(p, 1800);
-        await p.screenshot({ path: path.join(OUT, `${v}-${world}-${id}-${w}-end.jpg`), type: 'jpeg', quality: 80 });
+        await p.screenshot({ path: path.join(OUT, `${v}-${world}-${id}-${w}-end${QTAG}.jpg`), type: 'jpeg', quality: 80 });
         log.push({ v, world, id: id + '-end', w, ...(await barState(p)) });
       }
     }
     await ctx.close();
   }
-  fs.writeFileSync(path.join(OUT, VERS.length < 3 ? `bar-${VERS.join('')}.json` : 'bar.json'), JSON.stringify(log, null, 1));   // a run per version keeps its own
+  fs.writeFileSync(path.join(OUT, VERS.length < 3 || QTAG ? `bar-${VERS.join('')}${QTAG}.json` : 'bar.json'), JSON.stringify(log, null, 1));   // a run per version keeps its own
   const bad = log.filter((l) => l.bar === 'shown' && l.under && l.under.length);
   console.log('shots', log.length, '| bar shown over text:', bad.length, bad.map((l) => `${l.v}-${l.world}-${l.id}-${l.w}`).join(' '));
 }
@@ -101,6 +104,46 @@ async function snap(b, base) {
   }
   save();
   for (const r of res) console.log('snap', r.v, r.world, r.id, r.w, r.step || r.note || r.error, '|', r.expect || '', r.pass === false ? '| OFF' : '', '| top', r.top, 'bottomGap', r.bottomGap, 'nextTop', r.nextTop, 'snap', JSON.stringify(r.snap));
+}
+
+// the page's end (task d9a90616; J 19 Nov: each world's last call to action, then its door to the other world, the footer inside
+// that last slide): the last two slides of each world, walked as a visitor does. From the slide before the last, a slow scroll
+// of more than a third of the window brings the last slide in whole; inside a last slide taller than the window nothing moves,
+// and at its end its lower edge is on the window's with the page at its end; back up past its top by less than a third it
+// returns, by more than a third the slide before is back (whole, or at its end when it is the taller one)
+async function end(b, base) {
+  const res = [];
+  for (const v of VERS) for (const world of ['salon', 'coaching']) for (const [w, opt] of [['1440', DESK], ['390', PHONE]]) {
+    const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/${QUERY ? '?' + QUERY : ''}`);
+    try {
+      if (world === 'coaching') await toWorld(p, 'coaching');
+      if (opt.viewport.width >= 600) await p.mouse.move(opt.viewport.width / 2, opt.viewport.height / 2);
+      const ids = await p.evaluate((world) => [...document.querySelectorAll(`main[data-world="${world}"] > section.s`)].map((s) => s.id), world);
+      const last = ids[ids.length - 1], prev = ids[ids.length - 2];
+      const geo = (id) => p.evaluate((id) => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return { top: Math.round(r.top + scrollY), h: Math.round(r.height), vh: innerHeight }; }, id);
+      const P0 = await geo(prev), vh = P0.vh, third = vh / 3, tallPrev = P0.h > vh + 2;
+      const rec = async (step, expect, ok) => {
+        await wait(p, 1500);
+        const a = await edges(p, prev), z = await edges(p, last), left = await p.evaluate(() => Math.round(document.documentElement.scrollHeight - scrollY - innerHeight));
+        res.push({ v, world, w, prev, last, step, expect, pass: !!ok(a, z, left), prevTop: a.top, prevBottomGap: a.bottomGap, lastTop: z.top, lastBottomGap: z.bottomGap, pageLeft: left, snap: z.snap, ...(await barState(p)) });
+        await p.screenshot({ path: path.join(OUT, `end-${v}-${world}-${w}-${step[0]}${QTAG}.jpg`), type: 'jpeg', quality: 75 });
+      };
+      await jump(p, P0.top + Math.max(0, P0.h - vh)); await wait(p, 1200);
+      await wheel(p, Math.round(third * 1.5)); await rec('a: from the slide before, on by more than a third', 'the last slide in whole (its top 0)', (a, z) => Math.abs(z.top) <= 2);
+      const L = await geo(last), into = Math.min(200, L.h - vh - 20);
+      if (L.h > vh + 2) {
+        await wheel(p, into); await rec('b: a little way into the last slide, at rest', `no move (its top -${into})`, (a, z) => Math.abs(z.top + into) <= 2);
+        await wheel(p, L.h); await rec('c: on to the end of the page', 'its lower edge on the window\'s, nothing left under it', (a, z, left) => Math.abs(z.bottomGap) <= 2 && left <= 2);
+        await jump(p, L.top); await wait(p, 1200);
+      }
+      await wheel(p, -Math.round(third * .5)); await rec('d: back up past its top, less than a third', 'back to its top (0)', (a, z) => Math.abs(z.top) <= 2);
+      await wheel(p, -Math.round(third * 1.5)); await rec('e: back up, more than a third', tallPrev ? 'the slide before back, its end on the window\'s lower edge' : 'the slide before back whole (its top 0)', (a) => Math.abs(tallPrev ? a.bottomGap : a.top) <= 2);
+    } catch (e) { res.push({ v, world, w, error: e.message.slice(0, 200) }); }
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, `end${QTAG}.json`), JSON.stringify(res, null, 1));
+  for (const r of res) console.log('end', r.v, r.world, r.w, r.error || `${r.pass ? 'PASS' : 'FAIL'} ${r.step} | ${r.expect} | ${r.prev} top ${r.prevTop} gap ${r.prevBottomGap}, ${r.last} top ${r.lastTop} gap ${r.lastBottomGap}, page left ${r.pageLeft}, bar ${r.bar}`);
+  console.log('end', res.filter((r) => r.pass).length, 'pass,', res.filter((r) => r.pass === false).length, 'fail,', res.filter((r) => r.error).length, 'errors');
 }
 
 // G: the visit preview becoming the step rail (J's 4 Nov ask): stills at fixed points of the preview's leave, and whether the
@@ -282,5 +325,6 @@ try {
   if (ONLY.includes('line')) await line(b, base);
   if (ONLY.includes('films')) await films(b, base);
   if (ONLY.includes('snap')) await snap(b, base);
+  if (ONLY.includes('end')) await end(b, base);
   if (ONLY.includes('shots')) await shots(b, base);
 } finally { await b.close(); srv.close(); }

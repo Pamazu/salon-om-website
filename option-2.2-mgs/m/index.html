@@ -1517,6 +1517,16 @@ main[data-world] .voices .voices__t { color: var(--forest-deep); }
 .cl__foot .foot__legal { margin-top: var(--sp-3); }
 .cl__foot .foot__base { margin-top: var(--sp-3); }
 .cl__foot { padding-top: 0; }
+/* the footer inside a slide that is not Begin's (mgs_sections.with_foot; on G and S the second door closes each world, task
+   d9a90616): the band brings its own ground, edge to edge under the slide's stage, its details in the same column as under
+   Begin; the stage's own lower edge parts the two, so the hairline goes */
+.s:not(.cl) > .cl__foot { position: relative; max-width: none; padding: var(--sp-5) max(var(--gutter), calc((100% - 1680px) / 2 + var(--gutter))) calc(var(--sp-3) + env(safe-area-inset-bottom, 0px)); background: var(--umber); color: var(--ivory); text-align: left; }
+.s:not(.cl) > .cl__foot .foot__in { padding-top: 0; border-top: 0; }
+/* under the second door's earlier look (its Shift+V option, the words straight on the photo): that slide keeps one window
+   for its picture and words, the band follows it */
+.s.bridge:has(> .cl__foot) { height: auto; grid-template-rows: 100vh auto; grid-template-rows: 100svh auto; }
+.s.bridge:has(> .cl__foot) > :is(.ph-bg, .bridge__scrim) { bottom: auto; height: 100vh; height: 100svh; }
+.s.bridge > .cl__foot { justify-self: stretch; }
 @media (max-width: 1023px) {
   .cl__cta { grid-template-columns: 1fr; gap: var(--sp-4); padding-top: calc(var(--top) + var(--sp-3)); }
   .cl__ph { order: -1; width: 100%; height: auto; aspect-ratio: 4 / 3; }
@@ -2899,7 +2909,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </div>
     <div class="s__shade"></div>
   </section>
-  <section data-opt-key="begin" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Today’s version&quot;},{&quot;k&quot;:&quot;screen&quot;,&quot;n&quot;:&quot;Begin on its own screen&quot;,&quot;d&quot;:&quot;As before 20 Nov: Begin fills its own screen after the second door, its words centred, no form.&quot;}]" data-opt-name="Begin" class="s s--auto cl cl--flow" id="begin" data-tone="dark" data-sound="bed" aria-labelledby="begin-t">
+  <section data-opt-key="begin" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Today’s version&quot;},{&quot;k&quot;:&quot;screen&quot;,&quot;n&quot;:&quot;Begin on its own screen&quot;,&quot;d&quot;:&quot;As before 20 Nov: Begin fills its own screen, its words centred, no form.&quot;}]" data-opt-name="Begin" class="s s--auto cl cl--flow" id="begin" data-tone="dark" data-sound="bed" aria-labelledby="begin-t">
     <div class="cl__cta s__leave">
       <div class="cl__words">
         <p class="label a-up" style="--d:.2s">Begin</p>
@@ -3130,7 +3140,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </div>
     <div class="s__shade"></div>
   </section>
-  <section data-opt-key="begin" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Today’s version&quot;},{&quot;k&quot;:&quot;screen&quot;,&quot;n&quot;:&quot;Begin on its own screen&quot;,&quot;d&quot;:&quot;As before 20 Nov: Begin fills its own screen after the second door, its words centred, no form.&quot;}]" data-opt-name="Begin" class="s s--auto cl cl--flow" id="c-begin" data-tone="dark" data-sound="bed" aria-labelledby="c-begin-t">
+  <section data-opt-key="begin" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;Today’s version&quot;},{&quot;k&quot;:&quot;screen&quot;,&quot;n&quot;:&quot;Begin on its own screen&quot;,&quot;d&quot;:&quot;As before 20 Nov: Begin fills its own screen, its words centred, no form.&quot;}]" data-opt-name="Begin" class="s s--auto cl cl--flow" id="c-begin" data-tone="dark" data-sound="bed" aria-labelledby="c-begin-t">
     <div class="cl__cta s__leave">
       <div class="cl__words">
         <p class="label a-up" style="--d:.2s">Begin</p>
@@ -3160,7 +3170,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="bac2541e9c08";</script>
+<script>window.OM_BUILD="ef3ac62024a7";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -4558,8 +4568,11 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     var w = el.closest('main').getAttribute('data-world');
     if (el.getAttribute('href') === href[w]) { seen.set(el, false); io.observe(el); }
   });
-  // and while the footer is on screen: the page has ended, its own Begin is just above
-  [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io.observe(el); });
+  // and while the footer is on screen: the page has ended, and the footer's own "Begin" leads to this world's close. A footer
+  // that only touches the window's lower edge is not on screen yet: under a slide exactly one window tall (G, S: the second
+  // door, task d9a90616) an observer with no margin already counts it, and the bar would be gone from the door itself
+  var io3 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -2px 0px' });
+  [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io3.observe(el); });
   // and once the closing screen fills the lower part of the window: it is where the bar leads, so the bar has nothing
   // more to offer there (round 5 QA, task 2846db82: S on a phone showed it on its own closing screen, beside the last line)
   var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -40% 0px' });
