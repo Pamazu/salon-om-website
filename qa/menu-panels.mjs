@@ -2,6 +2,8 @@
 // photo panel (1440) and, on a phone (390), the row with its own photo. Judges the crop and focus point of every menu
 // picture, which a whole-section capture cannot (the panel shows one row at a time).
 //   node menu-panels.mjs [chromium|webkit] [m,g,s]      -> qa/out-<browser>/menu-<v>-<row>-<width>.jpg
+//   QUERY='pic-<picture>=<key>' opens the pages on a Shift+V choice (a picture's candidate, task b1dd24c9); WEBKIT=<path> for the
+//   pool's pinned build, as options.mjs
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,12 +31,12 @@ const srv = await new Promise((done) => {
   }).listen(0, '127.0.0.1', () => done(s));
 });
 const base = `http://127.0.0.1:${srv.address().port}`;
-const browser = await pw[BROWSER].launch();
+const browser = await pw[BROWSER].launch(BROWSER === 'webkit' && process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {});
 try {
   for (const v of VERS) {
     for (const [w, opts] of [[1440, { viewport: { width: 1440, height: 900 } }], [390, { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: BROWSER === 'chromium', hasTouch: true }]]) {
       const ctx = await browser.newContext(opts), p = await ctx.newPage();
-      await p.goto(`${base}/${v}/`, { waitUntil: 'load' });
+      await p.goto(`${base}/${v}/${process.env.QUERY ? '?' + process.env.QUERY : ''}`, { waitUntil: 'load' });
       await p.waitForTimeout(1500);
       const n = await p.locator('#services .mn__row').count();
       for (let i = 0; i < n; i++) {
