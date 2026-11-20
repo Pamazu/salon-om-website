@@ -1082,7 +1082,9 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
   /* B · Sheets: the next step is laid over the last like a sheet, its picture and words together, a soft shadow at its
      leading edge; the last one holds still and dims (never scaled down: a smaller picture shows its own edge, a line round a
      filled shape; no rounded corners: a clip re-drawn on every frame cost a long frame at J's 6K window) */
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets { overflow-x: clip !important; overflow-y: visible !important; }
+  /* open below only, so the held step's picture can stay on screen past its own foot while nothing of the arriving sheet
+     shows above its edge (a light line of its film did); the clip never changes, so it costs no frame */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets { overflow: visible !important; clip-path: inset(0 0 -100vh 0); }
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave) { transform: translate3d(0, var(--out, 0px), 0); }
   html:not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move)::after { content: ''; position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
     background: linear-gradient(to top, rgba(10, 7, 5, .46), rgba(10, 7, 5, 0)); opacity: min(1, calc(var(--q) * 8)); }

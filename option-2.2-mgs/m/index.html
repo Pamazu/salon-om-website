@@ -2272,7 +2272,7 @@ html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--m
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__media {transform: translate3d(0, calc(var(--out, 0px) - var(--inp, 0px)), 0);}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__zoom, html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still.is-active .s__zoom {transform: none; transition: none;}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still .s__veil, html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-still:has(+ .ch--move) .s__shade {opacity: 0; transition: none;}
-html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets {overflow-x: clip !important; overflow-y: visible !important;}
+html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets {overflow: visible !important; clip-path: inset(0 0 -100vh 0);}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move) > :is(.s__media, .s__scrim, .s__veil, .s__shade, .s__leave) {transform: translate3d(0, var(--out, 0px), 0);}
 html:not([data-motion="calm"]):not([data-motion="calm"]):not([data-shot]) .ch--move-sheets:has(+ .ch--move)::after {content: ''; position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
     background: linear-gradient(to top, rgba(10, 7, 5, .46), rgba(10, 7, 5, 0)); opacity: min(1, calc(var(--q) * 8));}
@@ -3136,7 +3136,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="31a3d1c34a58";</script>
+<script>window.OM_BUILD="1eecfe376c7d";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
