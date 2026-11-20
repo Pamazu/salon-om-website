@@ -128,6 +128,43 @@ PAUSE_DOOR = 'real-chair-window.webp'
 PAUSE_DOOR_ALT = 'The empty styling chair by the window at Salon OM, daylight on the leather'
 
 
+# THE PICTURES J SWITCHES WITH SHIFT+V (task 279db527; J 19 Nov 18:15 Z: "shift v to shift between options of all images that
+# are in view also please"): {the picture on the page today: its name in the panel, today's label, its candidates}, drawn by
+# section_options.pictures. A candidate becomes the picture on the page only once J picks it there: the deploy gate's row 27
+# refuses a generated picture he has not picked (qa/j-picks.json, written by `approved_gate.py pick` from his words). A service
+# picture's candidates (task b1dd24c9) join here, one line each, under its file.
+PICTURE_OPTIONS = {
+    PAUSE_DOOR: dict(name='The pause’s picture', live='Today’s: the empty chair by the window', options=[
+        # (task 69006a72, 5e79645): the 19 Nov pause guest with J's 25 Oct basins room laid under her by her own outline
+        dict(key='rest', label='A · The guest at the basin', img='om-pause-rest.webp', ai=AI_GUEST, pos='54% 55%',
+             alt='A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles',
+             note='Eyes closed, a towel round her shoulders, in your 25 Oct picture of the basins room.'),
+        # (task e1a1e009, every try on record ac8238bb): at the model's 1248 px, sharpened only once J picks (J 18 Nov); pos = her face
+        dict(key='exhale', label='S1 · The exhale at the basin', img='om-pause-exhale.webp', ai=AI_GUEST, pos='46.2% 49.9%',
+             alt='A generated guest lying back at a shampoo basin at Salon OM, eyes closed, a towel over her black cape, her hair falling to the bowl',
+             note='Lying back at the basin, eyes closed, in your 25 Oct picture of the basins room.'),
+        dict(key='window', label='S2 · Face to the window', img='om-pause-window.webp', ai=AI_GUEST, pos='61.1% 23.9%',
+             alt='A generated guest sitting back in a styling chair by the window at Salon OM, her face lifted to the daylight, eyes closed',
+             note='Sitting back in the chair by the window, her face lifted to the daylight.'),
+        # (msg 3d46766e to the CEO MA): the salon's own photo 2, no one in it
+        dict(key='lounge', label='The lounge by the fire', img='real-lounge.webp', alt=STEP_ALT[3],
+             note='The real lounge by the fireplace, no one in it.'),
+    ]),
+    # Inner Work's pause (task e1a1e009): its picture today is her photo by the fire (IW_PHOTO lounge_seated)
+    'real-maggie-lounge-seated.webp': dict(name='The pause’s picture', live='Today’s: the coach seated by the fire', options=[
+        dict(key='fire-tea', label='I1 · Tea by the fire', img='iw-pause-fire-tea.webp', ai=AI_GUEST, pos='38.4% 19%',
+             alt='A generated guest on the striped bench by the lit fireplace, a mug of tea in both hands, eyes closed',
+             note='A guest on the bench by the lit fire, tea in both hands, eyes closed.'),
+        dict(key='coach-fire', label='I2 · By the fire, re-lit', img='iw-pause-coach-fire.webp', pos='47% 28%',
+             alt='The coach sitting by the fireplace in the lounge, warm light on her face',
+             note='Her own photo by the fireplace, re-lit with warm light on her face.'),
+        dict(key='shelves', label='I3 · A quiet moment by the fire', img='iw-pause-shelves.webp', ai=AI_GUEST, pos='18.5% 22.6%',
+             alt='A generated guest leaning back on the striped bench by the lit fireplace, eyes closed, a notebook on her lap, seen through the shelves',
+             note='A guest leaning back by the fire, a notebook on her lap, seen through the shelves.'),
+    ]),
+}
+
+
 # THE FILMS SWITCH (build.FILMS_SHOWN; J 18 Nov, task 5479dd6c). With the films off, a film spot on M, G and S shows a still:
 # a step shows its own real photo (build.chapter drops the film layer, the photo stays whole); the two heroes show the
 # sharpest frame of their film (a mood film: no person, no salon), upscaled x4 on the Mac Studio and drawn like any picture here
@@ -657,15 +694,18 @@ def srcset(body, v):
 
     def one(m):
         tag, name = m.group(0), m.group(1)
-        if name not in ex or name not in sz or ' srcset=' in tag:
+        if name not in ex or ' srcset=' in tag or (name not in sz and ' data-cand' not in tag):
             return tag
-        e, stem = sz[name], name[:-5]
+        stem = name[:-5]
+        set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
+        # a place that names how wide it draws the picture keeps it (a full-bleed option, task e5325977); a picture's candidate
+        # (section_options.pictures, task 279db527) is drawn at the size of the picture it stands in for, so it takes only its files
+        if ' sizes=' in tag or ' data-cand' in tag:
+            return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}"', 1)
+        e = sz[name]
         sizes = ', '.join(x for x in (f'(max-width: 700px) {vw(e, "w390", 390)}vw' if e.get('w390') else '',
                                       f'(max-width: 2000px) {vw(e, "w1440", 1440)}vw' if e.get('w1440') else '',
                                       f'{vw(e, "w3230", 3230)}vw') if x)
-        set_ = ', '.join(f'img/hd/{stem}-{w}.webp {w}w' for w in ex[name])
-        if ' sizes=' in tag:      # a place that names how wide it draws the picture keeps it (a full-bleed option, task e5325977)
-            return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}"', 1)
         return tag.replace(f'src="img/{name}"', f'src="img/{name}" srcset="{set_}" sizes="{sizes}"', 1)
     return re.sub(r'<img [^>]*?src="img/([^"/]+\.webp)"[^>]*>', one, body)
 

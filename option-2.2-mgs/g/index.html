@@ -2200,6 +2200,8 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--breath .ps__stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; }
 .ps--breath .ps__pic { position: absolute; inset: 0; clip-path: inset(var(--ct) var(--cs) var(--ct) var(--cs) round var(--cr)); transform: scale(var(--sc)); }
 .ps--breath .ps__pic img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 55%; display: block; }
+/* a picture swapped in by Shift+V (options.js, task 279db527) keeps its subject in view: its own focus, in every scene of the pause */
+.s.ps img[style*="--pos"] { object-position: var(--pos); }
 /* a screen wider than the photos' real pixels stay sharp edge to edge (J's 6K window; approved row 18: "sharp at its display size
    on J's largest screen ... never upscaled soft"): the room opens to a large rounded frame of the width they hold, never soft */
 @media (min-width: 2401px) {
@@ -2394,6 +2396,14 @@ html[data-motion="calm"] :is(.mask__in, blockquote.a-up, .mani__text .l, .ps [da
   cursor: pointer; transition: background-color .32s var(--io), color .32s var(--io); }
 .opt__chips button:hover { background: rgba(245, 238, 228, .14); }
 .opt__chips button[aria-checked="true"] { background: #F5EEE4; color: #17110D; }
+/* a picture's options (task 279db527): under the section's own, each picture by its name, its rows the same pills with a small
+   thumbnail at their end */
+.opt__pics { margin-top: 10px; }
+.opt__pics > .opt__k { margin: 0 8px; }
+.opt__pic { margin: 8px 8px 6px; font: 300 17px/1.2 var(--serif); }
+.opt__row--pic { align-items: center; }
+.opt__th { flex: none; width: 56px; height: 40px; margin: -4px -6px -4px auto; border-radius: 12px; overflow: hidden; background: rgba(245, 238, 228, .08); }
+.opt__th img { display: block; width: 100%; height: 100%; object-fit: cover; }
 /* the phone's handle, beside the tweak button (tweaks.css .tw-btn: 38 px at left 14 px), its tap area 44 px */
 .opt-handle { display: none; position: fixed; z-index: 90; left: 58px; bottom: calc(11px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; padding: 0; border: 0;
   border-radius: 50%; place-items: center; color: rgba(245, 238, 228, .9); background: rgba(21, 16, 12, .45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -2408,6 +2418,9 @@ html[data-motion="calm"] :is(.mask__in, blockquote.a-up, .mani__text .l, .ps [da
 .s.opt-out > * { opacity: 0 !important; transition: opacity .24s var(--io) !important; }
 .s.opt-in > * { animation: opt-in .6s var(--io) both; }
 @keyframes opt-in { from { opacity: 0; } }
+/* a picture's swap: it fades out, the chosen one fades in once decoded */
+img.opt-pic-out { opacity: 0 !important; transition: opacity .24s var(--io) !important; }
+img.opt-pic-in { animation: opt-in .6s var(--io) both; }
 html[data-motion="calm"] .opt, html[data-motion="calm"] .s.opt-in > * { transition: none; animation: none; }
 /* motion switch (was prefers-reduced-motion: reduce) */
 html[data-motion="calm"] .opt {transition: opacity .2s linear; transform: none;}
@@ -2442,10 +2455,10 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
 </div>
 <nav class="rail" id="rail" aria-label="The visit"><a href="#arrive" data-c-href="#c-arrive" data-c-name="Reach out"><span>Arrive</span><b>01</b></a><a href="#unwind" data-c-href="#c-unwind" data-c-name="Look deeper"><span>Unwind</span><b>02</b></a><a href="#renew" data-c-href="#c-renew" data-c-name="Soften"><span>Renew</span><b>03</b></a><a href="#unhurried" data-c-href="#c-unhurried" data-c-name="Take root"><span>Unhurried</span><b>04</b></a><a href="#home" data-c-href="#c-home" data-c-name="Yours to keep"><span>Carry it home</span><b>05</b></a></nav>
 <div class="wveil" id="wveil" aria-hidden="true"><svg viewBox="-38.9 -49.9 1589.3 725.8" aria-hidden="true" focusable="false"><path fill="currentColor" d="M304.4 637Q235.3 637 179.1 611.5Q122.9 586 83.1 541Q43.2 496 21.6 437.5Q0 379 0 313Q0 232 30.3 171Q60.5 110 110.4 69.5Q160.4 29 219.9 9Q279.5 -11 338 -11Q409.1 -11 465.3 15.5Q521.5 42 560.8 87Q600.2 132 620.9 189Q641.5 246 641.5 306Q641.5 376 614.6 436Q587.7 496 541.2 541Q494.6 586 433.6 611.5Q372.6 637 304.4 637ZM339 617Q406.2 617 461 584.5Q515.7 552 547.9 488.5Q580.1 425 580.1 334Q580.1 239 545 166.5Q510 94 446.6 52.5Q383.2 11 297.7 11Q186.3 11 123.9 83Q61.5 155 61.5 279Q61.5 349 81.2 410.5Q100.8 472 137.8 518.5Q174.8 565 225.7 591Q276.6 617 339 617ZM821.5 521 831.5 47Q800.5 12 750.5 12Q748.5 12 748.5 6Q748.5 0 750.5 0Q765.5 0 782.5 1Q799.5 2 810.5 2Q824.5 2 836.5 1Q848.5 0 854.5 0Q868.5 0 876.5 9Q884.5 18 900.5 52L1125.5 538L1349.5 25Q1354.5 14 1363 7Q1371.5 0 1379.5 0Q1384.5 0 1394.5 1Q1404.5 2 1417.5 2Q1443.5 2 1459.5 1Q1475.5 0 1493.5 0Q1495.5 0 1495.5 6Q1495.5 12 1493.5 12Q1444.5 12 1421.5 24.5Q1398.5 37 1399.5 79L1418.5 544Q1419.5 573 1426 588Q1432.5 603 1451.5 608Q1470.5 613 1508.5 613Q1511.5 613 1511.5 619Q1511.5 625 1508.5 625Q1484.5 625 1455 624Q1425.5 623 1392.5 623Q1361.5 623 1335.5 624Q1309.5 625 1288.5 625Q1286.5 625 1286.5 619Q1286.5 613 1288.5 613Q1338.5 613 1353 600Q1367.5 587 1365.5 544L1348.5 79L1114.5 618Q1113.5 622 1106.5 622Q1099.5 622 1097.5 618L853.5 83Q852.5 82 852.5 81L844.5 521Q843.5 572 861 592.5Q878.5 613 928.5 613Q930.5 613 930.5 619Q930.5 625 928.5 625Q906.5 625 883 624Q859.5 623 831.5 623Q807.5 623 785.5 624Q763.5 625 743.5 625Q741.5 625 741.5 619Q741.5 613 743.5 613Q785.5 613 803 592.5Q820.5 572 821.5 521Z"/></svg></div>
-<div id="opt-store" hidden><template data-opt-for="pause" data-opt="standing" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+<div id="opt-store" hidden><template data-pic-for="real-chair-window.webp" data-opt="live" data-name="The pause’s picture" data-n="Today’s: the empty chair by the window"></template><template data-pic-for="real-chair-window.webp" data-opt="rest" data-n="A · The guest at the basin" data-d="Eyes closed, a towel round her shoulders, in your 25 Oct picture of the basins room." data-ai="Guest made with AI"><img src="img/om-pause-rest.webp?v=bb664e4d20" srcset="img/hd/om-pause-rest-640.webp?v=7462c868b7 640w, img/hd/om-pause-rest-960.webp?v=c6625de441 960w, img/hd/om-pause-rest-1280.webp?v=b52bf8011f 1280w, img/hd/om-pause-rest-1920.webp?v=80ce1661bf 1920w, img/hd/om-pause-rest-2560.webp?v=c893d622e0 2560w, img/hd/om-pause-rest-3840.webp?v=f26b1f5fe2 3840w, img/hd/om-pause-rest-4900.webp?v=eef83b29a9 4900w" alt="A generated guest resting at a shampoo basin at Salon OM, eyes closed, a towel round her shoulders, below shelves of Aveda bottles" data-cand style="--pos:54% 55%"></template><template data-pic-for="real-chair-window.webp" data-opt="exhale" data-n="S1 · The exhale at the basin" data-d="Lying back at the basin, eyes closed, in your 25 Oct picture of the basins room." data-ai="Guest made with AI"><img src="img/om-pause-exhale.webp?v=78986932de" srcset="img/hd/om-pause-exhale-640.webp?v=b631856783 640w, img/hd/om-pause-exhale-960.webp?v=4e2d768af9 960w, img/hd/om-pause-exhale-1248.webp?v=c655e0ba4a 1248w" alt="A generated guest lying back at a shampoo basin at Salon OM, eyes closed, a towel over her black cape, her hair falling to the bowl" data-cand style="--pos:46.2% 49.9%"></template><template data-pic-for="real-chair-window.webp" data-opt="window" data-n="S2 · Face to the window" data-d="Sitting back in the chair by the window, her face lifted to the daylight." data-ai="Guest made with AI"><img src="img/om-pause-window.webp?v=db8bf03e2f" srcset="img/hd/om-pause-window-640.webp?v=a1f991e624 640w, img/hd/om-pause-window-960.webp?v=496b468627 960w, img/hd/om-pause-window-1248.webp?v=031b16b907 1248w" alt="A generated guest sitting back in a styling chair by the window at Salon OM, her face lifted to the daylight, eyes closed" data-cand style="--pos:61.1% 23.9%"></template><template data-pic-for="real-chair-window.webp" data-opt="lounge" data-n="The lounge by the fire" data-d="The real lounge by the fireplace, no one in it."><img src="img/real-lounge.webp?v=d01ff7c001" srcset="img/hd/real-lounge-640.webp?v=4e673980dd 640w, img/hd/real-lounge-960.webp?v=77626a57c2 960w, img/hd/real-lounge-1280.webp?v=53b9847dc9 1280w, img/hd/real-lounge-1920.webp?v=7b423a6216 1920w, img/hd/real-lounge-2560.webp?v=ea8fe33a02 2560w, img/hd/real-lounge-3840.webp?v=e3242e2e30 3840w, img/hd/real-lounge-5120.webp?v=1970da1402 5120w, img/hd/real-lounge-5330.webp?v=31c73f3e01 5330w" alt="The lounge by the fireplace at Salon OM" data-cand></template><template data-pic-for="real-maggie-lounge-seated.webp" data-opt="live" data-name="The pause’s picture" data-n="Today’s: the coach seated by the fire"></template><template data-pic-for="real-maggie-lounge-seated.webp" data-opt="fire-tea" data-n="I1 · Tea by the fire" data-d="A guest on the bench by the lit fire, tea in both hands, eyes closed." data-ai="Guest made with AI"><img src="img/iw-pause-fire-tea.webp?v=48356048b4" srcset="img/hd/iw-pause-fire-tea-640.webp?v=142550a455 640w, img/hd/iw-pause-fire-tea-960.webp?v=6b7217b35c 960w, img/hd/iw-pause-fire-tea-1248.webp?v=ba9ff7d441 1248w" alt="A generated guest on the striped bench by the lit fireplace, a mug of tea in both hands, eyes closed" data-cand style="--pos:38.4% 19%"></template><template data-pic-for="real-maggie-lounge-seated.webp" data-opt="coach-fire" data-n="I2 · By the fire, re-lit" data-d="Her own photo by the fireplace, re-lit with warm light on her face."><img src="img/iw-pause-coach-fire.webp?v=5c50dbe36e" srcset="img/hd/iw-pause-coach-fire-640.webp?v=28826b8a1a 640w, img/hd/iw-pause-coach-fire-960.webp?v=bb99371cce 960w, img/hd/iw-pause-coach-fire-1280.webp?v=e908c88db1 1280w, img/hd/iw-pause-coach-fire-1920.webp?v=b9dacdac8a 1920w, img/hd/iw-pause-coach-fire-2560.webp?v=21044e9013 2560w, img/hd/iw-pause-coach-fire-3840.webp?v=3ce99bb1d8 3840w, img/hd/iw-pause-coach-fire-5100.webp?v=1047c48100 5100w" alt="The coach sitting by the fireplace in the lounge, warm light on her face" data-cand style="--pos:47% 28%"></template><template data-pic-for="real-maggie-lounge-seated.webp" data-opt="shelves" data-n="I3 · A quiet moment by the fire" data-d="A guest leaning back by the fire, a notebook on her lap, seen through the shelves." data-ai="Guest made with AI"><img src="img/iw-pause-shelves.webp?v=c6ee500c5f" srcset="img/hd/iw-pause-shelves-640.webp?v=9390906d9e 640w, img/hd/iw-pause-shelves-960.webp?v=a9bd823e34 960w, img/hd/iw-pause-shelves-1248.webp?v=f0c9dcc66d 1248w" alt="A generated guest leaning back on the striped bench by the lit fireplace, eyes closed, a notebook on her lap, seen through the shelves" data-cand style="--pos:18.5% 22.6%"></template><template data-opt-for="pause" data-opt="standing" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="The empty styling chair by the window at Salon OM, daylight on the leather" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="The empty styling chair by the window at Salon OM, daylight on the leather" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
@@ -2453,14 +2466,14 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="pause" data-opt="glass" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="The empty styling chair by the window at Salon OM, daylight on the leather" decoding="async"></div><div class="br__glass" aria-hidden="true"><div class="br__leaf" data-flute="9"></div><div class="br__leaf" data-flute="9"></div></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="The empty styling chair by the window at Salon OM, daylight on the leather" decoding="async"></div><div class="br__glass" aria-hidden="true"><div class="br__leaf" data-flute="9"></div><div class="br__leaf" data-flute="9"></div></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
     <div class="s__shade"></div>
   </template><template data-opt-for="pause" data-opt="through" data-attrs="{&quot;class&quot;:&quot;s ps ps--through&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="ps__stick">
-      <div class="ps__door"><div class="ps__pic"><img src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="(max-width: 1023px) 100vw, 86vw" decoding="async"></div><div class="ps__strip" aria-hidden="true" data-flute="16"></div><p class="ps__coda" aria-hidden="true">You deserve this moment.</p></div>
+      <div class="ps__door"><div class="ps__pic"><img data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="(max-width: 1023px) 100vw, 86vw" decoding="async"></div><div class="ps__strip" aria-hidden="true" data-flute="16"></div><p class="ps__coda" aria-hidden="true">You deserve this moment.</p></div>
       <div class="ps__words">
         <p class="ps__eyebrow label">The pause</p>
         <p class="ps__head" data-write="letters" style="--at:.3s">Take a breath.</p>
@@ -2471,13 +2484,13 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="pause" data-opt="door" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="The empty styling chair by the window at Salon OM, daylight on the leather" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="The empty styling chair by the window at Salon OM, daylight on the leather" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="moment.">Take a breath. When did you last give yourself time to be cared for?</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">You deserve this moment.</p>
     </div>
     <div class="s__shade"></div>
   </template><template data-opt-for="pause" data-opt="room" data-attrs="{&quot;class&quot;:&quot;s ps ps--room&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
-    <div class="ps__pic"><img src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="100vw" decoding="async"></div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true" data-flute="14"></div>
+    <div class="ps__pic"><img data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="100vw" decoding="async"></div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true" data-flute="14"></div>
     <div class="ps__words s__leave">
       <p class="ps__eyebrow label a-left" style="--d:.1s">The pause</p>
       <p class="ps__head" data-write="letters" style="--at:.3s">Take a breath.</p>
@@ -2487,7 +2500,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="pause" data-opt="cinema" data-attrs="{&quot;class&quot;:&quot;s ps ps--cinema&quot;,&quot;id&quot;:&quot;pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="ps__cine s__leave">
       <p class="ps__take" data-write="letters" style="--at:.3s">Take</p>
-      <figure class="ps__band"><img src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="(max-width: 760px) 100vw, 92vw" decoding="async"></figure>
+      <figure class="ps__band"><img data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="(max-width: 760px) 100vw, 92vw" decoding="async"></figure>
       <p class="ps__breath" data-write="letters" style="--at:1.2s">a breath.</p>
       <div class="ps__side"><p class="ps__sub a-fade" style="--d:2.2s">When did you last give yourself time to be cared for?</p><p class="ps__coda a-fade" style="--d:3.2s">You deserve this moment.</p></div>
     </div>
@@ -2520,7 +2533,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="c-pause" data-opt="standing" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="roots.">Sometimes what feels like today’s challenge has deeper roots.</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">Look a little deeper.</p>
     </div>
@@ -2528,14 +2541,14 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="c-pause" data-opt="glass" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div><div class="br__glass" aria-hidden="true"><div class="br__leaf" data-flute="9"></div><div class="br__leaf" data-flute="9"></div></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div><div class="br__glass" aria-hidden="true"><div class="br__leaf" data-flute="9"></div><div class="br__leaf" data-flute="9"></div></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="roots.">Sometimes what feels like today’s challenge has deeper roots.</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">Look a little deeper.</p>
     </div>
     <div class="s__shade"></div>
   </template><template data-opt-for="c-pause" data-opt="through" data-attrs="{&quot;class&quot;:&quot;s ps ps--through&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="ps__stick">
-      <div class="ps__door"><div class="ps__pic"><img src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="(max-width: 1023px) 100vw, 86vw" decoding="async"></div><div class="ps__strip" aria-hidden="true" data-flute="16"></div><p class="ps__coda" aria-hidden="true">Look a little deeper.</p></div>
+      <div class="ps__door"><div class="ps__pic"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="(max-width: 1023px) 100vw, 86vw" decoding="async"></div><div class="ps__strip" aria-hidden="true" data-flute="16"></div><p class="ps__coda" aria-hidden="true">Look a little deeper.</p></div>
       <div class="ps__words">
         <p class="ps__eyebrow label">The pause</p>
         <p class="ps__head is-long" data-write="letters" style="--at:.3s">Sometimes what feels like today’s challenge has deeper roots.</p>
@@ -2546,13 +2559,13 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="c-pause" data-opt="door" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
-      <figure class="br"><div class="br__ph"><div class="br__zoom"><img src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
+      <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
       <p class="mani__text" data-write="letters" data-accents="roots.">Sometimes what feels like today’s challenge has deeper roots.</p>
       <p class="lead a-up" style="--d:4.4s;margin-top:clamp(20px,3.5vh,40px);color:var(--ink-soft)">Look a little deeper.</p>
     </div>
     <div class="s__shade"></div>
   </template><template data-opt-for="c-pause" data-opt="room" data-attrs="{&quot;class&quot;:&quot;s ps ps--room&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
-    <div class="ps__pic"><img src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="100vw" decoding="async"></div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true" data-flute="14"></div>
+    <div class="ps__pic"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="100vw" decoding="async"></div><div class="ps__shade" aria-hidden="true"></div><div class="ps__lens" aria-hidden="true" data-flute="14"></div>
     <div class="ps__words s__leave">
       <p class="ps__eyebrow label a-left" style="--d:.1s">The pause</p>
       <p class="ps__head is-long" data-write="letters" style="--at:.3s">Sometimes what feels like today’s challenge has deeper roots.</p>
@@ -2562,7 +2575,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </template><template data-opt-for="c-pause" data-opt="cinema" data-attrs="{&quot;class&quot;:&quot;s ps ps--cinema&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="ps__cine s__leave">
       <p class="ps__take is-long" data-write="letters" style="--at:.3s">Sometimes what feels like</p>
-      <figure class="ps__band"><img src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="(max-width: 760px) 100vw, 92vw" decoding="async"></figure>
+      <figure class="ps__band"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="(max-width: 760px) 100vw, 92vw" decoding="async"></figure>
       <p class="ps__breath is-long" data-write="letters" style="--at:1.2s">today’s challenge has deeper roots.</p>
       <div class="ps__side"><p class="ps__coda a-fade" style="--d:3.2s">Look a little deeper.</p></div>
     </div>
@@ -2609,7 +2622,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </section>
   <section data-opt-key="pause" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;B · The breath&quot;,&quot;d&quot;:&quot;Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.&quot;},{&quot;k&quot;:&quot;standing&quot;,&quot;n&quot;:&quot;The door, standing in the room&quot;,&quot;d&quot;:&quot;Her words beside a tall arched door on the empty chair by the window (before 19 Nov).&quot;},{&quot;k&quot;:&quot;glass&quot;,&quot;n&quot;:&quot;D1 · The glass door&quot;,&quot;d&quot;:&quot;The door again, behind two leaves of fluted glass that slide apart as it arrives.&quot;},{&quot;k&quot;:&quot;through&quot;,&quot;n&quot;:&quot;D2 · Step through&quot;,&quot;d&quot;:&quot;Scroll slowly: you walk up to the door until it fills the screen and you stand in the room.&quot;},{&quot;k&quot;:&quot;door&quot;,&quot;n&quot;:&quot;The door, centred&quot;,&quot;d&quot;:&quot;Her words either side of a tall arched door in the middle, as on 18 Nov.&quot;},{&quot;k&quot;:&quot;room&quot;,&quot;n&quot;:&quot;A · Into the room&quot;,&quot;d&quot;:&quot;The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.&quot;},{&quot;k&quot;:&quot;cinema&quot;,&quot;n&quot;:&quot;C · Cinema&quot;,&quot;d&quot;:&quot;The room as a wide film frame; the heading huge above and below it.&quot;}]" data-opt-name="The pause" class="s ps ps--breath" id="pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="ps__stick">
-      <div class="ps__pic"><img fetchpriority="low" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="100vw" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
+      <div class="ps__pic"><img fetchpriority="low" data-pic="real-chair-window.webp" src="img/real-chair-window.webp?v=249b7c2b9e" srcset="img/hd/real-chair-window-640.webp?v=a6b9f68e4b 640w, img/hd/real-chair-window-960.webp?v=a798b67f8a 960w, img/hd/real-chair-window-1280.webp?v=17a7f93377 1280w, img/hd/real-chair-window-1920.webp?v=cc6f2e53e0 1920w, img/hd/real-chair-window-2560.webp?v=78b9c52746 2560w, img/hd/real-chair-window-3840.webp?v=2507224784 3840w, img/hd/real-chair-window-5464.webp?v=b88668b98c 5464w" alt="The empty styling chair by the window at Salon OM, daylight on the leather" sizes="100vw" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
       <p class="ps__cue label" aria-hidden="true" data-in="breathe in" data-out="breathe out">breathe in</p>
       <div class="ps__words">
         <p class="ps__head" data-write="letters" style="--at:.3s">Take a breath.</p>
@@ -2841,7 +2854,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   </section>
   <section data-opt-key="pause" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;B · The breath&quot;,&quot;d&quot;:&quot;Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.&quot;},{&quot;k&quot;:&quot;standing&quot;,&quot;n&quot;:&quot;The door, standing in the room&quot;,&quot;d&quot;:&quot;Her words beside a tall arched door on the empty chair by the window (before 19 Nov).&quot;},{&quot;k&quot;:&quot;glass&quot;,&quot;n&quot;:&quot;D1 · The glass door&quot;,&quot;d&quot;:&quot;The door again, behind two leaves of fluted glass that slide apart as it arrives.&quot;},{&quot;k&quot;:&quot;through&quot;,&quot;n&quot;:&quot;D2 · Step through&quot;,&quot;d&quot;:&quot;Scroll slowly: you walk up to the door until it fills the screen and you stand in the room.&quot;},{&quot;k&quot;:&quot;door&quot;,&quot;n&quot;:&quot;The door, centred&quot;,&quot;d&quot;:&quot;Her words either side of a tall arched door in the middle, as on 18 Nov.&quot;},{&quot;k&quot;:&quot;room&quot;,&quot;n&quot;:&quot;A · Into the room&quot;,&quot;d&quot;:&quot;The picture is the whole section, slowly drifting; the words written into it over a fluted glass strip.&quot;},{&quot;k&quot;:&quot;cinema&quot;,&quot;n&quot;:&quot;C · Cinema&quot;,&quot;d&quot;:&quot;The room as a wide film frame; the heading huge above and below it.&quot;}]" data-opt-name="The pause" class="s ps ps--breath" id="c-pause" data-tone="dark" data-sound="bed" aria-label="The pause">
     <div class="ps__stick">
-      <div class="ps__pic"><img fetchpriority="low" loading="lazy" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="100vw" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
+      <div class="ps__pic"><img fetchpriority="low" loading="lazy" data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" sizes="100vw" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
       <p class="ps__cue label" aria-hidden="true" data-in="breathe in" data-out="breathe out">breathe in</p>
       <div class="ps__words">
         <p class="ps__head is-long" data-write="letters" style="--at:.3s">Sometimes what feels like today’s challenge has deeper roots.</p>
@@ -3047,7 +3060,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="2f4d34d1c790";</script>
+<script>window.OM_BUILD="8160dea7fa36";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -3059,7 +3072,12 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
    kept per section in this browser and in the address (?opt-<section>=<option>), so a link shows it. The page's own options
    (window.OM_PAGE_OPTS: an attribute on <html>, e.g. the world switch) are listed under the section's. On a phone a small
    handle opens it. Only on review pages (<html data-review>, or ?review in the address). Runs before the engine, so a
-   remembered option is in place before anything is drawn. A section that sets itself up at load listens for "om:swap". */
+   remembered option is in place before anything is drawn. A section that sets itself up at load listens for "om:swap".
+   A PICTURE's options too (task 279db527; J 19 Nov 18:15 Z: "shift v to shift between options of all images that are in view
+   also please"): every copy of a picture that declares candidates carries data-pic (section_options.pictures), its candidates
+   wait in <template data-pic-for> in the same store. The panel lists the pictures of the section on screen under its options,
+   each with a small thumbnail; a choice swaps the picture in place on every copy (its files, words, focus and AI label), in a
+   section's option too, and is kept per picture the same way (?pic-<picture>=<option>). */
 (function () {
   'use strict';
   var root = document.documentElement;
@@ -3071,6 +3089,12 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   var tpl = {}, live = {};
   [].forEach.call(document.querySelectorAll('#opt-store template[data-opt-for]'), function (t) {
     var id = t.getAttribute('data-opt-for'); (tpl[id] = tpl[id] || {})[t.getAttribute('data-opt')] = t;
+  });
+  var ptpl = {}, pon = {};      // a picture -> its options (today's first), and the one chosen
+  [].forEach.call(document.querySelectorAll('#opt-store template[data-pic-for]'), function (t) {
+    var p = t.getAttribute('data-pic-for');
+    (ptpl[p] = ptpl[p] || []).push({ k: t.getAttribute('data-opt'), n: t.getAttribute('data-n'), d: t.getAttribute('data-d'),
+      name: t.getAttribute('data-name'), ai: t.getAttribute('data-ai'), img: t.content.querySelector('img') });
   });
   function attrsOf(el) { var o = {}; [].forEach.call(el.attributes, function (a) { o[a.name] = a.value; }); return o; }
   secs.forEach(function (s) { live[s.id] = { attrs: attrsOf(s), html: s.innerHTML }; });    // the live default, as drawn
@@ -3106,7 +3130,60 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     s.setAttribute('data-opt', k);
     s.innerHTML = src.html;
     if (window.OMEngine) [].forEach.call(s.querySelectorAll('[data-write]'), function (el) { window.OMEngine.writeIn(el); });
+    [].forEach.call(s.querySelectorAll('img[data-pic]'), function (im) { var o = optOf(im.getAttribute('data-pic'), pon[im.getAttribute('data-pic')]); if (o && o.k !== LIVE) picSwap(im, o); });
     s.dispatchEvent(new CustomEvent('om:swap', { bubbles: true, detail: { key: keyOf(s), option: k } }));
+  }
+
+  /* ---- a picture's swap: the candidate's files, words and focus into every copy, and its AI label with it */
+  function optOf(p, k) { return (ptpl[p] || []).filter(function (o) { return o.k === k; })[0]; }
+  function picsOf(p) { return [].slice.call(document.querySelectorAll('img[data-pic="' + p + '"]')); }
+  function frameOf(im) {      // the picture's own AI label: in a box holding no other picture (the menu's panel labels its open one by is-ai)
+    for (var el = im.parentElement, sec = im.closest('section'); el && el !== sec; el = el.parentElement) {
+      if (el.querySelectorAll('img').length > 1) return { shared: true };
+      var m = el.querySelector(':scope > .ai-mark'); if (m) return { mark: m, text: m.textContent };
+    }
+    return {};
+  }
+  function picSwap(im, o) {
+    var L = im._pl || (im._pl = { src: im.getAttribute('src'), srcset: im.getAttribute('srcset'), alt: im.getAttribute('alt'),
+      style: im.getAttribute('style'), ai: im.classList.contains('is-ai'), f: frameOf(im) });
+    var on = o.k === LIVE, c = o.img;
+    function set(a, v) { if (v == null) im.removeAttribute(a); else im.setAttribute(a, v); }
+    set('src', on ? L.src : c.getAttribute('src')); set('srcset', on ? L.srcset : c.getAttribute('srcset')); set('alt', on ? L.alt : c.getAttribute('alt'));
+    set('style', L.style); if (!on && c.style.getPropertyValue('--pos')) im.style.setProperty('--pos', c.style.getPropertyValue('--pos'));
+    im.classList.toggle('is-ai', on ? L.ai : !!o.ai);
+    im.setAttribute('data-pic-opt', o.k);
+    var f = L.f; if (f.shared) return;
+    if (f.mark) { f.mark.hidden = !on && !o.ai; f.mark.textContent = on ? f.text : (o.ai || f.text); return; }
+    if (!on && o.ai && !im._pm) { im._pm = document.createElement('p'); im._pm.className = 'ai-mark'; im.parentElement.appendChild(im._pm); }
+    if (im._pm) { im._pm.hidden = on || !o.ai; im._pm.textContent = o.ai || ''; }
+  }
+  function seen(im) { var r = im.getBoundingClientRect(); return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(im).opacity) > .05; }
+  function reveal(p) {      // a chosen picture out of sight: a picture opened by its row (the menu) opens with it, any other comes into view
+    var ims = picsOf(p).filter(function (im) { return !im.closest('[hidden]') && im.getClientRects().length; });
+    if (!ims.length || ims.some(seen)) return;
+    var im = ims[0], n = im.getAttribute('data-i'), sec = im.closest('section'), row = n != null && sec && sec.querySelector('[data-i="' + n + '"]:not(img)');
+    if (row) row.click(); else im.scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' });
+  }
+  function choosePic(p, k, animate) {
+    var o = optOf(p, k); if (!o || (pon[p] || LIVE) === k) return;
+    pon[p] = k; keep('pic-' + p.replace(/\.webp$/, ''), k, LIVE);
+    var ims = picsOf(p), shown = animate && !calm() ? ims.filter(seen) : [];
+    function go() {
+      ims.forEach(function (im) {
+        picSwap(im, o);
+        if (shown.indexOf(im) < 0) return;      // on screen: the chosen picture fades in once it is decoded
+        var back = function () { im.classList.remove('opt-pic-out'); im.classList.add('opt-pic-in'); setTimeout(function () { im.classList.remove('opt-pic-in'); }, 700); };
+        if (im.decode) im.decode().then(back, back); else back();
+      });
+      [].forEach.call(document.querySelectorAll('section'), function (s) {
+        if (s.querySelector('img[data-pic="' + p + '"]')) s.dispatchEvent(new CustomEvent('om:swap', { bubbles: true, detail: { key: keyOf(s) || s.id, picture: p, option: k } }));
+      });
+      reveal(p); draw(true);
+    }
+    if (!shown.length) return go();
+    shown.forEach(function (im) { im.classList.add('opt-pic-out'); });
+    setTimeout(go, 260);
   }
   function choose(key, k, animate) {
     var ts = twinsOf(key); if (!ts.length || !has(menuOf(ts[0]), k) || ts[0].getAttribute('data-opt') === k) return;
@@ -3138,6 +3215,10 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     var k = param('opt-' + key) || saved('opt-' + key);
     if (k && k !== LIVE && has(menuOf(s), k)) twinsOf(key).forEach(function (t) { swapOne(t, k); });
   });
+  Object.keys(ptpl).forEach(function (p) {
+    var n = 'pic-' + p.replace(/\.webp$/, ''), k = param(n) || saved(n), o = k && k !== LIVE && optOf(p, k);
+    if (o) { pon[p] = k; picsOf(p).forEach(function (im) { picSwap(im, o); }); }
+  });
   PAGE.forEach(function (p) {
     var v = param(p.p) || saved(p.p);
     if (v && p.o.some(function (o) { return o[0] === v; })) root.setAttribute(p.attr, v);
@@ -3162,7 +3243,8 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     panel.hidden = true;
     panel.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
-      if (b.hasAttribute('data-k')) choose(b.getAttribute('data-key'), b.getAttribute('data-k'), true);
+      if (b.hasAttribute('data-pic')) choosePic(b.getAttribute('data-pic'), b.getAttribute('data-k'), true);
+      else if (b.hasAttribute('data-k')) choose(b.getAttribute('data-key'), b.getAttribute('data-k'), true);
       else if (b.hasAttribute('data-v')) choosePage(PAGE[+b.getAttribute('data-p')], b.getAttribute('data-v'));
       else if (b.hasAttribute('data-go')) { var t = twinsOf(b.getAttribute('data-go')).filter(function (s) { return !s.closest('[hidden]'); })[0]; if (t) t.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth' }); }
     });
@@ -3170,7 +3252,10 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   }
   function draw(force) {
     if (!open) return;
-    var s = onScreen(), sig = (s ? s.id + ':' + (s.getAttribute('data-opt') || '') : '-') + '|' + PAGE.map(function (p) { return root.getAttribute(p.attr); }).join(',');
+    var s = onScreen(), seenP = {}, pics = s ? [].slice.call(s.querySelectorAll('img[data-pic]')).map(function (im) { return im.getAttribute('data-pic'); })
+      .filter(function (p) { if (seenP[p] || !ptpl[p] || ptpl[p].length < 2) return false; seenP[p] = 1; return true; }) : [];
+    var sig = (s ? s.id + ':' + (s.getAttribute('data-opt') || '') : '-') + '|' + PAGE.map(function (p) { return root.getAttribute(p.attr); }).join(',')
+      + '|' + pics.map(function (p) { return p + '=' + (pon[p] || LIVE); }).join(',');
     if (!force && sig === cur) return; cur = sig;
     var h = '<div class="opt__head"><p class="opt__k">Options</p><kbd class="opt__kbd" aria-label="Shift V">⇧V</kbd></div>';
     h += '<p class="opt__sec">' + esc(s ? nameOf(s) : 'This part of the page') + '</p>';
@@ -3184,10 +3269,27 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
           + '<b aria-hidden="true">' + (i < 9 ? i + 1 : i === 9 ? 0 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span></button>';
       });
       h += '</div>';
-    } else {
+    } else if (!pics.length) {
       var seen = {}, more = secs.filter(function (x) { var k = keyOf(x); if (seen[k] || x.closest('[hidden]')) return false; seen[k] = 1; return true; });
       h += '<p class="opt__none">No options in this section.</p>';
       if (more.length) h += '<div class="opt__go">' + more.map(function (x) { return '<button type="button" data-go="' + esc(keyOf(x)) + '">' + esc(nameOf(x)) + ' <span aria-hidden="true">→</span></button>'; }).join('') + '</div>';
+    }
+    var nRow = menu.length;
+    if (pics.length) {
+      h += '<div class="opt__pics"><p class="opt__k">Pictures</p>';
+      pics.forEach(function (p) {
+        var list = ptpl[p], on = pon[p] || LIVE, nm = list[0].name || p, first = picsOf(p)[0];
+        h += '<p class="opt__pic">' + esc(nm) + '</p><div class="opt__list" role="radiogroup" aria-label="' + esc(nm) + '">';
+        list.forEach(function (o) {
+          var sel = o.k === on, i = nRow++, L = first && first._pl, src = o.k === LIVE ? (L ? L.src : first.getAttribute('src')) : o.img.getAttribute('src'),
+            set = o.k === LIVE ? (L ? L.srcset : first.getAttribute('srcset')) : o.img.getAttribute('srcset');
+          h += '<button type="button" class="opt__row opt__row--pic" role="radio" aria-checked="' + sel + '" data-pic="' + esc(p) + '" data-k="' + esc(o.k) + '">'
+            + '<b aria-hidden="true">' + (i < 9 ? i + 1 : i === 9 ? 0 : '') + '</b><span>' + esc(o.n) + (sel && o.d ? '<small>' + esc(o.d) + '</small>' : '') + '</span>'
+            + '<i class="opt__th" aria-hidden="true"><img src="' + esc(src) + '"' + (set ? ' srcset="' + esc(set) + '" sizes="64px"' : '') + ' alt="" decoding="async"></i></button>';
+        });
+        h += '</div>';
+      });
+      h += '</div>';
     }
     PAGE.forEach(function (p, pi) {
       var on = root.getAttribute(p.attr) || p.d;
@@ -3227,7 +3329,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     document.body.appendChild(handle);
   }
   if (document.body) addHandle(); else addEventListener('DOMContentLoaded', addHandle);
-  window.OMOptions = { show: show, choose: choose };
+  window.OMOptions = { show: show, choose: choose, choosePic: choosePic };
 })();
 </script>
 <script>

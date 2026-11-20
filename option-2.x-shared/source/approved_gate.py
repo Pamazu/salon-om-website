@@ -25,6 +25,7 @@ gate's own words for it, the task's full id): then it is held, printed on every 
 task closes; a line whose fault is gone is named so it is taken out. A new fault, or one coming back, is never held.
 
     python3 option-2.x-shared/source/approved_gate.py [m g s]        # default: all three; exit 1 = refused
+    python3 option-2.x-shared/source/approved_gate.py pick <picture file> --j "<J's words picking it>"   # row 27's record
 To lift this into another product: replace ROWS, MEASURED, QA_ONLY and the list's path.
 """
 import glob
@@ -254,7 +255,7 @@ def _base_photo(PS, name):
 
 def _generated(PS, name):
     src = PS.SOURCE.get(name) or ''
-    return src.startswith('m:') and src[2:] in PS.BUILT_ON and src[2:] not in PS.CLEANED
+    return src.startswith('m:') and src[2:] in PS.BUILT_ON and src[2:] not in PS.CLEANED and src[2:] not in getattr(PS, 'GRADED', ())
 
 
 def row7(sections, letter, site):      # menu pictures: no two from the same corner; a generated guest is labelled, never a real result
@@ -552,6 +553,84 @@ def row26(sections, letter, site):     # Why Aveda's list: F, and one option, F 
     return out
 
 
+PICKS = os.path.join(ROOT, 'qa', 'j-picks.json')
+# the generated pictures on the pages before row 27 (19 Nov 2026, 7fdb392), each as its files were then: NEVER J's pick, only not
+# refused while unchanged. J, 18:15 Z, judged Blonding, Color Correction, Cut and Style and Extensions bad (task b1dd24c9 replaces
+# them, each through his pick in Shift+V). Nothing is ever added here: a picture J picks goes to qa/j-picks.json with his words.
+BEFORE_27 = {
+    'om-menu-signature-color.webp': 'de6c1a511d7682424218c857c33b4b17bccdeb2ffe1f23eae183a69d2fef6f74',
+    'om-menu-blonding.webp': '93cbd025390c84ad97bf915e5167218ff4222726f58fbee0da783410878dd48e',
+    'om-menu-color-correction.webp': '53ee836afbc0faaf155c95306f7a4e76951674b6c06de521273c21b7fa23321f',
+    'om-menu-cut-and-style.webp': 'f4331ec52a810c6f02bc113f203cb1dfb1f90b58c6710e1c84a5cb24b98c60a6',
+    'om-menu-extensions.webp': '25458e1b0c7ecbaf616c132cb6e8784dbba8cd3c279e78855121d41b95ea417d',
+    'om-menu-finishing-touches.webp': 'b6e4f119625ec328f0f047f50bcec1b20a456cc301881c55f103c6cd81f59618',
+    'meadow.webp': 'b663a53d46bef1cd98fe8977fe9f2fbf5a95836ee0385cfa2b807297eb84fdcd',
+}
+
+
+def picture_sha(name, site=None):
+    """one sha256 over every file a picture ships (its 1280 file and each width export_photos.py wrote), or None if one is missing"""
+    site = site or SITE
+    ex = json.load(open(os.path.join(os.path.dirname(__file__), 'photo_exports.json')))
+    h = hashlib.sha256()
+    for f in ['img/' + name] + [f'img/hd/{name[:-5]}-{w}.webp' for w in ex.get(name, [])]:
+        path = os.path.join(site, f)
+        if not os.path.exists(path):
+            return None
+        h.update(f.encode() + b'\0' + open(path, 'rb').read())
+    return h.hexdigest()
+
+
+def row27(sections, letter, site):     # a generated picture is on the page only once J picked it in Shift+V (task 279db527)
+    """J, 19 Nov 2026 18:15 Z, on four generated menu pictures that went live without his eye: "your QA is pretty bad ... What's
+    the gap in our process". A generated picture (photo_sources: made, not a cleaned photo) shown on the page, never only in the
+    Shift+V templates, must be the very files J picked: a line of qa/j-picks.json (written by `approved_gate.py pick` from his
+    words) whose sha256 matches. The pictures live before this row are listed in BEFORE_27 as such, never as his pick; a new one, or a
+    changed one (a re-frame, a re-grade), is refused until he picks it among its candidates."""
+    PS, out = _sources(), []
+    picks = json.load(open(PICKS)) if os.path.exists(PICKS) else {}
+    for w, P, W, ids in worlds(sections):
+        for sid in ids:
+            for p in sections[sid]['pics']:
+                m = re.match(r'img/([a-z0-9-]+\.webp)', p['attrs'].get('src') or '')
+                if not (m and _generated(PS, m[1])):
+                    continue
+                pick, sha = picks.get(m[1]), picture_sha(m[1], site)
+                if BEFORE_27.get(m[1]) == sha and sha:
+                    continue
+                if pick and len((pick.get('j') or '').strip()) < 15:
+                    why = f'{W} "{sid}": {m[1]}: its line in qa/j-picks.json carries no words of J\'s (approved_gate.py pick writes them)'
+                elif not pick:
+                    why = f'{W} "{sid}": {m[1]} is a generated picture J has not picked (offer it as a candidate in Shift+V; qa/j-picks.json)'
+                elif sha != pick.get('sha256'):
+                    why = f'{W} "{sid}": {m[1]} changed since J picked it ({pick.get("at")}): offer the new one as a candidate in Shift+V'
+                else:
+                    continue
+                if why not in out:
+                    out.append(why)
+    return out
+
+
+def pick(argv, site=None, path=None, now=None):
+    """`approved_gate.py pick <picture file> --j "<J's words picking it>"`: records J's pick of a generated picture (row 27), the
+    sha256 of its files as they are now, his words and the time. His words are required, at least 15 characters, as a waiver's."""
+    path = path or PICKS
+    if len(argv) != 3 or argv[1] != '--j' or len(argv[2].strip()) < 15 or re.fullmatch(r'<.*>', argv[2].strip()):
+        print('usage: approved_gate.py pick <picture file> --j "<J\'s own words picking it, at least 15 characters>"', file=sys.stderr)
+        return 2
+    name, sha = argv[0], picture_sha(argv[0], site)
+    if sha is None:
+        print(f'pick: {name} or one of its widths is not in the site (export it first)', file=sys.stderr)
+        return 2
+    picks = json.load(open(path)) if os.path.exists(path) else {}
+    picks[name] = {'sha256': sha, 'j': argv[2].strip(), 'at': now or time.strftime('%Y-%m-%dT%H:%MZ', time.gmtime())}
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(picks, f, indent=1, sort_keys=True, ensure_ascii=False)
+        f.write('\n')
+    print(f'pick: {name} recorded as J\'s pick ({sha[:12]})')
+    return 0
+
+
 ROWS = {
     1: ('each step has its own film, moving, with its own sound', 'mg', row1),
     2: ('each step shows its own real photo', 'mg', row2),
@@ -574,6 +653,7 @@ ROWS = {
     23: ('every picture of the basins room is built on J\'s 25 Oct picture, its organised bottles', 'mgs', row23),
     24: ('each sheet picture\'s clear window opens on its subject; Why Aveda\'s on the shelves of Aveda products', 'mgs', row24),
     26: ('Why Aveda\'s list is F and one option, F synced with the scroll; the second door synced with the scroll', 'mgs', row26),
+    27: ('a generated picture is on the page only once J picked it in Shift+V', 'mgs', row27),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
 MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg', 24: 'mgs', 25: 'mgs'}
@@ -893,4 +973,4 @@ def main(argv, pages=None, message=None, rows=None, measured_off=None, known=Non
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(pick(sys.argv[2:]) if sys.argv[1:2] == ['pick'] else main(sys.argv[1:]))

@@ -51,6 +51,13 @@ SOURCE = {
     'real-styling-stations.webp': 'm:11-styling-stations-clean.jpg',
     'om-menu-signature-color.webp': 'm:om-menu-signature-color-clean.png',   # the bin and the vacuum hose removed (task a8c429a3)
     'om-menu-blonding.webp': 'm:om-menu-blonding-j25.png',     # on J's 25 Oct picture (task 69006a72)
+    'om-pause-rest.webp': 'm:om-pause-guest-j25.png',     # the pause's picture A, under Shift+V (task 279db527), on J's 25 Oct picture
+    # the pause's other candidates under Shift+V (tasks e1a1e009, 279db527), at the model's review size until J picks one
+    'om-pause-exhale.webp': 'm:om-pause-exhale-j25.png',     # S1, on J's 25 Oct picture
+    'om-pause-window.webp': 'm:om-pause-window.png',         # S2
+    'iw-pause-fire-tea.webp': 'm:iw-pause-fire-tea.png',     # I1
+    'iw-pause-coach-fire.webp': 'm:iw-pause-coach-fire-graded.png',     # I2, her own photo re-lit
+    'iw-pause-shelves.webp': 'm:iw-pause-shelves.png',       # I3
     'om-menu-color-correction.webp': 'm:om-menu-color-correction.png',
     'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style-clean.png',
     'om-menu-extensions.webp': 'm:om-menu-extensions.png',
@@ -118,7 +125,8 @@ BASINS_ORIGINALS = {'6-shampoo-basins-5B3A1072.jpg', '12-shampoo-basins-backbar-
 # the bottle zones of J's picture (1280 px x0,y0,x1,y1: left shelf, left basket, right shelf, right basket): what makes it his
 J25_ZONES = [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (888, 232, 1038, 368)]
 # a picture made on J25 and cut from it: the box it was cut from (full-size px), so its pixels can be measured against his
-ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750)}
+ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750), 'om-pause-guest-j25.png': (3100, 300, 8000, 3567),
+             'om-pause-exhale-j25.png': (4650, 1250, 7350, 3050)}      # S1: cut there, then drawn at the model's 1248 px
 
 # every generated master -> what it was made on: 'o:<original>', 'm:<cleaned master>', or None (no photo: a mood film's frame,
 # the meadow). A picture made on the raw original of a cleaned place and then cleaned itself names what was removed in
@@ -129,6 +137,16 @@ BUILT_ON = {
     # Blonding (task 69006a72): a generated guest seated at the right basin of J's 25 Oct picture, his rows behind her (FLUX.2 Klein
     # 4B, BL69 seed 42; pasted by her own outline, align_paste.py), cut at ROOM_CROP and graded (cine_grade.py)
     'om-menu-blonding-j25.png': 'm:6-shampoo-basins-25oct.jpg',
+    # the pause (task 69006a72): the 19 Nov pause guest (PZ5) with J's 25 Oct room laid under her by her own outline
+    # (salon-om-pictures/tools/room_under_guest.py), cut at ROOM_CROP and graded (cine_grade.py)
+    'om-pause-guest-j25.png': 'm:6-shampoo-basins-25oct.jpg',
+    # the pause's candidates (task e1a1e009; Qwen-Image-Edit 2511 on the Mac Studio, her own outline laid on the real room,
+    # salon-om-pictures/tools/cine_try.sh; every try: record ac8238bb)
+    'om-pause-exhale-j25.png': 'm:6-shampoo-basins-25oct.jpg',             # S1: a guest lying back at the basin
+    'om-pause-window.png': 'm:4-styling-chair-window-clean.jpg',           # S2: a guest in the chair by the window
+    'iw-pause-fire-tea.png': 'o:2-lounge-fireplace-5B3A1048.jpg',          # I1: a guest with tea by the fire
+    'iw-pause-shelves.png': 'o:iw-5B3A1044.jpg',                           # I3: a guest by the fire, through the shelves
+    'iw-pause-coach-fire-graded.png': 'o:5-portrait-seated-fireplace-5B3A1413.jpg',     # I2: her photo, re-lit (GRADED)
     'om-menu-color-correction.png': 'o:15-aveda-plant-artwork-5B3A1081.jpg',
     'om-menu-cut-and-style-clean.png': 'm:11-styling-stations-clean.jpg',
     'om-menu-extensions.png': 'o:2-lounge-fireplace-5B3A1048.jpg',
@@ -141,6 +159,8 @@ BUILT_ON = {
     'film-hero-forest.png': None,
     'film-air-curtains.png': None,
 }
+# a master that is a photo only re-lit or graded, nothing drawn into it: a real photo, never a generated picture (no AI label)
+GRADED = {'iw-pause-coach-fire-graded.png'}
 CLEANED_IN_PLACE = {
     'om-menu-signature-color-clean.png': 'the bin by the window and the hair vacuum hose removed, as on the clean copy of photo 4',
 }
@@ -235,19 +255,20 @@ def room_check(master_path, picture_path, crop=None, photo_path=None):
     M = Image.open(master_path).convert('RGB')
     if crop is None:
         crop = (0, 0, M.width, M.height)
-        k = M.width / J.width
+        kf = M.width / J.width
     else:
-        k = 8192 / J.width                                      # J25 is the photographer's 8192 frame
+        kf = 8192 / J.width                                     # J25 is the photographer's 8192 frame
     x0, y0, x1, y1 = crop
+    k = M.width * kf / (x1 - x0)          # the master's px per px of J's picture: kf when it is at full size, less when drawn smaller
     m = np.asarray(M.resize((round(M.width / k), round(M.height / k)), Image.LANCZOS), dtype=np.float64)
     rooms = [np.asarray(J, dtype=np.float64), np.asarray(R, dtype=np.float64)]
     votes = [0, 0]
     for zx0, zy0, zx1, zy1 in J25_ZONES:
-        a, b = max(zx0, x0 / k), max(zy0, y0 / k)
-        c, d = min(zx1, x1 / k), min(zy1, y1 / k)
+        a, b = max(zx0, x0 / kf), max(zy0, y0 / kf)
+        c, d = min(zx1, x1 / kf), min(zy1, y1 / kf)
         if c - a < 20 or d - b < 20:
             continue
-        mz = m[round(b - y0 / k):round(d - y0 / k), round(a - x0 / k):round(c - x0 / k)]
+        mz = m[round(b - y0 / kf):round(d - y0 / kf), round(a - x0 / kf):round(c - x0 / kf)]
         diffs = []
         for room in rooms:
             rz = room[round(b):round(b) + mz.shape[0], round(a):round(a) + mz.shape[1]]

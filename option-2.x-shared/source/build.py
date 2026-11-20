@@ -670,6 +670,7 @@ def page(cfg):
     import section_options as SO
     store = SO.store()          # the options' templates (task e5325977): outside both worlds, before them; none, no change
     if store: body = body.replace('<main id="main-salon" data-world="salon">', store + '<main id="main-salon" data-world="salon">', 1)
+    if '-' in vkey: body = SO.pictures(body, MP.PICTURE_OPTIONS)      # M/G/S: a picture's options, in the same store (task 279db527)
     if '-' in vkey and 'data-sheet=' in body: body += f'<script>\n{open(V + "sheet.js").read()}</script>\n'   # the lenticular sheet, only on a page that has one
     css = BASE_CSS + '\n' + ADD_CSS + '\n' + TW_CSS
     ids = [d['cta']['id'] if 'cta' in d else d['id'] for _, d in cfg['salon']]     # the salon world's section ids
