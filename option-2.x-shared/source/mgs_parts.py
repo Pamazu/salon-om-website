@@ -162,6 +162,20 @@ PICTURE_OPTIONS = {
              alt='A generated guest leaning back on the striped bench by the lit fireplace, eyes closed, a notebook on her lap, seen through the shelves',
              note='A guest leaning back by the fire, a notebook on her lap, seen through the shelves.'),
     ]),
+    # the service pictures' candidates (task b1dd24c9; J 19 Nov 18:15 Z: "think like a professional photographer"): each one
+    # Qwen-Image-Edit 2511 on the Mac Studio, finished with salon-om-pictures/tools/room_restore.py (the model's picture, the
+    # photographer's pixels laid back wherever the two rooms agree), checked at 1:1 (face, hands, every contact, light against
+    # the room); every try in Test Lab EXP-salonom-menu-guest-1
+    'om-menu-blonding.webp': dict(name='Blonding', live='Today’s: the guest at the basin', options=[
+        dict(key='chair', label='In the styling chair, under the blonde poster', img='om-menu-blonding-bl8b1.webp', ai=AI_GUEST, pos='47% 35%',
+             alt='A generated guest with long golden-blonde hair in a styling chair under an Aveda poster at Salon OM, seen from behind',
+             note='Seen from behind, her golden hair lit by the blind, feet on the footrest; the real poster and room.'),
+    ]),
+    'om-menu-color-correction.webp': dict(name='Color Correction', live='Today’s: the guest by the Aveda canvas', options=[
+        dict(key='bar', label='At the colour bar', img='om-menu-color-correction-cc11a1.webp', ai=AI_GUEST, pos='62% 45%',
+             alt='A generated guest with even, glossy medium-brown hair in profile at the colour bar at Salon OM',
+             note='Chest up in profile at the colour wall, her hair one even glossy brown.'),
+    ]),
 }
 
 

@@ -59,6 +59,9 @@ SOURCE = {
     'iw-pause-coach-fire.webp': 'm:iw-pause-coach-fire-graded.png',     # I2, her own photo re-lit
     'iw-pause-shelves.webp': 'm:iw-pause-shelves.png',       # I3
     'om-menu-color-correction.webp': 'm:om-menu-color-correction.png',
+    # service candidates under Shift+V (task b1dd24c9), at the model's review size until J picks one
+    'om-menu-blonding-bl8b1.webp': 'm:om-menu-blonding-bl8b1.png',               # Blonding BL8b seed 1
+    'om-menu-color-correction-cc11a1.webp': 'm:om-menu-color-correction-cc11a1.png',     # Color Correction CC11A seed 1
     'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style-clean.png',
     'om-menu-extensions.webp': 'm:om-menu-extensions.png',
     'om-menu-finishing-touches.webp': 'm:om-menu-finishing-touches.png',
@@ -148,6 +151,10 @@ BUILT_ON = {
     'iw-pause-shelves.png': 'o:iw-5B3A1044.jpg',                           # I3: a guest by the fire, through the shelves
     'iw-pause-coach-fire-graded.png': 'o:5-portrait-seated-fireplace-5B3A1413.jpg',     # I2: her photo, re-lit (GRADED)
     'om-menu-color-correction.png': 'o:15-aveda-plant-artwork-5B3A1081.jpg',
+    # service candidates (task b1dd24c9; Qwen-Image-Edit 2511 on the Mac Studio, then salon-om-pictures/tools/room_restore.py: the
+    # model's picture with the photographer's pixels laid back wherever the two rooms agree; every try in Test Lab EXP-salonom-menu-guest-1)
+    'om-menu-blonding-bl8b1.png': 'm:11-styling-stations-clean.jpg',          # a guest in the styling chair under the blonde poster
+    'om-menu-color-correction-cc11a1.png': 'm:10-color-bar-clean.jpg',        # a guest in profile at the colour bar
     'om-menu-cut-and-style-clean.png': 'm:11-styling-stations-clean.jpg',
     'om-menu-extensions.png': 'o:2-lounge-fireplace-5B3A1048.jpg',
     'om-menu-finishing-touches.png': 'o:8-glo-skincare-display-5B3A1070.jpg',
