@@ -5,6 +5,12 @@
 //          step's sound change (from its section arriving to its own sound audible; the lowest combined level between)
 //   films: from the page opening (hero) or the section arriving (a step) to the film moving (currentTime > 0, shown)
 //   node speed.mjs <out.json> [net: fast|4g|slow] [m,g,s] [1440,390]
+// STEPS=1 (task 5cf1107e, J 19 Nov: "It takes to long to load all images especially in the 5 steps sections, brakes the user
+// experience"): a reader's walk through the five steps instead, at the device's own pixel density (2 on a Mac, 3 on a phone):
+// the opening, its click 3 s on, then the visit and each step in turn, READ ms on each (4000); per step, from its arrival to
+// its photo shown (loaded and decoded), its film moving and its first picture of any kind, the photo's file, and the frames
+// over 50 ms while there; then, in a fresh browser, a direct jump from the opening to the fourth step (the rail). S, which has
+// no step sections, gets its visit's five pictures.
 import fs from 'node:fs'; import http from 'node:http'; import http2 from 'node:http2'; import os from 'node:os'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
 import * as pw from 'playwright'; import { TYPES, jump } from './lib.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -130,13 +136,84 @@ async function one(v, w, box) {
   await ctx.close(); await b.close();
   return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2), ...(LOG ? { marks, sound, requests: reqs } : {}) };
 }
+// STEPS=1: one step's moment, polled from its arrival: photo = its own picture loaded and decoded; film = moving; first = any
+// picture in its frame (the film's poster, the photo or the film)
+const READ = +(process.env.READ || 4000), STEPS = process.env.STEPS === '1';
+const FRAMES = () => { const F = window.__frames = []; let last = 0; const f = (t) => { if (last && t - last > 50) F.push([Math.round(t), Math.round(t - last)]); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); };
+async function at(p, id, t0) {
+  await p.evaluate((id) => { const sec = document.getElementById(id); sec._t = performance.now();
+    sec.querySelectorAll('img').forEach((im) => { im._dec = null; const k = () => { if (im._dec == null && im.complete && im.naturalWidth) im.decode().then(() => { im._dec = performance.now(); }, () => {}); };
+      k(); im.addEventListener('load', k); }); }, id);
+  const o = { id, photoMs: null, filmMs: null, firstMs: null };
+  for (let i = 0; i < 2000 && (o.photoMs === null || o.filmMs === null); i++) {
+    const s = await p.evaluate((id) => { const sec = document.getElementById(id), T = sec._t;
+      const top = sec.querySelector('.ch__top img'), v = sec.querySelector('video[data-src]'), poster = sec.querySelector('.s__zoom > img');
+      const pics = top ? [top] : [...sec.querySelectorAll('img')].filter((im) => { const r = im.getBoundingClientRect(); return r.width > 40 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight; });
+      const dec = (im) => im && im._dec != null ? im._dec - T : null;
+      const photo = pics.length && pics.every((im) => im._dec != null) ? Math.max(...pics.map(dec)) : null;
+      const firstPic = [poster, ...pics].map(dec).filter((x) => x !== null);
+      return { photo, nopics: !pics.length, film: v ? (v.currentTime > 0.05 && !v.paused) : null, first: firstPic.length ? Math.min(...firstPic) : null,
+        src: pics.map((im) => (im.currentSrc || '').split('/').pop().split('?')[0]).join(' '), now: performance.now() - T }; }, id);
+    if (o.photoMs === null && s.photo !== null) o.photoMs = Math.max(0, Math.round(s.photo));
+    if (s.nopics) o.photoMs = -1;
+    if (o.filmMs === null && s.film) o.filmMs = Math.round(s.now);
+    if (s.film === null) o.filmMs = -1;
+    if (o.firstMs === null && (s.first !== null || s.film)) o.firstMs = Math.max(0, Math.round(s.first !== null ? s.first : s.now));
+    o.src = s.src;
+    if (Date.now() - t0 > 15000) break;
+    await p.waitForTimeout(25);
+  }
+  if (o.filmMs === -1) o.filmMs = undefined;
+  if (o.photoMs === -1) o.photoMs = undefined;
+  return o;
+}
+// a browser closed while its films play can stop answering (WebKit, 20 Nov: every 1440 case hung after its walk): each close
+// gets 5 s, then the case goes on (the node process ends every browser it started when it exits)
+const shut = (ctx, b) => Promise.race([(async () => { await ctx.close().catch(() => {}); await b.close().catch(() => {}); })(), new Promise((ok) => setTimeout(ok, 5000))]);
+async function steps(v, w, box) {
+  line = 0; reqs = []; held = new Set(); tCase = Date.now();
+  const h = w < 700 ? 844 : w > 2000 ? Math.round(w * 9 / 16) : 900;
+  const open = async () => {
+    const b = box.b = await pw.webkit.launch();
+    const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: h }, deviceScaleFactor: w < 700 ? 3 : 2, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
+    await ctx.addInitScript(PROBE); await ctx.addInitScript(FRAMES);
+    const p = await ctx.newPage(); await p.goto(`${BASE}/${v}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    await p.waitForTimeout(3000); await p.mouse.click(w / 2, 300); await p.waitForTimeout(1500);
+    return { b, ctx, p };
+  };
+  let { b, ctx, p } = await open();
+  const ids = await p.evaluate(() => { const ch = [...document.querySelectorAll('main[data-world="salon"] > .s.ch')].map((s) => s.id);
+    return ch.length ? ['visit', ...ch] : ['visit']; });
+  const walk = [];
+  for (const id of ids) {
+    const top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
+    const f0 = await p.evaluate(() => window.__frames.length);
+    await jump(p, top); const t0 = Date.now();
+    const o = await at(p, id, t0);
+    await p.waitForTimeout(Math.max(0, READ - (Date.now() - t0)));
+    const fr = await p.evaluate((n) => window.__frames.slice(n).map((x) => x[1]), f0);
+    walk.push({ ...o, longFrames: fr.length, worstFrameMs: fr.length ? Math.max(...fr) : 0 });
+    if (LOG) console.error(`  ${v} ${w} ${id}: ${JSON.stringify(walk[walk.length - 1])}`);
+  }
+  await shut(ctx, b);
+  let direct = null;
+  if (ids.length > 3) {
+    reqs = []; held = new Set(); line = 0; tCase = Date.now();
+    ({ b, ctx, p } = await open());
+    const id = ids[4], top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
+    await jump(p, top); direct = await at(p, id, Date.now());
+    if (LOG) console.error(`  ${v} ${w} jump to ${id}: ${JSON.stringify(direct)}`);
+    await shut(ctx, b);
+  }
+  return { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct, ...(LOG ? { requests: reqs } : {}) };
+}
 // a case gets 150 s (a full case takes some 25-40 s); one that runs out is closed and tried once more, then written as hung
 for (const v of VS.split(',')) for (const w of WS.split(',').map(Number)) {
   let row = null;
   for (let attempt = 1; attempt <= 2 && !row; attempt++) {
     const box = {}; let timer;
-    row = await Promise.race([one(v, w, box).catch((e) => ({ v, w, net: NET, error: String(e.message || e).slice(0, 160) })),
-      new Promise((ok) => { timer = setTimeout(() => ok(null), 150000); })]);
+    row = await Promise.race([(STEPS ? steps : one)(v, w, box).catch((e) => ({ v, w, net: NET, error: String(e.message || e).slice(0, 160) })),
+      new Promise((ok) => { timer = setTimeout(() => ok(null), STEPS ? 200000 : 150000); })]);
     clearTimeout(timer);
     if (!row || row.error) { if (box.b) box.b.close().catch(() => {}); if (attempt === 1) { console.log(`${v} ${w}: ${row ? row.error : 'hung 150 s'}; trying once more`); row = null; } }
   }

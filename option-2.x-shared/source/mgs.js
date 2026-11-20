@@ -348,7 +348,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     if (ground) {      // the glass header's veil (mgs.css .hdr-glass): the section's ground, or its tone's when it paints none
       var bg = getComputedStyle(ground).backgroundColor;
       if (bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg)) bg = ground.getAttribute('data-tone') === 'dark' ? 'var(--umber)' : 'var(--clay)';
-      root.style.setProperty('--hdr-ground', bg);
+      // on the veil itself, and only when it changes (task 5cf1107e): set on the root, every element of the page inherited it
+      // and was styled again as a tall section came under the header (iOS Safari: a 57-85 ms frame as each step pinned)
+      var hg = document.querySelector('.hdr-glass');
+      if (hg && hg._bg !== bg) { hg._bg = bg; hg.style.setProperty('--hdr-ground', bg); }
     }
     root.classList.toggle('hdr-ground', !!ground);
     snap(!tall);
@@ -494,6 +497,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      again two screens before the person reaches it, from the browser's cache; its photo stands in its frame meanwhile,
      as it does before any film arrives. */
   function release(v) {
+    v._pfrom = 0; v._dec = false;      // its photo is decoded ahead again when its step comes back near (task 5cf1107e)
     if (!v._mine) return; v._mine = false;
     try { v.pause(); } catch (e) {}
     v.classList.remove('is-on');
@@ -510,12 +514,39 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      measured on one shared 4G line, coming near the first step attached three step films at once (3.8 + 5.9 + 2.0 MB) and
      the step's own film moved only after 8.4 s. So of the films within two screens, every film on screen loads at once, and
      of the others only the nearest, the next one once it can play (or 4 s on, so a stalled film never holds the rest). */
-  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom < 0 ? -r.bottom : r.top > innerHeight ? r.top - innerHeight : 0; }
+  /* a step's own photo first, then its film (task 5cf1107e, J 19 Nov: "It takes to long to load all images especially in the
+     5 steps sections, brakes the user experience"): measured on one shared 4G line, a jump to the fourth step waited 12 s for
+     its photo and 9.5 s for its film, behind all five steps' photos (asked from the page's start), three films and four
+     sounds; the sections just above and below the screen counted as on it, so their films loaded at once too. So a step's
+     photo loads only as its step comes near (build.chapter: loading="lazy"), in this same nearest-first line: its photo,
+     decoded ahead so painting it never holds a frame, then its film, then the next step's. A section beside the screen is
+     not on it. */
+  function away(v) { var r = (v.closest('.s') || v).getBoundingClientRect(); if (!r.width && !r.height) return 1e9; return r.bottom <= 0 ? 1 - r.bottom : r.top >= innerHeight ? 1 + r.top - innerHeight : 0; }
   function ready(v) { return !v.paused || v.readyState >= 3 || (v._img && v._img.complete) || performance.now() - v._from > 4000; }
+  function photo(v) { if (v._ph === undefined) { var s = v.closest('.s'); v._ph = (s && s.querySelector('.ch__top img')) || null; } return v._ph; }
+  function photoReady(v) { var im = photo(v); return !im || (im.complete && im.naturalWidth > 0 && v._dec) || performance.now() - v._pfrom > 4000; }
+  function ask(v) {
+    var im = photo(v); if (!im || v._pfrom) return; v._pfrom = performance.now();
+    var done = function () { v._dec = true; pump(); };
+    if (im.loading === 'lazy') im.loading = 'eager';
+    if (im.decode) im.decode().then(done, done); else if (im.complete) done(); else { im.addEventListener('load', done); im.addEventListener('error', done); }
+  }
+  /* and while nothing near waits, the steps further on load their photos one at a time in the page's order (loaded, not
+     decoded, so a far photo holds no memory), once the opening's film moves or 6 s on: measured at 3230 on 4G, near-first
+     alone reached the fourth step 10 s before its 1.9 MB photo, which the page's start used to fetch */
+  function opened() { var hv = films[0]; return performance.now() > 6000 || (hv && !hv.paused && hv.currentTime > .3); }
+  function later() {
+    var w = films.filter(function (v) { var im = photo(v), m = v.closest('main'); return im && m && !m.hidden; });
+    if (w.some(function (v) { var im = photo(v); return v._lfrom && !im.complete && performance.now() - v._lfrom < 8000; })) return;
+    var nx = w.filter(function (v) { return !v._lfrom && !v._pfrom && !photo(v).complete; })[0];
+    if (nx) { nx._lfrom = performance.now(); var im = photo(nx); if (im.loading === 'lazy') im.loading = 'eager'; im.addEventListener('load', pump); im.addEventListener('error', pump); }
+  }
   function pump() {
     if (calm) return; var busy = false;
     films.filter(function (v) { return v._near; }).map(function (v) { return [away(v), v]; }).sort(function (a, b) { return a[0] - b[0]; })
-      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
+      .forEach(function (x) { var v = x[1]; if (x[0] > 0 && busy) return; ask(v); if (!photoReady(v)) { busy = true; return; }
+        if (!v._mine) { v._from = performance.now(); attach(v); } if (!ready(v)) busy = true; });
+    if (!busy && opened()) later();
   }
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { of.get(e.target).forEach(function (v) { v._near = e.isIntersecting; if (!v._near) release(v); }); });
@@ -556,7 +587,9 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (!p) return null;
       var n = +el.getAttribute('data-flute') || 12;
       if (el.children.length !== n) { el.textContent = ''; for (var k = 0; k < n; k++) el.appendChild(document.createElement('i')); }
-      return { el: el, scope: el.closest('section') || p, img: p.querySelector('img'), ribs: [].slice.call(el.children), src: '',
+      // a glass held in a step's sticky frame (the five steps' sheet, task 5cf1107e) follows the frame, which stands still while
+      // the step is pinned, so its ribs are drawn once there instead of on every scroll frame (iOS Safari: 4 frames over 50 ms)
+      return { el: el, scope: el.closest('.ch__stick') || el.closest('section') || p, img: p.querySelector('img'), ribs: [].slice.call(el.children), src: '',
                bend: +(el.getAttribute('data-flute-bend') || 14), mag: +(el.getAttribute('data-flute-mag') || 1.06) };
     }).filter(Boolean);
     q();
@@ -592,21 +625,43 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
 
 /* the pause's scenes (mgs_sections.pause_scene, offered by the option switcher, task e5325977; Designer 3's r1 page and the
    door options, task a78e6208): B's breath, the room opening as you scroll in and the question arriving on the exhale; D2's
-   step through, the door growing from where the default draws it until it fills the screen. Found again after every swap. */
+   step through, the door growing from where the default draws it until it fills the screen. Found again after every swap.
+   The five steps' scroll options too (build.chapter ch--scroll, task 5cf1107e; J 19 Nov: "play with scroll to switch between
+   the nature video and the other video ... Just like in the take a breath section"): the same progress through the section;
+   the step's content is held on screen in one sticky frame (.ch__stick, put in here and taken out again when today's comes
+   back, its elements moved, never redrawn, so its film plays on) and --e says how far its photo has handed over to its film
+   (0 the photo, 1 the film); mgs.css draws each way. The sheet's ribs are the fluted glass (data-flute) over the photo. */
 (function () {
-  var breaths = [], throughs = [], queued = false;
+  var breaths = [], throughs = [], steps = [], queued = false, RIBS = 18;
   var calm = function () { return document.documentElement.getAttribute('data-motion') === 'calm' || matchMedia('(prefers-reduced-motion: reduce)').matches; };
   function find() {
     breaths = [].slice.call(document.querySelectorAll('.ps--breath')).map(function (s) {
       return { s: s, pic: s.querySelector('.ps__pic'), cue: s.querySelector('.ps__cue') };
     });
     throughs = [].slice.call(document.querySelectorAll('.ps--through'));
+    var ribbed = false;
+    [].forEach.call(document.querySelectorAll('.s.ch.ch--stack'), function (s) {
+      var on = s.classList.contains('ch--scroll'), st = s.querySelector(':scope > .ch__stick');
+      if (on && !st) { st = document.createElement('div'); st.className = 'ch__stick'; while (s.firstChild) st.appendChild(s.firstChild); s.appendChild(st); }
+      else if (!on && st) { while (st.firstChild) s.insertBefore(st.firstChild, st); s.removeChild(st); s.style.removeProperty('--e'); }
+      var top = s.querySelector('.ch__top'), rb = top && top.querySelector(':scope > .ch__ribs'), want = s.classList.contains('ch--scroll-sheet');
+      if (want && top && !rb) {
+        rb = document.createElement('div'); rb.className = 'ch__ribs'; rb.setAttribute('aria-hidden', 'true');
+        rb.setAttribute('data-flute', RIBS); rb.setAttribute('data-flute-bend', '10'); rb.setAttribute('data-flute-mag', '1.03');
+        for (var k = 0; k < RIBS; k++) { var i = document.createElement('i'); i.style.setProperty('--j', (k / (RIBS - 1)).toFixed(3)); rb.appendChild(i); }
+        top.appendChild(rb); ribbed = true;
+      } else if (!want && rb) top.removeChild(rb);
+    });
+    steps = [].slice.call(document.querySelectorAll('.s.ch--scroll'));
+    // the fluted glass finds its ribs when a swap is announced; ribs put in at load (a remembered option) are announced here
+    if (ribbed && !loaded) document.dispatchEvent(new CustomEvent('om:swap', { detail: { key: 'steps', ribs: true } }));
     q();
   }
   var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  // how far the reader is through a section taller than the screen: 0 its top at the screen's top, 1 its end at the screen's end
+  function prog(s) { var r = s.getBoundingClientRect(), span = r.height - innerHeight; return r.height === 0 || span <= 0 ? null : Math.min(1, Math.max(0, -r.top / span)); }
   function breath(x) {
-    var r = x.s.getBoundingClientRect(), span = r.height - innerHeight; if (r.height === 0 || span <= 0) return;
-    var p = Math.min(1, Math.max(0, -r.top / span));
+    var p = prog(x.s); if (p === null) return;
     if (calm() || document.documentElement.hasAttribute('data-shot')) p = 1;
     var inh = ease(Math.min(1, p / .5)), exh = ease(Math.min(1, Math.max(0, (p - .5) / .35))), narrow = innerWidth < 760;
     x.s.style.setProperty('--ct', (48 * (1 - inh)) + '%');
@@ -621,8 +676,8 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   // the "Book your visit" bar; on a phone centred under the words); at the end it stands wider than the screen is tall,
   // centred, its arch above the top edge, so the room fills the view
   function through(s) {
-    var r = s.getBoundingClientRect(), H = innerHeight, W = innerWidth, span = r.height - H; if (r.height === 0 || span <= 0) return;
-    var p = Math.min(1, Math.max(0, -r.top / span)), still = calm();
+    var H = innerHeight, W = innerWidth, p = prog(s); if (p === null) return;
+    var still = calm();
     if (still) p = 0;
     var e = ease(Math.min(1, p / .8)), cs = getComputedStyle(s), st = s.querySelector('.ps__stick'), g = st ? parseFloat(getComputedStyle(st).paddingLeft) || 0 : 0;
     var w0, h0, l0, t0;
@@ -641,9 +696,17 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     s.style.setProperty('--co', Math.min(1, Math.max(0, (p - .7) / .2)).toFixed(3));      // the last line, once you stand in the room
     s.classList.toggle('is-still', still);
   }
-  function frame() { queued = false; breaths.forEach(breath); throughs.forEach(through); }
+  // a step: the photo held alone for the first part of the scroll (its words read on it), then handing over to the film, which
+  // has the last part to itself; calm motion and screenshots keep the photo (as today's step does under reduced motion)
+  function step(s) {
+    var p = prog(s); if (p === null) { if (s._e) { s._e = null; s.style.removeProperty('--e'); } return; }
+    if (calm() || document.documentElement.hasAttribute('data-shot')) p = 0;
+    var e = ease(Math.min(1, Math.max(0, (p - .12) / .73))).toFixed(4);
+    if (s._e !== e) { s._e = e; s.style.setProperty('--e', e); }
+  }
+  function frame() { queued = false; breaths.forEach(breath); throughs.forEach(through); steps.forEach(step); }
   function q() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
   addEventListener('scroll', q, { passive: true }); addEventListener('resize', q);
-  document.addEventListener('om:swap', function () { setTimeout(find, 0); });
-  find();
+  document.addEventListener('om:swap', function (e) { if (e.detail && e.detail.ribs) return; find(); setTimeout(find, 0); });
+  var loaded = false; find(); loaded = true;
 })();

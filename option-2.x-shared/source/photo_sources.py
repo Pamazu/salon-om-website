@@ -59,9 +59,15 @@ SOURCE = {
     'iw-pause-coach-fire.webp': 'm:iw-pause-coach-fire-graded.png',     # I2, her own photo re-lit
     'iw-pause-shelves.webp': 'm:iw-pause-shelves.png',       # I3
     'om-menu-color-correction.webp': 'm:om-menu-color-correction.png',
+    # service candidates under Shift+V (task b1dd24c9), at the model's review size until J picks one
+    'om-menu-color-correction-cc11a1.webp': 'm:om-menu-color-correction-cc11a1.png',     # Color Correction CC11A seed 1
+    'om-menu-extensions-ex11a2.webp': 'm:om-menu-extensions-ex11a2.png',         # Extensions EX11A seed 2
     'om-menu-cut-and-style.webp': 'm:om-menu-cut-and-style-clean.png',
     'om-menu-extensions.webp': 'm:om-menu-extensions.png',
     'om-menu-finishing-touches.webp': 'm:om-menu-finishing-touches.png',
+    'om-menu-finishing-touches-ft12a1.webp': 'm:om-menu-finishing-touches-ft12a1.png',     # its Shift+V candidate FT12A seed 1
+    'om-menu-blonding-bl9b4.webp': 'm:om-menu-blonding-bl9b4.png',             # Blonding BL9B seed 4
+    'om-menu-blonding-bl10a2.webp': 'm:om-menu-blonding-bl10a2-j25.png',       # Blonding BL10A seed 2, at the basin of J's 25 Oct picture
     'meadow.webp': 'm:meadow.png',
     # the two heroes' stills while the films are off (build.FILMS_SHOWN, task 5479dd6c): the sharpest frame of the film, upscaled
     # x4 (SeedVR2 or Real-ESRGAN on the Mac Studio); the master PNG lives with the other masters, not in git
@@ -126,7 +132,8 @@ BASINS_ORIGINALS = {'6-shampoo-basins-5B3A1072.jpg', '12-shampoo-basins-backbar-
 J25_ZONES = [(590, 180, 740, 292), (600, 290, 732, 402), (860, 90, 1085, 218), (888, 232, 1038, 368)]
 # a picture made on J25 and cut from it: the box it was cut from (full-size px), so its pixels can be measured against his
 ROOM_CROP = {'om-menu-blonding-j25.png': (4850, 450, 7050, 3750), 'om-pause-guest-j25.png': (3100, 300, 8000, 3567),
-             'om-pause-exhale-j25.png': (4650, 1250, 7350, 3050)}      # S1: cut there, then drawn at the model's 1248 px
+             'om-pause-exhale-j25.png': (4650, 1250, 7350, 3050),      # S1: cut there, then drawn at the model's 1248 px
+             'om-menu-blonding-bl10a2-j25.png': (4623, 761, 6807, 4037)}      # BL10A seed 2 (task b1dd24c9): cut there, drawn at 832 px
 
 # every generated master -> what it was made on: 'o:<original>', 'm:<cleaned master>', or None (no photo: a mood film's frame,
 # the meadow). A picture made on the raw original of a cleaned place and then cleaned itself names what was removed in
@@ -148,9 +155,18 @@ BUILT_ON = {
     'iw-pause-shelves.png': 'o:iw-5B3A1044.jpg',                           # I3: a guest by the fire, through the shelves
     'iw-pause-coach-fire-graded.png': 'o:5-portrait-seated-fireplace-5B3A1413.jpg',     # I2: her photo, re-lit (GRADED)
     'om-menu-color-correction.png': 'o:15-aveda-plant-artwork-5B3A1081.jpg',
+    # service candidates (task b1dd24c9; Qwen-Image-Edit 2511 on the Mac Studio, then salon-om-pictures/tools/room_restore.py: the
+    # model's picture with the photographer's pixels laid back wherever the two rooms agree; every try in Test Lab EXP-salonom-menu-guest-1)
+    'om-menu-color-correction-cc11a1.png': 'm:10-color-bar-clean.jpg',        # a guest in profile at the colour bar
+    'om-menu-extensions-ex11a2.png': 'o:7-aveda-product-shelves-5B3A1050.jpg',    # a guest from behind between the Aveda shelves
     'om-menu-cut-and-style-clean.png': 'm:11-styling-stations-clean.jpg',
     'om-menu-extensions.png': 'o:2-lounge-fireplace-5B3A1048.jpg',
     'om-menu-finishing-touches.png': 'o:8-glo-skincare-display-5B3A1070.jpg',
+    # FT12A (task b1dd24c9): J's liked guest restaged by her own outline into a portrait crop of photo 8
+    # (salon-om-pictures/tools/guest_restage.py), blended in by the model, then room_restore.py
+    'om-menu-finishing-touches-ft12a1.png': 'o:8-glo-skincare-display-5B3A1070.jpg',
+    'om-menu-blonding-bl9b4.png': 'm:11-styling-stations-clean.jpg',          # a guest in the styling chair under the blonde poster
+    'om-menu-blonding-bl10a2-j25.png': 'm:6-shampoo-basins-25oct.jpg',        # a guest reclined at the right basin of J's 25 Oct picture
     'om-pause-guest-25oct.png': 'm:6-shampoo-basins-tidied.jpg',       # NOT J's picture: made on the tidied photo (task 69006a72)
     # photo 6 with the lamp, bin and vacuum removed and its own small items tidied away (cdfa655, T6/assemble.sh): saved on 19 Nov
     # as '6-shampoo-basins-25oct-clean.jpg', but it is not J's 25 Oct picture (its bottles are the photo's, not his rows)

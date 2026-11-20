@@ -3,7 +3,7 @@
 // the page's own options (the world switch) still switch, the phone's handle opens it, and B scrolls through with the page's
 // snap on. A picture's options (task 279db527): the pause's picture lists its candidates under the section's options, a choice
 // swaps every copy in place with its AI label, survives a section option, is kept in the address and this browser; the menu's
-// path (a picture opened by its row, in a panel shared by six) on a fixture page, since no service picture has candidates yet.
+// path (a picture opened by its row, in a panel shared by six) on a fixture page, Blonding's options replaced by two known ones.
 // WebKit (WEBKIT=<path> for the pool's pinned build). Writes <out>/result.json and screenshots.
 //   node options.mjs [out]
 import * as pw from 'playwright';
@@ -189,7 +189,8 @@ const menu = (p) => p.evaluate(() => {
   const p = await page(ctx, `${base}/x/`, 'fixture-1440');
   await toPause(p, 'services'); await wait(p, 2500); await p.click('#services .mn__row[data-i="0"]'); await wait(p, 900);
   await p.keyboard.press('Shift+V'); await wait(p, 600); let s = await state(p);
-  ok('menu 1440: the section lists Blonding\'s picture options', s.pics.join() === 'live*,gen,real', s.pics);
+  // Blonding's group first (PICTURE_OPTIONS order); a service picture with real candidates lists its own group after it (task b1dd24c9)
+  ok('menu 1440: the section lists Blonding\'s picture options', s.pics.slice(0, 3).join() === 'live*,gen,real', s.pics);
   await p.click('#opt-panel [data-pic][data-k="gen"]'); await wait(p, 2200); let m = await menu(p);
   ok('menu 1440: a candidate opens its row and swaps both copies, labelled', m.panelOn && m.srcs.every((x) => x === 'om-pause-rest.webp') && m.panelAi && m.panelMark > .9 && m.rowMark === 'Guest made with AI' && m.pos === '60% 40%' && /pic-om-menu-blonding=gen/.test(m.url), m);
   await shot(p, 'menu-1440-blonding-gen');
