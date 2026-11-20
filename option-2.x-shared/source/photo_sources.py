@@ -38,8 +38,8 @@ SOURCE = {
     'real-maggie-outdoor-turn.webp': 'o:iw-5B3A1373.jpg',
     'real-maggie-outdoor-wide.webp': 'o:iw-5B3A1381.jpg',
     'real-lounge-wide.webp': 'o:iw-5B3A1044.jpg',
-    # Inner Work's second door (task 69006a72): the shoot's photo 16 (was real-basins-poster.webp, photo 1059's basins wall tidied,
-    # not J's 25 Oct picture of that room)
+    # the shoot's photo 16, a stylist by her mirror: Inner Work's second door from 7fdb392 (task 69006a72) until 20 Nov, when the door
+    # took J's cleaned-up basins picture, real-shampoo-basins.webp (task 95e37a41); on no page now
     'real-stylist-mirror.webp': 'o:16-portrait-team-member-mirror-5B3A1438.jpg',
     'real-maggie-salon-wide.webp': 'o:iw-5B3A1300.jpg',
     'real-maggie-outdoor-steps.webp': 'o:iw-5B3A1385.jpg',
