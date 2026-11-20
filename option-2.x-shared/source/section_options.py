@@ -108,7 +108,10 @@ def pictures(body, declared):
         marks = sorted([(m.start(), m.group(1)) for m in re.finditer(r'<section\b[^>]*\sid="([^"]+)"', body)] +
                        [(m.start(), m.group(1)) for m in re.finditer(r'<template data-opt-for="([^"]+)"', body)])
         opts = p.get('options') or []
-        tag = re.compile(r'<img\b(?=[^>]*\ssrc="img/' + re.escape(name) + r'")')
+        # only (task b1dd24c9): the class of the one copy its options swap (Finishing Touches: 'mn__img', the desktop panel), the
+        # other copies keep today's picture (its phone row, whose 3:2 already shows it whole); default: every copy
+        only = r'(?=[^>]*\sclass="[^"]*\b' + re.escape(p['only']) + r'\b)' if p.get('only') else ''
+        tag = re.compile(r'<img\b(?=[^>]*\ssrc="img/' + re.escape(name) + r'")' + only)
         at = [m.start() for m in tag.finditer(body)]
         if not opts or not at:
             continue

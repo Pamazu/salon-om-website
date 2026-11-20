@@ -27,5 +27,15 @@ class Pictures(unittest.TestCase):
             SO.pictures(body, {'one.webp': OPT('one')})
 
 
+    def test_only_swaps_the_one_copy_it_names(self):
+        # task b1dd24c9: Finishing Touches' options swap the tall desktop panel (mn__img) only; its phone row (mn__rph) keeps
+        # today's picture, whose 3:2 already shows it whole
+        body = ('<main id="main-salon"><section class="s" id="a"><img class="mn__img is-on" src="img/ft.webp" alt="">'
+                '<figure class="mn__rph"><img src="img/ft.webp" alt=""></figure></section></main>')
+        out = SO.pictures(body, {'ft.webp': dict(OPT('ft'), only='mn__img')})
+        self.assertEqual(out.count('data-pic="ft.webp"'), 1)
+        self.assertIn('<img data-pic="ft.webp" class="mn__img', out)
+
+
 if __name__ == '__main__':
     unittest.main()

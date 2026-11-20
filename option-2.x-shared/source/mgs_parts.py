@@ -167,9 +167,9 @@ PICTURE_OPTIONS = {
     # photographer's pixels laid back wherever the two rooms agree), checked at 1:1 (face, hands, every contact, light against
     # the room); every try in Test Lab EXP-salonom-menu-guest-1
     'om-menu-blonding.webp': dict(name='Blonding', live='Today’s: the guest at the basin', options=[
-        dict(key='chair', label='In the styling chair, under the blonde poster', img='om-menu-blonding-bl8b1c.webp', ai=AI_GUEST, pos='50% 42%',
+        dict(key='chair', label='In the styling chair, under the blonde poster', img='om-menu-blonding-bl9b4.webp', ai=AI_GUEST, pos='42% 38%',
              alt='A generated guest with long golden-blonde hair in a styling chair under an Aveda poster at Salon OM, seen from behind',
-             note='Seen from behind, her golden hair lit by the blind; the real poster and room.'),
+             note='Seen from behind in the chair, her long golden hair lit by the blind; the real poster and room.'),
     ]),
     'om-menu-color-correction.webp': dict(name='Color Correction', live='Today’s: the guest by the Aveda canvas', options=[
         dict(key='bar', label='At the colour bar', img='om-menu-color-correction-cc11a1.webp', ai=AI_GUEST, pos='62% 45%',
@@ -180,6 +180,13 @@ PICTURE_OPTIONS = {
         dict(key='shelves', label='Between the Aveda shelves, by the window', img='om-menu-extensions-ex11a2.webp', ai=AI_GUEST, pos='50% 45%',
              alt='A generated guest with very long, full, warm-brown waves, seen from behind between the Aveda shelves at Salon OM',
              note='Seen from behind, long full waves down her back lit by the windows; the real shelves and products.'),
+    ]),
+    # Finishing Touches (J 19 Nov 18:15 Z: "not showing enough the products on the right"): a framing per width. Its options
+    # swap the tall desktop panel only (only='mn__img'); the phone row keeps the liked picture, which its 3:2 shows whole
+    'om-menu-finishing-touches.webp': dict(name='Finishing Touches, desktop', live='Today’s: your liked picture, framed on her', only='mn__img', options=[
+        dict(key='portrait', label='The same guest, framed for the tall panel', img='om-menu-finishing-touches-ft12a1.webp', ai=AI_GUEST, pos='45% 50%',
+             alt='A generated guest with softly shaped brows holding a glo tube beside the glo skincare display at Salon OM',
+             note='The woman you liked, placed by the display for the tall panel: her whole head and the glo products beside her. The phone keeps your liked picture.'),
     ]),
 }
 
