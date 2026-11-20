@@ -605,7 +605,9 @@ def _tm(d):
 
 
 def _tm_people(t, cls='tm__people'):
-    """the people beside her (or all three, on S): picture, name, role and, on a letter, their words"""
+    """the people beside her (or all three, on S): picture, name, role and, on a letter, their words; none, nothing"""
+    if not t['withs']:
+        return ''
     cells = ''.join(f'<article class="tm__p">{t["av"](w, "tm__av")}<div><h3>{w["name"]}</h3><p class="tl__role tx">{w["role"]}</p>{t["desc"](w)}</div></article>'
                     for w in t['withs'])
     return (f'<div class="{cls} {cls}--n{len(t["withs"])}" style="--n:{len(t["withs"])}">' + (f'<p class="label tm__with">{t["label"]}</p>' if t['label'] else '')
@@ -628,9 +630,9 @@ def team_centred(d, world):
     <div class="tm__col s__leave">
       <div class="tm__head">{_tm_head(d)}</div>
       {ph}
-      <div class="tm__words a-up" style="--d:.6s">{t['intro']}{t['leadline']}</div>
+      {f'<div class="tm__words a-up" style="--d:.6s">{t["intro"]}{t["leadline"]}</div>' if t['intro'] or t['leadline'] else ''}
       {f'<div class="a-up" style="--d:.75s">{t["note"]}</div>' if t['note'] else ''}
-      <div class="a-up" style="--d:.9s">{_tm_people(t)}</div>
+      {f'<div class="a-up" style="--d:.9s">{_tm_people(t)}</div>' if t['withs'] else ''}
       {f'<div class="tm__qs a-up" style="--d:1s">{t["quotes"]}</div>' if t['quotes'] else ''}{f'<div class="a-up" style="--d:1.1s">{t["line"]}</div>' if t['line'] else ''}
       {f'<div class="tm__tail a-up" style="--d:1.1s">{t["tail"]}</div>' if t['tail'].strip() else ''}
     </div>
@@ -647,7 +649,7 @@ def team_band(d, world):
     return f'''<section class="s s--auto tm tm--band" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
     <figure class="tm__band"><img src="img/{lead['img']}" alt="{E(lead['alt'])}" sizes="(max-width: 1650px) 100vw, 1650px" decoding="async"></figure>
     <div class="tm__below s__leave">
-      <div class="tm__l">{_tm_head(d)}<div class="a-up" style="--d:.55s">{t['intro']}{t['leadline']}</div></div>
+      <div class="tm__l">{_tm_head(d)}{f'<div class="a-up" style="--d:.55s">{t["intro"]}{t["leadline"]}</div>' if t['intro'] or t['leadline'] else ''}</div>
       <div class="tm__r a-up" style="--d:.75s">{t['note']}{_tm_people(t)}{f'<div class="tm__qs">{t["quotes"]}</div>' if t['quotes'] else ''}{t['line']}
         {f'<div class="tm__tail">{t["tail"]}</div>' if t['tail'].strip() else ''}</div>
     </div>
@@ -672,9 +674,9 @@ def team_breath(d, world):
       </div>
     </div>
     <div class="tm__col tm__after s__leave">
-      <div class="a-up" style="--d:.2s">{t['intro']}</div>
+      {f'<div class="a-up" style="--d:.2s">{t["intro"]}</div>' if t['intro'] else ''}
       {f'<div class="a-up" style="--d:.35s">{t["note"]}</div>' if t['note'] else ''}
-      {f'<div class="a-up" style="--d:.5s">{_tm_people(t)}</div>' if t['letter'] else ''}
+      {f'<div class="a-up" style="--d:.5s">{_tm_people(t)}</div>' if t['letter'] and t['withs'] else ''}
       {f'<div class="tm__qs a-up" style="--d:.5s">{t["quotes"]}</div>' if t['quotes'] else ''}{f'<div class="a-up" style="--d:.6s">{t["line"]}</div>' if t['line'] else ''}
       {f'<div class="tm__tail a-up" style="--d:.7s">{t["tail"]}</div>' if t['tail'].strip() else ''}
     </div>
