@@ -567,7 +567,8 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
      (options.js) sets the preview aside, as it shows the step's own photo */
   [].forEach.call(document.querySelectorAll('.ch__pre'), function (pre) {
     var f = pre.parentNode, im = f.querySelector('img'), of = (pre.getAttribute('data-of') || '').split('?')[0]; if (!im) return;
-    new MutationObserver(function () { pre.hidden = (im.getAttribute('src') || '').split('?')[0] !== of; }).observe(im, { attributes: true, attributeFilter: ['src'] });
+    var own = function () { pre.hidden = (im.getAttribute('src') || '').split('?')[0] !== of; };
+    own(); new MutationObserver(own).observe(im, { attributes: true, attributeFilter: ['src'] });      // a pick made before this ran too
     if (im.complete && im.naturalWidth) return;
     im.addEventListener('load', function () { var r = f.getBoundingClientRect(); if (!r.width || r.bottom <= 0 || r.top >= innerHeight) return;
       im.classList.add('is-in'); im.addEventListener('animationend', function x(e) { if (e.animationName !== 'photo-in') return; im.classList.remove('is-in'); im.removeEventListener('animationend', x); }); }, { once: true });
@@ -610,13 +611,18 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
   function sync(im) {
     var custom = im.hasAttribute('data-orig') && im.getAttribute('src') !== im.getAttribute('data-orig');
     var src = im.parentNode && im.parentNode.tagName === 'PICTURE' ? [].slice.call(im.parentNode.querySelectorAll('source')) : [];
+    // a picture option other than today's (options.js picSwap, data-pic-opt) is another file too: the cut its <picture>
+    // sources serve was made for today's picture, and a source wins over the img's own files (task 1ff4c3f4: at 1440 the
+    // fourth step's "laugh" showed the lounge's cut), so its sources step aside while it shows
+    var picked = im.hasAttribute('data-pic-opt') && im.getAttribute('data-pic-opt') !== 'live';
     [im].concat(src).forEach(function (e) {
-      if (custom && e.hasAttribute('srcset')) { e.setAttribute('data-hd-srcset', e.getAttribute('srcset')); e.removeAttribute('srcset'); }
-      else if (!custom && e.hasAttribute('data-hd-srcset')) { e.setAttribute('srcset', e.getAttribute('data-hd-srcset')); e.removeAttribute('data-hd-srcset'); }
+      var off = custom || (e !== im && picked);
+      if (off && e.hasAttribute('srcset')) { e.setAttribute('data-hd-srcset', e.getAttribute('srcset')); e.removeAttribute('srcset'); }
+      else if (!off && e.hasAttribute('data-hd-srcset')) { e.setAttribute('srcset', e.getAttribute('data-hd-srcset')); e.removeAttribute('data-hd-srcset'); }
     });
   }
   var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.target.tagName === 'IMG') sync(m.target); }); });
-  document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig'] }); sync(im); });
+  document.querySelectorAll('img[srcset]').forEach(function (im) { mo.observe(im, { attributes: true, attributeFilter: ['src', 'data-orig', 'data-pic-opt'] }); sync(im); });
 })();
 
 /* the fluted glass (one block; task a78e6208): an element with data-flute="<ribs>" over a picture gets that many ribs, each the
