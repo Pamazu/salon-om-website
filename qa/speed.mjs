@@ -101,7 +101,7 @@ const rows = [];
 async function one(v, w, box) {
   line = 0;      // the shared line starts free for each case
   reqs = []; held = new Set(); tCase = Date.now(); const marks = {};
-  const b = box.b = await pw.webkit.launch();
+  const b = box.b = await pw.webkit.launch(WK);
   const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: w < 700 ? 844 : 900 }, deviceScaleFactor: w < 700 ? 3 : 1, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}) });
   await ctx.addInitScript(PROBE);
   const p = await ctx.newPage(); const t0 = Date.now(); marks.page = t0 - tCase;      // the sound moments count from about here
@@ -142,6 +142,9 @@ async function one(v, w, box) {
 // STEPS=1: one step's moment, polled from its arrival: photo = its own picture loaded and decoded; film = moving; first = any
 // picture in its frame (the film's poster, the photo, its soft preview carried in the page (.ch__pre, task 1ff4c3f4) or the film)
 const READ = +(process.env.READ || 4000), STEPS = process.env.STEPS === '1';
+// WEBKIT=<path>: the pool's pinned WebKit (as gate-rows.mjs and the other checks), else Playwright's own; on the Studio
+// Playwright's own build started and then hung (20 Nov, task 1ff4c3f4), the pinned one of the same build did not
+const WK = process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {};
 // VIDEO=dir (task 1ff4c3f4, J 20 Nov: "it needs to be instant"): the walk and the jump are filmed as WebKit paints them, and each
 // arrival gets its moment in the film (vMs), so what the reader SEES on arriving is looked at frame by frame, not only read from
 // the page (qa/arrive-frames.sh cuts each arrival into a strip); a filmed case costs CPU, so its times are not the A/B's
@@ -182,7 +185,7 @@ async function steps(v, w, box) {
   line = 0; reqs = []; held = new Set(); tCase = Date.now();
   const h = w < 700 ? 844 : w > 2000 ? Math.round(w * 9 / 16) : 900;
   const open = async () => {
-    const b = box.b = await pw.webkit.launch();
+    const b = box.b = await pw.webkit.launch(WK);
     const ctx = await b.newContext({ ignoreHTTPSErrors: H2, viewport: { width: w, height: h }, deviceScaleFactor: w < 700 ? 3 : 2, ...(w < 700 ? { isMobile: true, hasTouch: true } : {}),
       ...(VIDEO ? { recordVideo: { dir: VIDEO, size: { width: Math.min(w, 1615), height: Math.round(Math.min(w, 1615) * h / w) } } } : {}) });
     await ctx.addInitScript(PROBE); await ctx.addInitScript(FRAMES);
