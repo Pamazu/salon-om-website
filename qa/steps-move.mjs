@@ -26,9 +26,33 @@ const all = (p) => p.evaluate(() => [...document.querySelectorAll('main[data-wor
 const read = (p, ids) => p.evaluate((ids) => { const g = (el) => { if (!el) return null; const r = el.getBoundingClientRect(), cs = getComputedStyle(el); return { top: +r.top.toFixed(1), h: +r.height.toFixed(1), op: +(+cs.opacity).toFixed(3), blur: (cs.filter.match(/blur\(([\d.]+)px\)/) || [0, 0])[1] * 1 }; };
   return Object.fromEntries(ids.map((id) => { const s = document.getElementById(id); return [id, { sec: g(s), rad: parseFloat((getComputedStyle(s).clipPath.match(/round ([\d.]+)px/) || [0, 0])[1]) || 0, media: g(s.querySelector('.s__media')), copy: g(s.querySelector('.s__leave')), soft: g(s.querySelector('.ch__soft')), title: g(s.querySelector('.ch__title')) }]; })); }, ids);
 // the frames of a steady scroll from y0 to y1 in ms, the page's own animation frames
-const walk = (p, y0, y1, ms) => p.evaluate(([y0, y1, ms]) => new Promise((done) => { const g = [], t0 = performance.now(); let last = 0; (function fr(t) { if (last) g.push(t - last); last = t; const k = Math.min(1, (t - t0) / ms); scrollTo(0, y0 + (y1 - y0) * k); if (k < 1) requestAnimationFrame(fr); else { g.sort((a, b) => a - b); done({ n: g.length, worst: Math.round(g[g.length - 1]), p95: Math.round(g[Math.floor(g.length * .95)]), over50: g.filter((x) => x > 50).length }); } })(t0); }), [y0, y1, ms]);
+// (long: each frame over 50 ms with where it fell, in screens from the start: 0 is the first step at rest, 1 the second)
+const walk = (p, y0, y1, ms) => p.evaluate(([y0, y1, ms]) => new Promise((done) => { const g = [], long = [], t0 = performance.now(); let last = 0; (function fr(t) { if (last) { g.push(t - last); if (t - last > 50) long.push([Math.round(t - last), +((scrollY - y0) / innerHeight).toFixed(2)]); } last = t; const k = Math.min(1, (t - t0) / ms); scrollTo(0, y0 + (y1 - y0) * k); if (k < 1) requestAnimationFrame(fr); else { g.sort((a, b) => a - b); done({ n: g.length, worst: Math.round(g[g.length - 1]), p95: Math.round(g[Math.floor(g.length * .95)]), over50: g.filter((x) => x > 50).length, long }); } })(t0); }), [y0, y1, ms]);
 const choose = async (p, k) => { await p.evaluate((k) => window.OMOptions.choose('steps', k, false), k); await wait(p, 500); };
 
+// node steps-move.mjs <out> <m,g> <widths> perf: the frames only, each way twice, under three ways of giving the moving parts
+// their own layers (as built: the two steps in a hand-over; none; every step that carries a way), and where the long ones fall
+if (process.argv[5] === 'perf') {
+  const LAYERS = { built: '', none: '.ch--move :is(.s__media, .s__scrim, .s__leave, .ch__soft) { will-change: auto !important; }',
+    all: '.ch--move > :is(.s__media, .s__scrim, .s__leave) { will-change: transform, opacity !important; }' };
+  res.perf = {};
+  for (const v of VERS) for (const w of WIDTHS) {
+    const ctx = await b.newContext(CTX[w]), p = await open(ctx, `${base}/${v}/`);
+    p.on('pageerror', (e) => res.errors.push(`${v} ${w}: ${e.message}`));
+    for (const [lk, rule] of Object.entries(LAYERS)) {
+      await p.evaluate((rule) => { let st = document.getElementById('qa-layers'); if (!st) { st = document.createElement('style'); st.id = 'qa-layers'; document.head.appendChild(st); } st.textContent = rule; }, rule);
+      for (const k of ['live', ...WAYS]) {
+        await choose(p, k); const t = await tops(p);
+        for (const run of [1, 2]) { await hold(p, t.arrive); await wait(p, 700); res.perf[`${v} ${w} ${lk} ${k} ${run}`] = await walk(p, t.arrive, t.renew, 2800); }
+        await release(p); await wait(p, 300);
+        console.log(v, w, lk, k, JSON.stringify(res.perf[`${v} ${w} ${lk} ${k} 1`]), JSON.stringify(res.perf[`${v} ${w} ${lk} ${k} 2`]));
+      }
+    }
+    await ctx.close();
+  }
+  fs.writeFileSync(path.join(OUT, 'perf.json'), JSON.stringify(res, null, 1));
+  await b.close(); srv.close(); process.exit(0);
+}
 for (const v of VERS) for (const w of WIDTHS) {
   const tag = `${v} ${w}`, ctx = await b.newContext(CTX[w]), p = await open(ctx, `${base}/${v}/`);
   p.on('pageerror', (e) => res.errors.push(`${tag}: ${e.message}`));
