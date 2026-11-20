@@ -167,6 +167,9 @@ async function at(p, id, t0) {
   if (o.photoMs === -1) o.photoMs = undefined;
   return o;
 }
+// a browser closed while its films play can stop answering (WebKit, 20 Nov: every 1440 case hung after its walk): each close
+// gets 5 s, then the case goes on (the node process ends every browser it started when it exits)
+const shut = (ctx, b) => Promise.race([(async () => { await ctx.close().catch(() => {}); await b.close().catch(() => {}); })(), new Promise((ok) => setTimeout(ok, 5000))]);
 async function steps(v, w, box) {
   line = 0; reqs = []; held = new Set(); tCase = Date.now();
   const h = w < 700 ? 844 : w > 2000 ? Math.round(w * 9 / 16) : 900;
@@ -192,14 +195,15 @@ async function steps(v, w, box) {
     walk.push({ ...o, longFrames: fr.length, worstFrameMs: fr.length ? Math.max(...fr) : 0 });
     if (LOG) console.error(`  ${v} ${w} ${id}: ${JSON.stringify(walk[walk.length - 1])}`);
   }
-  await ctx.close(); await b.close();
+  await shut(ctx, b);
   let direct = null;
   if (ids.length > 3) {
     reqs = []; held = new Set(); line = 0; tCase = Date.now();
     ({ b, ctx, p } = await open());
     const id = ids[4], top = await p.evaluate((id) => document.getElementById(id).getBoundingClientRect().top + scrollY, id);
     await jump(p, top); direct = await at(p, id, Date.now());
-    await ctx.close(); await b.close();
+    if (LOG) console.error(`  ${v} ${w} jump to ${id}: ${JSON.stringify(direct)}`);
+    await shut(ctx, b);
   }
   return { v, w, dpr: w < 700 ? 3 : 2, net: NET, read: READ, walk, direct, ...(LOG ? { requests: reqs } : {}) };
 }

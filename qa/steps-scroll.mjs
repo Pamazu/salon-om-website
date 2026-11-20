@@ -32,9 +32,11 @@ async function page(ctx, url, tag) {
   await p.goto(url, { waitUntil: 'load' }); await wait(p, 1500);
   return p;
 }
-// every step section of both worlds: its class, whether it holds the sticky frame, its height against the screen, its film
+// every step section of both worlds: its class, whether it holds the sticky frame, its height against the screen (the hidden
+// world's sections have none: null), its film
 const steps = (p) => p.evaluate(() => [...document.querySelectorAll('main .s.ch.ch--stack')].map((s) => ({ id: s.id, cls: s.className.replace(/\s*is-active/, ''),
-  stick: !!s.querySelector(':scope > .ch__stick'), h: s.offsetHeight / innerHeight, film: (s.querySelector('video[data-src]') || {}).__id })));
+  stick: !!s.querySelector(':scope > .ch__stick'), h: s.closest('main').hidden ? null : s.offsetHeight / innerHeight, film: (s.querySelector('video[data-src]') || {}).__id })));
+const one = (s) => s.h === null || Math.abs(s.h - 1) < .01;
 // where the reader is in one step: its handover (--e), the frame's top, what shows of the photo, and the film's clock
 const at = (p, id) => p.evaluate((id) => { const s = document.getElementById(id), st = s.querySelector('.ch__stick'), top = s.querySelector('.ch__top'), v = s.querySelector('video[data-src]');
   const ribs = [...s.querySelectorAll('.ch__ribs i')], cs = getComputedStyle(s);
@@ -48,10 +50,10 @@ async function frames(p, id, w) {
   await jump(p, top - 40); await wait(p, 800);
   return p.evaluate(async ([y0, dy]) => {
     const r = document.documentElement, sn = r.style.scrollSnapType; r.style.scrollSnapType = 'none'; r.style.scrollBehavior = 'auto';
-    const gaps = []; let last = 0;
-    await new Promise((done) => { const t0 = performance.now(); (function f(t) { if (last) gaps.push(t - last); last = t; const k = Math.min(1, (t - t0) / 2400); scrollTo(0, y0 + dy * k); if (k < 1) requestAnimationFrame(f); else done(); })(t0); });
+    const gaps = [], at = []; let last = 0, lk = 0;
+    await new Promise((done) => { const t0 = performance.now(); (function f(t) { if (last) { gaps.push(t - last); if (t - last > 50) at.push([+lk.toFixed(2), Math.round(t - last)]); } last = t; const k = Math.min(1, (t - t0) / 2400); lk = k; scrollTo(0, y0 + dy * k); if (k < 1) requestAnimationFrame(f); else done(); })(t0); });
     r.style.scrollSnapType = sn; gaps.sort((a, b) => a - b);
-    return { n: gaps.length, worst: Math.round(gaps[gaps.length - 1]), p95: Math.round(gaps[Math.floor(gaps.length * .95)]), over50: gaps.filter((g) => g > 50).length };
+    return { n: gaps.length, worst: Math.round(gaps[gaps.length - 1]), p95: Math.round(gaps[Math.floor(gaps.length * .95)]), over50: gaps.filter((g) => g > 50).length, at };
   }, [top - 40, span + 80]);
 }
 const choose = async (p, w, k) => {
@@ -64,7 +66,7 @@ for (const v of VS) for (const w of WS) {
   const tag = `${v} ${w}`, ctx = await ctxFor(w), p = await page(ctx, `${base}/${v}/?review`, tag);
   await p.evaluate(() => document.querySelectorAll('main .s.ch video[data-src]').forEach((x, i) => { x.__id = i; }));
   const s0 = await steps(p);
-  ok(`${tag}: today's five steps in both worlds, unchanged (no scroll frame, one screen each)`, s0.length === 10 && s0.every((s) => !/ch--scroll/.test(s.cls) && !s.stick && Math.abs(s.h - 1) < .01), s0.map((s) => s.id + ':' + s.h.toFixed(2)));
+  ok(`${tag}: today's five steps in both worlds, unchanged (no scroll frame, one screen each)`, s0.length === 10 && s0.every((s) => !/ch--scroll/.test(s.cls) && !s.stick && one(s)), s0.map((s) => s.id + ':' + s.h));
   const top1 = await p.evaluate(() => document.getElementById('arrive').offsetTop);
   await jump(p, top1); await wait(p, 900);
   if (w < 700) { await p.tap('.opt-handle'); } else { await p.keyboard.press('Shift+V'); }
@@ -79,7 +81,7 @@ for (const v of VS) for (const w of WS) {
     await jump(p, top1); await wait(p, 700);
     await choose(p, w, k);
     const s1 = await steps(p), url = await p.evaluate(() => location.search);
-    ok(`${tag}: ${k} switches all five steps in both worlds, each keeping its own film`, s1.length === 10 && s1.every((s) => s.cls.includes('ch--scroll-' + k) && s.stick && s.film !== undefined) && s1.every((s, i) => s.film === s0[i].film), s1.map((s) => s.id + ':' + s.h.toFixed(2) + ':' + s.film));
+    ok(`${tag}: ${k} switches all five steps in both worlds, each keeping its own film`, s1.length === 10 && s1.every((s) => s.cls.includes('ch--scroll-' + k) && s.stick && s.film !== undefined) && s1.every((s, i) => s.film === s0[i].film), s1.map((s) => s.id + ':' + s.h + ':' + s.film));
     ok(`${tag}: ${k} is in the address`, url.includes('opt-steps=' + k), url);
     const { top, span } = await p.evaluate(() => { const s = document.getElementById('arrive'); return { top: s.offsetTop, span: s.offsetHeight - innerHeight }; });
     const pts = {};
@@ -107,7 +109,7 @@ for (const v of VS) for (const w of WS) {
   await jump(p, top1); await wait(p, 700);
   await choose(p, w, 'live');
   const s2 = await steps(p);
-  ok(`${tag}: today's again restores every step (no frame, one screen, the same films)`, s2.every((s, i) => !/ch--scroll/.test(s.cls) && !s.stick && Math.abs(s.h - 1) < .01 && s.film === s0[i].film), s2.map((s) => s.id + ':' + s.h.toFixed(2)));
+  ok(`${tag}: today's again restores every step (no frame, one screen, the same films)`, s2.every((s, i) => !/ch--scroll/.test(s.cls) && !s.stick && one(s) && s.film === s0[i].film), s2.map((s) => s.id + ':' + s.h));
   ok(`${tag}: today's leaves the address clean`, !(await p.evaluate(() => location.search)).includes('opt-steps'));
   await ctx.close();
 }
@@ -121,11 +123,15 @@ for (const v of VS) for (const w of WS) {
   const a = await at(p, 'renew');
   ok('m 1440: its ribs are drawn from the photo', a.ribs === 18 && a.ribsDrawn === 18, a);
   await ctx.close();
-  const c2 = await ctxFor(w, { reducedMotion: 'reduce' }), p2 = await page(c2, `${base}/m/?review&opt-steps=breath`, 'm calm');
+  // calm motion as the launched site sets it for a visitor who asks for less motion (a review address always plays full
+  // motion, mgs_parts.MOTION_HEAD): html[data-motion="calm"]
+  const c2 = await ctxFor(w), p2 = await page(c2, `${base}/m/?review&opt-steps=breath`, 'm calm');
+  await p2.evaluate(() => { document.documentElement.setAttribute('data-motion', 'calm'); dispatchEvent(new Event('scroll')); }); await wait(p2, 600);
   const s2 = await steps(p2);
   const t2 = await p2.evaluate(() => document.getElementById('arrive').offsetTop); await jump(p2, t2); await wait(p2, 1200);
   const a2 = await at(p2, 'arrive');
-  ok('m 1440, reduced motion: the steps stay one screen each and show the photo', s2.every((x) => Math.abs(x.h - 1) < .01) && (a2.e === null || +a2.e === 0) && a2.topOpacity > .99, { h: s2.map((x) => x.h.toFixed(2)), a2 });
+  await jump(p2, t2 + 300); await wait(p2, 900); const a3 = await at(p2, 'arrive');
+  ok('m 1440, calm motion: the steps stay one screen each and show the photo', s2.every(one) && (a2.e === null || +a2.e === 0) && a2.topOpacity > .99 && (a3.e === null || +a3.e === 0), { h: s2.map((x) => x.h), a2, a3 });
   await shot(p2, 'm-1440-calm-breath');
   await c2.close();
 }
