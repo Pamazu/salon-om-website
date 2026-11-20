@@ -377,10 +377,11 @@ IW_PHOTO = dict(
     wall=('real-maggie-product-wall.webp', 'Maggie Woodward standing in the window light at Salon OM'),
     lounge=('real-lounge-iw.webp', 'The lounge at Salon OM: a fireplace, a clock and a striped bench in warm light'),
     chair=('real-styling-chair.webp', 'The styling chair by the window at Salon OM'),
-    # the second door, back to the salon (task 69006a72): was the basins wall from photo 1059, its bottles only tidied, never J's
-    # 25 Oct picture of that room (J 19 Nov 12:01 Z); the salon world already shows photo 6, so Inner Work takes the shoot's photo 16,
-    # a stylist smiling by her mirror, shown nowhere else
-    salon_door=('real-stylist-mirror.webp', 'A stylist at Salon OM smiling by her mirror in the warm light of the salon'),
+    # the second door, back to the salon: J's own cleaned-up picture of the basins room, the Aveda products organised on the wall
+    # (task 95e37a41; J 18 Nov 17:24 Z: "we already had a cleanup version of this image and you used the one that's not cleaned up.
+    # The one in which we removed some things and organized the beauty products on the wall"; CEO MA 20 Nov: photo 16 leaves the
+    # door). The same file as step 02, built on his 25 Oct picture at full size and measured against it (photo_sources, row 23)
+    salon_door=('real-shampoo-basins.webp', 'The shampoo basins at Salon OM, the Aveda products organised on the wall'),
     lounge_seated=('real-maggie-lounge-seated.webp', 'Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer'),
     outdoor_chin=('real-maggie-outdoor-chin.webp', 'Maggie Woodward outside in a white blazer, her hand at her chin'),
     outdoor_portrait=('real-maggie-outdoor-portrait.webp', 'Maggie Woodward outside in a white blazer, smiling'),

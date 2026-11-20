@@ -427,7 +427,7 @@ PAUSE_LIVE_NOTE = 'Scroll slowly: the room opens as you breathe in; the question
 SUBJECTS = {'meadow.webp': '.44 .31 .56 .93',                     # the woman in linen, walking into the meadow
             'real-aveda-shelves.webp': '.58 .30 .82 .86',         # the shelves of Aveda products (J 19 Nov 18:05 Z: "is not highlighting the products"), the fig at its edge as at cd23c7c
             'real-maggie-outdoor-chin.webp': '.44 .08 .70 .80',   # Maggie, her face and shoulders
-            'real-stylist-mirror.webp': '.42 .12 .68 .80'}        # the stylist, her face and shoulders (Inner Work's second door, task 69006a72)
+            'real-shampoo-basins.webp': '.46 .10 .84 .50'}        # the Aveda products organised on the wall, the poster between them (Inner Work's second door, task 95e37a41)
 
 
 def sheet_stage(img, alt, preset, words, mark=''):
