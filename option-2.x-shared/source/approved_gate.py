@@ -738,11 +738,13 @@ ROWS = {
     28: ('on G and S each world\'s last call to action comes before its door to the other world, the door last', 'gs', row28),
 }
 # measured in WebKit by qa/gate-rows.mjs, on the pages it applies to (what it measures is written there, row by row)
-MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg', 24: 'mgs', 25: 'mgs'}
+MEASURED = {4: 'mg', 5: 'mgs', 6: 'mgs', 8: 'mg', 9: 'mgs', 10: 'mgs', 12: 'mgs', 14: 'mgs', 15: 'mg', 17: 'mg', 18: 'mgs', 20: 'mg', 21: 'mgs', 22: 'mg', 24: 'mgs', 25: 'mgs',
+            29: 'mgs'}
 # the rows only measured (no built-page check), by name for the refusal
 NAMES = {5: 'slides snap with a pull; a tall section scrolls freely inside, then pulls into the next',
          25: 'every section heading at the one heading size (--t-h2), the sheet sections too',
-         9: "option B's forests on buttons and marks, never mint", 17: 'the pause: no rings and no glow around its picture'}
+         9: "option B's forests on buttons and marks, never mint", 17: 'the pause: no rings and no glow around its picture',
+         29: "in Shift+V, a picture's chosen option shows at once on the copy in view, and today's again brings today's back"}
 # a machine cannot judge these; each stays a QA step, and says why
 QA_ONLY = {
     11: 'it is about what the words do (a hook in result, objection and time form, its proof, its reward); M carries only '

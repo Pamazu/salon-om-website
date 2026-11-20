@@ -35,7 +35,7 @@ const frames = (p) => p.evaluate(() => new Promise((r) => requestAnimationFrame(
 // the slide that closes a world: its last section, Begin on M, the second door on G and S (task d9a90616; row 14 reads its footer)
 const lastId = (p, P) => p.evaluate((P) => { const s = [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} > section.s`)].pop(); return s ? s.id : ''; }, P);
 
-// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22, 24, 25
+// 1440 x 900: rows 4, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, 21, 22, 24, 25, 29
 async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs's row (a break's other rows need no pull walk)
   const vh = 900;
   // row 9: every green on the page is one of option B's forests (a green = its green clearly above its red and blue)
@@ -223,6 +223,69 @@ async function desktop(p, v, P, W, add, seen, only) {      // only: gate-red.mjs
       if (back > 0) add(4, `${back} stops stayed in the rail after scrolling back to the preview (no reverse)`);
     }
   }
+
+  // row 29: Shift+V's picture options, last (it leaves every picture on today's and the panel closed)
+  if (!only || only === 29) await picks(p, P, W, add, seen);
+}
+
+// row 29 (task 279db527; J's video of 20 Nov 08:33 on live G: 0:11 "i'm trying to see the first picture here on blonding and
+// it's not showing", 2:53 "i mean now i cannot go back to the original one"): in Shift+V each option of a picture shows that
+// option's picture at once on the copy in view, and today's again brings today's back; on the menu, today's chosen again after
+// the mouse opened another row brings its own service's picture back. Read from what the browser draws (currentSrc, after the
+// fade), never from the src attribute: a srcset left on the earlier option drew it under a right src.
+async function picks(p, P, W, add, seen) {
+  const secs = await p.evaluate((P) => [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} > section[id]`)].map((s) => ({ id: s.id,
+    pics: [...new Set([...s.querySelectorAll('img[data-pic]')].map((i) => i.getAttribute('data-pic')))]
+      .filter((x) => document.querySelectorAll(`#opt-store template[data-pic-for="${x}"]`).length > 1) })).filter((s) => s.pics.length), P);
+  // the copies of a picture drawn in view now, and the file each draws from (its name, without a srcset width)
+  const drawn = (pic) => p.evaluate((pic) => {
+    const stem = (u) => decodeURIComponent((u || '').split('?')[0].split('#')[0].split('/').pop()).replace(/\.webp$/, '').replace(/-\d+$/, '');
+    return [...document.querySelectorAll(`img[data-pic="${pic}"]`)].filter((i) => { const r = i.getBoundingClientRect();
+      return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(i).opacity) > .5; }).map((i) => i.complete ? stem(i.currentSrc) : 'loading');
+  }, pic);
+  const want = (pic, k) => p.evaluate(([pic, k]) => { const t = document.querySelector(`#opt-store template[data-pic-for="${pic}"][data-opt="${k}"]`), i = t && t.content.querySelector('img[src]');
+    return decodeURIComponent((i ? i.getAttribute('src') : pic).split('?')[0].split('/').pop()).replace(/\.webp$/, ''); }, [pic, k]);
+  const until = async (pic, w) => { let d = []; for (let t = 0; t < 30; t++) { await wait(p, 250); d = await drawn(pic); if (t > 3 && d.length && d.every((x) => x === w)) break; } return d; };
+  const panel = async (on) => { if (await p.evaluate(() => { const n = document.getElementById('opt-panel'); return !!n && !n.hidden; }) !== on) { await p.keyboard.press('Shift+V'); await wait(p, 500); } };
+  const choose = async (pic, k) => { const b = p.locator(`#opt-panel [data-pic="${pic}"][data-k="${k}"]`); if (!(await b.count())) return false; await b.first().click(); return true; };
+  const out = [];
+  for (const s of secs) {
+    for (const pic of s.pics) {
+      // a copy in view, as a person brings it: its menu row opened (held, as a click holds it), any other picture scrolled to
+      const y = await p.evaluate((pic) => { const i = [...document.querySelectorAll(`img[data-pic="${pic}"]`)].find((x) => x.getClientRects().length); if (!i) return -1;
+        const n = i.getAttribute('data-i'), sec = i.closest('section'), row = n != null && sec.querySelector(`[data-i="${n}"]:not(img)`);
+        return row ? Math.round(sec.getBoundingClientRect().top + scrollY) : Math.round(i.getBoundingClientRect().top + scrollY - Math.max(0, innerHeight - i.offsetHeight) / 2); }, pic);
+      if (y < 0) { add(29, `${pic}: no copy of it laid out in #${s.id}`); continue; }
+      await jump(p, y); await wait(p, 1500);
+      await p.evaluate((pic) => { const i = [...document.querySelectorAll(`img[data-pic="${pic}"]`)].find((x) => x.getClientRects().length), n = i.getAttribute('data-i'),
+        row = n != null && i.closest('section').querySelector(`[data-i="${n}"]:not(img)`); if (row) row.click(); }, pic);
+      await panel(true);
+      const ks = await p.evaluate((pic) => [...document.querySelectorAll(`#opt-store template[data-pic-for="${pic}"]`)].map((t) => t.getAttribute('data-opt')), pic);
+      // every candidate in turn, then today's again: J's 0:11 (Blonding's 2, then its 1) and 2:53 (Finishing Touches' 9, then its 8)
+      for (const k of [...ks.filter((x) => x !== 'live'), 'live']) {
+        if (!(await choose(pic, k))) { add(29, `${pic}: Shift+V on #${s.id} does not list its option "${k}"`); continue; }
+        const w = await want(pic, k), d = await until(pic, w), good = d.length > 0 && d.every((x) => x === w);
+        out.push({ pic, k, want: w, drawn: d, good });
+        if (!good) add(29, `${pic}: "${k}" chosen in Shift+V, the copy in view draws ${d.length ? d.join(', ') : 'nothing'}, not ${w}`);
+      }
+      // the menu (J's 2:56): the mouse opens another row, then today's, already chosen, is clicked again
+      const at = await p.evaluate((pic) => { const i = [...document.querySelectorAll(`img[data-pic="${pic}"]`)].find((x) => x.getAttribute('data-i') != null); if (!i) return null;
+        const sec = i.closest('section');
+        for (const r of sec.querySelectorAll('.mn__row[data-i]')) { if (r.getAttribute('data-i') === i.getAttribute('data-i')) continue; const b = r.getBoundingClientRect();
+          const x = Math.round(b.right - 24), y = Math.round(b.top + Math.min(b.height / 2, 30)); if (y > 80 && y < innerHeight - 20 && document.elementFromPoint(x, y)?.closest('.mn__row') === r) return { x, y, i: r.getAttribute('data-i') }; }
+        return null; }, pic);
+      if (at) {
+        await p.mouse.move(at.x - 40, at.y, { steps: 2 }); await p.mouse.move(at.x, at.y, { steps: 2 }); await wait(p, 900);
+        const other = await p.evaluate((n) => !!document.querySelector(`.mn__row.is-on[data-i="${n}"]`), at.i);
+        await choose(pic, 'live');
+        const w = await want(pic, 'live'), d = await until(pic, w), good = d.length > 0 && d.every((x) => x === w);
+        out.push({ pic, k: 'live again', other: other ? `row ${at.i} opened by the mouse` : 'the mouse did not open another row', drawn: d, good });
+        if (!good) add(29, `${pic}: today's clicked again in Shift+V after the mouse opened another menu row, the copy in view draws ${d.length ? d.join(', ') : 'nothing'}, not ${w}`);
+      }
+    }
+  }
+  await panel(false);
+  seen[`29 ${W}`] = out;
 }
 
 // row 24 (task 4739f125; J 19 Nov 18:05 Z, Why Aveda: "is not highlighting the products, is highlighting something at the

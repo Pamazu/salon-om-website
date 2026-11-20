@@ -41,6 +41,12 @@ export const BREAKS = {
   25: ['Why Aveda\'s heading at a smaller size', '<style>#aveda .sh__words .mid{font-size:40px!important}</style>', '1440', ['salon']],
   18: ['the menu photos from their smallest file',
     "<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('#services .mn__ph img[srcset]').forEach(function(i){var f=i.getAttribute('srcset').split(',')[0].trim().split(' ')[0];i.removeAttribute('srcset');i.src=f;});});</script>", '6K', ['salon']],
+  // row 29 (task 279db527), J's two faults of 20 Nov as they were live: a picture whose srcset stays on the option chosen before
+  // when today's is chosen again (0:11, 2:53), and today's clicked again doing nothing over a row the mouse opened since (2:56)
+  29: ['a picture keeps drawing the option chosen before when today\'s is chosen again (its srcset left on the earlier option)',
+    "<script>addEventListener('load',function(){document.querySelectorAll('img[data-pic][srcset]').forEach(function(i){var last=i.getAttribute('srcset');new MutationObserver(function(){var s=i.getAttribute('srcset');if(i.getAttribute('data-pic-opt')==='live'&&s!==last)i.setAttribute('srcset',last);else last=s;}).observe(i,{attributes:true,attributeFilter:['data-pic-opt']});});});</script>", '1440', ['salon']],
+  '29b': ['a picture option already chosen does nothing when clicked again',
+    "<script>document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#opt-panel .opt__row--pic[aria-checked=\"true\"]'))e.stopPropagation();},true);</script>", '1440', ['salon']],
 };
 
 export function key() {

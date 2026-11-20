@@ -3249,6 +3249,11 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     set('style', L.style); if (!on && c.style.getPropertyValue('--pos')) im.style.setProperty('--pos', c.style.getPropertyValue('--pos'));
     im.classList.toggle('is-ai', on ? L.ai : !!o.ai);
     im.setAttribute('data-pic-opt', o.k);
+    // the picture's own file is the option shown: the tweak panel's original (tweaks.js data-orig) follows it, so the srcset
+    // sync (mgs.js) never sets this srcset aside nor puts an earlier option's back over it (task 279db527; J 20 Nov, 2:53:
+    // "now i cannot go back to the original one")
+    if (im.hasAttribute('data-orig')) im.setAttribute('data-orig', im.getAttribute('src'));
+    im.removeAttribute('data-hd-srcset');
     var f = L.f; if (f.shared) return;
     if (f.mark) { f.mark.hidden = !on && !o.ai; f.mark.textContent = on ? f.text : (o.ai || f.text); return; }
     if (!on && o.ai && !im._pm) { im._pm = document.createElement('p'); im._pm.className = 'ai-mark'; im.parentElement.appendChild(im._pm); }
@@ -3257,12 +3262,16 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
   function seen(im) { var r = im.getBoundingClientRect(); return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(im).opacity) > .05; }
   function reveal(p) {      // a chosen picture out of sight: a picture opened by its row (the menu) opens with it, any other comes into view
     var ims = picsOf(p).filter(function (im) { return !im.closest('[hidden]') && im.getClientRects().length; });
-    if (!ims.length || ims.some(seen)) return;
+    if (!ims.length) return;
     var im = ims[0], n = im.getAttribute('data-i'), sec = im.closest('section'), row = n != null && sec && sec.querySelector('[data-i="' + n + '"]:not(img)');
-    if (row) row.click(); else im.scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' });
+    // a menu picture is shown when its row is open, never by its opacity: one still fading out after the mouse opened another
+    // row (1.2 s) reads as seen, and its row stayed shut (task 279db527, gate row 29 in WebKit)
+    if (row) { if (!row.classList.contains('is-on')) row.click(); return; }
+    if (!ims.some(seen)) im.scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' });
   }
   function choosePic(p, k, animate) {
-    var o = optOf(p, k); if (!o || (pon[p] || LIVE) === k) return;
+    var o = optOf(p, k); if (!o) return;
+    if ((pon[p] || LIVE) === k) return reveal(p);      // chosen again: its picture comes back, over a menu row opened since
     pon[p] = k; keep('pic-' + p.replace(/\.webp$/, ''), k, LIVE);
     var ims = picsOf(p), shown = animate && !calm() ? ims.filter(seen) : [];
     function go() {
