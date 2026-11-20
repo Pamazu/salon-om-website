@@ -571,6 +571,125 @@ DOOR_OPTIONS = [dict(key='photo', label='The words on the photo (before 19 Nov)'
 DOOR_LIVE_LABEL = SYNCED['label']
 
 
+
+# ---- the team's new layouts (task 9999ef8a; J 20 Nov, his video at 4:21: "it feels a bit too overwhelming ... the layout is
+# just something on the left things on the right it's still an option ... but i will love more options i feel more beautiful").
+# Each draws the section's own dict, so every page keeps its own words and pictures: M and G's letter (her portrait, her words,
+# her name and role, her quote on G, Katie and Chesney with their words, the button and G's reward line), S's proof (the three
+# of them, two guests' words, the Aveda line and its picture), and Inner Work's twin its own. Today's layout stays the default.
+def _tm(d):
+    """the team dict's parts, the same for every layout: the lead (her), the people beside her and the rest of its words"""
+    people = d['people']
+    letter = d.get('layout') == 'letter'          # M, G (and their twins); S's proof shows the three alike, names and roles only
+    lead, withs = (people[0], people[1:]) if letter else (None, people)
+    av = lambda w, cls: (f'<img class="{cls}" src="img/{w["img"]}" alt="{E(w.get("alt", ""))}" decoding="async">' if w.get('img')
+                         else f'<span class="{cls} tl__initial" aria-hidden="true">{E(w.get("initial") or w["name"][0])}</span>')
+    def desc(w):
+        if not letter or not w.get('desc'):
+            return ''
+        if isinstance(w['desc'], list):      # Inner Work's credentials, one per line
+            return '<ul class="tl__creds tx">' + ''.join(f'<li>{c}</li>' for c in w['desc']) + '</ul>'
+        return f'<p class="tm__desc tx">{w["desc"]}</p>'
+    return dict(letter=letter, lead=lead, withs=withs, av=av, desc=desc,
+                intro=f'<p class="tm__intro tx">{d["intro"]}</p>' if d.get('intro') else '',
+                leadline=(f'<p class="tm__lead"><b>{lead["name"]}</b><span class="tl__role tx">{lead["role"]}</span></p>'
+                          + (desc(lead) if isinstance(lead.get('desc'), list) else '')) if lead and d.get('lead') else '',
+                note=(f'<blockquote class="tm__note"><span class="tx">“{d["note"]}”</span><cite class="tx">{d["sign"]}</cite></blockquote>'
+                      if d.get('note') else ''),
+                quotes=''.join(f'<figure class="tm__q"><blockquote>“{q[0]}”</blockquote><figcaption>{q[1]} · {q[2]}</figcaption></figure>'
+                               for q in d.get('quotes', [])),
+                line=(f'<p class="tm__line">' + (f'<img class="tm__line-img" src="img/{d["line_img"][0]}" alt="{E(d["line_img"][1])}" decoding="async">'
+                      if d.get('line_img') else '') + f'<span><b>{d["line_k"]}</b> {d["line"]}</span></p>') if d.get('line') else '',
+                tail=cycle(d, 0) + (f'<div class="tm__btn">{d["btn"]}</div>' if d.get('btn') else ''),
+                label=d.get('with_label', 'With') if letter else '')
+
+
+def _tm_people(t, cls='tm__people'):
+    """the people beside her (or all three, on S): picture, name, role and, on a letter, their words"""
+    cells = ''.join(f'<article class="tm__p">{t["av"](w, "tm__av")}<div><h3>{w["name"]}</h3><p class="tl__role tx">{w["role"]}</p>{t["desc"](w)}</div></article>'
+                    for w in t['withs'])
+    return (f'<div class="{cls}" style="--n:{len(t["withs"])}">' + (f'<p class="label tm__with">{t["label"]}</p>' if t['label'] else '')
+            + cells + '</div>')
+
+
+def _tm_head(d, cls=''):
+    return (f'<p class="eyebrow a-left{cls}" style="--d:.15s">{d["eyebrow"]}</p>'
+            f'<h2 class="mid" id="{d["id"]}-t"><span class="mask"><span class="mask__in" style="--d:.3s">{d["title"]}</span></span></h2>')
+
+
+def team_centred(d, world):
+    """A · Centred: one calm column. The heading, then her portrait standing alone, then her words, her quote, the people
+    beside her in one row, the button: one thing at a time, in the order they are read (Apple's leadership page: one
+    portrait, one name, the air around it). On S the three of them in one row under the heading, the guests' words, the line."""
+    t = _tm(d)
+    ph = (f'<figure class="tm__ph a-up" style="--d:.45s"><img src="img/{t["lead"]["img"]}" alt="{E(t["lead"]["alt"])}" sizes="(max-width: 700px) 78vw, 460px" decoding="async"></figure>'
+          if t['lead'] else '')
+    return f'''<section class="s s--auto tm tm--centred" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="tm__col s__leave">
+      <div class="tm__head">{_tm_head(d)}</div>
+      {ph}
+      <div class="tm__words a-up" style="--d:.6s">{t['intro']}{t['leadline']}</div>
+      {f'<div class="a-up" style="--d:.75s">{t["note"]}</div>' if t['note'] else ''}
+      <div class="a-up" style="--d:.9s">{_tm_people(t)}</div>
+      {f'<div class="tm__qs a-up" style="--d:1s">{t["quotes"]}</div>' if t['quotes'] else ''}{f'<div class="a-up" style="--d:1.1s">{t["line"]}</div>' if t['line'] else ''}
+      {f'<div class="tm__tail a-up" style="--d:1.1s">{t["tail"]}</div>' if t['tail'].strip() else ''}
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+def team_band(d, world):
+    """B · The band: her portrait as a wide band across the screen, her face in it, and the words beneath it in two calm
+    columns, the heading and her words on the left, the people beside her on the right (Hershesons' "Our Story": the place
+    and the person first, wide, then the story under it). Top and bottom instead of left and right."""
+    t = _tm(d)
+    lead = t['lead'] or t['withs'][0]
+    return f'''<section class="s s--auto tm tm--band" id="{d['id']}" data-tone="light" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <figure class="tm__band"><img src="img/{lead['img']}" alt="{E(lead['alt'])}" sizes="(max-width: 1650px) 100vw, 1650px" decoding="async"></figure>
+    <div class="tm__below s__leave">
+      <div class="tm__l">{_tm_head(d)}<div class="a-up" style="--d:.55s">{t['intro']}{t['leadline']}</div></div>
+      <div class="tm__r a-up" style="--d:.75s">{t['note']}{_tm_people(t)}{f'<div class="tm__qs">{t["quotes"]}</div>' if t['quotes'] else ''}{t['line']}
+        {f'<div class="tm__tail">{t["tail"]}</div>' if t['tail'].strip() else ''}</div>
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+def team_breath(d, world):
+    """C · The breath: drawn as the pause's B · The breath, J's favourite (19 Nov 11:51 Z: "I really like the take a breath
+    section in which you had some scroll triggered animations ... you can have more of that for other sections"; task
+    1a6089ec). Scroll through it: on the dark ground her portrait opens from a thin line to the screen while the heading
+    waits under her face; on the exhale the names arrive. Then the rest of the words follow on the same ground. mgs.js drives
+    it with the pause's own breath (.ps--breath: the opening, the dim, the exhale); reduced motion and review shots show it open."""
+    t = _tm(d)
+    lead = t['lead'] or t['withs'][0]
+    names = ''.join(f'<li><b>{w["name"]}</b><span class="label">{w["role"]}</span></li>' for w in ([t['lead']] if t['lead'] else []) + t['withs'])
+    return f'''<section class="s s--auto tm tm--breath" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-labelledby="{d['id']}-t">
+    <div class="ps--breath tm__run">
+      <div class="ps__stick">
+        <div class="ps__pic"><img src="img/{lead['img']}" alt="{E(lead['alt'])}" sizes="(max-width: 1650px) 100vw, 1650px" decoding="async"></div><div class="ps__dim" aria-hidden="true"></div>
+        <div class="tm__stage">{_tm_head(d)}<ul class="ps__sub tm__names" role="list">{names}</ul></div>
+      </div>
+    </div>
+    <div class="tm__col tm__after s__leave">
+      <div class="a-up" style="--d:.2s">{t['intro']}</div>
+      {f'<div class="a-up" style="--d:.35s">{t["note"]}</div>' if t['note'] else ''}
+      {f'<div class="a-up" style="--d:.5s">{_tm_people(t)}</div>' if t['letter'] else ''}
+      {f'<div class="tm__qs a-up" style="--d:.5s">{t["quotes"]}</div>' if t['quotes'] else ''}{f'<div class="a-up" style="--d:.6s">{t["line"]}</div>' if t['line'] else ''}
+      {f'<div class="tm__tail a-up" style="--d:.7s">{t["tail"]}</div>' if t['tail'].strip() else ''}
+    </div>
+    <div class="s__shade"></div>
+  </section>'''
+
+
+TEAM_NEW = [dict(key='centred', label='A · Centred: her portrait, then her words',
+                 note='One calm column: the heading, her portrait standing alone, her words and quote, then Katie and Chesney side by side.', kind=team_centred),
+            dict(key='band', label='B · Her portrait as a wide band, the words beneath',
+                 note='Her portrait across the screen, her face in it; under it the heading and her words on one side, the team on the other.', kind=team_band),
+            dict(key='breath', label='C · The breath: the team opens with the scroll',
+                 note='Scroll slowly: her portrait opens from a thin line on the dark ground, the names arrive on the exhale, then the words follow.', kind=team_breath)]
+
+
 # The team's options (task 9999ef8a; J 20 Nov, his video at 4:21: "i will love more options i feel more beautiful"; 12:47 Z:
 # "previously you had this section in a way that felt continous I think that it was after the one of what is your color").
 # Today's layout stays the section on the page until J picks.
@@ -578,4 +697,5 @@ TEAM_LIVE_LABEL = 'Today’s: her portrait beside the letter'
 TEAM_NOV11 = dict(key='nov11', label='As on 11 Nov: right after Why Aveda, one light ground',
                   note='Why Aveda above shows its line and four facts on the same light ground, and the team follows on, as on G from 6 to 11 Nov (2332179).',
                   also={'aveda': 'facts-nov11'})
-TEAM_OPTIONS = [TEAM_NOV11]
+TEAM_OPTIONS = [TEAM_NOV11] + TEAM_NEW      # M and G; S has no Why Aveda before its team, so only the new layouts
+TEAM_LIVE_LABEL_S = 'Today’s: three cards and two guests’ words'

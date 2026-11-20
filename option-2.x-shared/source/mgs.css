@@ -1275,3 +1275,88 @@ html:not([data-shot]) .is-active .sh:not(.sh--on) .a-left { transform: translate
 html:not([data-shot]) .is-active .sh:not(.sh--on) .mask__in { animation: none; }
 /* the calm setting: every word already there */
 html[data-motion="calm"] :is(.mask__in, blockquote.a-up, .mani__text .l, .ps [data-write] .l, .voices blockquote .wd) { opacity: 1; filter: none; transform: none; animation: none; }
+
+/* ---- the team's new layouts (task 9999ef8a; J 20 Nov at 4:21: "it feels a bit too overwhelming ... i will love more options
+   i feel more beautiful"): A centred, B the band, C the breath (mgs_sections.team_*), offered in Shift+V beside today's letter.
+   Each shows one thing at a time in reading order, on the site's spacing scale; the people's words hide on a phone as today's. */
+.tm { background: var(--clay); color: var(--ink); }
+.tm .eyebrow { color: var(--ink-soft); margin: 0 0 var(--sp-2); }
+.tm__intro { margin: 0; color: var(--ink-soft); font-size: 17px; line-height: 1.6; max-width: 46ch; }
+.tm__lead { margin: var(--sp-3) 0 0; display: grid; gap: 6px; }
+.tm__lead b { font: 500 17px/1.3 var(--sans); color: var(--ink); }
+.tm__lead .tl__role { margin: 0; }
+.tm__note { margin: 0; font: italic 300 clamp(26px, 2.3vw, 40px)/1.24 var(--serif); color: var(--ink); max-width: 24ch; }
+.tm__note cite { display: block; margin-top: 14px; font: 500 12px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; font-style: normal; color: var(--forest-deep); }
+.tm__people { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: var(--sp-3) var(--sp-4); text-align: left; }
+.tm__people > .tm__with { grid-column: 1 / -1; margin: 0; color: var(--ink-soft); }
+.tm__p { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: var(--sp-2); align-items: start; }
+.tm__av { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+.tm__p h3 { margin: 0; font: 300 26px/1.1 var(--serif); }
+.tm__p .tl__role { margin-top: 4px; }
+.tm__desc { margin: var(--sp-1) 0 0; color: var(--ink-soft); font-size: 15px; line-height: 1.55; max-width: 36ch; }
+.tm__qs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); text-align: left; }
+.tm__q { margin: 0; }
+.tm__q blockquote { margin: 0; font: italic 300 22px/1.35 var(--serif); }
+.tm__q figcaption { margin-top: 10px; font: 500 11.5px/1.3 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--forest-deep); }
+.tm__line { display: flex; gap: var(--sp-2); align-items: center; margin: 0; color: var(--ink-soft); font-size: 15px; line-height: 1.55; text-align: left; }
+.tm__line-img { width: 72px; height: 72px; border-radius: var(--r-photo); object-fit: cover; flex: none; }
+.tm__line b { color: var(--ink); font-weight: 500; }
+.tm__tail .cy__reward { margin: 0 0 var(--sp-3); }
+
+/* A · centred: one column, everything on its centre line */
+.tm--centred { padding: calc(var(--hdr) + var(--sp-6)) var(--gutter) calc(var(--base) + var(--dock)); }
+.tm--centred .tm__col { max-width: 880px; margin: 0 auto; display: grid; justify-items: center; text-align: center; gap: var(--sp-5); }
+.tm--centred .tm__head h2 { max-width: 15ch; margin: 0 auto; }
+.tm--centred .tm__ph { margin: 0; width: clamp(240px, 30vw, 440px); aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--r-photo); }
+.tm--centred .tm__ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 26%; display: block; }
+.tm--centred .tm__words { display: grid; justify-items: center; }
+.tm--centred .tm__intro, .tm--centred .tm__note { margin-left: auto; margin-right: auto; }
+.tm--centred .tm__lead { justify-items: center; }
+.tm--centred .tm__people { max-width: 760px; }
+.tm--centred .tm__people > .tm__with { text-align: center; }
+
+/* B · the band: her portrait across the screen, her face in it; the words beneath in two columns */
+.tm--band { padding: calc(var(--hdr) + var(--sp-4)) 0 calc(var(--base) + var(--dock)); }
+.tm__band, .tm__below { width: calc(100% - 2 * var(--gutter)); max-width: 1650px; margin: 0 auto; }
+.tm__band { position: relative; height: clamp(300px, 58vh, 680px); overflow: hidden; border-radius: var(--r-photo); clip-path: inset(50% 0 50% 0); }
+.tm--band.is-active .tm__band { clip-path: inset(0 0 0 0); transition: clip-path 1.8s var(--io-strong) .1s; }
+.tm__band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 34%; transform: scale(1.08); }
+.tm--band.is-active .tm__band img { transform: scale(1); transition: transform 3.2s var(--io-strong) .1s; }
+.tm__below { margin-top: var(--sp-5); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-5) clamp(40px, 7vw, 168px); align-items: start; }
+.tm__l .tm__intro { margin-top: var(--sp-4); }
+.tm__r { display: grid; gap: var(--sp-4); padding-top: var(--sp-1); }
+html[data-shot] .tm__band { clip-path: none !important; }
+html[data-shot] .tm__band img { transform: none !important; }
+
+/* C · the breath: the pause's breath (.ps--breath, mgs.js) on her portrait; the words follow on the same dark ground */
+.tm--breath { background: var(--ink); color: #F5EEE4; }
+.tm__run { position: relative; height: 240vh; height: 240svh; }
+.tm__run .ps__pic img { object-position: 50% 40%; }
+@media (min-width: 1651px) { .tm__run .ps__pic { left: calc(50% - 825px); right: calc(50% - 825px); } }
+.tm__stage { position: absolute; z-index: 2; left: 0; right: 0; bottom: max(9vh, 104px); text-align: center; padding: 0 var(--gutter); }
+.tm__stage .eyebrow { color: rgba(245, 238, 228, .82); }
+.tm__stage h2 { color: #F5EEE4; max-width: 16ch; margin: 0 auto; text-shadow: 0 2px 28px rgba(12, 9, 7, .45); }
+.tm__names { list-style: none; margin: var(--sp-4) 0 0; padding: 0; display: flex; justify-content: center; gap: var(--sp-5); }
+.tm__names li { display: grid; gap: 6px; }
+.tm__names b { font: 300 clamp(22px, 1.9vw, 34px)/1.1 var(--serif); }
+.tm__names .label { color: var(--forest-light); }
+.tm__after { max-width: 880px; margin: 0 auto; padding: var(--sp-6) var(--gutter) calc(var(--base) + var(--dock)); display: grid; justify-items: center; text-align: center; gap: var(--sp-5); }
+.tm--breath .tm__intro, .tm--breath .tm__desc, .tm--breath .tm__people > .tm__with { color: rgba(245, 238, 228, .8); }
+.tm--breath .tm__intro, .tm--breath .tm__note { margin-left: auto; margin-right: auto; }
+.tm--breath .tm__note, .tm--breath .tm__p h3, .tm--breath .tm__q blockquote { color: #F5EEE4; }
+.tm--breath .tm__note cite, .tm--breath .tl__role, .tm--breath .tm__q figcaption { color: var(--forest-light); }
+
+@media (max-width: 1023px) {
+  .tm__below { grid-template-columns: 1fr; gap: var(--sp-4); }
+}
+@media (max-width: 760px) {
+  .tm__people, .tm__qs { grid-template-columns: 1fr; }
+  .tm--centred .tm__ph { width: 72vw; }
+  .tm__band { height: 44svh; }
+  .tm__names { gap: var(--sp-3); flex-wrap: wrap; }
+  .tm__names b { font-size: 20px; }
+}
+@media (max-width: 639px) {
+  .tm__desc { display: none; }
+  .tm--centred .tm__col, .tm__after { gap: var(--sp-4); }
+}

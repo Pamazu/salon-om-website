@@ -34,7 +34,8 @@ S_PATH_HOOK = 'Four steps, and the first is a conversation.'   # as G
 S_IW_REWARD = 'You leave the call knowing your next step, and whether Maggie is the one to walk it with you.'   # as G
 PROOF = ('proof', dict(id='hosts', eyebrow=M.TEAM_LINE, title=draft(S_TEAM_HOOK),
                        people=[dict(M.TEAM[i], img=TEAM_IMG[i][0], alt=TEAM_IMG[i][1]) for i in range(3)],
-                       quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA, line_img=AVEDA_PHOTO))   # its picture: task a749167b
+                       quotes=M.QUOTES[:2], line_k='Why Aveda', line=M.AVEDA + ' ' + S_AVEDA, line_img=AVEDA_PHOTO,   # its picture: task a749167b
+                       options=S.TEAM_NEW, option_label=S.TEAM_LIVE_LABEL_S))   # task 9999ef8a
 # task d9a90616 (J 19 Nov 12:06 Z: "the call to action ... should be before the gate to the other world"): Begin, then the
 # second door as the world's last slide, the footer inside it; Inner Work's twin follows by itself
 SALON = [dict_with(salon_hero(proof=True, visit='visit', line=S_HERO_LINE), rot=draft(S_ROT)), VISIT, PROOF, services(),

@@ -2,6 +2,7 @@
 // width: the two sections whole, stacked as the page lays them out (?shot: every section arrived), and a strip of frames as
 // the page scrolls from the first one's end into the second. SITE=<a tree> serves another commit's pages (run-at-ref
 // --mirror OLD=salon-om-website@<sha>:tree, SITE=$OLD) with this commit's tools. WebKit, the pool's pinned one when given.
+// The same id twice: that one section whole, and the strip through it (its top at the window's top to its end at the window's end).
 // Usage: node seam.mjs <outdir> <v> <from-id> <to-id> [1440,390] [query, e.g. opt-hosts=flow] [label]
 import * as pw from 'playwright';
 import fs from 'node:fs'; import path from 'node:path';
@@ -30,7 +31,7 @@ for (const w of ws.split(',').map(Number)) {
   p = await open(ctx, q(''));
   await p.waitForSelector('#' + z, { state: 'attached', timeout: 20000 }).catch(() => null);
   const [ha, hz] = await p.evaluate(geo, [a, z]);
-  const from = ha.y + Math.max(0, ha.h - size.height), to = hz.y, n = 6;
+  const one = a === z, from = one ? ha.y : ha.y + Math.max(0, ha.h - size.height), to = one ? ha.y + Math.max(0, ha.h - size.height) : hz.y, n = 6;
   for (let k = 0; k <= n; k++) {
     await jump(p, Math.round(from + (to - from) * k / n)); await wait(p, 1400);
     await p.screenshot({ path: path.join(out, `${label}-${v}-${w}-seam-${k}.jpg`), type: 'jpeg', quality: 66 });
