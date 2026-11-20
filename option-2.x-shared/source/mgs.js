@@ -302,13 +302,17 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     if (el.getAttribute('href') === href[w]) { seen.set(el, false); io.observe(el); }
   });
   // and while the footer is on screen: the page has ended, and the footer's own "Begin" leads to this world's close. A footer
-  // that only touches the window's lower edge is not on screen yet: under a slide exactly one window tall (G, S: the second
-  // door, task d9a90616) an observer with no margin already counts it, and the bar would be gone from the door itself
-  var io3 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -2px 0px' });
+  // that only touches the window's lower edge, or shows a few pixels of itself, is not on screen yet: under a slide exactly one
+  // window tall (G, S: the second door, task d9a90616) an observer with no margin already counts it, and the bar would be gone
+  // from the door itself
+  var io3 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
   [].forEach.call(document.querySelectorAll('main[data-world] .cl__foot'), function (el) { seen.set(el, false); io3.observe(el); });
   // and once the closing screen fills the lower part of the window: it is where the bar leads, so the bar has nothing
   // more to offer there (round 5 QA, task 2846db82: S on a phone showed it on its own closing screen, beside the last line)
-  var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '0px 0px -40% 0px' });
+  // a last sliver of it at the window's top is not the closing screen on screen (task d9a90616): on G and S the second door
+  // follows Begin, and a pull that rests the door a pixel short left Begin's last line of pixels in the window, so the bar was
+  // gone from the door, the one place it leads back to this world's action
+  var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); apply(); }, { threshold: 0, rootMargin: '-24px 0px -40% 0px' });
   ['begin', 'c-begin'].forEach(function (id) { var s = document.getElementById(id); if (s) { seen.set(s, false); io2.observe(s); } });
   addEventListener('scroll', later, { passive: true }); addEventListener('resize', later);
   new MutationObserver(function () { setTimeout(check, 900); }).observe(root, { attributes: true, attributeFilter: ['data-world'] });
