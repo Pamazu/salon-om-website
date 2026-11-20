@@ -342,6 +342,9 @@ main[data-world="salon"] .voices .voices__t { color: var(--forest-deep); }
    Begin; the stage's own lower edge parts the two, so the hairline goes */
 .s:not(.cl) > .cl__foot { position: relative; max-width: none; padding: var(--sp-5) max(var(--gutter), calc((100% - 1680px) / 2 + var(--gutter))) calc(var(--sp-3) + env(safe-area-inset-bottom, 0px)); background: var(--umber); color: var(--ivory); text-align: left; }
 .s:not(.cl) > .cl__foot .foot__in { padding-top: 0; border-top: 0; }
+/* G's door, Shift+V "The footer as its own band" (mgs_parts.FOOT_BAND, task b623ab76): the band as it was live from 20 Nov 14:36 Z,
+   a fine line above the details, as under Begin */
+.s.s--band > .cl__foot .foot__in { padding-top: var(--sp-4); border-top: 1px solid color-mix(in srgb, var(--ivory) 14%, transparent); }
 /* under the second door's earlier look (its Shift+V option, the words straight on the photo): that slide keeps one window
    for its picture and words, the band follows it */
 .s.bridge:has(> .cl__foot) { height: auto; grid-template-rows: 100vh auto; grid-template-rows: 100svh auto; }

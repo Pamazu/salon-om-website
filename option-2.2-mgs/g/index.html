@@ -1534,6 +1534,9 @@ main[data-world] .voices .voices__t { color: var(--forest-deep); }
    Begin; the stage's own lower edge parts the two, so the hairline goes */
 .s:not(.cl) > .cl__foot { position: relative; max-width: none; padding: var(--sp-5) max(var(--gutter), calc((100% - 1680px) / 2 + var(--gutter))) calc(var(--sp-3) + env(safe-area-inset-bottom, 0px)); background: var(--umber); color: var(--ivory); text-align: left; }
 .s:not(.cl) > .cl__foot .foot__in { padding-top: 0; border-top: 0; }
+/* G's door, Shift+V "The footer as its own band" (mgs_parts.FOOT_BAND, task b623ab76): the band as it was live from 20 Nov 14:36 Z,
+   a fine line above the details, as under Begin */
+.s.s--band > .cl__foot .foot__in { padding-top: var(--sp-4); border-top: 1px solid color-mix(in srgb, var(--ivory) 14%, transparent); }
 /* under the second door's earlier look (its Shift+V option, the words straight on the photo): that slide keeps one window
    for its picture and words, the band follows it */
 .s.bridge:has(> .cl__foot) { height: auto; grid-template-rows: 100vh auto; grid-template-rows: 100svh auto; }
@@ -2629,7 +2632,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
       <div class="foot__base"><span>© 2026 Maggie Woodward · Option 2.2 · Guided</span><span>Aveda is a trademark of Aveda Corporation. The photos of the salon and its people are real, a few retouched with AI to remove clutter. Every other picture and film is made with AI, including the menu pictures with their guests.</span></div>
     </footer>
     <div class="s__shade"></div>
-  </template><template data-opt-for="c-pause" data-opt="standing" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
+  </template><template data-opt-for="deeper" data-opt="band" data-attrs="{&quot;class&quot;:&quot;s s--auto dr s--band&quot;,&quot;id&quot;:&quot;deeper&quot;,&quot;data-tone&quot;:&quot;light&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-labelledby&quot;:&quot;deeper-t&quot;}" data-same></template><template data-opt-for="c-pause" data-opt="standing" data-attrs="{&quot;class&quot;:&quot;s mani&quot;,&quot;id&quot;:&quot;c-pause&quot;,&quot;data-tone&quot;:&quot;dark&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-label&quot;:&quot;The pause&quot;}">
     <div class="mani__ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.5" pathLength="1"/><circle cx="50" cy="50" r="43" pathLength="1"/></svg></div>
     <div class="s__leave mani__in">
       <figure class="br"><div class="br__ph"><div class="br__zoom"><img data-pic="real-maggie-lounge-seated.webp" src="img/real-maggie-lounge-seated.webp?v=01e1e68e17" srcset="img/hd/real-maggie-lounge-seated-640.webp?v=41e6285a2a 640w, img/hd/real-maggie-lounge-seated-960.webp?v=e938694c0c 960w, img/hd/real-maggie-lounge-seated-1280.webp?v=ada9e4e0d6 1280w, img/hd/real-maggie-lounge-seated-1920.webp?v=1015be1dcd 1920w, img/hd/real-maggie-lounge-seated-2560.webp?v=2b76f3f064 2560w, img/hd/real-maggie-lounge-seated-3840.webp?v=f113cc03da 3840w, img/hd/real-maggie-lounge-seated-5332.webp?v=bd452bb214 5332w" sizes="(max-width: 700px) 155vw, (max-width: 2000px) 108vw, 80vw" alt="Maggie Woodward seated by the fireplace in the lounge at Salon OM, in a white blazer" decoding="async"></div></div></figure><p class="mani__label label a-left" style="--d:.1s">The pause</p>
@@ -2713,7 +2716,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
       <div class="foot__base"><span>© 2026 Maggie Woodward · Option 2.2 · Guided</span><span>Aveda is a trademark of Aveda Corporation. The photos of the salon and its people are real, a few retouched with AI to remove clutter. Every other picture and film is made with AI, including the menu pictures with their guests.</span></div>
     </footer>
     <div class="s__shade"></div>
-  </template></div>
+  </template><template data-opt-for="c-deeper" data-opt="band" data-attrs="{&quot;class&quot;:&quot;s s--auto dr s--band&quot;,&quot;id&quot;:&quot;c-deeper&quot;,&quot;data-tone&quot;:&quot;light&quot;,&quot;data-sound&quot;:&quot;bed&quot;,&quot;aria-labelledby&quot;:&quot;c-deeper-t&quot;}" data-same></template></div>
 <main id="main-salon" data-world="salon">
   <section class="s hero" id="top" data-tone="dark" data-sound="bed" aria-label="Salon OM">
     <div class="s__media"><div class="s__zoom"><img src="media/hero-poster.webp?v=91e8d5861d" alt="" decoding="async"><video data-src="media/hero.mp4?v=a6babba4a6" data-src-hevc="media/hero-hevc.mp4?v=48db7a5c1d" muted playsinline loop preload="none" aria-hidden="true"></video></div></div><p class="ai-mark ai-mark--film">Made with AI</p>
@@ -2923,7 +2926,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </div>
     <div class="s__shade"></div>
   </section>
-  <section data-opt-key="deeper" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;F · synced with the scroll&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The words on the photo (before 19 Nov)&quot;,&quot;d&quot;:&quot;White words straight on the photo under a dark shade.&quot;}]" data-opt-name="The second door" class="s s--auto dr" id="deeper" data-tone="light" data-sound="bed" aria-labelledby="deeper-t">
+  <section data-opt-key="deeper" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;F · synced with the scroll&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The words on the photo (before 19 Nov)&quot;,&quot;d&quot;:&quot;White words straight on the photo under a dark shade.&quot;},{&quot;k&quot;:&quot;band&quot;,&quot;n&quot;:&quot;The footer as its own band&quot;,&quot;d&quot;:&quot;As live from 20 Nov 14:36 Z: the footer follows the door as its own band, a fine line above its details.&quot;}]" data-opt-name="The second door" class="s s--auto dr" id="deeper" data-tone="light" data-sound="bed" aria-labelledby="deeper-t">
     <div class="sh" data-sheet="FS" data-subject=".44 .31 .56 .93">
       <div class="sh__ph"><img fetchpriority="low" src="img/meadow.webp?v=2e325a4357" srcset="img/hd/meadow-640.webp?v=9ab22dd07c 640w, img/hd/meadow-960.webp?v=8d0a066b71 960w, img/hd/meadow-1280.webp?v=311cec03e5 1280w, img/hd/meadow-1920.webp?v=7bdfa1fbe2 1920w, img/hd/meadow-2560.webp?v=b2cf6161a8 2560w, img/hd/meadow-3840.webp?v=c9994018c1 3840w, img/hd/meadow-5120.webp?v=45855a2cb0 5120w, img/hd/meadow-6400.webp?v=c22b068267 6400w, img/hd/meadow-8000.webp?v=682081adb3 8000w" alt="" sizes="100vw" decoding="async" loading="lazy"></div><p class="ai-mark">Made with AI</p>
       <div class="sh__words">
@@ -3144,7 +3147,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </div>
     <div class="s__shade"></div>
   </section>
-  <section data-opt-key="deeper" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;F · synced with the scroll&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The words on the photo (before 19 Nov)&quot;,&quot;d&quot;:&quot;White words straight on the photo under a dark shade.&quot;}]" data-opt-name="The second door" class="s s--auto dr" id="c-deeper" data-tone="light" data-sound="bed" aria-labelledby="c-deeper-t">
+  <section data-opt-key="deeper" data-opt="live" data-opts="[{&quot;k&quot;:&quot;live&quot;,&quot;n&quot;:&quot;F · synced with the scroll&quot;},{&quot;k&quot;:&quot;photo&quot;,&quot;n&quot;:&quot;The words on the photo (before 19 Nov)&quot;,&quot;d&quot;:&quot;White words straight on the photo under a dark shade.&quot;},{&quot;k&quot;:&quot;band&quot;,&quot;n&quot;:&quot;The footer as its own band&quot;,&quot;d&quot;:&quot;As live from 20 Nov 14:36 Z: the footer follows the door as its own band, a fine line above its details.&quot;}]" data-opt-name="The second door" class="s s--auto dr" id="c-deeper" data-tone="light" data-sound="bed" aria-labelledby="c-deeper-t">
     <div class="sh" data-sheet="FS" data-subject=".46 .10 .84 .50">
       <div class="sh__ph"><img fetchpriority="low" src="img/real-shampoo-basins.webp?v=c239853d88" srcset="img/hd/real-shampoo-basins-640.webp?v=15e3cd63bd 640w, img/hd/real-shampoo-basins-960.webp?v=d3eb71821a 960w, img/hd/real-shampoo-basins-1280.webp?v=e0f1c2483c 1280w, img/hd/real-shampoo-basins-1920.webp?v=c6ba6fdb68 1920w, img/hd/real-shampoo-basins-2560.webp?v=8f6b4fff30 2560w, img/hd/real-shampoo-basins-3840.webp?v=63f293952f 3840w, img/hd/real-shampoo-basins-5120.webp?v=ad8430f79f 5120w, img/hd/real-shampoo-basins-6400.webp?v=1069edf949 6400w, img/hd/real-shampoo-basins-8192.webp?v=e7036be88c 8192w" alt="" sizes="100vw" decoding="async" loading="lazy"></div>
       <div class="sh__words">
@@ -3166,7 +3169,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="s__shade"></div>
   </section>
 </main>
-<script>window.OM_BUILD="8e4f6d2306c9";</script>
+<script>window.OM_BUILD="1690cd5a1c63";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v

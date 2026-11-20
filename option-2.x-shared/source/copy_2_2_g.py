@@ -164,7 +164,7 @@ SALON = [
   # SECTION"; 13:43 Z: "too much margin at the top ... NOT COntknous ... the background color is not exactly the same")
   (S.om_begin, dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                     btn=btn(BOOK, BOOK_URL, arrow=True), begin=BEGIN_G[1])),
-  door(short=False),
+  _with(door(short=False), options=S.DOOR_OPTIONS + [FOOT_BAND]),   # the footer band as it was live, under Shift+V (task b623ab76)
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 

@@ -236,6 +236,13 @@ def cfg(letter, name, salon, coaching, menu_salon, menu_coaching, steps=True):
     }
 
 
+# G's footer as its own band after the second door, as live from 20 Nov 14:36 Z (task cde7849b), kept as a Shift+V option of the
+# door beside row 14's footer inside it, the default (CEO MA 20 Nov 16:20 Z, task b623ab76: "a change adds an option; today's look
+# stays as a Shift+V option unless J's words name its removal"): the footer's details under a fine line, as under Begin
+FOOT_BAND = dict(key='band', label='The footer as its own band', note='As live from 20 Nov 14:36 Z: the footer follows the door as its own band, a fine line above its details.',
+                 foot_band=True)
+
+
 def _close(slides):
     """Begin is drawn as the closing screen (mgs_sections.close) wherever it stands, and the footer sits inside the slide it
     follows, the world's last (mgs_sections.with_foot; approved feature 14): Begin's own on M, the second door's on G and S,

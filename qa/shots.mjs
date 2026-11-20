@@ -9,7 +9,7 @@ const srv = await serve(REPO); const base = `http://127.0.0.1:${srv.address().po
 // WebKit only (J, 4 Nov: browser checks in WebKit); the pool's pinned one with run-at-ref --asset WEBKIT, as gate-rows.mjs
 const b = await pw.webkit.launch(process.env.WEBKIT ? { executablePath: process.env.WEBKIT } : {}); const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: D, isMobile: W < 600, hasTouch: W < 600 });
 ctx.on('page', (pg) => { pg.on('pageerror', (e) => console.log('PAGEERROR', e.message.slice(0, 160))); pg.on('console', (m) => { if (m.type() === 'error') console.log('CONSOLE', m.text().slice(0, 160)); }); pg.on('requestfailed', (r) => console.log('REQFAIL', r.url().slice(-80))); });
-const p = await open(ctx, `${base}/${v}/`);
+const p = await open(ctx, `${base}/${v}/${process.env.QUERY ? '?' + process.env.QUERY : ''}`);   // QUERY=opt-deeper=band: the page on a section's option, as a shared link opens it
 for (const id of ids.split(',')) {
   if (id.startsWith('c-')) { if (!(await p.evaluate(() => document.body.classList.contains('is-coaching') || document.documentElement.classList.contains('is-coaching')))) await toWorld(p, 'coaching'); }
   const y = await p.evaluate((id) => { const e = document.getElementById(id); return e ? Math.round(e.getBoundingClientRect().top + scrollY) : -1; }, id);

@@ -130,6 +130,8 @@ def with_foot(kind):
         import build
         own = {k: v for k, v in d.items() if k != 'foot'}
         html = kind(own, world) if callable(kind) else build.R[kind](own)
+        if d.get('foot_band'):      # the footer as its own band (mgs_parts.FOOT_BAND): one class on the section, its content the same
+            html = re.sub(r'^(\s*<section\b[^>]*\sclass=")([^"]*)"', lambda c: f'{c.group(1)}{c.group(2)} s--band"', html, count=1)
         m = re.search(r'(\n[ \t]*<div class="s__shade"></div>)?\n[ \t]*</section>\s*$', html)
         assert m, 'with_foot: a renderer drew something other than one <section>'
         return html[:m.start()] + '\n    ' + _foot(d['foot'], d['draft']) + html[m.start():]
