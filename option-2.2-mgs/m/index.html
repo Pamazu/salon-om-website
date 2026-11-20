@@ -2351,14 +2351,13 @@ html[data-motion="calm"] .s.ch--scroll, html[data-shot] .s.ch--scroll { height: 
 html[data-motion="calm"] .ch--stack.is-active .ai-mark--film {opacity: 0;}
 /* the scroll ways (mgs.js --e: 0 the photo, 1 the film; calm motion and screenshots keep 0): C · Crossfade as the photo
    dissolves; D · The sheet as the last rib, the one the label sits on at the right, clears; B · The breath on the film's own
-   corner as it opens, once the film is taller than the label */
+   top corner as it opens (its foot crossed the steps' facts), held under the header, once the film is taller than the label */
 .ch--scroll .ai-mark--film { transition: none; }
 .ch--scroll-fade.ch--stack .ai-mark--film, .ch--scroll-fade.ch--stack.is-active .ai-mark--film { opacity: var(--e, 0); }
 .ch--scroll-sheet.ch--stack .ai-mark--film, .ch--scroll-sheet.ch--stack.is-active .ai-mark--film { opacity: clamp(0, calc((var(--e, 0) - .7) / .3), 1); }
 .ch--scroll-breath.ch--stack .ai-mark--film, .ch--scroll-breath.ch--stack.is-active .ai-mark--film { opacity: clamp(0, calc((var(--e, 0) - .05) * 20), 1);
-  right: calc(var(--cs0) * (1 - var(--e, 0)) + 16px); bottom: calc(49.4% * (1 - var(--e, 0)) + 16px); }
-@media (max-width: 600px) { .ch--scroll-breath.ch--stack .ai-mark--film, .ch--scroll-breath.ch--stack.is-active .ai-mark--film { bottom: auto;
-  top: max(calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px), calc(49.4% * (1 - var(--e, 0)) + 16px)); } }
+  right: calc(var(--cs0) * (1 - var(--e, 0)) + 16px); bottom: auto;
+  top: max(calc(var(--hdr) + env(safe-area-inset-top, 0px) + 6px), calc(49.4% * (1 - var(--e, 0)) + 16px)); }
 /* the words on the sheet read comfortably at every width, in proportion to their heading (task 4739f125; J 19 Nov 14:26 Z:
    "the text is way to small here and here", the second door and Why Aveda at his window): one size for the body that grows
    with the window (18 px at 1440, 28 px at 3230), and the eyebrow, the facts, the source line and the buttons from it; the
@@ -3135,7 +3134,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="5e6557523e61";</script>
+<script>window.OM_BUILD="96df38da13f2";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
