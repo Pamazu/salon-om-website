@@ -1360,3 +1360,19 @@ html[data-shot] .tm__band img { transform: none !important; }
   .tm__desc { display: none; }
   .tm--centred .tm__col, .tm__after { gap: var(--sp-4); }
 }
+
+/* QA round 1 (WebKit, 1440 and 390): the breath's stage holds while its run scrolls (a section clips with overflow: hidden,
+   which stops a sticky; clip does not, as the pause's own breath); the people as standing cards where the words are centred
+   or three share a column; the breath's Aveda line in the dark ground's own colours; on a phone the names one under another */
+.s.tm--breath { overflow: clip !important; }
+.tm--breath .tm__line { color: rgba(245, 238, 228, .8); }
+.tm--breath .tm__line b { color: #F5EEE4; }
+.tm--centred .tm__p, .tm--breath .tm__p, .tm__people--n3 .tm__p { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 12px; }
+.tm--centred .tm__av, .tm--breath .tm__av { width: 88px; height: 88px; }
+.tm--centred .tm__desc, .tm--breath .tm__desc { margin-left: auto; margin-right: auto; }
+.tm--band .tm__people--n3 .tm__p { justify-items: start; text-align: left; }
+@media (max-width: 760px) {
+  .tm__names { display: grid; gap: 14px; justify-items: center; }
+  .tm--centred .tm__p, .tm--breath .tm__p, .tm__people--n3 .tm__p { grid-template-columns: 56px minmax(0, 1fr); justify-items: start; text-align: left; gap: var(--sp-2); }
+  .tm--centred .tm__av, .tm--breath .tm__av { width: 56px; height: 56px; }
+}

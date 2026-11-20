@@ -17,7 +17,8 @@
 // Writes qa/out-gaps-<browser>/gaps.json (every gap measured and every flag) and, for each flagged section and width, a
 // picture of each flagged gap, the window centred on it and the gap marked in red: <v>-<world>-<id>-<w>-<n>.jpg.
 // Sizes: the seven above plus 1976 x 1209 and 3230 x 1319 (J's 6K screen), as lens-contrast.mjs.
-// node run.mjs gaps [webkit|chromium] [m,g,s]     SIZES=1440,390 or IDS=sec1,sec2 narrow it
+// node run.mjs gaps [webkit|chromium] [m,g,s]     SIZES=1440,390 or IDS=sec1,sec2 narrow it; QUERY=opt-hosts=band walks a
+// section's Shift+V option as a shared link opens it (task 9999ef8a), into qa/out-gaps-<browser>-<query>/
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -29,7 +30,8 @@ const BROWSER = process.env.BROWSER || 'webkit';
 const VERS = (process.env.VERS || 'm,g,s').split(',');
 const ONLY_W = (process.env.SIZES || '').split(',').filter(Boolean);
 const ONLY_ID = (process.env.IDS || '').split(',').filter(Boolean);
-const OUT = path.join(REPO, 'qa', `out-gaps-${BROWSER}`);
+const QUERY = process.env.QUERY || '';
+const OUT = path.join(REPO, 'qa', `out-gaps-${BROWSER}${QUERY ? '-' + QUERY.replace(/[^a-z0-9]+/gi, '-') : ''}`);
 fs.mkdirSync(OUT, { recursive: true });
 
 // runs in the page: every stack of every section of one world. A stack is an element whose visible children (the ones
@@ -171,7 +173,7 @@ console.log(BROWSER, b.version());
 const sizes = [...SIZES(BROWSER), ['1976', vp(1976, 1209)], ['3230', vp(3230, 1319)]].filter(([w]) => !ONLY_W.length || ONLY_W.includes(w));
 const med = (xs) => { const v = [...xs].sort((x, y) => x - y); return v.length ? v[Math.floor((v.length - 1) / 2)] : 0; };
 const page = async (v, world, opt) => {
-  const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/?shot`);
+  const ctx = await b.newContext(opt), p = await open(ctx, `${base}/${v}/?shot${QUERY ? '&' + QUERY : ''}`);
   if (world === 'coaching') await toWorld(p, 'coaching');
   await wait(p, 600);
   return { ctx, p };

@@ -2560,6 +2560,22 @@ html[data-shot] .tm__band img { transform: none !important; }
   .tm--centred .tm__col, .tm__after { gap: var(--sp-4); }
 }
 
+/* QA round 1 (WebKit, 1440 and 390): the breath's stage holds while its run scrolls (a section clips with overflow: hidden,
+   which stops a sticky; clip does not, as the pause's own breath); the people as standing cards where the words are centred
+   or three share a column; the breath's Aveda line in the dark ground's own colours; on a phone the names one under another */
+.s.tm--breath { overflow: clip !important; }
+.tm--breath .tm__line { color: rgba(245, 238, 228, .8); }
+.tm--breath .tm__line b { color: #F5EEE4; }
+.tm--centred .tm__p, .tm--breath .tm__p, .tm__people--n3 .tm__p { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 12px; }
+.tm--centred .tm__av, .tm--breath .tm__av { width: 88px; height: 88px; }
+.tm--centred .tm__desc, .tm--breath .tm__desc { margin-left: auto; margin-right: auto; }
+.tm--band .tm__people--n3 .tm__p { justify-items: start; text-align: left; }
+@media (max-width: 760px) {
+  .tm__names { display: grid; gap: 14px; justify-items: center; }
+  .tm--centred .tm__p, .tm--breath .tm__p, .tm__people--n3 .tm__p { grid-template-columns: 56px minmax(0, 1fr); justify-items: start; text-align: left; gap: var(--sp-2); }
+  .tm--centred .tm__av, .tm--breath .tm__av { width: 56px; height: 56px; }
+}
+
 /* the option switcher (task e5325977, options.js): a small panel in the page's own floating glass (the bottom anchor's,
    next.css .wdoor), anchored bottom left above the tweak button it sits beside; pill rows, the chosen one filled ivory as the
    header's chosen world is; no outline on any filled shape. Its colours are fixed, not the theme's, as the tweak button's
@@ -2742,7 +2758,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
       <figure class="tm__ph a-up" style="--d:.45s"><img src="img/real-maggie-arms-crossed.webp?v=666e880c79" srcset="img/hd/real-maggie-arms-crossed-640.webp?v=beccb10a23 640w, img/hd/real-maggie-arms-crossed-960.webp?v=e3ea2153db 960w, img/hd/real-maggie-arms-crossed-1280.webp?v=d5e3a8a9f7 1280w, img/hd/real-maggie-arms-crossed-1920.webp?v=d9d34a7f36 1920w, img/hd/real-maggie-arms-crossed-2560.webp?v=6c74af683a 2560w, img/hd/real-maggie-arms-crossed-3305.webp?v=266ad71a38 3305w" alt="Maggie Woodward in front of the Aveda shelves at Salon OM" sizes="(max-width: 700px) 78vw, 460px" decoding="async"></figure>
       <div class="tm__words a-up" style="--d:.6s"><p class="tm__intro tx">Maggie created Salon OM as a place to be seen, heard and cared for. It begins with your hair and often becomes something more. You are held in OM.</p><p class="tm__lead"><b>Maggie Woodward</b><span class="tl__role tx">Founder and Stylist</span></p></div>
       
-      <div class="a-up" style="--d:.9s"><div class="tm__people" style="--n:2"><p class="label tm__with">With</p><article class="tm__p"><img class="tm__av" src="img/real-katie.webp?v=ff96085848" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="tl__role tx">Stylist</p><p class="tm__desc tx">A Central Coast native with over 14 years of experience, Katie specializes in lived-in color, low-maintenance blonding, precision cutting and luxury extensions. She creates hair that feels luxurious, natural and effortlessly you.</p></div></article><article class="tm__p"><img class="tm__av" src="img/real-chesney.webp?v=07d08890e1" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="tl__role tx">Salon Concierge</p><p class="tm__desc tx">Chesney welcomes you with your favorite drink and a warm smile, and takes care of every detail, so your time in the chair is yours alone. She is beginning her cosmetology training and will soon join our team as a Salon OM stylist.</p></div></article></div></div>
+      <div class="a-up" style="--d:.9s"><div class="tm__people tm__people--n2" style="--n:2"><p class="label tm__with">With</p><article class="tm__p"><img class="tm__av" src="img/real-katie.webp?v=ff96085848" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="tl__role tx">Stylist</p><p class="tm__desc tx">A Central Coast native with over 14 years of experience, Katie specializes in lived-in color, low-maintenance blonding, precision cutting and luxury extensions. She creates hair that feels luxurious, natural and effortlessly you.</p></div></article><article class="tm__p"><img class="tm__av" src="img/real-chesney.webp?v=07d08890e1" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="tl__role tx">Salon Concierge</p><p class="tm__desc tx">Chesney welcomes you with your favorite drink and a warm smile, and takes care of every detail, so your time in the chair is yours alone. She is beginning her cosmetology training and will soon join our team as a Salon OM stylist.</p></div></article></div></div>
       
       
     </div>
@@ -2751,7 +2767,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <figure class="tm__band"><img src="img/real-maggie-arms-crossed.webp?v=666e880c79" srcset="img/hd/real-maggie-arms-crossed-640.webp?v=beccb10a23 640w, img/hd/real-maggie-arms-crossed-960.webp?v=e3ea2153db 960w, img/hd/real-maggie-arms-crossed-1280.webp?v=d5e3a8a9f7 1280w, img/hd/real-maggie-arms-crossed-1920.webp?v=d9d34a7f36 1920w, img/hd/real-maggie-arms-crossed-2560.webp?v=6c74af683a 2560w, img/hd/real-maggie-arms-crossed-3305.webp?v=266ad71a38 3305w" alt="Maggie Woodward in front of the Aveda shelves at Salon OM" sizes="(max-width: 1650px) 100vw, 1650px" decoding="async"></figure>
     <div class="tm__below s__leave">
       <div class="tm__l"><p class="eyebrow a-left" style="--d:.15s">Meet the team</p><h2 class="mid" id="hosts-t"><span class="mask"><span class="mask__in" style="--d:.3s">Maggie, Katie and Chesney</span></span></h2><div class="a-up" style="--d:.55s"><p class="tm__intro tx">Maggie created Salon OM as a place to be seen, heard and cared for. It begins with your hair and often becomes something more. You are held in OM.</p><p class="tm__lead"><b>Maggie Woodward</b><span class="tl__role tx">Founder and Stylist</span></p></div></div>
-      <div class="tm__r a-up" style="--d:.75s"><div class="tm__people" style="--n:2"><p class="label tm__with">With</p><article class="tm__p"><img class="tm__av" src="img/real-katie.webp?v=ff96085848" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="tl__role tx">Stylist</p><p class="tm__desc tx">A Central Coast native with over 14 years of experience, Katie specializes in lived-in color, low-maintenance blonding, precision cutting and luxury extensions. She creates hair that feels luxurious, natural and effortlessly you.</p></div></article><article class="tm__p"><img class="tm__av" src="img/real-chesney.webp?v=07d08890e1" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="tl__role tx">Salon Concierge</p><p class="tm__desc tx">Chesney welcomes you with your favorite drink and a warm smile, and takes care of every detail, so your time in the chair is yours alone. She is beginning her cosmetology training and will soon join our team as a Salon OM stylist.</p></div></article></div>
+      <div class="tm__r a-up" style="--d:.75s"><div class="tm__people tm__people--n2" style="--n:2"><p class="label tm__with">With</p><article class="tm__p"><img class="tm__av" src="img/real-katie.webp?v=ff96085848" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="tl__role tx">Stylist</p><p class="tm__desc tx">A Central Coast native with over 14 years of experience, Katie specializes in lived-in color, low-maintenance blonding, precision cutting and luxury extensions. She creates hair that feels luxurious, natural and effortlessly you.</p></div></article><article class="tm__p"><img class="tm__av" src="img/real-chesney.webp?v=07d08890e1" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="tl__role tx">Salon Concierge</p><p class="tm__desc tx">Chesney welcomes you with your favorite drink and a warm smile, and takes care of every detail, so your time in the chair is yours alone. She is beginning her cosmetology training and will soon join our team as a Salon OM stylist.</p></div></article></div>
         </div>
     </div>
     <div class="s__shade"></div>
@@ -2765,7 +2781,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="tm__col tm__after s__leave">
       <div class="a-up" style="--d:.2s"><p class="tm__intro tx">Maggie created Salon OM as a place to be seen, heard and cared for. It begins with your hair and often becomes something more. You are held in OM.</p></div>
       
-      <div class="a-up" style="--d:.5s"><div class="tm__people" style="--n:2"><p class="label tm__with">With</p><article class="tm__p"><img class="tm__av" src="img/real-katie.webp?v=ff96085848" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="tl__role tx">Stylist</p><p class="tm__desc tx">A Central Coast native with over 14 years of experience, Katie specializes in lived-in color, low-maintenance blonding, precision cutting and luxury extensions. She creates hair that feels luxurious, natural and effortlessly you.</p></div></article><article class="tm__p"><img class="tm__av" src="img/real-chesney.webp?v=07d08890e1" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="tl__role tx">Salon Concierge</p><p class="tm__desc tx">Chesney welcomes you with your favorite drink and a warm smile, and takes care of every detail, so your time in the chair is yours alone. She is beginning her cosmetology training and will soon join our team as a Salon OM stylist.</p></div></article></div></div>
+      <div class="a-up" style="--d:.5s"><div class="tm__people tm__people--n2" style="--n:2"><p class="label tm__with">With</p><article class="tm__p"><img class="tm__av" src="img/real-katie.webp?v=ff96085848" alt="Katie Paonessa at Salon OM" decoding="async"><div><h3>Katie Paonessa</h3><p class="tl__role tx">Stylist</p><p class="tm__desc tx">A Central Coast native with over 14 years of experience, Katie specializes in lived-in color, low-maintenance blonding, precision cutting and luxury extensions. She creates hair that feels luxurious, natural and effortlessly you.</p></div></article><article class="tm__p"><img class="tm__av" src="img/real-chesney.webp?v=07d08890e1" alt="Chesney Missamore at Salon OM" decoding="async"><div><h3>Chesney Missamore</h3><p class="tl__role tx">Salon Concierge</p><p class="tm__desc tx">Chesney welcomes you with your favorite drink and a warm smile, and takes care of every detail, so your time in the chair is yours alone. She is beginning her cosmetology training and will soon join our team as a Salon OM stylist.</p></div></article></div></div>
       
       
     </div>
@@ -2864,7 +2880,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
       <figure class="tm__ph a-up" style="--d:.45s"><img src="img/real-maggie-outdoor-portrait.webp?v=ccc9e51f36" srcset="img/hd/real-maggie-outdoor-portrait-640.webp?v=fdf02895fd 640w, img/hd/real-maggie-outdoor-portrait-960.webp?v=706c3fec2d 960w, img/hd/real-maggie-outdoor-portrait-1280.webp?v=bc115658bf 1280w, img/hd/real-maggie-outdoor-portrait-1920.webp?v=ca85723070 1920w, img/hd/real-maggie-outdoor-portrait-2560.webp?v=1634b80c71 2560w, img/hd/real-maggie-outdoor-portrait-3305.webp?v=4bf77ff7c9 3305w" alt="Maggie Woodward outside in a white blazer, smiling" sizes="(max-width: 700px) 78vw, 460px" decoding="async"></figure>
       <div class="tm__words a-up" style="--d:.6s"><p class="tm__intro tx">In Inner Work with Maggie, I am your guide to a deeper knowing of yourself, uncovering the patterns and beliefs that may be holding you back, so you can step into your fullest potential with clarity, calm and confidence.</p><p class="tm__lead"><b>Maggie Woodward</b><span class="tl__role tx">Coach and hypnotherapist</span></p><ul class="tl__creds tx"><li>Certified Rapid Transformational Coach, including ICF-approved coach training, The School of Rapid Transformational Therapy®</li><li>Certified Hypnotherapist, The School of Rapid Transformational Therapy®</li><li>Certified in Rapid Transformational Therapy® (RTT®)</li><li>Somatic EMDR Therapy Certificate, The Embody Lab</li><li>IFS-informed, with ongoing study through the IFS Institute</li><li>Ongoing education as a member of The Embody Lab, with live trainings led by licensed therapists and PhDs, and the study of neuroscience and human behavior</li></ul></div>
       
-      <div class="a-up" style="--d:.9s"><div class="tm__people" style="--n:0"></div></div>
+      <div class="a-up" style="--d:.9s"><div class="tm__people tm__people--n0" style="--n:0"></div></div>
       
       
     </div>
@@ -2873,7 +2889,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <figure class="tm__band"><img src="img/real-maggie-outdoor-portrait.webp?v=ccc9e51f36" srcset="img/hd/real-maggie-outdoor-portrait-640.webp?v=fdf02895fd 640w, img/hd/real-maggie-outdoor-portrait-960.webp?v=706c3fec2d 960w, img/hd/real-maggie-outdoor-portrait-1280.webp?v=bc115658bf 1280w, img/hd/real-maggie-outdoor-portrait-1920.webp?v=ca85723070 1920w, img/hd/real-maggie-outdoor-portrait-2560.webp?v=1634b80c71 2560w, img/hd/real-maggie-outdoor-portrait-3305.webp?v=4bf77ff7c9 3305w" alt="Maggie Woodward outside in a white blazer, smiling" sizes="(max-width: 1650px) 100vw, 1650px" decoding="async"></figure>
     <div class="tm__below s__leave">
       <div class="tm__l"><p class="eyebrow a-left" style="--d:.15s">Credentials</p><h2 class="mid" id="c-hosts-t"><span class="mask"><span class="mask__in" style="--d:.3s">Maggie Woodward</span></span></h2><div class="a-up" style="--d:.55s"><p class="tm__intro tx">In Inner Work with Maggie, I am your guide to a deeper knowing of yourself, uncovering the patterns and beliefs that may be holding you back, so you can step into your fullest potential with clarity, calm and confidence.</p><p class="tm__lead"><b>Maggie Woodward</b><span class="tl__role tx">Coach and hypnotherapist</span></p><ul class="tl__creds tx"><li>Certified Rapid Transformational Coach, including ICF-approved coach training, The School of Rapid Transformational Therapy®</li><li>Certified Hypnotherapist, The School of Rapid Transformational Therapy®</li><li>Certified in Rapid Transformational Therapy® (RTT®)</li><li>Somatic EMDR Therapy Certificate, The Embody Lab</li><li>IFS-informed, with ongoing study through the IFS Institute</li><li>Ongoing education as a member of The Embody Lab, with live trainings led by licensed therapists and PhDs, and the study of neuroscience and human behavior</li></ul></div></div>
-      <div class="tm__r a-up" style="--d:.75s"><div class="tm__people" style="--n:0"></div>
+      <div class="tm__r a-up" style="--d:.75s"><div class="tm__people tm__people--n0" style="--n:0"></div>
         </div>
     </div>
     <div class="s__shade"></div>
@@ -2887,7 +2903,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     <div class="tm__col tm__after s__leave">
       <div class="a-up" style="--d:.2s"><p class="tm__intro tx">In Inner Work with Maggie, I am your guide to a deeper knowing of yourself, uncovering the patterns and beliefs that may be holding you back, so you can step into your fullest potential with clarity, calm and confidence.</p></div>
       
-      <div class="a-up" style="--d:.5s"><div class="tm__people" style="--n:0"></div></div>
+      <div class="a-up" style="--d:.5s"><div class="tm__people tm__people--n0" style="--n:0"></div></div>
       
       
     </div>
@@ -3355,7 +3371,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="64b0ad79dd88";</script>
+<script>window.OM_BUILD="bed9a346d091";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v

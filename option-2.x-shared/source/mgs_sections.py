@@ -608,7 +608,7 @@ def _tm_people(t, cls='tm__people'):
     """the people beside her (or all three, on S): picture, name, role and, on a letter, their words"""
     cells = ''.join(f'<article class="tm__p">{t["av"](w, "tm__av")}<div><h3>{w["name"]}</h3><p class="tl__role tx">{w["role"]}</p>{t["desc"](w)}</div></article>'
                     for w in t['withs'])
-    return (f'<div class="{cls}" style="--n:{len(t["withs"])}">' + (f'<p class="label tm__with">{t["label"]}</p>' if t['label'] else '')
+    return (f'<div class="{cls} {cls}--n{len(t["withs"])}" style="--n:{len(t["withs"])}">' + (f'<p class="label tm__with">{t["label"]}</p>' if t['label'] else '')
             + cells + '</div>')
 
 
