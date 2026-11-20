@@ -1095,10 +1095,17 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
   /* D · Into focus: the step arrives soft and sharpens as it settles, as the pause's heading does (approved feature 15).
      The soft picture is a quarter-size copy of the step's own photo, blurred once and scaled up (mgs.js .ch__soft), so only
      its opacity changes; the title follows a moment after */
-  .ch__soft { position: absolute; left: -1%; top: -1%; width: 25.5%; height: 25.5%; transform: scale(4); transform-origin: 0 0; background-size: cover; background-repeat: no-repeat; filter: blur(5px); opacity: 0; pointer-events: none; }
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus .ch__soft { opacity: clamp(0, calc((1 - var(--in, 1)) * 1.6), 1); transition: opacity .5s var(--io-soft); }
-  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus .ch__title { filter: blur(calc((1 - var(--in, 1)) * 14px)); transition: filter .6s var(--io-soft) .15s; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus .ch__soft { opacity: clamp(0, calc((1 - var(--in, 1)) * 1.6), 1); }
+  /* the title is blurred once while its step comes in (mgs.js .is-arriving) and sharpens as one short transition once it
+     has settled, never re-drawn on every scroll frame (J's 6K window) */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus .ch__title { transition: filter .9s var(--io-soft) .1s, opacity .9s var(--io-soft) .1s; }
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus.is-arriving .ch__title { filter: blur(12px); opacity: .55; transition: none; }
+  /* only the two steps in a hand-over get their own layers (mgs.js .is-moving): ten full-screen layers at 6K would not fit */
+  html:not([data-motion="calm"]):not([data-shot]) .ch--move.is-moving > :is(.s__media, .s__scrim, .s__leave), html:not([data-motion="calm"]):not([data-shot]) .ch--move-focus.is-moving .ch__soft { will-change: transform, opacity; }
 }
+.ch__soft { position: absolute; left: -1%; top: -1%; width: 25.5%; height: 25.5%; transform: scale(4); transform-origin: 0 0; background-size: cover; background-repeat: no-repeat; filter: blur(5px); opacity: 0; pointer-events: none; }
+html[data-motion="calm"] .ch__soft, html[data-shot] .ch__soft { display: none; }
+@media (prefers-reduced-motion: reduce) { .ch__soft { display: none; } }
 /* C · Cinema: the room as a wide film frame opening from its centre; the heading set huge above and below it, never on it;
    the question and the last line wait at the side */
 .ps--cinema { display: grid; align-items: center; }

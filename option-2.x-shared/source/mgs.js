@@ -719,8 +719,8 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
       if (want && top && !soft) { soft = document.createElement('i'); soft.className = 'ch__soft'; soft.setAttribute('aria-hidden', 'true'); top.appendChild(soft); }
       else if (!want && soft) top.removeChild(soft);
       if (soft) soft._src = '';
-      s._mv = null;
-      if (!s.classList.contains('ch--move')) VARS.forEach(function (k) { s.style.removeProperty(k); });
+      s._mv = null; s._mo = s._ar = undefined;
+      if (!s.classList.contains('ch--move')) { VARS.forEach(function (k) { s.style.removeProperty(k); }); s.classList.remove('is-moving', 'is-arriving'); }
     });
     steps = [].slice.call(document.querySelectorAll('.s.ch--move')).map(function (s) {
       var a = s.previousElementSibling, b = s.nextElementSibling;
@@ -737,6 +737,10 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     s.style.setProperty('--out', (x.next ? above : 0).toFixed(1) + 'px'); s.style.setProperty('--inp', (x.prev ? below : 0).toFixed(1) + 'px');
     s.style.setProperty('--ina', (x.prev ? share : 1).toFixed(4)); s.style.setProperty('--in', share.toFixed(4));
     s.style.setProperty('--rk', (x.prev ? Math.min(1, (1 - share) * 6) : 0).toFixed(3));
+    // in a hand-over (coming in or going out, on screen): its layers are promoted (mgs.css); coming in: D's title is soft
+    var moving = (below > 0 && below < vh) || (above > 0 && above < r.height), arriving = below > 0;
+    if (s._mo !== moving) { s._mo = moving; s.classList.toggle('is-moving', moving); }
+    if (s._ar !== arriving) { s._ar = arriving; s.classList.toggle('is-arriving', arriving); }
     if (x.soft && !x.soft._src && x.img) {
       var src = x.img.currentSrc || x.img.src;
       if (src && x.img.naturalWidth) { x.soft._src = src; x.soft.style.backgroundImage = 'url("' + src + '")'; x.soft.style.backgroundPosition = getComputedStyle(x.img).objectPosition; }

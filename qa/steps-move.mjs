@@ -18,8 +18,9 @@ const res = { browser: 'webkit ' + b.version(), started: new Date().toISOString(
 const ok = (name, pass, info) => { res.checks.push({ name, pass: !!pass, info }); console.log(pass ? 'PASS' : 'FAIL', name, info === undefined ? '' : JSON.stringify(info)); };
 const near = (a, b, by = 1.5) => Math.abs(a - b) <= by;
 // the page at rest at y, its snap paused; release() gives the snap back
-const hold = (p, y) => p.evaluate((y) => new Promise((done) => { const r = document.documentElement; r.style.scrollBehavior = 'auto'; r.style.scrollSnapType = 'none'; scrollTo(0, y); requestAnimationFrame(() => requestAnimationFrame(() => done(scrollY))); }), y);
-const release = (p) => p.evaluate(() => { const r = document.documentElement; r.style.scrollSnapType = ''; r.style.scrollBehavior = ''; });
+// (a rule of its own with !important: mgs.js gives the page's snap back on every scroll, so its inline style cannot hold it)
+const hold = (p, y) => p.evaluate((y) => new Promise((done) => { if (!document.getElementById('qa-hold')) { const st = document.createElement('style'); st.id = 'qa-hold'; st.textContent = 'html { scroll-snap-type: none !important; scroll-behavior: auto !important; }'; document.head.appendChild(st); } scrollTo(0, y); requestAnimationFrame(() => requestAnimationFrame(() => done(scrollY))); }), y);
+const release = (p) => p.evaluate(() => { const st = document.getElementById('qa-hold'); if (st) st.remove(); });
 const tops = (p) => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('main[data-world]:not([hidden]) > .s.ch')].map((s) => [s.id, Math.round(s.getBoundingClientRect().top + scrollY)])));
 const all = (p) => p.evaluate(() => [...document.querySelectorAll('main[data-world] > .s.ch')].map((s) => ({ id: s.id, cls: s.className, opt: s.getAttribute('data-opt'), one: Math.abs(s.offsetHeight - innerHeight) <= 1 || s.closest('[hidden]') !== null, film: !!(s.querySelector('video') || {})._qa, soft: !!s.querySelector('.ch__soft'), vars: s.style.getPropertyValue('--in') + s.style.getPropertyValue('--out') })));
 const read = (p, ids) => p.evaluate((ids) => { const g = (el) => { if (!el) return null; const r = el.getBoundingClientRect(), cs = getComputedStyle(el); return { top: +r.top.toFixed(1), h: +r.height.toFixed(1), op: +(+cs.opacity).toFixed(3), blur: (cs.filter.match(/blur\(([\d.]+)px\)/) || [0, 0])[1] * 1 }; };
@@ -52,7 +53,7 @@ for (const v of VERS) for (const w of WIDTHS) {
       // calm motion: today's hand-over, whatever the choice
       await p.evaluate(() => { document.documentElement.setAttribute('data-motion', 'calm'); scrollBy(0, -1); }); await wait(p, 900);
       const c = await read(p, ['arrive', 'unwind']);
-      ok(`${tag}: ${k} with calm motion is today's hand-over`, near(c.unwind.media.top, c.unwind.sec.top) && c.unwind.media.op === 1 && c.unwind.rad === 0 && (!c.unwind.soft || c.unwind.soft.op === 0) && c.unwind.title.blur === 0 && c.arrive.media.h >= vh - 1, { u: c.unwind.media, rad: c.unwind.rad, soft: c.unwind.soft });
+      ok(`${tag}: ${k} with calm motion is today's hand-over`, near(c.unwind.media.top, c.unwind.sec.top) && c.unwind.media.op === 1 && c.unwind.rad === 0 && (!c.unwind.soft || c.unwind.soft.op === 0 || c.unwind.soft.h === 0) && c.unwind.title.blur === 0 && c.arrive.media.h >= vh - 1, { u: c.unwind.media, rad: c.unwind.rad, soft: c.unwind.soft });
       await p.evaluate(() => { document.documentElement.removeAttribute('data-motion'); scrollBy(0, 1); }); await wait(p, 300);
       // at rest on the next step nothing is left over
       await hold(p, t.unwind); await wait(p, 1300);
@@ -62,7 +63,7 @@ for (const v of VERS) for (const w of WIDTHS) {
     // the frames through two hand-overs, a steady scroll (the snap paused)
     await hold(p, t.arrive); await wait(p, 600);
     const f = await walk(p, t.arrive, t.renew, 2800); res.frames[`${tag} ${k}`] = f;
-    if (k !== 'live') { const today = res.frames[`${tag} live`]; ok(`${tag}: ${k} scrolls through two hand-overs with no frame over 100 ms and no more long frames than today's`, f.worst <= 100 && f.over50 <= today.over50 + 1, { it: f, today }); }
+    if (k !== 'live') { const today = res.frames[`${tag} live`]; ok(`${tag}: ${k} scrolls through two hand-overs as smoothly as today's steps (95th-percentile frame within 4 ms of today's, at most one more frame over 50 ms)`, f.p95 <= today.p95 + 4 && f.over50 <= today.over50 + 1, { it: f, today }); }
     await release(p); await wait(p, 400);
   }
   await choose(p, 'live'); s = await all(p);
