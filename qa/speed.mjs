@@ -140,7 +140,7 @@ async function one(v, w, box) {
   return { v, w, net: NET, heroFilmMs: heroMs, clickToSoundMs: soundMs, step: step && step.join(':'), stepFilmMs, stepSoundMs, minLevelDuringStepChange: +minLevel.toFixed(2), ...(LOG ? { marks, sound, requests: reqs } : {}) };
 }
 // STEPS=1: one step's moment, polled from its arrival: photo = its own picture loaded and decoded; film = moving; first = any
-// picture in its frame (the film's poster, the photo or the film)
+// picture in its frame (the film's poster, the photo, its soft preview carried in the page (.ch__pre, task 1ff4c3f4) or the film)
 const READ = +(process.env.READ || 4000), STEPS = process.env.STEPS === '1';
 // VIDEO=dir (task 1ff4c3f4, J 20 Nov: "it needs to be instant"): the walk and the jump are filmed as WebKit paints them, and each
 // arrival gets its moment in the film (vMs), so what the reader SEES on arriving is looked at frame by frame, not only read from
@@ -158,7 +158,8 @@ async function at(p, id, t0) {
       const pics = top ? [top] : [...sec.querySelectorAll('img')].filter((im) => { const r = im.getBoundingClientRect(); return r.width > 40 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight; });
       const dec = (im) => im && im._dec != null ? im._dec - T : null;
       const photo = pics.length && pics.every((im) => im._dec != null) ? Math.max(...pics.map(dec)) : null;
-      const firstPic = [poster, ...pics].map(dec).filter((x) => x !== null);
+      const pre = sec.querySelector('.ch__top .ch__pre'), preOn = !!pre && !pre.hidden && getComputedStyle(pre).backgroundImage !== 'none';
+      const firstPic = [poster, ...pics].map(dec).filter((x) => x !== null).concat(preOn ? [performance.now() - T] : []);
       return { photo, nopics: !pics.length, film: v ? (v.currentTime > 0.05 && !v.paused) : null, first: firstPic.length ? Math.min(...firstPic) : null,
         src: pics.map((im) => (im.currentSrc || '').split('/').pop().split('?')[0]).join(' '), now: performance.now() - T }; }, id);
     if (o.photoMs === null && s.photo !== null) o.photoMs = Math.max(0, Math.round(s.photo));
