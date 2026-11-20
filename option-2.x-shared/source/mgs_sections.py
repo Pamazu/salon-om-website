@@ -123,7 +123,7 @@ def close(d, world):
     """Begin and the footer as ONE closing screen (Spoke & Weal's "Not sure what to book?" over its footer; Heyday's photo
     beside the details): the call to action on the left, Begin's own photo framed whole on the right, the details in a
     short band under both. On a phone: the photo, the action, the band."""
-    c, e = d['cta'], d['end']
+    c, e = d['cta'], d.get('end')
     img, pos = d['img']
     text = f'<p class="cl__text a-up" style="--d:.7s">{c["text"]}</p>' if c.get('text') else ''
     flow = d.get('flow')
@@ -136,7 +136,7 @@ def close(d, world):
         <div class="cl__btn a-up" style="--d:1s">{c['btn']}</div>      </div>
       <figure class="cl__ph" aria-hidden="true"><img src="img/{img}" alt="" decoding="async" loading="lazy" style="--pos:{pos}"></figure>
     </div>
-    {_foot(e, d['draft'])}
+    {_foot(e, d['draft']) if e else ''}
   </section>'''
 
 
@@ -163,6 +163,13 @@ def mail_form(btns, world):
           <p class="cl__note">This opens your own email app with your message ready to send to {E(to)}. Nothing is sent or kept by this page.</p>
           <p class="cl__thanks" role="status" hidden>Thank you. Your email app has your message ready: press send, and we will reply soon.</p>
         </form>'''
+
+
+def foot_alone(d, world):
+    """the closing screen's footer band on its own, where no Begin comes right before it (G: after the second door, task cde7849b)"""
+    return f'''<section class="s s--auto cl cl--foot" id="{d['id']}-foot" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="Contact">
+    {_foot(d, d['draft'])}
+  </section>'''
 
 
 def cred(d, world):

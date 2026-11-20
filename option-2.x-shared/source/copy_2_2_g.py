@@ -157,10 +157,13 @@ SALON = [
         intro=draft(G['story_open']) + ' ' + M.TEAM[0]['desc'] + ' ' + draft(G['story_close'])),
   ('tease', dict(id='om', label='OM · Oneness', dark=True, accents=['kindness.'], text=M.OM,   # her quiet version; its last line is the payoff
                  btn=btn(BOOK, BOOK_URL, arrow=True))),
-  door(short=False),
+  # Begin right under OM · Oneness, on the same brown ground, each at its own height, as one section to the eye; the second door
+  # after them (task cde7849b; J 20 Nov 13:3x Z: "JUST KEEP THE SAME OM BROWN SECTION AND MAKE THE LAST CTA SECTION PART OF THE OM
+  # BROWN SECTION ... both parts still the same height they originally have")
   # her Begin text and her two buttons (call, email: the one action's two ways); her two-week word (11 Nov). Round 6
   # (task b9a04e51): no 'Book online' (her booking page lists no services) and no Inner Work block in the footer
   _with(begin(), answer=draft(A11['adjust']), reward=draft(G['begin_reward'])),
+  door(short=False),
   salon_end(LEGEND, explore=[('The visit', 'visit'), ('The menu', 'services'), ('The team', 'hosts'), ('Begin', 'begin')], iw=False),
 ]
 

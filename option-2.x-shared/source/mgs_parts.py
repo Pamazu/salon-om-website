@@ -250,7 +250,10 @@ def _close(slides):
                                       note='As before 20 Nov: Begin fills its own screen after the second door, its words centred, no form.', flow=False)])))
         else:
             out.append((kind, d))
-    return out
+    # Begin with no footer after it (G: right under OM · Oneness, task cde7849b) is the same closing screen, without the footer
+    # and a footer with no Begin before it (G: after the second door) is the closing screen's own footer band, alone
+    return [(S.close, dict(cta=d, img=d.get('close_img') or CLOSE_IMG[d['id']])) if k == 'cta' and d['id'].endswith('begin')
+            else (S.foot_alone, dict(d, foot_visit=FOOT_VISIT)) if k == 'end' else (k, d) for k, d in out]
 
 
 def salon_hero(proof=False, visit='arrive', line=None):
