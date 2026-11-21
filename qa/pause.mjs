@@ -1,32 +1,52 @@
-// the pause (task 2b1d1187): M and G's pause at 1440, 390 and J's 6K window (3230 x 1319 CSS px at 2x, as sharpness.mjs), the settled frame
-// plus frames while the picture opens. PZ_IMG=<file> serves that file as img/om-pause-guest.webp (a stand-in or a
-// candidate) without touching the site's img folder. Usage: node pause.mjs <outdir> [m,g] [1440,390,3230]
-import { chromium } from 'playwright';
+// the pause (tasks 2b1d1187, e1a1e009): M and G's pause, B · The breath, at 1440, 390 and J's 6K window (3230 x 1319 CSS px at
+// 2x), in WebKit (J's Safari). A frame at each point of the breath (0.15 the room opening, 0.5 the in-breath full, 0.72 the
+// out-breath with the question, 1 at rest) and, at the last two, the same frame with the words hidden plus each line's box and
+// colour, so the contrast behind every line is read from the pixels (qa/pause_contrast.py). At 1440 also a strip of eleven
+// frames through the section, to see the breath move. chromium (4th argument, or ENGINE=) for Chromium (the PC). The pool's pinned browser when
+// given (WEBKIT=, run-at-ref --asset WEBKIT; CHROME= or SDELEGATE_CHROMIUM=), else Playwright's own.
+// Both worlds: the salon's pause (#pause) and Inner Work's twin (#c-pause), reached with the page's own world switch (task
+// 3a9e24cf). Usage: node pause.mjs <outdir> [m,g] [1440,390,3230] [webkit|chromium] [query, e.g. opt-pause=centred] [salon,coaching]
+import * as pw from 'playwright';
 import fs from 'node:fs'; import path from 'node:path';
-import { serve, open, jump, wait } from './lib.mjs';
+import { serve, open, jump, wait, toWorld } from './lib.mjs';
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const [out = 'pause-shots', vs = 'm,g', ws = '1440,390,3230'] = process.argv.slice(2);
+const [out = 'pause-shots', vs = 'm,g', ws = '1440,390,3230', eng = '', qs = '', wds = 'salon,coaching'] = process.argv.slice(2);
 fs.mkdirSync(out, { recursive: true });
-const srv = await serve(REPO, (u, req, res) => {
-  if (process.env.PZ_IMG && /\/img\/om-pause-guest\.webp$/.test(u)) { res.writeHead(200, { 'Content-Type': 'image/webp' }); fs.createReadStream(process.env.PZ_IMG).pipe(res); return true; }
-});
+const srv = await serve(REPO);
 const base = `http://127.0.0.1:${srv.address().port}`;
-const b = await chromium.launch();
+const ENGINE = eng || process.env.ENGINE || 'webkit', exe = ENGINE === 'webkit' ? process.env.WEBKIT : process.env.CHROME || process.env.SDELEGATE_CHROMIUM;
+const b = await pw[ENGINE].launch(exe ? { executablePath: exe } : {});
+console.log(ENGINE, b.version());
+const LINES = (id) => ['ps__cue', 'ps__head', 'ps__sub', 'ps__coda'].map((c) => `#${id} .${c}`).join(', ');
 for (const w of ws.split(',').map(Number)) {
   const size = w === 390 ? { width: 390, height: 844 } : w === 3230 ? { width: 3230, height: 1319 } : { width: 1440, height: 900 };
-  const ctx = await b.newContext({ viewport: size, deviceScaleFactor: w === 3230 ? 2 : w === 390 ? 3 : 2, isMobile: w === 390, hasTouch: w === 390 });
-  for (const v of vs.split(',')) {
-    const p = await open(ctx, `${base}/${v}/`);
-    const y = await p.evaluate(() => document.getElementById('pause').offsetTop);
-    await jump(p, y);
-    for (const t of w === 3230 ? [] : [700, 1600]) { await wait(p, t === 700 ? 700 : 900); await p.screenshot({ path: `${out}/${v}-${w}-t${t}.jpg`, type: 'jpeg', quality: 80 }); }
-    await wait(p, 5200);
-    await p.screenshot({ path: `${out}/${v}-${w}.jpg`, type: 'jpeg', quality: 82, timeout: 180000 });
-    const m = await p.evaluate(() => { const i = document.querySelector('#pause .br__ph img'), r = i.getBoundingClientRect();
-      // with srcset, naturalWidth is the slot's width, not the file's: read the width of the file the browser chose
-      const fw = +((i.currentSrc.match(/-(\d+)\.webp$/) || [])[1] || 0) || 1280;
-      return { css: [Math.round(r.width), Math.round(r.height)], file: i.currentSrc.split('/').pop(), fileW: fw, devPerFile: +(r.width * devicePixelRatio / fw).toFixed(2) }; });
-    console.log(v, w, JSON.stringify(m));
+  const dpr = w === 390 ? 3 : 2;
+  const ctx = await b.newContext({ viewport: size, deviceScaleFactor: dpr, isMobile: w === 390, hasTouch: w === 390 });
+  for (const v of vs.split(',')) for (const wd of wds.split(',')) {
+    const id = wd === 'coaching' ? 'c-pause' : 'pause', tag = `${v}-${wd}-${w}`;
+    const p = await open(ctx, `${base}/${v}/${qs ? '?' + qs : ''}`);
+    if (wd === 'coaching') await toWorld(p, 'coaching');
+    // the switcher may redraw the section from its store as the page settles: wait for it, and say what the page is if it never comes
+    if (!(await p.waitForSelector('#' + id, { state: 'attached', timeout: 20000 }).catch(() => null))) { console.log('NO #' + id, v, w, await p.evaluate(() => [location.href, document.title, document.querySelectorAll('section[id]').length, document.body.innerText.slice(0, 160)])); continue; }
+    const g = await p.evaluate((id) => { const s = document.getElementById(id); return { y: s.getBoundingClientRect().top + scrollY, span: s.offsetHeight - innerHeight }; }, id);
+    const at = (t) => jump(p, Math.round(g.y + g.span * t));
+    if (w === 1440) for (let k = 0; k <= 10; k++) { await at(k / 10); await wait(p, 700); await p.screenshot({ path: `${out}/${tag}-strip-${k}.jpg`, type: 'jpeg', quality: 70 }); }
+    for (const t of [0.15, 0.5, 0.72, 1]) {
+      await at(t); await wait(p, t === 1 ? 5200 : 1800);
+      await p.screenshot({ path: `${out}/${tag}-p${t}.jpg`, type: 'jpeg', quality: 85, timeout: 180000 });
+      if (t < 0.72) continue;
+      const lines = await p.evaluate((q) => [...document.querySelectorAll(q)].filter((e) => +getComputedStyle(e).opacity > 0.5 && e.getClientRects().length).map((e) => {
+        const r = e.getBoundingClientRect(), c = getComputedStyle(e);
+        return { k: e.className.split(' ')[0], text: e.textContent.trim().slice(0, 60), box: [r.left, r.top, r.right, r.bottom].map(Math.round), color: c.color, px: parseFloat(c.fontSize), weight: c.fontWeight };
+      }), LINES(id));
+      const vars = await p.evaluate((id) => { const s = document.getElementById(id), c = getComputedStyle(s); return Object.fromEntries(['--sc', '--ct', '--cs', '--dim'].map((k) => [k, c.getPropertyValue(k).trim()])); }, id);
+      const hide = await p.addStyleTag({ content: `#${id} .ps__cue, #${id} .ps__words, #${id} .ps__coda { visibility: hidden !important; }` });
+      await wait(p, 150);
+      await p.screenshot({ path: `${out}/${tag}-p${t}-bare.png`, timeout: 180000 });
+      await hide.evaluate((n) => n.remove());
+      fs.writeFileSync(`${out}/${tag}-p${t}.json`, JSON.stringify({ dpr, lines, vars }, null, 1));
+      console.log(tag, t, JSON.stringify(vars), lines.map((l) => l.k + ' ' + l.box.join(',')).join(' | '));
+    }
     await p.close();
   }
   await ctx.close();
