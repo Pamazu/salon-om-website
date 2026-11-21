@@ -412,7 +412,9 @@ def pause_scene(d, world):
       cinema  C, Cinema: the room as a wide film frame opening from its centre, the heading set huge above and below it;
       through D2, Step through: the door as the default draws it, growing as you scroll until you stand in the room.
     Every word is the section's own (its label, text, after; d['cue'] the two breath words); the picture is the section's
-    (breath, breath_alt) with its AI label (breath_mark); the letters come into focus as on the live pause (base.css ink)."""
+    (breath, breath_alt) with its AI label (breath_mark); the letters come into focus as on the live pause (base.css ink).
+    d['lit'] (breath): the light falls off softly behind each line of words, so they read at AA or better on every screen
+    (task 3a9e24cf, mgs.css .ps--lit); without it the room is dimmed evenly behind them, as on 20 Nov."""
     head, rest = _head_rest(d['text'])
     long = ' is-long' if len(head) > 30 else ''      # a long opening sentence (Inner Work's) is set a size smaller, on its heading
     sc, f, alt, mark = d['scene'], d['breath'], E(d.get('breath_alt', '')), d.get('breath_mark', '')
@@ -460,7 +462,8 @@ def pause_scene(d, world):
     </div>'''
     else:
         raise AssertionError(f'pause_scene: no scene "{sc}"')
-    return f'''<section class="s ps ps--{sc}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
+    lit = ' ps--lit' if sc == 'breath' and d.get('lit') else ''
+    return f'''<section class="s ps ps--{sc}{lit}" id="{d['id']}" data-tone="dark" data-sound="{d.get('sound', 'bed')}" aria-label="{E(re.sub(r'<[^>]+>', '', d['label']))}">
     {inner}
     <div class="s__shade"></div>
   </section>'''
@@ -470,8 +473,9 @@ def pause_scene(d, world):
 # choose", screenshot 12.46.46 on "B · The breath"): the copy draws the pause with pause_scene and PAUSE_DEFAULT; the door versions
 # and the rest stay under Shift+V, J's words for each in the notes. One list for every page that has the pause (M, G); Inner
 # Work's twin draws the same options in its own words and picture.
-PAUSE_DEFAULT = dict(scene='breath', cue=('breathe in', 'breathe out'))
+PAUSE_DEFAULT = dict(scene='breath', cue=('breathe in', 'breathe out'), lit=True)
 PAUSE_OPTIONS = [
+    dict(key='even', label='B · The breath, as on 20 Nov', note='The same breath with the room dimmed evenly behind the words (live until 21 Nov).', lit=False),
     dict(key='standing', label='The door, standing in the room', note='Her words beside a tall arched door on the empty chair by the window (before 19 Nov).', kind='tease'),
     dict(key='glass', label='D1 · The glass door', note='The door again, behind two leaves of fluted glass that slide apart as it arrives.', kind='tease', glass=True),
     dict(key='through', label='D2 · Step through', note='Scroll slowly: you walk up to the door until it fills the screen and you stand in the room.', scene='through'),
@@ -480,7 +484,7 @@ PAUSE_OPTIONS = [
     dict(key='cinema', label='C · Cinema', note='The room as a wide film frame; the heading huge above and below it.', scene='cinema'),
 ]
 PAUSE_LIVE_LABEL = 'B · The breath'
-PAUSE_LIVE_NOTE = 'Scroll slowly: the room opens as you breathe in; the question arrives on the exhale.'
+PAUSE_LIVE_NOTE = 'Scroll slowly: the room opens as you breathe in; the question arrives on the exhale. The light falls away softly behind each line, so the words read on every screen.'
 
 
 # where each sheet picture's subject stands, as fractions of the picture (left top right bottom), read from the picture itself

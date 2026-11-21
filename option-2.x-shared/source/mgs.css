@@ -1089,6 +1089,17 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--breath .ps__coda { position: absolute; z-index: 2; bottom: max(9vh, 116px); left: 0; right: 0; text-align: center; opacity: 0; transition: opacity 1.6s var(--io); }
 .ps--breath.is-exhale .ps__sub, .ps--breath.is-rest .ps__coda, html[data-shot] .ps--breath .ps__sub, html[data-shot] .ps--breath .ps__coda { opacity: 1; transform: none; }
 .ps--breath .ps__cue { position: absolute; z-index: 2; top: calc(var(--hdr) + 6vh); left: 0; right: 0; margin: 0; text-align: center; color: rgba(245, 238, 228, .78); transition: opacity .8s var(--io); }
+/* the pause's words read at AA or better on every screen (task 3a9e24cf; J 19 Nov: "use lighting to enhance readability ... the
+   text needs to be more readable"; J 20 Nov: "the lighting is too even"): the even dim above stays as it is; behind each line
+   the light falls away, a pool of the page's own dark blurred wider than itself, so it has no edge anywhere. It belongs to
+   its line (its ::before, under the glyphs in the line's own layer): it arrives and leaves with it. The cue and the last line
+   are as wide as their words, so their pools hug them. B · The breath as on 20 Nov (no .ps--lit) stays a Shift+V option. */
+.ps--lit { --lit: .5; --lit-blur: 40px; }
+.ps--lit .ps__words::before, .ps--lit .ps__coda::before, .ps--lit .ps__cue::before { content: ''; position: absolute; z-index: -1; inset: -64px -56px;
+  border-radius: 999px; background: rgba(21, 16, 12, var(--lit)); filter: blur(var(--lit-blur)); pointer-events: none; }
+.ps--lit .ps__coda, .ps--lit .ps__cue { width: fit-content; margin-left: auto; margin-right: auto; }
+.ps--lit .ps__cue::before { inset: -40px -48px; filter: blur(28px); }
+@media (max-width: 759px) { .ps--lit { --lit: .62; --lit-blur: 32px; } }
 /* the five steps' scroll options (task 5cf1107e; J 19 Nov: "play with scroll to switch between the nature video and the other
    video ... Just like in the take a breath section"; build.chapter ch--scroll, mgs.js --e: 0 the photo, 1 the film). The
    step's content is held in one sticky frame (.ch__stick) while the section scrolls by; the photo starts whole, its words on it
