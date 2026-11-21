@@ -237,11 +237,16 @@ async function picks(p, P, W, add, seen) {
   const secs = await p.evaluate((P) => [...document.querySelectorAll(`#main-${P ? 'coaching' : 'salon'} > section[id]`)].map((s) => ({ id: s.id,
     pics: [...new Set([...s.querySelectorAll('img[data-pic]')].map((i) => i.getAttribute('data-pic')))]
       .filter((x) => document.querySelectorAll(`#opt-store template[data-pic-for="${x}"]`).length > 1) })).filter((s) => s.pics.length), P);
-  // the copies of a picture drawn in view now, and the file each draws from (its name, without a srcset width)
+  // the copies of a picture drawn in view now, and the file each draws from (its name, without a srcset width); a file its
+  // <picture>'s own source serves is today's picture through its cut (task 1ff4c3f4: the fourth and fifth steps' wide band,
+  // made for today's picture only), so it reads as today's file, and a source left on over a chosen option still reads wrong
   const drawn = (pic) => p.evaluate((pic) => {
     const stem = (u) => decodeURIComponent((u || '').split('?')[0].split('#')[0].split('/').pop()).replace(/\.webp$/, '').replace(/-\d+$/, '');
+    const lt = document.querySelector(`#opt-store template[data-pic-for="${pic}"][data-opt="live"]`), today = stem((lt && lt.getAttribute('data-file')) || pic);
+    const viaSource = (i) => { const pc = i.parentElement, cur = (i.currentSrc || '').split('?')[0]; if (!pc || pc.tagName !== 'PICTURE' || !cur) return false;
+      return [...pc.querySelectorAll('source[srcset]')].some((s) => s.getAttribute('srcset').split(',').some((c) => { const u = c.trim().split(/\s+/)[0].split('?')[0]; return u && cur.endsWith(u); })); };
     return [...document.querySelectorAll(`img[data-pic="${pic}"]`)].filter((i) => { const r = i.getBoundingClientRect();
-      return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(i).opacity) > .5; }).map((i) => i.complete ? stem(i.currentSrc) : 'loading');
+      return r.width > 0 && r.bottom > 0 && r.top < innerHeight && parseFloat(getComputedStyle(i).opacity) > .5; }).map((i) => i.complete ? (viaSource(i) ? today : stem(i.currentSrc)) : 'loading');
   }, pic);
   const want = (pic, k) => p.evaluate(([pic, k]) => { const t = document.querySelector(`#opt-store template[data-pic-for="${pic}"][data-opt="${k}"]`), i = t && t.content.querySelector('img[src]');
     // today's: its file, named on its template when the picture's key is not its file (a step's photo, per world: task f748d06c)
