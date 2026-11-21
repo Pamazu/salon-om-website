@@ -2293,6 +2293,10 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--lit { --lit: .5; --lit-cue: .66; --lit-blur: 40px; }
 .ps--lit .ps__words::before, .ps--lit .ps__coda::before, .ps--lit .ps__cue::before { content: ''; position: absolute; z-index: -1; inset: -64px -56px;
   border-radius: 999px; background: rgba(21, 16, 12, var(--lit)); filter: blur(var(--lit-blur)); pointer-events: none; }
+/* on the plain dark ground the words need no shade (and a blurred shade there shows its rounding as faint rings): each pool
+   comes in only as the room opens behind it (--open, mgs.js breath()), the cue's last, as the room reaches the top */
+.ps--lit .ps__words::before, .ps--lit .ps__coda::before { opacity: clamp(0, calc(var(--open, 1) * 2 - 1), 1); }
+.ps--lit .ps__cue::before { opacity: clamp(0, calc(var(--open, 1) * 5 - 4), 1); }
 .ps--lit .ps__coda, .ps--lit .ps__cue { width: fit-content; margin-left: auto; margin-right: auto; }
 .ps--lit .ps__cue { color: rgba(245, 238, 228, .92); }
 .ps--lit .ps__cue::before { inset: -48px -64px; background: rgba(21, 16, 12, var(--lit-cue)); filter: blur(30px); }
@@ -3389,7 +3393,7 @@ html[data-motion="calm"] .s.opt-in > * {animation-duration: .2s;}
     </footer>
   </section>
 </main>
-<script>window.OM_BUILD="cccda334a7fc";</script>
+<script>window.OM_BUILD="d78e8ac11d55";</script>
 <script>window.OM_PAGE_OPTS=[{"p":"switch","attr":"data-switch","n":"The other world’s door","d":"b","o":[["a","The pill"],["b","The bottom anchor"],["c","“Two practices”"]]}];</script>
 <script>
 /* The option switcher (task e5325977, J 19 Nov 2026: "the options just give them to me in the page directly, so I can do shift v
@@ -5230,6 +5234,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     x.s.style.setProperty('--cr', (40 * (1 - inh)) + 'px');
     x.s.style.setProperty('--sc', (1 + .08 * inh - .06 * exh).toFixed(4));
     x.s.style.setProperty('--dim', (.2 + .35 * inh - .1 * exh).toFixed(3));
+    x.s.style.setProperty('--open', inh.toFixed(3));   // how far the room has opened: the light behind the words follows it (mgs.css .ps--lit)
     if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
     x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
   }

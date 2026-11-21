@@ -1097,6 +1097,10 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
 .ps--lit { --lit: .5; --lit-cue: .66; --lit-blur: 40px; }
 .ps--lit .ps__words::before, .ps--lit .ps__coda::before, .ps--lit .ps__cue::before { content: ''; position: absolute; z-index: -1; inset: -64px -56px;
   border-radius: 999px; background: rgba(21, 16, 12, var(--lit)); filter: blur(var(--lit-blur)); pointer-events: none; }
+/* on the plain dark ground the words need no shade (and a blurred shade there shows its rounding as faint rings): each pool
+   comes in only as the room opens behind it (--open, mgs.js breath()), the cue's last, as the room reaches the top */
+.ps--lit .ps__words::before, .ps--lit .ps__coda::before { opacity: clamp(0, calc(var(--open, 1) * 2 - 1), 1); }
+.ps--lit .ps__cue::before { opacity: clamp(0, calc(var(--open, 1) * 5 - 4), 1); }
 .ps--lit .ps__coda, .ps--lit .ps__cue { width: fit-content; margin-left: auto; margin-right: auto; }
 .ps--lit .ps__cue { color: rgba(245, 238, 228, .92); }
 .ps--lit .ps__cue::before { inset: -48px -64px; background: rgba(21, 16, 12, var(--lit-cue)); filter: blur(30px); }

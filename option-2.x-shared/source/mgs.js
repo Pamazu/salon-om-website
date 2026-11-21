@@ -721,6 +721,7 @@ pauseHead(); document.addEventListener('om:swap', pauseHead);
     x.s.style.setProperty('--cr', (40 * (1 - inh)) + 'px');
     x.s.style.setProperty('--sc', (1 + .08 * inh - .06 * exh).toFixed(4));
     x.s.style.setProperty('--dim', (.2 + .35 * inh - .1 * exh).toFixed(3));
+    x.s.style.setProperty('--open', inh.toFixed(3));   // how far the room has opened: the light behind the words follows it (mgs.css .ps--lit)
     if (x.cue) { x.cue.textContent = x.cue.getAttribute(p < .5 ? 'data-in' : 'data-out'); x.cue.style.opacity = p > .92 ? 0 : 1; }
     x.s.classList.toggle('is-exhale', p > .58); x.s.classList.toggle('is-rest', p > .86);
   }
