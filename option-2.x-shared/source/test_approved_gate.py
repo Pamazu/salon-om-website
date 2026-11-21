@@ -677,5 +677,77 @@ class FilmLaw(unittest.TestCase):
         self.assertEqual(code, 1); self.assertIn('AI Act', err.getvalue()); self.assertIn('M "top"', err.getvalue())
 
 
+
+class LooksKept(unittest.TestCase):
+    """task b2d8bf11 (J 20 Nov 12:47 Z: "agents are making changes of things that I like removeing completely things that I like
+    not at least keeping them as options"): a deploy never removes a look live today. Red: the pause's centred breath, live at
+    6bbb2ec, changed in place at 090f185 (data-light) and 7bf6af7 (data-split); green: 3344365 keeps it as the option "centred"."""
+    STEPS = 'J names look steps: "I don\'t like any of the effects on the 5 steps scroll triggered, do something really beautiful and clean"'
+
+    def lost(self, live, head, message='x'):
+        return g.looks_check(live, head, message)[0]
+
+    def test_red_the_centred_breath_changed_in_place(self):
+        for live in ('6bbb2ec', '4e3a4a4'):
+            got = self.lost({l: page(live, l) for l in 'mg'}, {l: page('7bf6af7', l) for l in 'mg'}, self.STEPS)
+            self.assertEqual({l: sorted({s for s, _ in it}) for l, it in got.items()}, {'m': ['pause'], 'g': ['pause']}, live)
+
+    def test_green_once_the_centred_breath_is_an_option_again(self):
+        self.assertEqual(self.lost({l: page('6bbb2ec', l) for l in 'mg'}, {l: page('3344365', l) for l in 'mg'}, self.STEPS), {})
+
+    def test_a_removal_j_named_needs_his_words_on_a_commit(self):
+        # 649e5ca took the steps' three scroll effects off on J's words (20 Nov 07:18 Z); without them quoted, refused
+        got = self.lost({'m': page('6bbb2ec', 'm')}, {'m': page('3344365', 'm')})
+        self.assertIn('arrive', {s for s, _ in got['m']}); self.assertIn('c-home', {s for s, _ in got['m']})
+
+    def test_the_same_pages_keep_every_look(self):
+        m = page(BUILT, 'm')
+        self.assertEqual(self.lost({'m': m}, {'m': m}), {})
+
+    def test_an_option_taken_off_the_list(self):
+        m = page(BUILT, 'm')
+        head = re.sub(r'<template data-opt-for="hosts" data-opt="band"[^>]*>.*?</template>', '', m, count=1, flags=re.S)
+        head = head.replace('{&quot;k&quot;:&quot;band&quot;', '{&quot;k&quot;:&quot;gone&quot;', 1)
+        got = self.lost({'m': m}, {'m': head})
+        self.assertTrue(any(s == 'hosts' and '"band" is gone' in w for s, w in got['m']), got)
+
+    @staticmethod
+    def wall(m):
+        """the voices (a section with no options), in both worlds, drawn another way"""
+        for sid in ('kind', 'c-kind'):
+            j, k = span(m, sid)
+            m = m[:j] + m[j:k].replace('class="s voices"', 'class="s voices voices--wall"', 1) + m[k:]
+        return m
+
+    def test_a_default_changed_and_the_old_one_kept_as_an_option(self):
+        m = page(BUILT, 'm')
+        changed = self.wall(m)
+        self.assertEqual({s for s, _ in self.lost({'m': m}, {'m': changed})['m']}, {'kind', 'c-kind'})   # today's voices gone: red
+        old = '{&quot;class&quot;:&quot;s voices&quot;,&quot;data-tone&quot;:&quot;dark&quot;}'
+        kept = changed.replace('<div id="opt-store" hidden>', '<div id="opt-store" hidden>' + ''.join(
+            f'<template data-opt-for="{sid}" data-opt="today" data-attrs="{old}" data-same></template>' for sid in ('kind', 'c-kind')), 1)
+        self.assertNotIn('m', self.lost({'m': m}, {'m': kept}))                                     # kept as an option: green
+
+    def test_a_picture_offered_today_taken_away(self):
+        m = page(BUILT, 'm')
+        name = re.search(r'<template data-pic-for="([^"]+)" data-opt="(?!live)[^"]+"[^>]*><img src="img/([^"?]+)', m)
+        if not name:
+            raise unittest.SkipTest('no picture option on this page')
+        head = re.sub(r'src="img/' + re.escape(name.group(2)) + r'[^"]*"', 'src="img/elsewhere.webp"', m)
+        self.assertTrue(any(name.group(2) in w for _, w in self.lost({'m': m}, {'m': head}).get('m', [])))
+
+    def test_his_words_lift_it_and_the_deploy_says_so(self):
+        m = page(BUILT, 'm')
+        changed = self.wall(m)
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err), before_21():
+            refused = g.main(['m'], pages={'m': changed}, live_pages={'m': m}, message='x', rows=list(range(1, 20)), measured_off={}, known=[])
+        self.assertEqual(refused, 1); self.assertIn('J names look kind:', err.getvalue())
+        out, err = io.StringIO(), io.StringIO()
+        said = 'x\n\nJ names look kind: "the guests words as one wall of quotes from now on"'
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err), before_21():
+            g.main(['m'], pages={'m': changed}, live_pages={'m': m}, message=said, rows=list(range(1, 20)), measured_off={}, known=[])
+        self.assertIn('loses a look on purpose, J: "the guests words', out.getvalue())
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

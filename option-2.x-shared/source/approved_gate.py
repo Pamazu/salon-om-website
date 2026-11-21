@@ -15,6 +15,11 @@ A row of the list with none of the three refuses the deploy: a new row J approve
 Before the rows, the law (film_law, task 2a3f89d3; AI Act Art 50): every film the pages play has its origin recorded for the very
 file staged, and every film made with AI says "Made with AI" on it. No waiver line lifts it.
 
+Before any row, every look live today must still be on the pages (task b2d8bf11; J 20 Nov 12:47 Z: "agents are making changes of
+things that I like removeing completely things that I like not at least keeping them as options"): each section's default look,
+Shift+V option and picture, read from the live commit's own built pages, is still there as its default or an option of that
+section, unless a commit since the live one quotes J naming it: J names look <section>: "<his words>" (looks_check).
+
 Before any row, the deployed commit must contain the commit live on each site it deploys (the site's deployed.json, which
 deploy-mgs.sh writes; until a site has one, origin/mgs-options): a build from an older base would take live work back off the
 sites (CEO MA, 19 Nov). To bring an older version back, revert it on top of the live commit.
@@ -41,6 +46,7 @@ import subprocess
 import sys
 import tarfile
 import time
+from html import unescape
 import urllib.request
 from html.parser import HTMLParser
 
@@ -779,6 +785,115 @@ def check(pages, site=SITE):
     return {n: m for n, m in off.items() if m}
 
 
+# ---- looks kept (task b2d8bf11; J 20 Nov 12:47 Z: "It seems that agents are making changes of things that I like removeing
+# completely things that I like not at least keeping them as options"). A deploy never removes a look live today: read from
+# the LIVE commit's built pages, each section's default look (its shape: classes and data attributes, so a layout or motion
+# drawn by a class or a scene attribute), each of its Shift+V options (the same, from its template) and each picture it shows
+# or offers; the deployed build must still have every one of them, as its default or as an option of the same section. A
+# changed default is fine when the old one stays as an option; gone, it is refused unless the deployed commit quotes J naming
+# that section: J names look <section>: "<his words>". Words, positions and sizes are not looks; 's' and 's--auto' (whether a
+# section grows with its words) are not either.
+NOT_LOOK = {'id', 'data-opt', 'data-opts', 'data-opt-key', 'data-opt-name', 'data-sound', 'aria-label', 'aria-labelledby', 'style',
+            'data-sk', 'hidden', 'class'}
+NOT_LOOK_CLASS = {'s', 's--auto'}
+LOOK_WAIVER = re.compile(r'^J names look ([a-z0-9-]+): "(.{15,})"\s*$', re.M)
+
+
+def _sig(attrs):
+    """a section's look as its element carries it: its classes and its other attributes but the switcher's and the words'"""
+    cls = sorted(c for c in (attrs.get('class') or '').split() if c not in NOT_LOOK_CLASS)
+    return ' '.join(cls) + ''.join(sorted(f' [{k}={v}]' for k, v in attrs.items() if k not in NOT_LOOK and not k.startswith('aria-')))
+
+
+def looks(html):
+    """{section id: {'default': sig, 'options': {key: sig}, 'pics': set of files shown, 'offered': set of files offered}}"""
+    secs, out = parse(html), {}
+    tpl = {}
+    for sid, k, a in re.findall(r'<template data-opt-for="([^"]+)" data-opt="([^"]+)" data-attrs="([^"]*)"', html):
+        try:
+            tpl.setdefault(sid, {})[k] = _sig(json.loads(unescape(a)))
+        except ValueError:
+            tpl.setdefault(sid, {})[k] = '(unreadable)'
+    cand = {}
+    for name, body in re.findall(r'<template data-pic-for="([^"]+)"[^>]*>(.*?)</template>', html, re.S):
+        cand.setdefault(name, set()).update(re.findall(r'src="img/([^"?]+)', body))
+    for sid, sec in secs.items():
+        if sid.startswith('__') or not isinstance(sec, dict):
+            continue
+        shown = {re.sub(r'\?.*$', '', p['attrs'].get('src', '')).replace('img/', '') for p in sec['pics'] if p['attrs'].get('src')}
+        offered = set()
+        for p in sec['pics']:
+            if p['attrs'].get('data-pic'):
+                offered |= cand.get(p['attrs']['data-pic'], set())
+        out[sid] = {'default': _sig(sec['attrs']), 'options': tpl.get(sid, {}), 'pics': shown - {''}, 'offered': offered,
+                    'keys': {sid[2:] if sid.startswith('c-') else sid, sec['attrs'].get('data-opt-key') or sid}}
+    return out
+
+
+def looks_lost(live_html, head_html):
+    """[(section id, what is gone)] for every look live today that the build no longer has, as its default or an option"""
+    live, head, out = looks(live_html), looks(head_html), []
+    opt_pics = lambda h: set(re.findall(r'src="img/([^"?]+)', h))
+    for sid, L in live.items():
+        H = head.get(sid)
+        if H is None:
+            out.append((sid, 'the whole section is gone'))
+            continue
+        have = {H['default']} | set(H['options'].values())
+        if L['default'] not in have:
+            out.append((sid, f'today\'s look ({L["default"]}) is gone: it is neither the default nor an option now ({H["default"]})'))
+        for k, s in L['options'].items():
+            if s not in have and k not in H['options']:
+                out.append((sid, f'its Shift+V option "{k}" is gone'))
+            elif s not in have:
+                out.append((sid, f'its Shift+V option "{k}" changed in place ({s} -> {H["options"][k]}) and the old one is not kept'))
+        kept = H['pics'] | H['offered'] | _template_pics(head_html, sid)
+        for f in sorted((L['pics'] | L['offered']) - kept):
+            out.append((sid, f'the picture {f} is gone from it (neither shown nor offered in Shift+V)'))
+    return out
+
+
+def _template_pics(html, sid):
+    """the files the section's option templates draw (a picture an option shows is still offered)"""
+    return {f for body in re.findall(r'<template data-opt-for="' + re.escape(sid) + r'"[^>]*>(.*?)</template>', html, re.S)
+            for f in re.findall(r'src="img/([^"?]+)', body)}
+
+
+def looks_check(live_pages, pages, message):
+    """{letter: [(section id, what is gone)]} not lifted by J's words, and [(letter, section id, his words)] lifted"""
+    said, refused, lifted = look_waivers(message), {}, []
+    for l, live in live_pages.items():
+        if l not in pages or live is None:
+            continue
+        keys = {sid: v['keys'] for sid, v in looks(live).items()}
+        for sid, what in looks_lost(live, pages[l]):
+            hit = next((k for k in sorted(keys.get(sid, {sid})) if k in said), None)
+            if hit:
+                lifted.append((l, sid, said[hit]))
+            else:
+                refused.setdefault(l, []).append((sid, what))
+    return refused, lifted
+
+
+def live_page(sha, letter, root=ROOT):
+    """the built page the live commit carries, or None"""
+    r = subprocess.run(['git', '-C', root, 'show', f'{sha}:option-2.2-mgs/{letter}/index.html'], capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else None
+
+
+def range_message(shas, head='HEAD', root=ROOT):
+    """every commit message from the live commits up to the one deployed: J's words go on the commit that removes a look"""
+    out = []
+    for sha in sorted(set(shas)):
+        out.append(subprocess.run(['git', '-C', root, 'log', '--format=%B', f'{sha}..{head}'], capture_output=True, text=True).stdout)
+    return '\n'.join(out)
+
+
+def look_waivers(message):
+    """section key -> J's quoted words naming that look's removal, from the deployed commit's message"""
+    return {k: q for k, q in LOOK_WAIVER.findall(message) if not re.fullmatch(r'<.*>', q.strip())}
+
+
 LIVE_STAMP = 'https://salon-om-2-2-{}.web.app/deployed.json'
 LIVE_BRANCH = 'mgs-options'
 
@@ -979,15 +1094,21 @@ def head_message(root=ROOT):
     return subprocess.run(['git', '-C', root, 'log', '-1', '--format=%B'], capture_output=True, text=True, check=True).stdout
 
 
-def main(argv, pages=None, message=None, rows=None, measured_off=None, known=None, status=task_status, stamp=None):
+def main(argv, pages=None, message=None, rows=None, measured_off=None, known=None, status=task_status, stamp=None, live_pages=None):
     """pages, message, rows, measured_off, known, status and stamp are for the test; the deploy reads the live sites' stamps,
     the built pages, the HEAD message, the list, the measured result, qa/gate-known.json and StoryMind."""
     letters = argv or ['m', 'g', 's']
+    look_msg = message
     if pages is None or stamp is not None:
         why = base_check(letters, stamp=stamp or read_stamp)
         if why:
             print(f'REFUSED: this deploy is built on an older base than the live sites.\n    {why}\nNothing was deployed.', file=sys.stderr)
             return 1
+        if live_pages is None:      # looks kept (task b2d8bf11): the live commit's own built pages, and every message since it
+            live, _ = live_commits(letters, stamp or read_stamp)
+            live_pages = {l: live_page(sha, l) for l, sha, _ in live}
+            if look_msg is None:
+                look_msg = range_message([sha for _, sha, _ in live])
     if pages is None:
         raw = {}
         for l in letters:
@@ -1007,6 +1128,25 @@ def main(argv, pages=None, message=None, rows=None, measured_off=None, known=Non
         return 1
     print(f'AI Act Art 50: {films} film spots on {" ".join(letters)}, each with its recorded origin, every one made with AI '
           'labelled "Made with AI" (photo_sources.FILMS).')
+    if live_pages is not None:
+        lost, lifted = looks_check(live_pages, pages, (head_message() if look_msg is None else look_msg))
+        for l, sid, quote in lifted:
+            print(f'looks kept: {l.upper()} "{sid}" loses a look on purpose, J: "{quote}"')
+        if lost:
+            print('REFUSED: this deploy removes a look that is live today (task b2d8bf11; J 20 Nov: "agents are making changes of '
+                  'things that I like removeing completely things that I like not at least keeping them as options").', file=sys.stderr)
+            for l, items in sorted(lost.items()):
+                for sid, what in items:
+                    print(f'    - {l.upper()} "{sid}": {what}', file=sys.stderr)
+            print('\nKeep each one as a Shift+V option of its section (section_options: options=, or variants= with also=), then build '
+                  'again. If J named the removal, put his own words on the commit that removes it, one line per section:', file=sys.stderr)
+            for sid in sorted({s[2:] if s.startswith('c-') else s for items in lost.values() for s, _ in items}):
+                print(f'    J names look {sid}: "<his words, at least 15 characters>"', file=sys.stderr)
+            print('Nothing was deployed.', file=sys.stderr)
+            return 1
+        n = sum(len(looks(h)) for h in live_pages.values() if h)
+        print(f'looks kept: every look live today ({n} sections on {" ".join(sorted(l for l, h in live_pages.items() if h))}: each '
+              'default, Shift+V option and picture) is still on the pages, as its default or an option')
     rows = list_rows() if rows is None else rows
     if rows is None:
         print(f'REFUSED: the approved-features list cannot be read at {LIST} (APPROVED_FEATURES= or ALL_KERNEL= points to it), '
