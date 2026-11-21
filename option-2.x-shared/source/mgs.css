@@ -1094,12 +1094,13 @@ html:not([data-motion="calm"]) .ps--room.is-active .ps__pic img { animation: ps-
    the light falls away, a pool of the page's own dark blurred wider than itself, so it has no edge anywhere. It belongs to
    its line (its ::before, under the glyphs in the line's own layer): it arrives and leaves with it. The cue and the last line
    are as wide as their words, so their pools hug them. B · The breath as on 20 Nov (no .ps--lit) stays a Shift+V option. */
-.ps--lit { --lit: .5; --lit-blur: 40px; }
+.ps--lit { --lit: .5; --lit-cue: .66; --lit-blur: 40px; }
 .ps--lit .ps__words::before, .ps--lit .ps__coda::before, .ps--lit .ps__cue::before { content: ''; position: absolute; z-index: -1; inset: -64px -56px;
   border-radius: 999px; background: rgba(21, 16, 12, var(--lit)); filter: blur(var(--lit-blur)); pointer-events: none; }
 .ps--lit .ps__coda, .ps--lit .ps__cue { width: fit-content; margin-left: auto; margin-right: auto; }
-.ps--lit .ps__cue::before { inset: -40px -48px; filter: blur(28px); }
-@media (max-width: 759px) { .ps--lit { --lit: .62; --lit-blur: 32px; } }
+.ps--lit .ps__cue { color: rgba(245, 238, 228, .92); }
+.ps--lit .ps__cue::before { inset: -48px -64px; background: rgba(21, 16, 12, var(--lit-cue)); filter: blur(30px); }
+@media (max-width: 759px) { .ps--lit { --lit: .62; --lit-cue: .62; --lit-blur: 32px; } }
 /* the five steps' scroll options (task 5cf1107e; J 19 Nov: "play with scroll to switch between the nature video and the other
    video ... Just like in the take a breath section"; build.chapter ch--scroll, mgs.js --e: 0 the photo, 1 the film). The
    step's content is held in one sticky frame (.ch__stick) while the section scrolls by; the photo starts whole, its words on it
