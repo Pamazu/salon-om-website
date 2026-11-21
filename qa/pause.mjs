@@ -37,15 +37,25 @@ for (const w of ws.split(',').map(Number)) {
       if (t < 0.72) continue;
       const lines = await p.evaluate((q) => [...document.querySelectorAll(q)].filter((e) => +getComputedStyle(e).opacity > 0.5 && e.getClientRects().length).map((e) => {
         const r = e.getBoundingClientRect(), c = getComputedStyle(e);
-        return { k: e.className.split(' ')[0], text: e.textContent.trim().slice(0, 60), box: [r.left, r.top, r.right, r.bottom].map(Math.round), color: c.color, px: parseFloat(c.fontSize), weight: c.fontWeight };
+        // the glyphs' own extent, line by line (task 3a9e24cf): a centred line's box is the column's width, and its empty sides
+        // are not behind any word
+        const rg = document.createRange(); rg.selectNodeContents(e); const rows = [];
+        for (const q of rg.getClientRects()) {
+          if (q.width < 1 || q.height < 1) continue;
+          const cy = (q.top + q.bottom) / 2, row = rows.find((o) => cy > o[1] && cy < o[3]);
+          if (row) { row[0] = Math.min(row[0], q.left); row[1] = Math.min(row[1], q.top); row[2] = Math.max(row[2], q.right); row[3] = Math.max(row[3], q.bottom); }
+          else rows.push([q.left, q.top, q.right, q.bottom]);
+        }
+        return { k: e.className.split(' ')[0], text: e.textContent.trim().slice(0, 60), box: [r.left, r.top, r.right, r.bottom].map(Math.round), rows: rows.map((o) => o.map(Math.round)), color: c.color, px: parseFloat(c.fontSize), weight: c.fontWeight };
       }), LINES(id));
       const vars = await p.evaluate((id) => { const s = document.getElementById(id), c = getComputedStyle(s); return Object.fromEntries(['--sc', '--ct', '--cs', '--dim'].map((k) => [k, c.getPropertyValue(k).trim()])); }, id);
-      const hide = await p.addStyleTag({ content: `#${id} .ps__cue, #${id} .ps__words, #${id} .ps__coda { visibility: hidden !important; }` });
+      // only the glyphs are hidden: whatever is laid behind the words (a light, a shade) stays in the frame and is measured
+      const hide = await p.addStyleTag({ content: ['ps__cue', 'ps__words', 'ps__coda'].map((c) => `#${id} .${c}, #${id} .${c} *`).join(', ') + ' { color: transparent !important; -webkit-text-fill-color: transparent !important; }' });
       await wait(p, 150);
       await p.screenshot({ path: `${out}/${tag}-p${t}-bare.png`, timeout: 180000 });
       await hide.evaluate((n) => n.remove());
       fs.writeFileSync(`${out}/${tag}-p${t}.json`, JSON.stringify({ dpr, lines, vars }, null, 1));
-      console.log(tag, t, JSON.stringify(vars), lines.map((l) => l.k + ' ' + l.box.join(',')).join(' | '));
+      console.log(tag, t, JSON.stringify(vars), lines.map((l) => l.k + ' ' + l.rows.map((o) => o.join(',')).join(';')).join(' | '));
     }
     await p.close();
   }

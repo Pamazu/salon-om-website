@@ -1,6 +1,6 @@
 """The contrast behind every line of the pause's words, read from the pixels (task e1a1e009; J 20 Nov: "use lighting to enhance
 readability"). Reads what qa/pause.mjs wrote at the out-breath and at rest: the frame with the words hidden (*-bare.png) and each
-line's box, colour and size (*.json). For every background pixel under a line, the line's colour (its alpha laid over that pixel)
+line's box, the glyphs' extent on each of its lines and its colour and size (*.json). For every background pixel under a line, the line's colour (its alpha laid over that pixel)
 against the pixel, as WCAG measures contrast; a line passes when its worst 5 % of pixels still reach the level: AA 4.5:1, or 3:1
 for large text (24 px and over, or 18.66 px bold); AAA 7:1, or 4.5:1 large (task 3a9e24cf: AA at least, AAA the aim).
 Usage: python pause_contrast.py <outdir> [aa|aaa]; exit 1 when a line misses the level (AA when not given)."""
@@ -25,8 +25,9 @@ for j in sorted(glob.glob(sys.argv[1] + '/*-p*.json')):
     d = json.load(open(j))
     im = np.asarray(Image.open(j[:-5] + '-bare.png').convert('RGB')).astype(float)
     for l in d['lines']:
-        x0, y0, x1, y1 = [int(round(v * d['dpr'])) for v in l['box']]
-        bg = im[max(0, y0):y1, max(0, x0):x1].reshape(-1, 3)
+        # behind the glyphs of each of its lines (rows), else its whole box (a reading made before rows were kept)
+        bg = np.concatenate([im[max(0, y0):y1, max(0, x0):x1].reshape(-1, 3)
+                             for x0, y0, x1, y1 in ([int(round(v * d['dpr'])) for v in r] for r in l.get('rows') or [l['box']])])
         if not len(bg):
             continue
         n = [float(v) for v in re.findall(r'[\d.]+', l['color'])]
