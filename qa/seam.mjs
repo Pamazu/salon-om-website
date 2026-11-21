@@ -5,9 +5,10 @@
 // The same id twice: that one section whole, and the strip through it (its top at the window's top to its end at the window's end).
 // Usage: node seam.mjs <outdir> <v> <from-id> <to-id> [1440,390] [query, e.g. opt-hosts=flow] [label]
 import * as pw from 'playwright';
-import fs from 'node:fs'; import path from 'node:path';
+import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
 import { serve, open, jump, wait } from './lib.mjs';
-const REPO = process.env.SITE || path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+// fileURLToPath, never URL.pathname: on Windows the pathname is "/C:/...", the server then finds no page (the PC, 21 Nov)
+const REPO = process.env.SITE || path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [out = 'seam', v = 'g', a = 'aveda', z = 'hosts', ws = '1440,390', qs = '', label = 'now'] = process.argv.slice(2);
 fs.mkdirSync(out, { recursive: true });
 const srv = await serve(REPO), base = `http://127.0.0.1:${srv.address().port}`;
